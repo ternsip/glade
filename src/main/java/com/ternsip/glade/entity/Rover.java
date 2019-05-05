@@ -13,6 +13,7 @@ import com.ternsip.glade.terrains.Terrain;
 import com.ternsip.glade.utils.DisplayManager;
 import com.ternsip.glade.utils.Maths;
 
+import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class Rover extends Entity implements Observable {
@@ -42,13 +43,13 @@ public class Rover extends Entity implements Observable {
 	public void move(MultipleTerrain multipleTerrain){
 		Terrain terrain = multipleTerrain.getTerrain(getPosition());
 		checkInputs(terrain);
-		super.increaseRotation(0, currentTurnSpeed * DisplayManager.getFrameTimeSeconds(), 0);
-		float distance = currentSpeed * DisplayManager.getFrameTimeSeconds();
+		super.increaseRotation(0, currentTurnSpeed * DISPLAY_MANAGER.getFrameTimeSeconds(), 0);
+		float distance = currentSpeed * DISPLAY_MANAGER.getFrameTimeSeconds();
 		float dx = (float) (distance * Math.sin(Math.toRadians(super.getRotY())));
 		float dz = (float) (distance * Math.cos(Math.toRadians(super.getRotY())));
 		super.increasePosition(dx, 0, dz);
-		upwardsSpeed += GRAVITY * DisplayManager.getFrameTimeSeconds();
-		super.increasePosition(0, upwardsSpeed * DisplayManager.getFrameTimeSeconds() , 0);
+		upwardsSpeed += GRAVITY * DISPLAY_MANAGER.getFrameTimeSeconds();
+		super.increasePosition(0, upwardsSpeed * DISPLAY_MANAGER.getFrameTimeSeconds() , 0);
 		float terrainHeight = terrain.getHeightOfTerrain(super.getPosition().x, super.getPosition().z);
 		if(super.getPosition().y < terrainHeight){
 			upwardsSpeed = 0;
@@ -112,43 +113,43 @@ public class Rover extends Entity implements Observable {
 
 	private void checkInputs(Terrain terrain){
 
-		if(DisplayManager.isKeyDown(GLFW_KEY_W)){
+		if(DISPLAY_MANAGER.isKeyDown(GLFW_KEY_W)){
 			this.currentSpeed = +RUN_SPEED;
-		}else if(DisplayManager.isKeyDown(GLFW_KEY_S)){
+		}else if(DISPLAY_MANAGER.isKeyDown(GLFW_KEY_S)){
 			this.currentSpeed = -RUN_SPEED;
 		}else{
 			this.currentSpeed = 0;
 		}
 
-		if(DisplayManager.isKeyDown(GLFW_KEY_D)){
+		if(DISPLAY_MANAGER.isKeyDown(GLFW_KEY_D)){
 			this.currentTurnSpeed = -TURN_SPEED;
-		}else if(DisplayManager.isKeyDown(GLFW_KEY_A)){
+		}else if(DISPLAY_MANAGER.isKeyDown(GLFW_KEY_A)){
 			this.currentTurnSpeed = TURN_SPEED;
 		}else{
 			this.currentTurnSpeed = 0;
 		}
 
-		if(DisplayManager.isKeyDown(GLFW_KEY_B)){
+		if(DISPLAY_MANAGER.isKeyDown(GLFW_KEY_B)){
 			super.increaseRotation(rotX, 0, 0);
 		}
-		if(DisplayManager.isKeyDown(GLFW_KEY_N)){
+		if(DISPLAY_MANAGER.isKeyDown(GLFW_KEY_N)){
 			super.increaseRotation(0, rotY, 0);
 		}
-		if(DisplayManager.isKeyDown(GLFW_KEY_M)){
+		if(DISPLAY_MANAGER.isKeyDown(GLFW_KEY_M)){
 			super.increaseRotation(0, 0, rotZ);
 		}
 
-		if(DisplayManager.isKeyDown(GLFW_KEY_H)){
+		if(DISPLAY_MANAGER.isKeyDown(GLFW_KEY_H)){
 			super.increaseRotation(-rotX, 0, 0);
 		}
-		if(DisplayManager.isKeyDown(GLFW_KEY_J)){
+		if(DISPLAY_MANAGER.isKeyDown(GLFW_KEY_J)){
 			super.increaseRotation(0, -rotY, 0);
 		}
-		if(DisplayManager.isKeyDown(GLFW_KEY_K)){
+		if(DISPLAY_MANAGER.isKeyDown(GLFW_KEY_K)){
 			super.increaseRotation(0, 0, -rotZ);
 		}
 
-		if(DisplayManager.isKeyDown(GLFW_KEY_R)){
+		if(DISPLAY_MANAGER.isKeyDown(GLFW_KEY_R)){
 			this.setRotY(0);
 			this.setRotX(0);
 			this.setRotZ(0);

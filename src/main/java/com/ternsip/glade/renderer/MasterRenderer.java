@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.ternsip.glade.Glade;
 import com.ternsip.glade.entity.Sun;
 import com.ternsip.glade.utils.DisplayManager;
 import org.joml.Matrix4f;
@@ -18,6 +19,8 @@ import com.ternsip.glade.shader.model.ModelShader;
 import com.ternsip.glade.shader.terrain.TerrainShader;
 import com.ternsip.glade.sky.SkyRenderer;
 import com.ternsip.glade.terrains.Terrain;
+
+import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 
 public class MasterRenderer {
 	
@@ -57,7 +60,7 @@ public class MasterRenderer {
 	public static void enableCulling(){
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glCullFace(GL11.GL_BACK);
-        GL11.glViewport(0, 0, DisplayManager.getWidth(), DisplayManager.getHeight());
+        GL11.glViewport(0, 0, DISPLAY_MANAGER.getWidth(), DISPLAY_MANAGER.getHeight());
 	}
 	
 	public static void disableCulling(){
@@ -111,7 +114,7 @@ public class MasterRenderer {
 	}
 	
 	private void createProjectionMatrix() {
-		float aspectRatio = (float) DisplayManager.getWidth() / (float) DisplayManager.getHeight();
+		float aspectRatio = (float) DISPLAY_MANAGER.getWidth() / (float) DISPLAY_MANAGER.getHeight();
 		float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))) * aspectRatio);
 		float x_scale = y_scale / aspectRatio;
 		float frustum_length = FAR_PLANE - NEAR_PLANE;

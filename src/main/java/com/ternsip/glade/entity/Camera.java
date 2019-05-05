@@ -1,9 +1,9 @@
 package com.ternsip.glade.entity;
 
-import com.ternsip.glade.utils.DisplayManager;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFWCursorPosCallbackI;
 
+import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1;
 
 public class Camera {
@@ -20,11 +20,11 @@ public class Camera {
 
     public Camera(Rover rover) {
         this.rover = rover;
-        DisplayManager.registerScrollCallback(((window, xoffset, yoffset) -> {
+        DISPLAY_MANAGER.registerScrollCallback(((window, xoffset, yoffset) -> {
             recalculateZoom((float) yoffset);
         }));
 
-        DisplayManager.registerCursorPosCallback((new GLFWCursorPosCallbackI() {
+        DISPLAY_MANAGER.registerCursorPosCallback((new GLFWCursorPosCallbackI() {
 
             private float dx;
             private float dy;
@@ -98,7 +98,7 @@ public class Camera {
     }
 
     private void recalculatePitch(float mouseDy) {
-        if (DisplayManager.isMouseDown(GLFW_MOUSE_BUTTON_1)) {
+        if (DISPLAY_MANAGER.isMouseDown(GLFW_MOUSE_BUTTON_1)) {
             float pitchChange = pitch + mouseDy * 0.1f;
             if (pitchChange <= -90) {
                 pitchChange = -90;
@@ -111,7 +111,7 @@ public class Camera {
     }
 
     private void recalculateAngleAroundRover(float mouseDx) {
-        if (DisplayManager.isMouseDown(GLFW_MOUSE_BUTTON_1)) {
+        if (DISPLAY_MANAGER.isMouseDown(GLFW_MOUSE_BUTTON_1)) {
             float angleChange = mouseDx * 0.1f;
             angleAroundRover -= angleChange;
         }

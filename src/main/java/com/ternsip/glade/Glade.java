@@ -17,13 +17,13 @@ import org.joml.Vector3f;
 import java.io.File;
 
 // BE CAREFUL BUFFER FLIPS
-public class MainGameLoop {
+public class Glade {
+
+    public static final DisplayManager DISPLAY_MANAGER = new DisplayManager();
+
     public static void main(String[] args) {
 
-        //SharedLibraryLoader.load();
-
-        //System.setProperty("org.lwjgl.librarypath", new File("lib/native").getAbsolutePath());
-        DisplayManager.createDisplay();
+        DISPLAY_MANAGER.createDisplay();
         Loader loader = new Loader();
         MultipleTerrain multipleTerrain = new MultipleTerrain(loader);
 
@@ -59,7 +59,7 @@ public class MainGameLoop {
         }
 
         // TODO Check performance with runnable and without it
-        DisplayManager.loop(() -> {
+        DISPLAY_MANAGER.loop(() -> {
             rover.move(multipleTerrain);
             multipleTerrain.checkTerrain(rover.getPosition());
             camera.move();
@@ -77,7 +77,7 @@ public class MainGameLoop {
 
         renderer.cleanUp();
         loader.cleanUp();
-        DisplayManager.closeDisplay();
+        DISPLAY_MANAGER.closeDisplay();
 
     }
 }

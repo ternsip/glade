@@ -12,18 +12,18 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class DisplayManager {
 
-    private static ArrayList<Callback> callbacks = new ArrayList<>();
+    private ArrayList<Callback> callbacks = new ArrayList<>();
 
-    private static final int FPS_CAP = 120;
+    private final int FPS_CAP = 120;
 
-    private static long lastFrameTime;
-    private static float fps;
-    private static long window;
+    private long lastFrameTime;
+    private float fps;
+    private long window;
 
-    private static Vector2i windowSize;
-    private static float ratio;
+    private Vector2i windowSize;
+    private float ratio;
 
-    public static void createDisplay() {
+    public void createDisplay() {
         registerErrorCallback(GLFWErrorCallback.createPrint(System.err));
         if (!glfwInit()) {
             throw new IllegalStateException("Unable to initialize GLFW");
@@ -54,7 +54,7 @@ public class DisplayManager {
         lastFrameTime = getCurrentTime();
     }
 
-    public static void loop(Runnable runnable) {
+    public void loop(Runnable runnable) {
         /* Loop until window gets closed */
         while (!glfwWindowShouldClose(window)) {
             runnable.run();
@@ -69,11 +69,11 @@ public class DisplayManager {
         }
     }
 
-    public static float getFrameTimeSeconds() {
+    public float getFrameTimeSeconds() {
         return fps;
     }
 
-    public static void closeDisplay() {
+    public void closeDisplay() {
 
         // Release window
         glfwDestroyWindow(window);
@@ -87,63 +87,63 @@ public class DisplayManager {
         glfwTerminate();
     }
 
-    public static int getWidth() {
+    public int getWidth() {
         return windowSize.x();
     }
 
-    public static int getHeight() {
+    public int getHeight() {
         return windowSize.y();
     }
 
-    public static boolean isKeyDown(int key) {
+    public boolean isKeyDown(int key) {
         return glfwGetKey(window, key) == GLFW_PRESS;
     }
 
-    public static boolean isMouseDown(int key) {
+    public boolean isMouseDown(int key) {
         return glfwGetMouseButton(window, key) == GLFW_PRESS;
     }
 
-    public static void registerScrollCallback(GLFWScrollCallbackI callback) {
+    public void registerScrollCallback(GLFWScrollCallbackI callback) {
         GLFWScrollCallback scrollCallback = GLFWScrollCallback.create(callback);
         callbacks.add(scrollCallback);
         glfwSetScrollCallback(window, scrollCallback);
     }
 
-    public static void registerCursorPosCallback(GLFWCursorPosCallbackI callback) {
+    public void registerCursorPosCallback(GLFWCursorPosCallbackI callback) {
         GLFWCursorPosCallback posCallback = GLFWCursorPosCallback.create(callback);
         callbacks.add(posCallback);
         glfwSetCursorPosCallback(window, posCallback);
     }
 
-    public static void registerKeyCallback(GLFWKeyCallbackI callback) {
+    public void registerKeyCallback(GLFWKeyCallbackI callback) {
         GLFWKeyCallback keyCallback = GLFWKeyCallback.create(callback);
         callbacks.add(keyCallback);
         glfwSetKeyCallback(window, keyCallback);
     }
 
-    public static void registerErrorCallback(GLFWErrorCallbackI callback) {
+    public void registerErrorCallback(GLFWErrorCallbackI callback) {
         GLFWErrorCallback errorCallback = GLFWErrorCallback.create(callback);
         callbacks.add(errorCallback);
         glfwSetErrorCallback(errorCallback);
     }
 
-    public static void registerFrameBufferSizeCallback(GLFWFramebufferSizeCallbackI callback) {
+    public void registerFrameBufferSizeCallback(GLFWFramebufferSizeCallbackI callback) {
         GLFWFramebufferSizeCallback framebufferSizeCallback = GLFWFramebufferSizeCallback.create(callback);
         callbacks.add(framebufferSizeCallback);
         glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
     }
 
-    public static void close() {
+    public void close() {
         glfwSetWindowShouldClose(window, true);
     }
 
-    public static Vector2i getMainDisplaySize() {
+    public Vector2i getMainDisplaySize() {
         GLFWVidMode vidMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
         return new Vector2i(vidMode.width(), vidMode.height());
     }
 
     // TODO MOVE TO HOTKEYS CLASS
-    private static void registerCloser() {
+    private void registerCloser() {
         registerKeyCallback(((window, key, scancode, action, mods) -> {
             if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
                 close();
@@ -151,7 +151,7 @@ public class DisplayManager {
         }));
     }
 
-    private static long getCurrentTime() {
+    private long getCurrentTime() {
         return System.currentTimeMillis();
     }
 }
