@@ -22,24 +22,18 @@ public class MainGameLoop {
 		DisplayManager.createDisplay();
 		Loader loader = new Loader();
 		MultipleTerrain multipleTerrain = new MultipleTerrain(loader);
-		
-//		Creo l'oggetto luce e lo posiziono ad una determinata altezza
+
 		Sun sun = new Sun(new Vector2f(0,0), new Vector2f(20000,20000), new Vector3f(1,1,1));
 
 
 		MasterRenderer renderer = new MasterRenderer(loader);
-		
-		
-//		Carico il modello del Rover
+
 		RawModel roverModel = OBJLoader.loadObjModel("rover", loader);
 
 		TexturedModel roverTexturedModel = new TexturedModel(roverModel, new ModelTexture(loader.loadTexture("roverTexture")));
 
-//		Setto la posizione del rover in una determinata area
 		Rover rover = new Rover(roverTexturedModel, new Vector3f(4200, 60, 4200), 0, 0, 0, 1);
-		
-//		Inizializzo la camera fornendogli come parametro l'oggetto da seguire
-		
+
 		Camera camera = new Camera(rover); 
 		
 //		List<Cube> cubes = new ArrayList<>();

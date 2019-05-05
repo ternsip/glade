@@ -1,0 +1,20 @@
+# Eclipse
+.classpath
+.project
+.settings/
+
+# Intellij
+/.idea/*
+*.iml
+*.iws
+!/.idea/dictionaries/
+!/.idea/dictionaries/*
+!/.idea/codeStyles/
+!/.idea/codeStyles/*
+
+# Mac
+.DS_Store
+
+# Maven
+/log/
+/target/
