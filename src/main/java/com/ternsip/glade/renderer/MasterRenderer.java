@@ -21,6 +21,7 @@ import com.ternsip.glade.sky.SkyRenderer;
 import com.ternsip.glade.terrains.Terrain;
 
 import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
+import static com.ternsip.glade.sky.SkyRenderer.SKY_COLOR;
 
 public class MasterRenderer {
 	
@@ -28,21 +29,15 @@ public class MasterRenderer {
 	private static final float NEAR_PLANE = 0.1f;
 	private static final float FAR_PLANE = 1000;
 	
-	private static final float RED = 0.823f;
-	private static final float GREEN = 0.722f;
-	private static final float BLUE = 0.535f;
-	
 	private Matrix4f projectionMatrix;
 
 	// TODO MOVE ALL SHADERS INSIDE RENDERERS
-	private ModelShader modelShader = new ModelShader();
+
 
 	// TODO RENAME TO MODEL RENDERER
 	private EntityRenderer entityRenderer;
 	
 	private TerrainRenderer terrainRenderer;
-	private TerrainShader terrainShader = new TerrainShader();
-	
 	
 	private Map<TexturedModel,List<Entity>> entities = new HashMap<TexturedModel,List<Entity>>();
 	private List<Terrain> terrains = new ArrayList<Terrain>();
@@ -52,8 +47,8 @@ public class MasterRenderer {
 	public MasterRenderer(Loader loader){
 		enableCulling();
 		createProjectionMatrix();
-		entityRenderer = new EntityRenderer(modelShader,projectionMatrix);
-		terrainRenderer = new TerrainRenderer(terrainShader,projectionMatrix);
+		entityRenderer = new EntityRenderer(projectionMatrix);
+		terrainRenderer = new TerrainRenderer(projectionMatrix);
 		skyRenderer = new SkyRenderer(loader, projectionMatrix);
 	}
 	
@@ -69,18 +64,8 @@ public class MasterRenderer {
 	
 	public void render(Sun sun, Camera camera){
 		prepare();
-		modelShader.start();
-		modelShader.loadSkyColour(RED, GREEN, BLUE);
-		modelShader.loadLight(sun);
-		modelShader.loadViewMatrix(camera);
-		entityRenderer.render(entities);
-		modelShader.stop();
-		terrainShader.start();
-		terrainShader.loadSkyColour(RED, GREEN, BLUE);
-		terrainShader.loadLight(sun);
-		terrainShader.loadViewMatrix(camera);
-		terrainRenderer.render(terrains);
-		terrainShader.stop();
+		entityRenderer.render(entities, camera, sun);
+		terrainRenderer.render(terrains, sun, camera);
 		skyRenderer.render(sun, camera);
 		terrains.clear();
 		entities.clear();
@@ -103,14 +88,15 @@ public class MasterRenderer {
 	}
 	
 	public void cleanUp(){
-		modelShader.cleanUp();
-		terrainShader.cleanUp();
+        terrainRenderer.cleanUp();
+        entityRenderer.cleanUp();
+        skyRenderer.cleanUp();
 	}
 	
 	public void prepare() {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-		GL11.glClearColor(RED, GREEN, BLUE, 1);
+		GL11.glClearColor(SKY_COLOR.x(), SKY_COLOR.y(), SKY_COLOR.z(), 1);
 	}
 	
 	private void createProjectionMatrix() {

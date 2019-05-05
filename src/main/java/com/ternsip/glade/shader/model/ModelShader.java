@@ -53,8 +53,8 @@ public class ModelShader extends ShaderProgram{
 		
 	}
 	
-	public void loadSkyColour(float r, float g, float b){
-		super.loadVector(location_SkyColour, new Vector3f(r,g,b));
+	public void loadSkyColour(Vector3f color){
+		super.loadVector(location_SkyColour, color);
 	}
 	
 	public void loadFakeLightingVariable(boolean useFake){

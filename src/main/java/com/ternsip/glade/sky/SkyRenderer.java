@@ -6,11 +6,14 @@ import com.ternsip.glade.entity.Sun;
 import com.ternsip.glade.model.RawModel;
 import com.ternsip.glade.shader.sky.SkyboxShader;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
 public class SkyRenderer {
+
+    public static final Vector3f SKY_COLOR = new Vector3f(0.823f, 0.722f,  0.535f);
 
 	private static final float SIZE = 500f;
 
@@ -59,25 +62,30 @@ public class SkyRenderer {
 	};
 
 	private RawModel skyBox;
-	private SkyboxShader shader;
+	private SkyboxShader skyboxShader;
 	
 	public SkyRenderer(Loader loader, Matrix4f projectionMatrix){
 		skyBox = loader.loadToVAO(VERTICES, 3);
-		shader = new SkyboxShader();
-		shader.start();
-		shader.loadProjectionMatrix(projectionMatrix);
-		shader.stop();
+		skyboxShader = new SkyboxShader();
+		skyboxShader.start();
+		skyboxShader.loadProjectionMatrix(projectionMatrix);
+		skyboxShader.stop();
 	}
 	
 	public void render(Sun sun, Camera camera){
-		shader.start();
-		shader.loadSunVector(sun.getPosition());
-		shader.loadViewMatrix(camera);
+		skyboxShader.start();
+		skyboxShader.loadSunVector(sun.getPosition());
+		skyboxShader.loadViewMatrix(camera);
 		GL30.glBindVertexArray(skyBox.getVaoID());
 		GL20.glEnableVertexAttribArray(0);
 		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, skyBox.getVertexCount());
 		GL20.glDisableVertexAttribArray(0);
 		GL30.glBindVertexArray(0);
-		shader.stop();
+		skyboxShader.stop();
 	}
+
+    public void cleanUp() {
+        skyboxShader.cleanUp();
+    }
+
 }

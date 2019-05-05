@@ -1,6 +1,8 @@
 package com.ternsip.glade.renderer;
 
+import com.ternsip.glade.entity.Camera;
 import com.ternsip.glade.entity.Entity;
+import com.ternsip.glade.entity.Sun;
 import com.ternsip.glade.model.RawModel;
 import com.ternsip.glade.model.TexturedModel;
 import com.ternsip.glade.shader.model.ModelShader;
@@ -17,19 +19,25 @@ import org.lwjgl.opengl.GL30;
 import java.util.List;
 import java.util.Map;
 
+import static com.ternsip.glade.sky.SkyRenderer.SKY_COLOR;
+
 
 public class EntityRenderer {
 
-    private ModelShader shader;
+    private ModelShader modelShader;
 
-    public EntityRenderer(ModelShader shader, Matrix4f projectionMatrix) {
-        this.shader = shader;
-        shader.start();
-        shader.loadProjectionMatrix(projectionMatrix);
-        shader.stop();
+    public EntityRenderer(Matrix4f projectionMatrix) {
+        this.modelShader = new ModelShader();
+        modelShader.start();
+        modelShader.loadProjectionMatrix(projectionMatrix);
+        modelShader.stop();
     }
 
-    public void render(Map<TexturedModel, List<Entity>> entities) {
+    public void render(Map<TexturedModel, List<Entity>> entities, Camera camera, Sun sun) {
+        modelShader.start();
+        modelShader.loadSkyColour(SKY_COLOR);
+        modelShader.loadLight(sun);
+        modelShader.loadViewMatrix(camera);
         for (TexturedModel model : entities.keySet()) {
             prepareTexturedModel(model);
             List<Entity> batch = entities.get(model);
@@ -40,6 +48,11 @@ public class EntityRenderer {
             }
             unbindTexturedModel();
         }
+        modelShader.stop();
+    }
+
+    public void cleanUp() {
+        modelShader.cleanUp();
     }
 
     private void prepareTexturedModel(TexturedModel model) {
@@ -54,9 +67,9 @@ public class EntityRenderer {
             MasterRenderer.disableCulling();
         }
 
-        shader.loadFakeLightingVariable(texture.isUseFakeLighting());
+        modelShader.loadFakeLightingVariable(texture.isUseFakeLighting());
 
-        shader.loadShineVariables(texture.getShineDamper(), texture.getReflectivity());
+        modelShader.loadShineVariables(texture.getShineDamper(), texture.getReflectivity());
         GL13.glActiveTexture(GL13.GL_TEXTURE0);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, model.getTexture().getTextureID());
     }
@@ -70,14 +83,9 @@ public class EntityRenderer {
     }
 
     private void prepareInstance(Entity entity) {
-
-//		Matrix4f transformationMatrix = Maths.createTransformationMatrix(entity.getPosition(),
-//				entity.getRotX(), entity.getRotY(), entity.getRotZ(), entity.getScale());
-
         Matrix4f transformationMatrix = Maths.createTransformationMatrix(entity.getPosition(),
                 Entity.getRotationQuat(entity.getRotX(), entity.getRotY(), entity.getRotZ()), entity.getScale());
-
-        shader.loadTransformationMatrix(transformationMatrix);
+        modelShader.loadTransformationMatrix(transformationMatrix);
     }
 
     public Quaternionfc addRotation(float rx, float ry, float rz) {
