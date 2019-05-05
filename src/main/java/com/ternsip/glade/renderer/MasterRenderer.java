@@ -1,23 +1,23 @@
-package com.unifi.ing.engine.renderer;
+package com.ternsip.glade.renderer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.unifi.ing.engine.entity.Sun;
+import com.ternsip.glade.entity.Sun;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix4f;
 
-import com.unifi.ing.engine.Loader;
-import com.unifi.ing.engine.entity.Camera;
-import com.unifi.ing.engine.entity.Entity;
-import com.unifi.ing.engine.model.TexturedModel;
-import com.unifi.ing.engine.shader.model.ModelShader;
-import com.unifi.ing.engine.shader.terrain.TerrainShader;
-import com.unifi.ing.engine.sky.SkyRenderer;
-import com.unifi.ing.engine.terrains.Terrain;
+import com.ternsip.glade.Loader;
+import com.ternsip.glade.entity.Camera;
+import com.ternsip.glade.entity.Entity;
+import com.ternsip.glade.model.TexturedModel;
+import com.ternsip.glade.shader.model.ModelShader;
+import com.ternsip.glade.shader.terrain.TerrainShader;
+import com.ternsip.glade.sky.SkyRenderer;
+import com.ternsip.glade.terrains.Terrain;
 
 
 

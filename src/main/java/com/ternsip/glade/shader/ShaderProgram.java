@@ -1,11 +1,9 @@
-package com.unifi.ing.engine.shader;
+package com.ternsip.glade.shader;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.FloatBuffer;
 
+import com.ternsip.glade.utils.Utils;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
@@ -26,7 +24,7 @@ public abstract class ShaderProgram {
 	
 	private static FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
 	
-	public ShaderProgram(String vertexFile,String fragmentFile){
+	public ShaderProgram(File vertexFile, File fragmentFile){
 		vertexShaderID = loadShader(vertexFile,GL20.GL_VERTEX_SHADER);
 		fragmentShaderID = loadShader(fragmentFile,GL20.GL_FRAGMENT_SHADER);
 		programID = GL20.glCreateProgram();
@@ -92,11 +90,10 @@ public abstract class ShaderProgram {
 		matrixBuffer.flip();
 		GL20.glUniformMatrix4(location, false, matrixBuffer);
 	}
-	
-//	Metodo che consente di leggere e compilare lo shader fornito come parametro di ingresso
-	private static int loadShader(String file, int type){
+
+	private static int loadShader(File file, int type){
 		StringBuilder shaderSource = new StringBuilder();
-		InputStream in = ShaderProgram.class.getResourceAsStream(file);
+		InputStream in = Utils.loadResourceAsStream(file);
 		try{
 			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 			String line;
@@ -104,15 +101,15 @@ public abstract class ShaderProgram {
 				shaderSource.append(line).append("//\n");
 			}
 			reader.close();
-		}catch(IOException e){
+		} catch(IOException e){
 			e.printStackTrace();
 			System.exit(-1);
 		}
-//		Utilizzo la OpenGl 2.0 per creare uno shader 
+
 		int shaderID = GL20.glCreateShader(type);
 		GL20.glShaderSource(shaderID, shaderSource);
 		GL20.glCompileShader(shaderID);
-//		Compilo lo shader nel caso ci sia un errore termino il programma
+
 		if(GL20.glGetShaderi(shaderID, GL20.GL_COMPILE_STATUS )== GL11.GL_FALSE){
 			System.out.println(GL20.glGetShaderInfoLog(shaderID, 500));
 			System.err.println("Could not compile shader!");

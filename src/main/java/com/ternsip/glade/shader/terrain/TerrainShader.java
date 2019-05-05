@@ -1,22 +1,23 @@
-package com.unifi.ing.engine.shader.terrain;
+package com.ternsip.glade.shader.terrain;
 
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
-import com.unifi.ing.engine.entity.Camera;
-import com.unifi.ing.engine.entity.Light;
-import com.unifi.ing.engine.shader.ShaderProgram;
-import com.unifi.ing.engine.utils.Maths;
-import com.unifi.ing.engine.utils.ShaderPath;
+import com.ternsip.glade.entity.Camera;
+import com.ternsip.glade.entity.Light;
+import com.ternsip.glade.shader.ShaderProgram;
+import com.ternsip.glade.utils.Maths;
+import com.ternsip.glade.utils.ShaderPath;
 
+import java.io.File;
 
 
 public class TerrainShader extends ShaderProgram{
 	
 //	Shader utilizzato principalmente per il terreno fornisce allo shader i vari parametri per consentire di modellare l'oggetto
 	
-	private static final String VERTEX_FILE = ShaderPath.getShaderPath("terrain/terrainVertexShader.txt");
-	private static final String FRAGMENT_FILE = ShaderPath.getShaderPath("terrain/terrainFragmentShader.txt");
+	private static final File VERTEX_FILE = new File("shaders/terrain/terrainVertexShader.txt");
+	private static final File FRAGMENT_FILE = new File("shaders/terrain/terrainFragmentShader.txt");
 	
 	private int location_transformationMatrix;
 	private int location_projectionMatrix;

@@ -1,10 +1,10 @@
-package com.unifi.ing.engine.sky;
+package com.ternsip.glade.sky;
 
-import com.unifi.ing.engine.Loader;
-import com.unifi.ing.engine.entity.Camera;
-import com.unifi.ing.engine.entity.Sun;
-import com.unifi.ing.engine.model.RawModel;
-import com.unifi.ing.engine.shader.sky.SkyboxShader;
+import com.ternsip.glade.Loader;
+import com.ternsip.glade.entity.Camera;
+import com.ternsip.glade.entity.Sun;
+import com.ternsip.glade.model.RawModel;
+import com.ternsip.glade.shader.sky.SkyboxShader;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;

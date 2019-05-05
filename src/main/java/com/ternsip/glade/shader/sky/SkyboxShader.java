@@ -1,18 +1,20 @@
-package com.unifi.ing.engine.shader.sky;
+package com.ternsip.glade.shader.sky;
 
 import org.lwjgl.util.vector.Matrix4f;
 
-import com.unifi.ing.engine.entity.Camera;
-import com.unifi.ing.engine.shader.ShaderProgram;
-import com.unifi.ing.engine.utils.Maths;
-import com.unifi.ing.engine.utils.ShaderPath;
+import com.ternsip.glade.entity.Camera;
+import com.ternsip.glade.shader.ShaderProgram;
+import com.ternsip.glade.utils.Maths;
+import com.ternsip.glade.utils.ShaderPath;
 import org.lwjgl.util.vector.Vector3f;
+
+import java.io.File;
 
 
 public class SkyboxShader extends ShaderProgram{
  
-    private static final String VERTEX_FILE = ShaderPath.getShaderPath("sky/skyboxVertexShader.txt");
-    private static final String FRAGMENT_FILE = ShaderPath.getShaderPath("sky/skyboxFragmentShader.txt");
+    private static final File VERTEX_FILE = new File("shaders/sky/skyboxVertexShader.txt");
+    private static final File FRAGMENT_FILE = new File("shaders/sky/skyboxFragmentShader.txt");
      
     private int location_projectionMatrix;
     private int location_viewMatrix;

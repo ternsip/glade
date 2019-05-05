@@ -1,17 +1,17 @@
-package com.unifi.ing.engine;
+package com.ternsip.glade;
 
-import com.unifi.ing.engine.entity.*;
+import com.ternsip.glade.entity.*;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
-import com.unifi.ing.engine.model.RawModel;
-import com.unifi.ing.engine.model.TexturedModel;
-import com.unifi.ing.engine.renderer.MasterRenderer;
-import com.unifi.ing.engine.terrains.MultipleTerrain;
-import com.unifi.ing.engine.terrains.Terrain;
-import com.unifi.ing.engine.texture.ModelTexture;
-import com.unifi.ing.engine.utils.DisplayManager;
+import com.ternsip.glade.model.RawModel;
+import com.ternsip.glade.model.TexturedModel;
+import com.ternsip.glade.renderer.MasterRenderer;
+import com.ternsip.glade.terrains.MultipleTerrain;
+import com.ternsip.glade.terrains.Terrain;
+import com.ternsip.glade.texture.ModelTexture;
+import com.ternsip.glade.utils.DisplayManager;
 
 import java.io.File;
 
@@ -19,16 +19,9 @@ public class MainGameLoop {
 	public static void main(String[] args) {
 
 		System.setProperty("org.lwjgl.librarypath", new File("lib/native").getAbsolutePath());
-
-//		Creazione del display
 		DisplayManager.createDisplay();
-		
-//		Inizializzazione dell'oggetto loader utilizzato per caricare modelli 3D
 		Loader loader = new Loader();
-
-
 		MultipleTerrain multipleTerrain = new MultipleTerrain(loader);
-		
 		
 //		Creo l'oggetto luce e lo posiziono ad una determinata altezza
 		Sun sun = new Sun(new Vector2f(0,0), new Vector2f(20000,20000), new Vector3f(1,1,1));

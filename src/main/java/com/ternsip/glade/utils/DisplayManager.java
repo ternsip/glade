@@ -1,4 +1,4 @@
-package com.unifi.ing.engine.utils;
+package com.ternsip.glade.utils;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;

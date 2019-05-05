@@ -1,4 +1,4 @@
-package com.unifi.ing.engine;
+package com.ternsip.glade;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -10,7 +10,7 @@ import java.util.List;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
-import com.unifi.ing.engine.model.RawModel;
+import com.ternsip.glade.model.RawModel;
 
 public class OBJLoader {
 	public static RawModel loadObjModel(String fileName, Loader loader){

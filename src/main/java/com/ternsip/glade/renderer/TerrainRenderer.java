@@ -1,4 +1,4 @@
-package com.unifi.ing.engine.renderer;
+package com.ternsip.glade.renderer;
 
 import java.util.List;
 
@@ -9,11 +9,11 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
-import com.unifi.ing.engine.model.RawModel;
-import com.unifi.ing.engine.shader.terrain.TerrainShader;
-import com.unifi.ing.engine.terrains.Terrain;
-import com.unifi.ing.engine.texture.TerrainTexturePack;
-import com.unifi.ing.engine.utils.Maths;
+import com.ternsip.glade.model.RawModel;
+import com.ternsip.glade.shader.terrain.TerrainShader;
+import com.ternsip.glade.terrains.Terrain;
+import com.ternsip.glade.texture.TerrainTexturePack;
+import com.ternsip.glade.utils.Maths;
 
 
 

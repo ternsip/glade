@@ -1,4 +1,4 @@
-package com.unifi.ing.engine.terrains.utils;
+package com.ternsip.glade.terrains.utils;
 
 public class MapTerrainIndex {
 	private int currentTerrain;

@@ -1,4 +1,4 @@
-package com.unifi.ing.engine.log;
+package com.ternsip.glade.log;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;

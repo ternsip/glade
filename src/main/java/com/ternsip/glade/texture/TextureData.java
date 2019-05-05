@@ -1,4 +1,4 @@
-package com.unifi.ing.engine.texture;
+package com.ternsip.glade.texture;
 
 import java.nio.ByteBuffer;
 

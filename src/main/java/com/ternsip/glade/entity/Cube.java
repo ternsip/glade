@@ -1,14 +1,14 @@
-package com.unifi.ing.engine.entity;
+package com.ternsip.glade.entity;
 
 
+import com.ternsip.glade.observer.Observer;
 import org.lwjgl.util.vector.Vector3f;
 
-import com.unifi.ing.engine.model.TexturedModel;
-import com.unifi.ing.engine.terrains.MultipleTerrain;
-import com.unifi.ing.engine.utils.Maths;
-import com.unifi.ing.pattern.observer.Observer;
+import com.ternsip.glade.model.TexturedModel;
+import com.ternsip.glade.terrains.MultipleTerrain;
+import com.ternsip.glade.utils.Maths;
 
-public class Cube extends Entity implements Observer{
+public class Cube extends Entity implements Observer {
 
 	private float offsetX;
 	private float offsetZ;

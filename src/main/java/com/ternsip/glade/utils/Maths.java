@@ -1,4 +1,4 @@
-package com.unifi.ing.engine.utils;
+package com.ternsip.glade.utils;
 
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Quaternion;
@@ -6,7 +6,7 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
-import com.unifi.ing.engine.entity.Camera;
+import com.ternsip.glade.entity.Camera;
 
 public class Maths {
 

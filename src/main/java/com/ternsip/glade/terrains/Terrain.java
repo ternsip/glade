@@ -1,13 +1,13 @@
-package com.unifi.ing.engine.terrains;
+package com.ternsip.glade.terrains;
 
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
-import com.unifi.ing.engine.Loader;
-import com.unifi.ing.engine.model.RawModel;
-import com.unifi.ing.engine.texture.TerrainTexture;
-import com.unifi.ing.engine.texture.TerrainTexturePack;
-import com.unifi.ing.engine.utils.Maths;
+import com.ternsip.glade.Loader;
+import com.ternsip.glade.model.RawModel;
+import com.ternsip.glade.texture.TerrainTexture;
+import com.ternsip.glade.texture.TerrainTexturePack;
+import com.ternsip.glade.utils.Maths;
 
 public class Terrain {
 

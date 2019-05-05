@@ -1,4 +1,4 @@
-package com.unifi.ing.engine.renderer;
+package com.ternsip.glade.renderer;
 
 import java.util.List;
 import java.util.Map;
@@ -10,12 +10,12 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Quaternion;
 
-import com.unifi.ing.engine.entity.Entity;
-import com.unifi.ing.engine.model.RawModel;
-import com.unifi.ing.engine.model.TexturedModel;
-import com.unifi.ing.engine.shader.model.ModelShader;
-import com.unifi.ing.engine.texture.ModelTexture;
-import com.unifi.ing.engine.utils.Maths;
+import com.ternsip.glade.entity.Entity;
+import com.ternsip.glade.model.RawModel;
+import com.ternsip.glade.model.TexturedModel;
+import com.ternsip.glade.shader.model.ModelShader;
+import com.ternsip.glade.texture.ModelTexture;
+import com.ternsip.glade.utils.Maths;
 
 
 

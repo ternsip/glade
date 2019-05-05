@@ -1,13 +1,15 @@
-package com.unifi.ing.engine.shader.model;
+package com.ternsip.glade.shader.model;
 
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
-import com.unifi.ing.engine.entity.Camera;
-import com.unifi.ing.engine.entity.Light;
-import com.unifi.ing.engine.shader.ShaderProgram;
-import com.unifi.ing.engine.utils.Maths;
-import com.unifi.ing.engine.utils.ShaderPath;
+import com.ternsip.glade.entity.Camera;
+import com.ternsip.glade.entity.Light;
+import com.ternsip.glade.shader.ShaderProgram;
+import com.ternsip.glade.utils.Maths;
+import com.ternsip.glade.utils.ShaderPath;
+
+import java.io.File;
 
 
 public class ModelShader extends ShaderProgram{
@@ -15,8 +17,8 @@ public class ModelShader extends ShaderProgram{
 //	Questa classe estende ShaderProgram viene principalmente utilizzata sia per gli oggetti statici si a per gli oggetti dinamici come il Rover
 //	Consente di caricare lo shader fornendo i valori di tutti i parametri utilizzati per il calcolo delle texture e dei vertici
 	
-	private static final String VERTEX_FILE = ShaderPath.getShaderPath("model/vertexShader.txt");
-	private static final String FRAGMENT_FILE = ShaderPath.getShaderPath("model/fragmentShader.txt");
+	private static final File VERTEX_FILE = new File("shaders/model/vertexShader.txt");
+	private static final File FRAGMENT_FILE = new File("shaders/model/fragmentShader.txt");
 	
 	private int location_transformationMatrix;
 	private int location_projectionMatrix;

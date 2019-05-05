@@ -1,20 +1,20 @@
-package com.unifi.ing.engine.entity;
+package com.ternsip.glade.entity;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ternsip.glade.observer.Observable;
+import com.ternsip.glade.observer.Observer;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector3f;
 
-import com.unifi.ing.engine.model.TexturedModel;
-import com.unifi.ing.engine.terrains.MultipleTerrain;
-import com.unifi.ing.engine.terrains.Terrain;
-import com.unifi.ing.engine.utils.DisplayManager;
-import com.unifi.ing.engine.utils.Maths;
-import com.unifi.ing.pattern.observer.Observable;
-import com.unifi.ing.pattern.observer.Observer;
+import com.ternsip.glade.model.TexturedModel;
+import com.ternsip.glade.terrains.MultipleTerrain;
+import com.ternsip.glade.terrains.Terrain;
+import com.ternsip.glade.utils.DisplayManager;
+import com.ternsip.glade.utils.Maths;
 
-public class Rover extends Entity implements Observable{
+public class Rover extends Entity implements Observable {
 
 	private static final float RUN_SPEED = 40;
 	private static final float TURN_SPEED = 160.0f;//160

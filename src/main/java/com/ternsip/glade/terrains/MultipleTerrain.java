@@ -1,14 +1,14 @@
-package com.unifi.ing.engine.terrains;
+package com.ternsip.glade.terrains;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.util.vector.Vector3f;
 
-import com.unifi.ing.engine.Loader;
-import com.unifi.ing.engine.terrains.utils.MapTerrainIndex;
-import com.unifi.ing.engine.texture.TerrainTexture;
-import com.unifi.ing.engine.texture.TerrainTexturePack;
+import com.ternsip.glade.Loader;
+import com.ternsip.glade.terrains.utils.MapTerrainIndex;
+import com.ternsip.glade.texture.TerrainTexture;
+import com.ternsip.glade.texture.TerrainTexturePack;
 
 public class MultipleTerrain {
 	//	Definisco il terreno e le sue multiTexture

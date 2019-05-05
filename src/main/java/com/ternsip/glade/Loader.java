@@ -1,4 +1,4 @@
-package com.unifi.ing.engine;
+package com.ternsip.glade;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -20,8 +20,8 @@ import org.lwjgl.opengl.GL30;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 
-import com.unifi.ing.engine.model.RawModel;
-import com.unifi.ing.engine.texture.TextureData;
+import com.ternsip.glade.model.RawModel;
+import com.ternsip.glade.texture.TextureData;
 
 import de.matthiasmann.twl.utils.PNGDecoder;
 import de.matthiasmann.twl.utils.PNGDecoder.Format;

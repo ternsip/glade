@@ -1,4 +1,4 @@
-package com.unifi.ing.engine.entity;
+package com.ternsip.glade.entity;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector3f;

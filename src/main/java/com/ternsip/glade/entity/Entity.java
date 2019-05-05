@@ -1,12 +1,12 @@
-package com.unifi.ing.engine.entity;
+package com.ternsip.glade.entity;
 
 
 
 import org.lwjgl.util.vector.Quaternion;
 import org.lwjgl.util.vector.Vector3f;
 
-import com.unifi.ing.engine.model.TexturedModel;
-import com.unifi.ing.engine.utils.Maths;
+import com.ternsip.glade.model.TexturedModel;
+import com.ternsip.glade.utils.Maths;
 
 public class Entity {
 

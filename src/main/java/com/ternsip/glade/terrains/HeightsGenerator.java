@@ -1,4 +1,4 @@
-package com.unifi.ing.engine.terrains;
+package com.ternsip.glade.terrains;
 
 import java.util.Random;
 

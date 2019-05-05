@@ -1,6 +1,6 @@
-package com.unifi.ing.engine.model;
+package com.ternsip.glade.model;
 
-import com.unifi.ing.engine.texture.ModelTexture;
+import com.ternsip.glade.texture.ModelTexture;
 
 public class TexturedModel {
 

@@ -1,4 +1,4 @@
-package com.unifi.ing.engine.model;
+package com.ternsip.glade.model;
 
 public class RawModel {
 

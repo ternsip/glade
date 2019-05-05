@@ -1,4 +1,4 @@
-package com.unifi.ing.engine.utils;
+package com.ternsip.glade.utils;
 
 import java.io.Serializable;
 
