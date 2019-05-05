@@ -1,12 +1,10 @@
 package com.ternsip.glade.shader.sky;
 
-import org.lwjgl.util.vector.Matrix4f;
-
 import com.ternsip.glade.entity.Camera;
 import com.ternsip.glade.shader.ShaderProgram;
 import com.ternsip.glade.utils.Maths;
-import com.ternsip.glade.utils.ShaderPath;
-import org.lwjgl.util.vector.Vector3f;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 import java.io.File;
 
@@ -30,9 +28,9 @@ public class SkyboxShader extends ShaderProgram{
  
     public void loadViewMatrix(Camera camera){
         Matrix4f matrix = Maths.createViewMatrix(camera);
-        matrix.m30 = 0;
-        matrix.m31 = 0;
-        matrix.m32 = 0;
+        matrix.m30(0);
+        matrix.m31(0);
+        matrix.m32(0);
         super.loadMatrix(location_viewMatrix, matrix);
     }
 

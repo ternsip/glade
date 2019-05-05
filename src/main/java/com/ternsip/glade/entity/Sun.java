@@ -1,7 +1,7 @@
 package com.ternsip.glade.entity;
 
-import org.lwjgl.util.vector.Vector2f;
-import org.lwjgl.util.vector.Vector3f;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 
 public class Sun implements Light {
 
@@ -25,8 +25,8 @@ public class Sun implements Light {
 
 	public Vector3f getPosition() {
 		return new Vector3f(
-				origin.getX() + (float)Math.sin(phase * 2f * Math.PI) * size.getX(),
-				origin.getY() + (float)Math.cos(phase * 2f * Math.PI) * size.getY(),
+				origin.x() + (float)Math.sin(phase * 2f * Math.PI) * size.x(),
+				origin.y() + (float)Math.cos(phase * 2f * Math.PI) * size.y(),
 				2000
 		);
 	}

@@ -1,102 +1,118 @@
 package com.ternsip.glade.entity;
 
-import org.lwjgl.input.Mouse;
-import org.lwjgl.util.vector.Vector3f;
+import com.ternsip.glade.utils.DisplayManager;
+import org.joml.Vector3f;
+import org.lwjgl.glfw.GLFWCursorPosCallbackI;
+
+import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1;
 
 public class Camera {
 
-	private float distanceFromRover = 60;
-	private float angleAroundRover = 0;
+    private float distanceFromRover = 60;
+    private float angleAroundRover = 0;
 
-	private Vector3f position = new Vector3f(0,0,0);
-	private float pitch = 15;
-	private float yaw;
-	private float roll;
+    private Vector3f position = new Vector3f(0, 0, 0);
+    private float pitch = 15;
+    private float yaw;
+    private float roll;
 
-	private Rover rover;
+    private Rover rover;
 
-	public Camera(Rover rover){
-		this.rover = rover;
-	}
+    public Camera(Rover rover) {
+        this.rover = rover;
+        DisplayManager.registerScrollCallback(((window, xoffset, yoffset) -> {
+            recalculateZoom((float) yoffset);
+        }));
+        DisplayManager.registerCursorPosCallback((new GLFWCursorPosCallbackI() {
 
-	public void move(){
-		calculateZoom();
-		calculatePitch();
-		calculateAngleAroundRover();
-		float horizontalDistance = calculateHorizontalDistance();
-		float verticalDistance = calculateVerticalDistance();
-		calculateCameraPosition(horizontalDistance, verticalDistance);
-		this.yaw = 180 - (rover.getRotY() + angleAroundRover);
-	}
+            private float dx;
+            private float dy;
+            private float prevX;
+            private float prevY;
 
-	public Vector3f getPosition() {
-		return position;
-	}
+            @Override
+            public void invoke(long window, double xpos, double ypos) {
+                dx = (float) (xpos - prevX);
+                dy = (float) (ypos - prevY);
+                prevX = (float) xpos;
+                prevY = (float) ypos;
+                Camera.this.recalculatePitch(dy);
+                Camera.this.recalculateAngleAroundRover(dx);
+            }
+        }));
+    }
 
-	public float getPitch() {
-		return pitch;
-	}
+    public void move() {
+        float horizontalDistance = calculateHorizontalDistance();
+        float verticalDistance = calculateVerticalDistance();
+        calculateCameraPosition(horizontalDistance, verticalDistance);
+        this.yaw = 180 - (rover.getRotY() + angleAroundRover);
+    }
 
-	public float getYaw() {
-		return yaw;
-	}
+    public Vector3f getPosition() {
+        return position;
+    }
 
-	public float getRoll() {
-		return roll;
-	}
+    public float getPitch() {
+        return pitch;
+    }
 
-	private void calculateCameraPosition(float horizontalDistance, float verticalDistance){
-		float theta = rover.getRotY() + angleAroundRover;
-		float offsetX = (float) (horizontalDistance * Math.sin(Math.toRadians(theta)));
-		float offsetZ = (float) (horizontalDistance * Math.cos(Math.toRadians(theta)));
-		position.x = rover.getPosition().x - offsetX;
-		position.z = rover.getPosition().z - offsetZ;
-		position.y = rover.getPosition().y + verticalDistance;
-	}
+    public float getYaw() {
+        return yaw;
+    }
 
-	private float calculateHorizontalDistance(){
-		return (float) (distanceFromRover * Math.cos(Math.toRadians(pitch)));
-	}
+    public float getRoll() {
+        return roll;
+    }
 
+    private void calculateCameraPosition(float horizontalDistance, float verticalDistance) {
+        float theta = rover.getRotY() + angleAroundRover;
+        float offsetX = (float) (horizontalDistance * Math.sin(Math.toRadians(theta)));
+        float offsetZ = (float) (horizontalDistance * Math.cos(Math.toRadians(theta)));
+        position.x = rover.getPosition().x - offsetX;
+        position.z = rover.getPosition().z - offsetZ;
+        position.y = rover.getPosition().y + verticalDistance;
+    }
 
-	private float calculateVerticalDistance(){
-		return (float) (distanceFromRover * Math.sin(Math.toRadians(pitch)));
-	}
-
-
-
-	private void calculateZoom(){
-		float zoomLevel = distanceFromRover - Mouse.getDWheel() * 0.01f;
-		if(zoomLevel <= 10){
-			distanceFromRover = 10;
-		}else if(zoomLevel >= 200){
-			distanceFromRover = 200;
-		}
-		else{
-			distanceFromRover = zoomLevel;
-		}
+    private float calculateHorizontalDistance() {
+        return (float) (distanceFromRover * Math.cos(Math.toRadians(pitch)));
+    }
 
 
-	}
+    private float calculateVerticalDistance() {
+        return (float) (distanceFromRover * Math.sin(Math.toRadians(pitch)));
+    }
 
-	private void calculatePitch(){
-		if(Mouse.isButtonDown(0)){
-			float pitchChange = pitch - Mouse.getDY() * 0.1f;
-			if(pitchChange <= -90){
-				pitchChange = -90;
-			}else if(pitchChange >= 90){
-				pitchChange = 90;
-			}else{
-				pitch = pitchChange;
-			}
-		}
-	}
 
-	private void calculateAngleAroundRover(){
-		if(Mouse.isButtonDown(0)){
-			float angleChange = Mouse.getDX() * 0.1f;
-			angleAroundRover -= angleChange;
-		}
-	}
+    private void recalculateZoom(float mouseWheelVelocity) {
+        float zoomLevel = distanceFromRover - mouseWheelVelocity * 5f;
+        if (zoomLevel <= 10) {
+            distanceFromRover = 10;
+        } else if (zoomLevel >= 200) {
+            distanceFromRover = 200;
+        } else {
+            distanceFromRover = zoomLevel;
+        }
+    }
+
+    private void recalculatePitch(float mouseDy) {
+        if (DisplayManager.isMouseDown(GLFW_MOUSE_BUTTON_1)) {
+            float pitchChange = pitch + mouseDy * 0.1f;
+            if (pitchChange <= -90) {
+                pitchChange = -90;
+            } else if (pitchChange >= 90) {
+                pitchChange = 90;
+            } else {
+                pitch = pitchChange;
+            }
+        }
+    }
+
+    private void recalculateAngleAroundRover(float mouseDx) {
+        if (DisplayManager.isMouseDown(GLFW_MOUSE_BUTTON_1)) {
+            float angleChange = mouseDx * 0.1f;
+            angleAroundRover -= angleChange;
+        }
+    }
 
 }

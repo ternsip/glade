@@ -1,7 +1,7 @@
 package com.ternsip.glade.terrains;
 
-import org.lwjgl.util.vector.Vector2f;
-import org.lwjgl.util.vector.Vector3f;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 
 import com.ternsip.glade.Loader;
 import com.ternsip.glade.model.RawModel;
@@ -143,7 +143,7 @@ public class Terrain {
 		float heightD = getHeight(x, z-1, generator);
 		float heightU = getHeight(x, z+1, generator);
 		Vector3f normal = new Vector3f(heightL - heightR, 2f, heightD - heightU);
-		normal.normalise();
+		normal.normalize();
 		return normal;
 	}
 	
@@ -154,7 +154,7 @@ public class Terrain {
 		float heightD = getHeight((int)x, (int)(z-1f), generator);
 		float heightU = getHeight((int)x, (int)(z+1f), generator);
 		Vector3f normal = new Vector3f(heightL - heightR, 2f, heightD - heightU);
-		normal.normalise();
+		normal.normalize();
 		return normal;
 	}
 

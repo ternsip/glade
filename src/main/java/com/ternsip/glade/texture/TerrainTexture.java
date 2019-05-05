@@ -1,13 +1,14 @@
 package com.ternsip.glade.texture;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+
+@RequiredArgsConstructor
+@Getter
 public class TerrainTexture {
-	private int textureID;
-	
-	public TerrainTexture(int textureID){
-		this.textureID = textureID;
-	}
-	
-	public int getTextureID() {
-		return textureID;
-	}
+
+	private final int textureID;
+
 }

@@ -5,10 +5,10 @@ import com.ternsip.glade.entity.Camera;
 import com.ternsip.glade.entity.Sun;
 import com.ternsip.glade.model.RawModel;
 import com.ternsip.glade.shader.sky.SkyboxShader;
+import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
-import org.lwjgl.util.vector.Matrix4f;
 
 public class SkyRenderer {
 

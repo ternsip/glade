@@ -1,9 +1,10 @@
 package com.ternsip.glade.terrains;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.lwjgl.util.vector.Vector3f;
+import org.joml.Vector3f;
 
 import com.ternsip.glade.Loader;
 import com.ternsip.glade.terrains.utils.MapTerrainIndex;
@@ -27,12 +28,12 @@ public class MultipleTerrain {
 	
 
 	public MultipleTerrain(Loader loader){
-		backgroundTexture = new TerrainTexture(loader.loadTexture("martian"));
-		rTexture = new TerrainTexture(loader.loadTexture("dirt"));
-		gTexture = new TerrainTexture(loader.loadTexture("martianDirt"));
-		bTexture = new TerrainTexture(loader.loadTexture("path"));
+		backgroundTexture = new TerrainTexture(loader.loadTexturePNG(new File("textures/martian.png")));
+		rTexture = new TerrainTexture(loader.loadTexturePNG(new File("textures/dirt.png")));
+		gTexture = new TerrainTexture(loader.loadTexturePNG(new File("textures/martianDirt.png")));
+		bTexture = new TerrainTexture(loader.loadTexturePNG(new File("textures/path.png")));
 		texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
-		blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
+		blendMap = new TerrainTexture(loader.loadTexturePNG(new File("textures/blendMap.png")));
 
 		terrains = new ArrayList<Terrain>();
 

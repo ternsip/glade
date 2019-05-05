@@ -1,30 +1,24 @@
 package com.ternsip.glade;
 
+import com.ternsip.glade.model.RawModel;
+import com.ternsip.glade.texture.TextureData;
+import com.ternsip.glade.utils.Utils;
+import de.matthiasmann.twl.utils.PNGDecoder;
+import de.matthiasmann.twl.utils.PNGDecoder.Format;
+import lombok.SneakyThrows;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.*;
+
+import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL14;
-import org.lwjgl.opengl.GL15;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
-import org.newdawn.slick.opengl.Texture;
-import org.newdawn.slick.opengl.TextureLoader;
-
-import com.ternsip.glade.model.RawModel;
-import com.ternsip.glade.texture.TextureData;
-
-import de.matthiasmann.twl.utils.PNGDecoder;
-import de.matthiasmann.twl.utils.PNGDecoder.Format;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 
 
 public class Loader {
@@ -51,21 +45,41 @@ public class Loader {
 		return new RawModel(vaoID, positions.length/dimensions);
 	}
 
-	public int loadTexture(String fileName){
- 		Texture texture = null;
-		try {
-			texture = TextureLoader.getTexture("PNG", new FileInputStream("res/" + fileName + ".png"));
-			GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
-			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
-			GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, -1);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		int textureID = texture.getTextureID();
-		textures.add(textureID);
-		return textureID;
+	@SneakyThrows
+	public static int loadTexturePNG(File file){
+
+		//load png file
+		PNGDecoder decoder = new PNGDecoder(Utils.loadResourceAsStream(file));
+
+		//create a byte buffer big enough to store RGBA values
+		ByteBuffer buffer = ByteBuffer.allocateDirect(4 * decoder.getWidth() * decoder.getHeight());
+
+		//decode
+		decoder.decode(buffer, decoder.getWidth() * 4, PNGDecoder.Format.RGBA);
+
+		//flip the buffer so its ready to read
+		buffer.flip();
+
+		//create a texture
+		int id = glGenTextures();
+
+		//bind the texture
+		glBindTexture(GL_TEXTURE_2D, id);
+
+		//tell opengl how to unpack bytes
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+		//set the texture parameters, can be GL_LINEAR or GL_NEAREST
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		//upload texture
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, decoder.getWidth(), decoder.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+
+		// Generate Mip Map
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		return id;
 	}
 
 	private int createVAO(){
@@ -124,9 +138,9 @@ public class Loader {
 	}
 
 	public int loadCubeMap(List<String> textureFile){
-		int texID = GL11.glGenTextures();
+		int texID = glGenTextures();
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
-		GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, texID);
+		glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, texID);
 
 		for (int i = 0; i < textureFile.size(); i++) {
 

@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.ternsip.glade.entity.Sun;
-import org.lwjgl.opengl.Display;
+import com.ternsip.glade.utils.DisplayManager;
+import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.vector.Matrix4f;
 
 import com.ternsip.glade.Loader;
 import com.ternsip.glade.entity.Camera;
@@ -19,26 +19,23 @@ import com.ternsip.glade.shader.terrain.TerrainShader;
 import com.ternsip.glade.sky.SkyRenderer;
 import com.ternsip.glade.terrains.Terrain;
 
-
-
 public class MasterRenderer {
 	
 	private static final float FOV = 70;
 	private static final float NEAR_PLANE = 0.1f;
 	private static final float FAR_PLANE = 1000;
 	
-//	private static final float RED = 0.98f;
-//	private static final float GREEN = 0.69f;
-//	private static final float BLUE = 0.52f;
-	
 	private static final float RED = 0.823f;
 	private static final float GREEN = 0.722f;
 	private static final float BLUE = 0.535f;
 	
 	private Matrix4f projectionMatrix;
-	
-	private ModelShader shader = new ModelShader();
-	private EntityRenderer renderer;
+
+	// TODO MOVE ALL SHADERS INSIDE RENDERERS
+	private ModelShader modelShader = new ModelShader();
+
+	// TODO RENAME TO MODEL RENDERER
+	private EntityRenderer entityRenderer;
 	
 	private TerrainRenderer terrainRenderer;
 	private TerrainShader terrainShader = new TerrainShader();
@@ -52,7 +49,7 @@ public class MasterRenderer {
 	public MasterRenderer(Loader loader){
 		enableCulling();
 		createProjectionMatrix();
-		renderer = new EntityRenderer(shader,projectionMatrix);
+		entityRenderer = new EntityRenderer(modelShader,projectionMatrix);
 		terrainRenderer = new TerrainRenderer(terrainShader,projectionMatrix);
 		skyRenderer = new SkyRenderer(loader, projectionMatrix);
 	}
@@ -68,12 +65,12 @@ public class MasterRenderer {
 	
 	public void render(Sun sun, Camera camera){
 		prepare();
-		shader.start();
-		shader.loadSkyColour(RED, GREEN, BLUE);
-		shader.loadLight(sun);
-		shader.loadViewMatrix(camera);
-		renderer.render(entities);
-		shader.stop();
+		modelShader.start();
+		modelShader.loadSkyColour(RED, GREEN, BLUE);
+		modelShader.loadLight(sun);
+		modelShader.loadViewMatrix(camera);
+		entityRenderer.render(entities);
+		modelShader.stop();
 		terrainShader.start();
 		terrainShader.loadSkyColour(RED, GREEN, BLUE);
 		terrainShader.loadLight(sun);
@@ -102,7 +99,7 @@ public class MasterRenderer {
 	}
 	
 	public void cleanUp(){
-		shader.cleanUp();
+		modelShader.cleanUp();
 		terrainShader.cleanUp();
 	}
 	
@@ -110,22 +107,21 @@ public class MasterRenderer {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		GL11.glClearColor(RED, GREEN, BLUE, 1);
-		
 	}
 	
 	private void createProjectionMatrix() {
-		float aspectRatio = (float) Display.getWidth() / (float) Display.getHeight();
+		float aspectRatio = (float) DisplayManager.getWidth() / (float) DisplayManager.getHeight();
 		float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))) * aspectRatio);
 		float x_scale = y_scale / aspectRatio;
 		float frustum_length = FAR_PLANE - NEAR_PLANE;
 
 		projectionMatrix = new Matrix4f();
-		projectionMatrix.m00 = x_scale;
-		projectionMatrix.m11 = y_scale;
-		projectionMatrix.m22 = -((FAR_PLANE + NEAR_PLANE) / frustum_length);
-		projectionMatrix.m23 = -1;
-		projectionMatrix.m32 = -((2 * NEAR_PLANE * FAR_PLANE) / frustum_length);
-		projectionMatrix.m33 = 0;
+		projectionMatrix.m00(x_scale);
+		projectionMatrix.m11(y_scale);
+		projectionMatrix.m22(-((FAR_PLANE + NEAR_PLANE) / frustum_length));
+		projectionMatrix.m23(-1);
+		projectionMatrix.m32(-((2 * NEAR_PLANE * FAR_PLANE) / frustum_length));
+		projectionMatrix.m33(0);
 	}
 	
 

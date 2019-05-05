@@ -1,9 +1,9 @@
 package com.ternsip.glade.entity;
 
 
-
-import org.lwjgl.util.vector.Quaternion;
-import org.lwjgl.util.vector.Vector3f;
+import org.joml.Quaternionf;
+import org.joml.Quaternionfc;
+import org.joml.Vector3f;
 
 import com.ternsip.glade.model.TexturedModel;
 import com.ternsip.glade.utils.Maths;
@@ -87,7 +87,7 @@ public class Entity {
 		this.scale = scale;
 	}
 
-	public static Quaternion getRotationQuat(float rotX, float rotY, float rotZ){
+	public static Quaternionfc getRotationQuat(float rotX, float rotY, float rotZ){
 		float attitude = Maths.toRadians(rotX);
 		float heading = Maths.toRadians(rotY);
 		float bank = Maths.toRadians(rotZ);
@@ -104,6 +104,6 @@ public class Entity {
 		float x = (c2 * s3 + c1 * s3 + s1 * s2 * c3) / w4 ;
 		float y = (s1 * c2 + s1 * c3 + c1 * s2 * s3) / w4 ;
 		float z = (-s1 * s3 + c1 * s2 * c3 +s2) / w4 ;
-		return new Quaternion(x, y, z, w);
+		return new Quaternionf(x, y, z, w);
 	}
 }

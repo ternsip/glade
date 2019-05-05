@@ -1,13 +1,11 @@
 package com.ternsip.glade.shader.terrain;
 
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector3f;
-
 import com.ternsip.glade.entity.Camera;
 import com.ternsip.glade.entity.Light;
 import com.ternsip.glade.shader.ShaderProgram;
 import com.ternsip.glade.utils.Maths;
-import com.ternsip.glade.utils.ShaderPath;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 import java.io.File;
 

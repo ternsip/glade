@@ -5,14 +5,15 @@ import java.util.List;
 
 import com.ternsip.glade.observer.Observable;
 import com.ternsip.glade.observer.Observer;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.util.vector.Vector3f;
+import org.joml.Vector3f;
 
 import com.ternsip.glade.model.TexturedModel;
 import com.ternsip.glade.terrains.MultipleTerrain;
 import com.ternsip.glade.terrains.Terrain;
 import com.ternsip.glade.utils.DisplayManager;
 import com.ternsip.glade.utils.Maths;
+
+import static org.lwjgl.glfw.GLFW.*;
 
 public class Rover extends Entity implements Observable {
 
@@ -111,43 +112,43 @@ public class Rover extends Entity implements Observable {
 
 	private void checkInputs(Terrain terrain){
 
-		if(Keyboard.isKeyDown(Keyboard.KEY_W)){
+		if(DisplayManager.isKeyDown(GLFW_KEY_W)){
 			this.currentSpeed = +RUN_SPEED;
-		}else if(Keyboard.isKeyDown(Keyboard.KEY_S)){
+		}else if(DisplayManager.isKeyDown(GLFW_KEY_S)){
 			this.currentSpeed = -RUN_SPEED;
 		}else{
 			this.currentSpeed = 0;
 		}
 
-		if(Keyboard.isKeyDown(Keyboard.KEY_D)){
+		if(DisplayManager.isKeyDown(GLFW_KEY_D)){
 			this.currentTurnSpeed = -TURN_SPEED;
-		}else if(Keyboard.isKeyDown(Keyboard.KEY_A)){
+		}else if(DisplayManager.isKeyDown(GLFW_KEY_A)){
 			this.currentTurnSpeed = TURN_SPEED;
 		}else{
 			this.currentTurnSpeed = 0;
 		}
 
-		if(Keyboard.isKeyDown(Keyboard.KEY_B)){
+		if(DisplayManager.isKeyDown(GLFW_KEY_B)){
 			super.increaseRotation(rotX, 0, 0);
 		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_N)){
+		if(DisplayManager.isKeyDown(GLFW_KEY_N)){
 			super.increaseRotation(0, rotY, 0);
 		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_M)){
+		if(DisplayManager.isKeyDown(GLFW_KEY_M)){
 			super.increaseRotation(0, 0, rotZ);
 		}
 
-		if(Keyboard.isKeyDown(Keyboard.KEY_H)){
+		if(DisplayManager.isKeyDown(GLFW_KEY_H)){
 			super.increaseRotation(-rotX, 0, 0);
 		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_J)){
+		if(DisplayManager.isKeyDown(GLFW_KEY_J)){
 			super.increaseRotation(0, -rotY, 0);
 		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_K)){
+		if(DisplayManager.isKeyDown(GLFW_KEY_K)){
 			super.increaseRotation(0, 0, -rotZ);
 		}
 
-		if(Keyboard.isKeyDown(Keyboard.KEY_R)){
+		if(DisplayManager.isKeyDown(GLFW_KEY_R)){
 			this.setRotY(0);
 			this.setRotX(0);
 			this.setRotZ(0);

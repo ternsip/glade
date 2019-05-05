@@ -1,9 +1,10 @@
 package com.ternsip.glade.utils;
 
 import com.ternsip.glade.shader.ShaderProgram;
+import lombok.SneakyThrows;
 
-import java.io.File;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 public class Utils {
 
@@ -13,6 +14,11 @@ public class Utils {
             throw new IllegalArgumentException("Can't find file: " + file.getPath());
         }
         return in;
+    }
+
+    @SneakyThrows
+    public static BufferedReader loadResourceAsBufferedReader(File file) {
+        return new BufferedReader(new InputStreamReader(loadResourceAsStream(file), StandardCharsets.UTF_8));
     }
 
 

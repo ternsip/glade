@@ -2,19 +2,18 @@ package com.ternsip.glade.renderer;
 
 import java.util.List;
 
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector3f;
 
 import com.ternsip.glade.model.RawModel;
 import com.ternsip.glade.shader.terrain.TerrainShader;
 import com.ternsip.glade.terrains.Terrain;
 import com.ternsip.glade.texture.TerrainTexturePack;
 import com.ternsip.glade.utils.Maths;
-
 
 
 public class TerrainRenderer {

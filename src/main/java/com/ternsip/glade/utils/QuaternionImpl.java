@@ -2,7 +2,7 @@ package com.ternsip.glade.utils;
 
 import java.io.Serializable;
 
-import org.lwjgl.util.vector.Vector3f;
+import org.joml.Vector3f;
 
 public class QuaternionImpl implements Serializable {
 	private static final long serialVersionUID = -7661875440774897168L;
@@ -472,7 +472,7 @@ public class QuaternionImpl implements Serializable {
 	 * @param v2 The target vector, which should be normalized.
 	 * @return This quaternion for chaining */
 	public QuaternionImpl setFromCross (final Vector3f v1, final Vector3f v2) {
-		final float dot = Maths.clamp(Vector3f.dot(v1, v2), -1f, 1f);
+		final float dot = Maths.clamp(v1.dot(v2), -1f, 1f);
 		final float angle = (float)Math.acos(dot);
 		return setFromAxisRad(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x, angle);
 	}

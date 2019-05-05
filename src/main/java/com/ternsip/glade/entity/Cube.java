@@ -2,7 +2,7 @@ package com.ternsip.glade.entity;
 
 
 import com.ternsip.glade.observer.Observer;
-import org.lwjgl.util.vector.Vector3f;
+import org.joml.Vector3f;
 
 import com.ternsip.glade.model.TexturedModel;
 import com.ternsip.glade.terrains.MultipleTerrain;
@@ -14,8 +14,8 @@ public class Cube extends Entity implements Observer {
 	private float offsetZ;
 	private String colore;
 
-	public Cube(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, 
-			float scale, float offsetX, float offsetZ, int i) {
+	public Cube(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ,
+				float scale, float offsetX, float offsetZ, int i) {
 		super(model, position, rotX, rotY, rotZ, scale);
 		this.offsetX = offsetX;
 		this.offsetZ = offsetZ;
