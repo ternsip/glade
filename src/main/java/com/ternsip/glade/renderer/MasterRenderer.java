@@ -57,6 +57,7 @@ public class MasterRenderer {
 	public static void enableCulling(){
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glCullFace(GL11.GL_BACK);
+        GL11.glViewport(0, 0, DisplayManager.getWidth(), DisplayManager.getHeight());
 	}
 	
 	public static void disableCulling(){

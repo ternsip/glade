@@ -23,6 +23,7 @@ public class Camera {
         DisplayManager.registerScrollCallback(((window, xoffset, yoffset) -> {
             recalculateZoom((float) yoffset);
         }));
+
         DisplayManager.registerCursorPosCallback((new GLFWCursorPosCallbackI() {
 
             private float dx;
@@ -40,6 +41,7 @@ public class Camera {
                 Camera.this.recalculateAngleAroundRover(dx);
             }
         }));
+
     }
 
     public void move() {
