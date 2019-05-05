@@ -31,10 +31,6 @@ public class MasterRenderer {
 	
 	private Matrix4f projectionMatrix;
 
-	// TODO MOVE ALL SHADERS INSIDE RENDERERS
-
-
-	// TODO RENAME TO MODEL RENDERER
 	private EntityRenderer entityRenderer;
 	
 	private TerrainRenderer terrainRenderer;
