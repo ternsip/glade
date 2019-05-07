@@ -17,11 +17,11 @@ public class OBJLoader {
         List<Vector3f> vertices = new ArrayList<>();
         List<Vector2f> textures = new ArrayList<>();
         List<Vector3f> normals = new ArrayList<>();
-        List<Integer> indices = new ArrayList<Integer>();
+        List<Short> indices = new ArrayList<>();
         float[] verticesArray = null;
         float[] normalsArray = null;
         float[] textureArray = null;
-        int[] indicesArray = null;
+        short[] indicesArray = null;
 
         try {
             while (true) {
@@ -64,7 +64,7 @@ public class OBJLoader {
         }
 
         verticesArray = new float[vertices.size() * 3];
-        indicesArray = new int[indices.size()];
+        indicesArray = new short[indices.size()];
         int vertexPointer = 0;
         for (Vector3f vertex : vertices) {
             verticesArray[vertexPointer++] = vertex.x;
@@ -81,14 +81,14 @@ public class OBJLoader {
 
     private static void processVertex(
             String[] vertexData,
-            List<Integer> indices,
+            List<Short> indices,
             List<Vector2f> textures,
             List<Vector3f> normals,
             float[] textureArray,
             float[] normalsArray
     ) {
         int currentVertexPointer = Integer.parseInt(vertexData[0]) - 1;
-        indices.add(currentVertexPointer);
+        indices.add((short) currentVertexPointer);
         Vector2f currentText = textures.get(Integer.parseInt(vertexData[1]) - 1);
         textureArray[currentVertexPointer * 2] = currentText.x;
         textureArray[currentVertexPointer * 2 + 1] = 1 - currentText.y;

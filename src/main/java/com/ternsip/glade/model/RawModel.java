@@ -1,31 +1,15 @@
 package com.ternsip.glade.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
+@AllArgsConstructor
+@Getter
+@Setter
 public class RawModel {
 
 	private int vaoID;
 	private int vertexCount;
-	
-	public RawModel(int vaoID, int vertexCount){
-		this.vaoID = vaoID;
-		this.vertexCount = vertexCount;
-	}
-
-	public int getVaoID() {
-		return vaoID;
-	}
-
-	public void setVaoID(int vaoID) {
-		this.vaoID = vaoID;
-	}
-
-	public int getVertexCount() {
-		return vertexCount;
-	}
-
-	public void setVertexCount(int vertexCount) {
-		this.vertexCount = vertexCount;
-	}
-	
-
 	
 }

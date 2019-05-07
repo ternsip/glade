@@ -1,9 +1,9 @@
 package com.ternsip.glade.utils;
 
-import com.ternsip.glade.shader.ShaderProgram;
 import lombok.SneakyThrows;
 
 import java.io.*;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 public class Utils {
@@ -14,6 +14,16 @@ public class Utils {
             throw new IllegalArgumentException("Can't find file: " + file.getPath());
         }
         return in;
+    }
+
+    @SneakyThrows
+    public static FileInputStream  loadResourceAsFileStream(File file) {
+        URL resource = Utils.class.getClassLoader().getResource(file.getPath());
+        if (resource == null) {
+            throw new IllegalArgumentException("Can't find file: " + file.getPath());
+        }
+        File rFile = new File(resource.toURI());
+        return new FileInputStream(rFile);
     }
 
     @SneakyThrows

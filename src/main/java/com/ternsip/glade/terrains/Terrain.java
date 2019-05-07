@@ -96,7 +96,7 @@ public class Terrain {
 		float[] vertices = new float[count * 3];
 		float[] normals = new float[count * 3];
 		float[] textureCoords = new float[count*2];
-		int[] indices = new int[6*(VERTEX_COUNT-1)*(VERTEX_COUNT-1)];
+		short[] indices = new short[6*(VERTEX_COUNT-1)*(VERTEX_COUNT-1)];
 		int vertexPointer = 0;
 		
 		for(int i=0;i<VERTEX_COUNT;i++){
@@ -125,12 +125,12 @@ public class Terrain {
 				int topRight = topLeft + 1;
 				int bottomLeft = ((gz+1)*VERTEX_COUNT)+gx;
 				int bottomRight = bottomLeft + 1;
-				indices[pointer++] = topLeft;
-				indices[pointer++] = bottomLeft;
-				indices[pointer++] = topRight;
-				indices[pointer++] = topRight;
-				indices[pointer++] = bottomLeft;
-				indices[pointer++] = bottomRight;
+				indices[pointer++] = (short) topLeft;
+				indices[pointer++] = (short) bottomLeft;
+				indices[pointer++] = (short) topRight;
+				indices[pointer++] = (short) topRight;
+				indices[pointer++] = (short) bottomLeft;
+				indices[pointer++] = (short) bottomRight;
 			}
 		}
 		return loader.loadToVAO(vertices, textureCoords, normals, indices);

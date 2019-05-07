@@ -14,6 +14,7 @@ import java.io.FileInputStream;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class Loader {
 	private List<Integer> vbos = new ArrayList<Integer>();
 	private List<Integer> textures = new ArrayList<Integer>();
 
-	public RawModel loadToVAO(float [] positions, float[] textureCoords,float[] normals, int[] indices){
+	public RawModel loadToVAO(float [] positions, float[] textureCoords,float[] normals, short[] indices){
 		int vaoID = createVAO();
 		bindIndicesBuffer(indices);
 		storeDataInAttributeList(0,3, positions);
@@ -36,13 +37,23 @@ public class Loader {
 		unbindVAO();
 		return new RawModel(vaoID, indices.length);
 	}
-	
-	//TODO ricontrollare che venga effettivamente utilizzato
+
 	public RawModel loadToVAO(float [] positions, int dimensions){
 		int vaoID = createVAO();
-		this.storeDataInAttributeList(0, dimensions, positions);
+		storeDataInAttributeList(0, dimensions, positions);
 		unbindVAO();
 		return new RawModel(vaoID, positions.length/dimensions);
+	}
+
+	public RawModel loadToVAO(float[] vertices, float[] normals, float[] colors, float[] texcoords, short[] indices){
+		int vaoID = createVAO();
+        bindIndicesBuffer(indices);
+        storeDataInAttributeList(0,3, vertices);
+        storeDataInAttributeList(1,3, normals);
+        storeDataInAttributeList(2,3, colors);
+        storeDataInAttributeList(3,2, texcoords);
+		unbindVAO();
+		return new RawModel(vaoID, indices.length);
 	}
 
 	@SneakyThrows
@@ -123,12 +134,27 @@ public class Loader {
 		GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
 	}
 
+    private void bindIndicesBuffer(short[] indices){
+        int vboID = GL15.glGenBuffers();
+        vbos.add(vboID);
+        GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, vboID);
+        ShortBuffer buffer = storeInShortBuffer(indices);
+        GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
+    }
+
 	private IntBuffer storeInIntBuffer(int[] data){
 		IntBuffer buffer = BufferUtils.createIntBuffer(data.length);
 		buffer.put(data);
 		buffer.flip();
 		return buffer;
 	}
+
+    private ShortBuffer storeInShortBuffer(short[] data){
+        ShortBuffer buffer = BufferUtils.createShortBuffer(data.length);
+        buffer.put(data);
+        buffer.flip();
+        return buffer;
+    }
 
 	private FloatBuffer storeDataInFloatBuffer(float[] data){
 		FloatBuffer buffer = BufferUtils.createFloatBuffer(data.length);
