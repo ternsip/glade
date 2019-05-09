@@ -48,7 +48,7 @@ public class Camera {
         float horizontalDistance = calculateHorizontalDistance();
         float verticalDistance = calculateVerticalDistance();
         calculateCameraPosition(horizontalDistance, verticalDistance);
-        this.yaw = 180 - (rover.getRotY() + angleAroundRover);
+        this.yaw = 180 - (rover.getRotation().y() + angleAroundRover);
     }
 
     public Vector3f getPosition() {
@@ -68,7 +68,7 @@ public class Camera {
     }
 
     private void calculateCameraPosition(float horizontalDistance, float verticalDistance) {
-        float theta = rover.getRotY() + angleAroundRover;
+        float theta = rover.getRotation().y() + angleAroundRover;
         float offsetX = (float) (horizontalDistance * Math.sin(Math.toRadians(theta)));
         float offsetZ = (float) (horizontalDistance * Math.cos(Math.toRadians(theta)));
         position.x = rover.getPosition().x - offsetX;

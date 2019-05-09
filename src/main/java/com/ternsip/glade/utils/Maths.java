@@ -28,13 +28,13 @@ public class Maths {
     }
 
 
-    public static Matrix4f createTransformationMatrix(Vector3f translation, Quaternionfc rotation, float scale) {
+    public static Matrix4f createTransformationMatrix(Vector3f translation, Quaternionfc rotation, Vector3f scale) {
         Matrix4f matrix = new Matrix4f();
 
         matrix.identity();
         matrix.translate(translation, matrix);
         matrix.mul(convertQuaternionToMatrix4f(rotation), matrix);
-        matrix.scale(new Vector3f(scale, scale, scale), matrix);
+        matrix.scale(scale, matrix);
         return matrix;
     }
 

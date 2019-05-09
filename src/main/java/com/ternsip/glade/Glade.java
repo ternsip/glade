@@ -26,16 +26,14 @@ public class Glade {
 
         MasterRenderer renderer = new MasterRenderer();
 
-        GLModel roverModel = ResourceLoader.loadObjModel(new File("models/rover/rover.obj"), new File("models/dude/dude.png"));
-
-        // TODO SCALE = 10
-        Rover rover = new Rover(roverModel, new Vector3f(0, 0, 0), 0, 0, 0, 1);
+        GLModel roverModel = ResourceLoader.loadObjModel(new File("models/rover/rover.obj"), new File("models/rover/rover.png"));
+        Rover rover = new Rover(roverModel, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
 
         Camera camera = new Camera(rover);
         Model ship = Parser.load3dModel(new File("models/ship/ship.3ds"), new File("models/ship/ship.png"));
 
         GLModel cubeModel = Cube.generateGLModel();
-        Entity cube = new Entity(cubeModel, new Vector3f(0, 0, 0), 0, 0, 0, 1);
+        Entity cube = new Entity(cubeModel, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
 
         // TODO Check performance with runnable and without it
         DISPLAY_MANAGER.loop(() -> {
@@ -47,7 +45,6 @@ public class Glade {
             renderer.render(sun, camera);
             //ship.render(new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), 10);
         });
-
 
         renderer.cleanUp();
         DISPLAY_MANAGER.closeDisplay();
