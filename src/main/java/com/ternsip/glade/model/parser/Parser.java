@@ -128,7 +128,7 @@ public class Parser {
             vertices[i] = reader.getFloat();
         }
 
-        currentObject.vertices = vertices;
+        currentObject.setVertices(vertices);
         //System.out.println("Found %d vertices" + numVertices);
     }
 
@@ -142,7 +142,7 @@ public class Parser {
             reader.getShort(); // Discard face flag
         }
         //System.out.println("Found %d faces"+  numFaces);
-        currentObject.indices = indices;
+        currentObject.setIndices(indices);
     }
 
     private void parseLocalCoordinateSystem() throws IOException {
@@ -163,7 +163,7 @@ public class Parser {
             uv[i * 2] = reader.getFloat();
             uv[i * 2 + 1] = reader.getFloat();
         }
-        currentObject.textureCoordinates = uv;
+        currentObject.setTextureCoordinates(uv);
         //System.out.println("Found %d mapping coordinates "+ numVertices);
     }
 

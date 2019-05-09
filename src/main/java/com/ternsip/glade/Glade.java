@@ -3,6 +3,7 @@ package com.ternsip.glade;
 import com.ternsip.glade.entity.*;
 import com.ternsip.glade.model.GLModel;
 import com.ternsip.glade.model.parser.Model;
+import com.ternsip.glade.model.parser.ModelObject;
 import com.ternsip.glade.model.parser.Parser;
 import com.ternsip.glade.renderer.MasterRenderer;
 import com.ternsip.glade.utils.DisplayManager;
@@ -35,12 +36,16 @@ public class Glade {
         GLModel cubeModel = Cube.generateGLModel();
         Entity cube = new Entity(cubeModel, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
 
+        renderer.processEntity(rover);
+        renderer.processEntity(cube);
+        for (ModelObject o : ship.objects) {
+            renderer.processEntity(new Entity(o.getGLModel(), new Vector3f(10, 0, 0), new Vector3f(0, 0, 0), new Vector3f(0.25f, 0.25f, 0.25f)));
+        }
+
         // TODO Check performance with runnable and without it
         DISPLAY_MANAGER.loop(() -> {
             rover.move();
             camera.move();
-            renderer.processEntity(rover);
-            renderer.processEntity(cube);
             sun.move();
             renderer.render(sun, camera);
             //ship.render(new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), 10);
