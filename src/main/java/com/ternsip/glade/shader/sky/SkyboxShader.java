@@ -8,6 +8,8 @@ import org.joml.Vector3f;
 
 import java.io.File;
 
+import static com.ternsip.glade.model.GLModel.VERTICES_ATTRIBUTE_POINTER_INDEX;
+
 
 public class SkyboxShader extends ShaderProgram{
  
@@ -47,7 +49,7 @@ public class SkyboxShader extends ShaderProgram{
  
     @Override
     protected void bindAttributes() {
-        super.bindAttribute(0, "position");
+        super.bindAttribute(VERTICES_ATTRIBUTE_POINTER_INDEX, "position");
     }
  
 }

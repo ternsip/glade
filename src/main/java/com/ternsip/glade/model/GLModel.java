@@ -6,30 +6,35 @@ import de.matthiasmann.twl.utils.PNGDecoder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import org.lwjgl.opengl.*;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
 
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
-import java.util.Arrays;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL20.glDisableVertexAttribArray;
-import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
-import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
+import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
 
 @Getter
 @Setter
 public class GLModel {
 
+    public static float[] SKIP_ARRAY = new float[0];
+    public static short[] SKIP_ELEMENT_ARRAY = new short[0];
+    public static File SKIP_TEXTURE = new File("");
+
     public static int VERTICES_ATTRIBUTE_POINTER_INDEX = 0;
     public static int NORMALS_ATTRIBUTE_POINTER_INDEX = 1;
     public static int COLORS_ATTRIBUTE_POINTER_INDEX = 2;
     public static int TEXTURES_ATTRIBUTE_POINTER_INDEX = 3;
+
+    private static int NO_TEXTURE = -1;
+    private static int NO_VBO = -1;
 
     private int indicesCount;
     private int texture;
@@ -48,21 +53,8 @@ public class GLModel {
             short[] indices,
             File textureFile
     ) {
-
-        if (textureFile == null) {
-            texture = 0; // TODO BIND SPECIAL DEBUG TEXTURE
-        } else {
-            texture = loadTexturePNG(textureFile);
-        }
-        if (indices == null || indices.length == 0) {
-            indicesCount = vertices.length / 3; // TRIANGLES
-        } else {
-            indicesCount = indices.length;
-        }
-        if (colors == null) {
-            colors = new float[vertices.length];
-            Arrays.fill(colors, 1.0f);
-        }
+        texture = textureFile == SKIP_TEXTURE ? NO_TEXTURE : loadTexturePNG(textureFile);
+        indicesCount = indices == SKIP_ELEMENT_ARRAY ? vertices.length / 3 : indices.length;
 
         vao = glGenVertexArrays();
         glBindVertexArray(vao);
@@ -75,7 +67,10 @@ public class GLModel {
 
     }
 
-    public static int bindArrayVBO(int attributePointerIndex, int attributePointerSize, float[] array) {
+    private static int bindArrayVBO(int attributePointerIndex, int attributePointerSize, float[] array) {
+        if (array == SKIP_ARRAY) {
+            return NO_VBO;
+        }
         FloatBuffer verticesBuffer = BufferUtil.newFloatBuffer(array.length);
         verticesBuffer.put(array);
         verticesBuffer.flip();
@@ -87,7 +82,10 @@ public class GLModel {
         return vbo;
     }
 
-    public static int bindElementArrayVBO(short[] array) {
+    private static int bindElementArrayVBO(short[] array) {
+        if (array == SKIP_ELEMENT_ARRAY) {
+            return NO_VBO;
+        }
         ShortBuffer indicesBuffer = BufferUtil.newShortBuffer(array.length);
         indicesBuffer.put(array);
         indicesBuffer.flip();
@@ -99,39 +97,46 @@ public class GLModel {
 
     public void render() {
 
-        // TODO MIGHT BE SLOW
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        if (texture != NO_TEXTURE) {
+            // TODO MIGHT BE SLOW
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        // TODO MAYBE MOVE IT ON UPPER CLASS
-        //glEnable(GL_TEXTURE_2D);
-        glActiveTexture(GL13.GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture);
+            // TODO MAYBE MOVE IT ON UPPER CLASS
+            //glEnable(GL_TEXTURE_2D);
+            glActiveTexture(GL13.GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, texture);
+        }
 
         glBindVertexArray(vao);
-        glEnableVertexAttribArray(VERTICES_ATTRIBUTE_POINTER_INDEX);
-        glEnableVertexAttribArray(NORMALS_ATTRIBUTE_POINTER_INDEX);
-        glEnableVertexAttribArray(COLORS_ATTRIBUTE_POINTER_INDEX);
-        glEnableVertexAttribArray(TEXTURES_ATTRIBUTE_POINTER_INDEX);
+        if (vboVertices != NO_VBO) glEnableVertexAttribArray(VERTICES_ATTRIBUTE_POINTER_INDEX);
+        if (vboNormals != NO_VBO) glEnableVertexAttribArray(NORMALS_ATTRIBUTE_POINTER_INDEX);
+        if (vboColors != NO_VBO) glEnableVertexAttribArray(COLORS_ATTRIBUTE_POINTER_INDEX);
+        if (vboTextures != NO_VBO) glEnableVertexAttribArray(TEXTURES_ATTRIBUTE_POINTER_INDEX);
 
-        glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_SHORT, 0);
+        if (vboIndices == NO_VBO) {
+            glDrawArrays(GL11.GL_TRIANGLES, 0, indicesCount);
+        } else {
+            glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_SHORT, 0);
+        }
 
-        glDisableVertexAttribArray(VERTICES_ATTRIBUTE_POINTER_INDEX);
-        glDisableVertexAttribArray(NORMALS_ATTRIBUTE_POINTER_INDEX);
-        glDisableVertexAttribArray(COLORS_ATTRIBUTE_POINTER_INDEX);
-        glDisableVertexAttribArray(TEXTURES_ATTRIBUTE_POINTER_INDEX);
+        if (vboVertices != NO_VBO) glDisableVertexAttribArray(VERTICES_ATTRIBUTE_POINTER_INDEX);
+        if (vboNormals != NO_VBO) glDisableVertexAttribArray(NORMALS_ATTRIBUTE_POINTER_INDEX);
+        if (vboColors != NO_VBO) glDisableVertexAttribArray(COLORS_ATTRIBUTE_POINTER_INDEX);
+        if (vboTextures != NO_VBO) glDisableVertexAttribArray(TEXTURES_ATTRIBUTE_POINTER_INDEX);
+
         glBindVertexArray(0);
     }
 
     void cleanUp() {
         glDeleteVertexArrays(vao);
-        glDeleteBuffers(vboVertices);
-        glDeleteBuffers(vboNormals);
-        glDeleteBuffers(vboColors);
-        glDeleteBuffers(vboTextures);
-        glDeleteTextures(texture);
+        if (vboVertices != NO_VBO) glDeleteBuffers(vboVertices);
+        if (vboNormals != NO_VBO) glDeleteBuffers(vboNormals);
+        if (vboColors != NO_VBO) glDeleteBuffers(vboColors);
+        if (vboTextures != NO_VBO) glDeleteBuffers(vboTextures);
+        if (texture != NO_TEXTURE) glDeleteTextures(texture);
     }
 
     @SneakyThrows

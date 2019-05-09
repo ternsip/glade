@@ -11,6 +11,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.ternsip.glade.model.GLModel.SKIP_ARRAY;
+
 public class ResourceLoader {
 
     @SneakyThrows
@@ -81,7 +83,7 @@ public class ResourceLoader {
             indicesArray[i] = indices.get(i);
         }
 
-        return new GLModel(verticesArray, normalsArray, null, textureArray, indicesArray, textureFile);
+        return new GLModel(verticesArray, normalsArray, SKIP_ARRAY, textureArray, indicesArray, textureFile);
     }
 
 
