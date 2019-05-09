@@ -1,84 +1,77 @@
 package com.ternsip.glade.entity;
 
 
-import com.ternsip.glade.observer.Observer;
-import org.joml.Vector3f;
+import com.ternsip.glade.model.GLModel;
 
-import com.ternsip.glade.model.TexturedModel;
-import com.ternsip.glade.terrains.MultipleTerrain;
-import com.ternsip.glade.utils.Maths;
+import java.io.File;
 
-public class Cube extends Entity implements Observer {
+public class Cube {
 
-	private float offsetX;
-	private float offsetZ;
-	private String colore;
+    // unit cube
+    // A cube has 6 sides and each side has 4 vertices, therefore, the total number
+    // of vertices is 24 (6 sides * 4 verts), and 72 floats in the vertex array
+    // since each vertex has 3 components (x,y,z) (= 24 * 3)
+    //    v6----- v5
+    //   /|      /|
+    //  v1------v0|
+    //  | |     | |
+    //  | v7----|-v4
+    //  |/      |/
+    //  v2------v3
 
-	public Cube(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ,
-				float scale, float offsetX, float offsetZ, int i) {
-		super(model, position, rotX, rotY, rotZ, scale);
-		this.offsetX = offsetX;
-		this.offsetZ = offsetZ;
-		if(i == 1){
-			this.colore = "Rosso";
-		}else if(i == 2){
-			this.colore = "Verde";
-		}else if(i == 3){
-			this.colore = "Viola";
-		}else if(i == 4){
-			this.colore = "Giallo";
-		}else{
-			this.colore = "error";
-		}
-	}
+    public static float VERTICES[] = {
+            .5f, .5f, .5f, -.5f, .5f, .5f, -.5f, -.5f, .5f, .5f, -.5f, .5f, // v0,v1,v2,v3 (front)
+            .5f, .5f, .5f, .5f, -.5f, .5f, .5f, -.5f, -.5f, .5f, .5f, -.5f, // v0,v3,v4,v5 (right)
+            .5f, .5f, .5f, .5f, .5f, -.5f, -.5f, .5f, -.5f, -.5f, .5f, .5f, // v0,v5,v6,v1 (top)
+            -.5f, .5f, .5f, -.5f, .5f, -.5f, -.5f, -.5f, -.5f, -.5f, -.5f, .5f, // v1,v6,v7,v2 (left)
+            -.5f, -.5f, -.5f, .5f, -.5f, -.5f, .5f, -.5f, .5f, -.5f, -.5f, .5f, // v7,v4,v3,v2 (bottom)
+            .5f, -.5f, -.5f, -.5f, -.5f, -.5f, -.5f, .5f, -.5f, .5f, .5f, -.5f  // v4,v7,v6,v5 (back)
+    };
 
-	@Override
-	public void update(Entity entity, MultipleTerrain terrain) {
-		Rover rover = ((Rover) entity);
-		Vector3f roverPosition = rover.getPosition();
-		Vector3f position = rotateVector(new Vector3f(roverPosition.x + offsetX, 0, roverPosition.z + offsetZ),
-				rover.getPosition(), Maths.toRadians(rover.getRotY()));
-		position.y = terrain.getTerrain(getPosition()).getHeightOfTerrain(position.x, position.z);
-		this.setPosition(position);
-	}
+    // texture coord array
+    public static float TEXCOORDS[] = {
+            1, 0, 0, 0, 0, 1, 1, 1,               // v0,v1,v2,v3 (front)
+            0, 0, 0, 1, 1, 1, 1, 0,               // v0,v3,v4,v5 (right)
+            1, 1, 1, 0, 0, 0, 0, 1,               // v0,v5,v6,v1 (top)
+            1, 0, 0, 0, 0, 1, 1, 1,               // v1,v6,v7,v2 (left)
+            0, 1, 1, 1, 1, 0, 0, 0,               // v7,v4,v3,v2 (bottom)
+            0, 1, 1, 1, 1, 0, 0, 0                // v4,v7,v6,v5 (back)
+    };
 
-	private Vector3f rotateVector(Vector3f v , Vector3f center,float teta){
-		teta = -teta;
+    // normal array
+    public static float NORMALS[] = {
+            0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,  // v0,v1,v2,v3 (front)
+            1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,  // v0,v3,v4,v5 (right)
+            0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0,  // v0,v5,v6,v1 (top)
+            -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0,  // v1,v6,v7,v2 (left)
+            0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0,  // v7,v4,v3,v2 (bottom)
+            0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1   // v4,v7,v6,v5 (back)
+    };
 
-		float v1 = (float) (center.x + (v.x - center.x) * Math.cos(teta) - (v.z - center.z) * Math.sin(teta));
-		float v2 = (float) (center.z + (v.x - center.x) * Math.sin(teta) + (v.z - center.z) * Math.cos(teta));
+    // colour array
+    public static float COLORS[] = {
+            1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1,  // v0,v1,v2,v3 (front)
+            1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1,  // v0,v3,v4,v5 (right)
+            1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0,  // v0,v5,v6,v1 (top)
+            1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0,  // v1,v6,v7,v2 (left)
+            0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0,  // v7,v4,v3,v2 (bottom)
+            0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1   // v4,v7,v6,v5 (back)
+    };
 
+    // index array for glDrawElements()
+    // A cube requires 36 indices = 6 sides * 2 tris * 3 verts
+    public static short INDICES[] = {
+            0, 1, 2, 2, 3, 0,    // v0-v1-v2, v2-v3-v0 (front)
+            4, 5, 6, 6, 7, 4,    // v0-v3-v4, v4-v5-v0 (right)
+            8, 9, 10, 10, 11, 8,    // v0-v5-v6, v6-v1-v0 (top)
+            12, 13, 14, 14, 15, 12,    // v1-v6-v7, v7-v2-v1 (left)
+            16, 17, 18, 18, 19, 16,    // v7-v4-v3, v3-v2-v7 (bottom)
+            20, 21, 22, 22, 23, 20     // v4-v7-v6, v6-v5-v4 (back)
+    };
 
-		return new Vector3f(v1,v.y,v2);
-	}
+    public static GLModel generateGLModel() {
+        return new GLModel(VERTICES, NORMALS, COLORS, TEXCOORDS, INDICES, new File("models/others/stall.png"));
+    }
 
-	public float getOffsetX() {
-		return offsetX;
-	}
-
-	public void setOffsetX(float offsetX) {
-		this.offsetX = offsetX;
-	}
-
-	public float getOffsetZ() {
-		return offsetZ;
-	}
-
-	public void setOffsetZ(float offsetZ) {
-		this.offsetZ = offsetZ;
-	}
-
-	@Override
-	public String toString() {
-		StringBuilder str = new StringBuilder();
-		str.append("---------------------------------\n");
-		str.append("x:\t" + this.getPosition().x + "\n");
-		str.append("y:\t" + this.getPosition().y + "\n");
-		str.append("z:\t" + this.getPosition().z + "\n");
-		str.append(colore);
-		str.append("---------------------------------\n");
-		
-		return str.toString();
-	}
 }
 

@@ -1,0 +1,12 @@
+#version 400 core
+
+attribute vec3 aCoords;
+attribute vec3 aColor;
+uniform mat4 umvMat;
+uniform mat4 upMat;
+varying vec3 vColor;
+
+void main () {
+    gl_Position = upMat * umvMat * vec4(aCoords, 1.0);
+    vColor = aColor;
+}

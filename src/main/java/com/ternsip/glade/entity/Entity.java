@@ -1,6 +1,8 @@
 package com.ternsip.glade.entity;
 
 
+import com.ternsip.glade.model.GLModel;
+import com.ternsip.glade.utils.Maths;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,15 +11,12 @@ import org.joml.Quaternionf;
 import org.joml.Quaternionfc;
 import org.joml.Vector3f;
 
-import com.ternsip.glade.model.TexturedModel;
-import com.ternsip.glade.utils.Maths;
-
 @AllArgsConstructor
 @Getter
 @Setter
 public class Entity {
 
-	private TexturedModel model;
+	private GLModel model;
 	private Vector3f position;
 	private float rotX;
 	private float rotY;

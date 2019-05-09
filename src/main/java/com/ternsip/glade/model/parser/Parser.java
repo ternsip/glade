@@ -1,6 +1,6 @@
 package com.ternsip.glade.model.parser;
 
-import com.ternsip.glade.Loader;
+import com.ternsip.glade.model.GLModel;
 import com.ternsip.glade.utils.Utils;
 import lombok.SneakyThrows;
 
@@ -19,7 +19,7 @@ public class Parser {
     @SneakyThrows
     public static Model load3dModel(File modelFile, File textureFile) {
         FileInputStream stream = Utils.loadResourceAsFileStream(modelFile);
-        int texture = Loader.loadTexturePNG(textureFile);
+        int texture = GLModel.loadTexturePNG(textureFile);
         try (FileChannel channel = stream.getChannel()) {
             MapReader reader = new MapReader(channel);
             Parser parser = new Parser(reader);

@@ -1,16 +1,10 @@
 package com.ternsip.glade.model.parser;
 
-import com.ternsip.glade.entity.VboCube;
 import org.joml.Vector3f;
 
 import java.util.LinkedList;
 
-import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
-
-
 public class Model {
-
-    public static VboCube vboCube = new VboCube();
 
     public LinkedList<ModelObject> objects = new LinkedList<ModelObject>();
     public int texture;
@@ -22,8 +16,6 @@ public class Model {
     }
 
     public void render(Vector3f pos, Vector3f rot, float scale) {
-
-        vboCube.render(pos, rot, scale, texture);
 
         for (ModelObject modelObject : objects) {
             short[] indexArray = modelObject.indices;

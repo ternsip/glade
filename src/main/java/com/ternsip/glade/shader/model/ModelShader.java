@@ -9,12 +9,11 @@ import org.joml.Vector3f;
 
 import java.io.File;
 
+import static com.ternsip.glade.model.GLModel.*;
+
 
 public class ModelShader extends ShaderProgram{
-	
-//	Questa classe estende ShaderProgram viene principalmente utilizzata sia per gli oggetti statici si a per gli oggetti dinamici come il Rover
-//	Consente di caricare lo shader fornendo i valori di tutti i parametri utilizzati per il calcolo delle texture e dei vertici
-	
+
 	private static final File VERTEX_FILE = new File("shaders/model/vertexShader.txt");
 	private static final File FRAGMENT_FILE = new File("shaders/model/fragmentShader.txt");
 	
@@ -34,9 +33,10 @@ public class ModelShader extends ShaderProgram{
 
 	@Override
 	protected void bindAttributes() {
-		super.bindAttribute(0, "position");
-		super.bindAttribute(1, "textureCoordinates");
-		super.bindAttribute(2, "normal");
+		super.bindAttribute(VERTICES_ATTRIBUTE_POINTER_INDEX, "position");
+		super.bindAttribute(TEXTURES_ATTRIBUTE_POINTER_INDEX, "textureCoordinates");
+		super.bindAttribute(NORMALS_ATTRIBUTE_POINTER_INDEX, "normal");
+		super.bindAttribute(COLORS_ATTRIBUTE_POINTER_INDEX, "color");
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public class ModelShader extends ShaderProgram{
 		
 	}
 	
-	public void loadSkyColour(Vector3f color){
+	public void loadSkyColour(Vector3f color) {
 		super.loadVector(location_SkyColour, color);
 	}
 	
