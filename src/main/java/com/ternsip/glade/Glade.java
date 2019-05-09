@@ -13,6 +13,8 @@ import org.joml.Vector3f;
 
 import java.io.File;
 
+import static com.ternsip.glade.utils.Maths.PI;
+
 // BE CAREFUL BUFFER FLIPS
 public class Glade {
 
@@ -39,7 +41,7 @@ public class Glade {
         renderer.processEntity(rover);
         renderer.processEntity(cube);
         for (ModelObject o : ship.objects) {
-            renderer.processEntity(new Entity(o.getGLModel(), new Vector3f(10, 0, 0), new Vector3f(0, 0, 0), new Vector3f(0.25f, 0.25f, 0.25f)));
+            renderer.processEntity(new Entity(o.getGLModel(), new Vector3f(20, 0, 0), new Vector3f(0, 0, -4f*PI), new Vector3f(0.25f, 0.25f, 0.25f)));
         }
 
         // TODO Check performance with runnable and without it
