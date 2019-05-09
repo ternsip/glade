@@ -42,12 +42,16 @@ public class Glade {
         GLModel houseModel = ResourceLoader.loadObjModel(new File("models/house/house.obj"), SKIP_TEXTURE);
         Entity house = new Entity(houseModel, new Vector3f(-20, 0, 0), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
 
+        GLModel dudeModel = ResourceLoader.loadObjModel(new File("models/dude/dude.obj"), new File("models/dude/dude.png"));
+        Entity dude = new Entity(dudeModel, new Vector3f(-20, 0, -20), new Vector3f(0, 0, 0), new Vector3f(10, 10, 10));
+
         renderer.processEntity(rover);
         renderer.processEntity(cube);
         for (ModelObject o : ship.objects) {
             renderer.processEntity(new Entity(o.getGLModel(), new Vector3f(20, 0, 0), new Vector3f(0, 0, -4f*PI), new Vector3f(0.25f, 0.25f, 0.25f)));
         }
         renderer.processEntity(house);
+        renderer.processEntity(dude);
 
 
         // TODO Check performance with runnable and without it
