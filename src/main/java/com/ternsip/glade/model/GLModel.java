@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
 
 import java.io.File;
 import java.nio.ByteBuffer;
@@ -15,6 +14,7 @@ import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
@@ -98,15 +98,6 @@ public class GLModel {
     public void render() {
 
         if (texture != NO_TEXTURE) {
-            // TODO MIGHT BE SLOW
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-            // TODO MAYBE MOVE IT ON UPPER CLASS
-            //glEnable(GL_TEXTURE_2D);
-            glActiveTexture(GL13.GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, texture);
         }
 
@@ -164,8 +155,11 @@ public class GLModel {
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
         //set the texture parameters, can be GL_LINEAR or GL_NEAREST
+        // TODO control this
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
         //upload texture
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, decoder.getWidth(), decoder.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);

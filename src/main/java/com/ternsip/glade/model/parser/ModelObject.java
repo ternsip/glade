@@ -1,7 +1,6 @@
 package com.ternsip.glade.model.parser;
 
 import com.ternsip.glade.model.GLModel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 

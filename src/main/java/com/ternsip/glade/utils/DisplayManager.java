@@ -49,6 +49,10 @@ public class DisplayManager {
         // Enable vertical synchronization
         glfwSwapInterval(1);
 
+        // TODO Should it really be here?
+        //glEnable(GL_TEXTURE_2D);
+        //glActiveTexture(GL_TEXTURE0);
+
         registerCloser();
 
         lastFrameTime = getCurrentTime();

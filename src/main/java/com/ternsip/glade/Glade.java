@@ -60,7 +60,6 @@ public class Glade {
             camera.move();
             sun.move();
             renderer.render(sun, camera);
-            //ship.render(new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), 10);
         });
 
         renderer.cleanUp();
