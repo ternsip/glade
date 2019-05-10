@@ -5,6 +5,9 @@ import com.ternsip.glade.model.GLModel;
 
 import java.io.File;
 
+import static com.ternsip.glade.model.GLModel.SKIP_ARRAY_FLOAT;
+import static com.ternsip.glade.model.GLModel.SKIP_ARRAY_INT;
+
 public class Cube {
 
     // unit cube
@@ -70,7 +73,7 @@ public class Cube {
     };
 
     public static GLModel generateGLModel() {
-        return new GLModel(VERTICES, NORMALS, COLORS, TEXCOORDS, INDICES, new File("models/others/stall.png"));
+        return new GLModel(VERTICES, NORMALS, COLORS, TEXCOORDS, INDICES, SKIP_ARRAY_FLOAT, SKIP_ARRAY_INT, new File("models/others/stall.png"));
     }
 
 }

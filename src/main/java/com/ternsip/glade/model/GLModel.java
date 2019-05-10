@@ -1,15 +1,12 @@
 package com.ternsip.glade.model;
 
-import com.ternsip.glade.utils.Utils;
-import de.matthiasmann.twl.utils.PNGDecoder;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.SneakyThrows;
 import org.lwjgl.opengl.GL11;
 
 import java.io.File;
-import java.nio.ByteBuffer;
 
+import static com.ternsip.glade.model.loader.engine.textures.TextureUtils.loadTexturePNG;
 import static com.ternsip.glade.utils.Utils.arrayToBuffer;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
@@ -20,14 +17,16 @@ import static org.lwjgl.opengl.GL30.*;
 @Setter
 public class GLModel {
 
-    public static float[] SKIP_ARRAY = new float[0];
-    public static int[] SKIP_ELEMENT_ARRAY = new int[0];
+    public static float[] SKIP_ARRAY_FLOAT = new float[0];
+    public static int[] SKIP_ARRAY_INT = new int[0];
     public static File SKIP_TEXTURE = new File("");
 
     public static int VERTICES_ATTRIBUTE_POINTER_INDEX = 0;
     public static int NORMALS_ATTRIBUTE_POINTER_INDEX = 1;
     public static int COLORS_ATTRIBUTE_POINTER_INDEX = 2;
     public static int TEXTURES_ATTRIBUTE_POINTER_INDEX = 3;
+    public static int WEIGHTS_ATTRIBUTE_POINTER_INDEX = 4;
+    public static int JOINTS_ATTRIBUTE_POINTER_INDEX = 5;
 
     private static int NO_TEXTURE = -1;
     private static int NO_VBO = -1;
@@ -40,17 +39,21 @@ public class GLModel {
     private int vboNormals;
     private int vboColors;
     private int vboTextures;
+    private int vboWeights;
+    private int vboJoints;
 
     public GLModel(
             float[] vertices,
             float[] normals,
             float[] colors,
-            float[] textures,
+            float[] texCoords,
             int[] indices,
+            float[] weights,
+            int[] joints,
             File textureFile
     ) {
         texture = textureFile == SKIP_TEXTURE ? NO_TEXTURE : loadTexturePNG(textureFile);
-        indicesCount = indices == SKIP_ELEMENT_ARRAY ? vertices.length / 3 : indices.length;
+        indicesCount = indices == SKIP_ARRAY_INT ? vertices.length / 3 : indices.length;
 
         vao = glGenVertexArrays();
         glBindVertexArray(vao);
@@ -58,71 +61,45 @@ public class GLModel {
         vboVertices = bindArrayVBO(VERTICES_ATTRIBUTE_POINTER_INDEX, 3, vertices);
         vboNormals = bindArrayVBO(NORMALS_ATTRIBUTE_POINTER_INDEX, 3, normals);
         vboColors = bindArrayVBO(COLORS_ATTRIBUTE_POINTER_INDEX, 3, colors);
-        vboTextures = bindArrayVBO(TEXTURES_ATTRIBUTE_POINTER_INDEX, 2, textures);
+        vboTextures = bindArrayVBO(TEXTURES_ATTRIBUTE_POINTER_INDEX, 2, texCoords);
+        vboWeights = bindArrayVBO(WEIGHTS_ATTRIBUTE_POINTER_INDEX, 3, weights);
+        vboJoints = bindArrayVBO(JOINTS_ATTRIBUTE_POINTER_INDEX, 3, joints);
         glBindVertexArray(0);
 
     }
 
-    private static int bindArrayVBO(int attributePointerIndex, int attributePointerSize, float[] array) {
-        if (array == SKIP_ARRAY) {
+    private static int bindArrayVBO(int index, int nPerVertex, float[] array) {
+        if (array == SKIP_ARRAY_FLOAT) {
             return NO_VBO;
         }
         int vbo = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
         glBufferData(GL_ARRAY_BUFFER, arrayToBuffer(array), GL_STATIC_DRAW);
-        glVertexAttribPointer(attributePointerIndex, attributePointerSize, GL_FLOAT, false, 0, 0);
+        glVertexAttribPointer(index, nPerVertex, GL_FLOAT, false, 0, 0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        return vbo;
+    }
+
+    private static int bindArrayVBO(int index, int nPerVertex, int[] array) {
+        if (array == SKIP_ARRAY_INT) {
+            return NO_VBO;
+        }
+        int vbo = glGenBuffers();
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, arrayToBuffer(array), GL_STATIC_DRAW);
+        glVertexAttribPointer(index, nPerVertex, GL_INT, false, 0, 0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         return vbo;
     }
 
     private static int bindElementArrayVBO(int[] array) {
-        if (array == SKIP_ELEMENT_ARRAY) {
+        if (array == SKIP_ARRAY_INT) {
             return NO_VBO;
         }
         int vbo = glGenBuffers();
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, arrayToBuffer(array), GL_STATIC_DRAW);
         return vbo;
-    }
-
-    @SneakyThrows
-    public static int loadTexturePNG(File file) {
-
-        //load png file
-        PNGDecoder decoder = new PNGDecoder(Utils.loadResourceAsStream(file));
-
-        //create a byte buffer big enough to store RGBA values
-        ByteBuffer buffer = ByteBuffer.allocateDirect(4 * decoder.getWidth() * decoder.getHeight());
-
-        //decode
-        decoder.decode(buffer, decoder.getWidth() * 4, PNGDecoder.Format.RGBA);
-
-        //flip the buffer so its ready to read
-        buffer.flip();
-
-        //create a texture
-        int id = glGenTextures();
-
-        //bind the texture
-        glBindTexture(GL_TEXTURE_2D, id);
-
-        //tell opengl how to unpack bytes
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-        //set the texture parameters, can be GL_LINEAR or GL_NEAREST
-        // TODO control this
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-        //upload texture
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, decoder.getWidth(), decoder.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
-
-        // Generate Mip Map
-        glGenerateMipmap(GL_TEXTURE_2D);
-
-        return id;
     }
 
     public void render() {
@@ -136,6 +113,8 @@ public class GLModel {
         if (vboNormals != NO_VBO) glEnableVertexAttribArray(NORMALS_ATTRIBUTE_POINTER_INDEX);
         if (vboColors != NO_VBO) glEnableVertexAttribArray(COLORS_ATTRIBUTE_POINTER_INDEX);
         if (vboTextures != NO_VBO) glEnableVertexAttribArray(TEXTURES_ATTRIBUTE_POINTER_INDEX);
+        if (vboWeights != NO_VBO) glEnableVertexAttribArray(WEIGHTS_ATTRIBUTE_POINTER_INDEX);
+        if (vboJoints != NO_VBO) glEnableVertexAttribArray(JOINTS_ATTRIBUTE_POINTER_INDEX);
 
         if (vboIndices == NO_VBO) {
             glDrawArrays(GL11.GL_TRIANGLES, 0, indicesCount);
@@ -147,6 +126,8 @@ public class GLModel {
         if (vboNormals != NO_VBO) glDisableVertexAttribArray(NORMALS_ATTRIBUTE_POINTER_INDEX);
         if (vboColors != NO_VBO) glDisableVertexAttribArray(COLORS_ATTRIBUTE_POINTER_INDEX);
         if (vboTextures != NO_VBO) glDisableVertexAttribArray(TEXTURES_ATTRIBUTE_POINTER_INDEX);
+        if (vboWeights != NO_VBO) glDisableVertexAttribArray(WEIGHTS_ATTRIBUTE_POINTER_INDEX);
+        if (vboJoints != NO_VBO) glDisableVertexAttribArray(JOINTS_ATTRIBUTE_POINTER_INDEX);
 
         glBindVertexArray(0);
     }
@@ -157,6 +138,8 @@ public class GLModel {
         if (vboNormals != NO_VBO) glDeleteBuffers(vboNormals);
         if (vboColors != NO_VBO) glDeleteBuffers(vboColors);
         if (vboTextures != NO_VBO) glDeleteBuffers(vboTextures);
+        if (vboWeights != NO_VBO) glDeleteBuffers(vboWeights);
+        if (vboJoints != NO_VBO) glDeleteBuffers(vboJoints);
         if (texture != NO_TEXTURE) glDeleteTextures(texture);
     }
 

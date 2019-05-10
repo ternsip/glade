@@ -13,7 +13,7 @@ public class Vao {
     private static final int BYTES_PER_FLOAT = 4;
     private static final int BYTES_PER_INT = 4;
     public final int id;
-    private List<Vbo> dataVbos = new ArrayList<Vbo>();
+    private List<Vbo> dataVbos = new ArrayList<>();
     private Vbo indexVbo;
     private int indexCount;
 
@@ -31,7 +31,7 @@ public class Vao {
     }
 
     public void bind(int... attributes) {
-        bind();
+        GL30.glBindVertexArray(id);
         for (int i : attributes) {
             GL20.glEnableVertexAttribArray(i);
         }
@@ -41,7 +41,7 @@ public class Vao {
         for (int i : attributes) {
             GL20.glDisableVertexAttribArray(i);
         }
-        unbind();
+        GL30.glBindVertexArray(0);
     }
 
     public void createIndexBuffer(int[] indices) {
@@ -75,14 +75,6 @@ public class Vao {
             vbo.delete();
         }
         indexVbo.delete();
-    }
-
-    private void bind() {
-        GL30.glBindVertexArray(id);
-    }
-
-    private void unbind() {
-        GL30.glBindVertexArray(0);
     }
 
 }

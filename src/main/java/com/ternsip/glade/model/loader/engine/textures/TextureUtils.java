@@ -18,6 +18,7 @@ import static org.lwjgl.opengl.GL.getCapabilities;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
+import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 
 public class TextureUtils {
 
@@ -62,6 +63,46 @@ public class TextureUtils {
         }
         glBindTexture(GL_TEXTURE_2D, 0);
         return texID;
+    }
+
+    @SneakyThrows
+    public static int loadTexturePNG(File file) {
+
+        //load png file
+        PNGDecoder decoder = new PNGDecoder(Utils.loadResourceAsStream(file));
+
+        //create a byte buffer big enough to store RGBA values
+        ByteBuffer buffer = ByteBuffer.allocateDirect(4 * decoder.getWidth() * decoder.getHeight());
+
+        //decode
+        decoder.decode(buffer, decoder.getWidth() * 4, PNGDecoder.Format.RGBA);
+
+        //flip the buffer so its ready to read
+        buffer.flip();
+
+        //create a texture
+        int id = glGenTextures();
+
+        //bind the texture
+        glBindTexture(GL_TEXTURE_2D, id);
+
+        //tell opengl how to unpack bytes
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+        //set the texture parameters, can be GL_LINEAR or GL_NEAREST
+        // TODO control this
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+        //upload texture
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, decoder.getWidth(), decoder.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+
+        // Generate Mip Map
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        return id;
     }
 
 }

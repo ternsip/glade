@@ -4,7 +4,8 @@ import com.ternsip.glade.model.GLModel;
 import lombok.Getter;
 import lombok.Setter;
 
-import static com.ternsip.glade.model.GLModel.SKIP_ARRAY;
+import static com.ternsip.glade.model.GLModel.SKIP_ARRAY_FLOAT;
+import static com.ternsip.glade.model.GLModel.SKIP_ARRAY_INT;
 import static com.ternsip.glade.model.GLModel.SKIP_TEXTURE;
 
 @Getter
@@ -24,7 +25,7 @@ public class ModelObject {
 
     public GLModel getGLModel() {
         if (model == null) {
-            model = new GLModel(vertices, SKIP_ARRAY, SKIP_ARRAY, textureCoordinates, indices, SKIP_TEXTURE);
+            model = new GLModel(vertices, SKIP_ARRAY_FLOAT, SKIP_ARRAY_FLOAT, textureCoordinates, indices, SKIP_ARRAY_FLOAT, SKIP_ARRAY_INT, SKIP_TEXTURE);
         }
         return model;
     }

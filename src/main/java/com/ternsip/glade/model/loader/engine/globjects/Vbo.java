@@ -1,11 +1,10 @@
 package com.ternsip.glade.model.loader.engine.globjects;
 
-import org.lwjgl.opengl.GL15;
-
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import static com.ternsip.glade.utils.Utils.arrayToBuffer;
+import static org.lwjgl.opengl.GL15.*;
 
 public class Vbo {
 
@@ -18,36 +17,28 @@ public class Vbo {
     }
 
     public static Vbo create(int type) {
-        int id = GL15.glGenBuffers();
+        int id = glGenBuffers();
         return new Vbo(id, type);
     }
 
     public void bind() {
-        GL15.glBindBuffer(type, vboId);
+        glBindBuffer(type, vboId);
     }
 
     public void unbind() {
-        GL15.glBindBuffer(type, 0);
+        glBindBuffer(type, 0);
     }
 
     public void storeData(float[] data) {
-        storeData(arrayToBuffer(data));
+        glBufferData(type, arrayToBuffer(data), GL_STATIC_DRAW);
     }
 
     public void storeData(int[] data) {
-        storeData(arrayToBuffer(data));
-    }
-
-    public void storeData(IntBuffer data) {
-        GL15.glBufferData(type, data, GL15.GL_STATIC_DRAW);
-    }
-
-    public void storeData(FloatBuffer data) {
-        GL15.glBufferData(type, data, GL15.GL_STATIC_DRAW);
+        glBufferData(type, arrayToBuffer(data), GL_STATIC_DRAW);
     }
 
     public void delete() {
-        GL15.glDeleteBuffers(vboId);
+        glDeleteBuffers(vboId);
     }
 
 }

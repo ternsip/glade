@@ -9,6 +9,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 
+import static com.ternsip.glade.model.loader.engine.textures.TextureUtils.loadTexturePNG;
+
 
 public class Parser {
 
@@ -23,7 +25,7 @@ public class Parser {
     @SneakyThrows
     public static Model load3dModel(File modelFile, File textureFile) {
         FileInputStream stream = Utils.loadResourceAsFileStream(modelFile);
-        int texture = GLModel.loadTexturePNG(textureFile);
+        int texture = loadTexturePNG(textureFile);
         try (FileChannel channel = stream.getChannel()) {
             MapReader reader = new MapReader(channel);
             Parser parser = new Parser(reader);
