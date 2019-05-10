@@ -15,22 +15,17 @@ import static com.ternsip.glade.sky.SkyRenderer.SKY_COLOR;
 
 public class MasterRenderer {
 
-    private static final float FOV = 70;
-    private static final float NEAR_PLANE = 0.1f;
-    private static final float FAR_PLANE = 1000;
-
-    private Matrix4f projectionMatrix;
     private EntityRenderer entityRenderer;
 
     private List<Entity> entities = new ArrayList<>();
 
     private SkyRenderer skyRenderer;
 
-    public MasterRenderer() {
+    public MasterRenderer(Camera camera) {
         enableCulling();
-        createProjectionMatrix();
-        entityRenderer = new EntityRenderer(projectionMatrix);
-        skyRenderer = new SkyRenderer(projectionMatrix);
+        Camera.createProjectionMatrix();
+        entityRenderer = new EntityRenderer(camera.getProjectionMatrix());
+        skyRenderer = new SkyRenderer(camera.getProjectionMatrix());
     }
 
     public static void enableCulling() {
@@ -60,20 +55,7 @@ public class MasterRenderer {
         skyRenderer.cleanUp();
     }
 
-    private void createProjectionMatrix() {
-        float aspectRatio = (float) DISPLAY_MANAGER.getWidth() / (float) DISPLAY_MANAGER.getHeight();
-        float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))) * aspectRatio);
-        float x_scale = y_scale / aspectRatio;
-        float frustum_length = FAR_PLANE - NEAR_PLANE;
 
-        projectionMatrix = new Matrix4f();
-        projectionMatrix.m00(x_scale);
-        projectionMatrix.m11(y_scale);
-        projectionMatrix.m22(-((FAR_PLANE + NEAR_PLANE) / frustum_length));
-        projectionMatrix.m23(-1);
-        projectionMatrix.m32(-((2 * NEAR_PLANE * FAR_PLANE) / frustum_length));
-        projectionMatrix.m33(0);
-    }
 
 
 }

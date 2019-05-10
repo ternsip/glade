@@ -90,6 +90,133 @@ public class Maths {
         );
     }
 
+    //TODO ALREADY EXISTS!11, this might be better
+
+    /**
+     * Converts the quaternion to a 4x4 matrix representing the exact same
+     * rotation as this quaternion. (The rotation is only contained in the
+     * top-left 3x3 part, but a 4x4 matrix is returned here for convenience
+     * seeing as it will be multiplied with other 4x4 matrices).
+     * <p>
+     * More detailed explanation here:
+     * http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToMatrix/
+     *
+     * @return The rotation matrix which represents the exact same rotation as
+     * this quaternion.
+     */
+    public static Matrix4f toRotationMatrix(Quaternionfc quaternionfc) {
+        final float x = quaternionfc.x();
+        final float y = quaternionfc.y();
+        final float z = quaternionfc.z();
+        final float w = quaternionfc.w();
+        final float xy = x * y;
+        final float xz = x * z;
+        final float xw = x * w;
+        final float yz = y * z;
+        final float yw = y * w;
+        final float zw = z * w;
+        final float xSquared = x * x;
+        final float ySquared = y * y;
+        final float zSquared = z * z;
+        return new Matrix4f(
+                1 - 2 * (ySquared + zSquared),
+                2 * (xy - zw),
+                2 * (xz + yw),
+                0,
+                2 * (xy + zw),
+                1 - 2 * (xSquared + zSquared),
+                2 * (yz - xw),
+                0,
+                2 * (xz - yw),
+                2 * (yz + xw),
+                1 - 2 * (xSquared + ySquared),
+                0,
+                0,
+                0,
+                0,
+                1
+        );
+    }
+
+
+    // TODO PROBABLY ALREADY EXISTS (setFromUnnormalized)
+    /**
+     * Extracts the rotation part of a transformation matrix and converts it to
+     * a quaternion using the magic of maths.
+     * <p>
+     * More detailed explanation here:
+     * http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/index.htm
+     *
+     * @param matrix - the transformation matrix containing the rotation which this
+     *               quaternion shall represent.
+     */
+    public static Quaternionfc fromMatrix(Matrix4f matrix) {
+        float w, x, y, z;
+        float diagonal = matrix.m00() + matrix.m11() + matrix.m22();
+        if (diagonal > 0) {
+            float w4 = (float) (Math.sqrt(diagonal + 1f) * 2f);
+            w = w4 / 4f;
+            x = (matrix.m21() - matrix.m12()) / w4;
+            y = (matrix.m02() - matrix.m20()) / w4;
+            z = (matrix.m10() - matrix.m01()) / w4;
+        } else if ((matrix.m00() > matrix.m11()) && (matrix.m00() > matrix.m22())) {
+            float x4 = (float) (Math.sqrt(1f + matrix.m00() - matrix.m11() - matrix.m22()) * 2f);
+            w = (matrix.m21() - matrix.m12()) / x4;
+            x = x4 / 4f;
+            y = (matrix.m01() + matrix.m10()) / x4;
+            z = (matrix.m02() + matrix.m20()) / x4;
+        } else if (matrix.m11() > matrix.m22()) {
+            float y4 = (float) (Math.sqrt(1f + matrix.m11() - matrix.m00() - matrix.m22()) * 2f);
+            w = (matrix.m02() - matrix.m20()) / y4;
+            x = (matrix.m01() + matrix.m10()) / y4;
+            y = y4 / 4f;
+            z = (matrix.m12() + matrix.m21()) / y4;
+        } else {
+            float z4 = (float) (Math.sqrt(1f + matrix.m22() - matrix.m00() - matrix.m11()) * 2f);
+            w = (matrix.m10() - matrix.m01()) / z4;
+            x = (matrix.m02() + matrix.m20()) / z4;
+            y = (matrix.m12() + matrix.m21()) / z4;
+            z = z4 / 4f;
+        }
+        return new Quaternionf(x, y, z, w).normalize();
+    }
+
+    /**
+     * Interpolates between two quaternion rotations and returns the resulting
+     * quaternion rotation. The interpolation method here is "nlerp", or
+     * "normalized-lerp". Another mnethod that could be used is "slerp", and you
+     * can see a comparison of the methods here:
+     * https://keithmaggio.wordpress.com/2011/02/15/math-magician-lerp-slerp-and-nlerp/
+     * <p>
+     * and here:
+     * http://number-none.com/product/Understanding%20Slerp,%20Then%20Not%20Using%20It/
+     *
+     * @param a
+     * @param b
+     * @param blend - a value between 0 and 1 indicating how far to interpolate
+     *              between the two quaternions.
+     * @return The resulting interpolated rotation in quaternion format.
+     */
+    public static Quaternionfc interpolate(Quaternionfc a, Quaternionfc b, float blend) {
+        Quaternionfc result = new Quaternionf(0, 0, 0, 1).normalize();
+        float dot = a.w() * b.w() + a.x() * b.x() + a.y() * b.y() + a.z() * b.z();
+        float blendI = 1f - blend;
+        if (dot < 0) {
+            return new Quaternionf(
+                    blendI * a.x() + blend * -b.x(),
+                    blendI * a.y() + blend * -b.y(),
+                    blendI * a.z() + blend * -b.z(),
+                    blendI * a.w() + blend * -b.w()
+            ).normalize();
+        }
+        return new Quaternionf(
+                blendI * a.x() + blend * b.x(),
+                blendI * a.y() + blend * b.y(),
+                blendI * a.z() + blend * b.z(),
+                blendI * a.w() + blend * b.w()
+        ).normalize();
+    }
+
     public static Quaternionf convertMatrix4fToQuaternion(Matrix4f matrix) {
         Quaternionf quat = new Quaternionf();
         quat.setFromUnnormalized(matrix);
@@ -103,18 +230,6 @@ public class Maths {
         matrix.translate(new Vector3f(translation.x, translation.y, 0f), matrix);
         matrix.scale(new Vector3f(scale.x, scale.y, 1f), matrix);
         return matrix;
-    }
-
-
-    public static Matrix4f createViewMatrix(Camera camera) {
-        Matrix4f viewMatrix = new Matrix4f();
-        viewMatrix.identity();
-        viewMatrix.rotate((float) Math.toRadians(camera.getPitch()), new Vector3f(1, 0, 0), viewMatrix);
-        viewMatrix.rotate((float) Math.toRadians(camera.getYaw()), new Vector3f(0, 1, 0), viewMatrix);
-        Vector3f cameraPos = camera.getPosition();
-        Vector3f negativeCameraPos = new Vector3f(-cameraPos.x, -cameraPos.y, -cameraPos.z);
-        viewMatrix.translate(negativeCameraPos, viewMatrix);
-        return viewMatrix;
     }
 
     public static float barryCentric(Vector3f p1, Vector3f p2, Vector3f p3, Vector2f pos) {

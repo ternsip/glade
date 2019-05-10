@@ -2,6 +2,12 @@ package com.ternsip.glade;
 
 import com.ternsip.glade.entity.*;
 import com.ternsip.glade.model.GLModel;
+import com.ternsip.glade.model.loader.animation.loaders.AnimationLoader;
+import com.ternsip.glade.model.loader.animation.model.AnimatedModel;
+import com.ternsip.glade.model.loader.animation.animation.Animation;
+import com.ternsip.glade.model.loader.animation.loaders.AnimatedModelLoader;
+import com.ternsip.glade.model.loader.engine.render.RenderEngine;
+import com.ternsip.glade.model.loader.engine.scene.Scene;
 import com.ternsip.glade.model.parser.Model;
 import com.ternsip.glade.model.parser.ModelObject;
 import com.ternsip.glade.model.parser.Parser;
@@ -28,7 +34,6 @@ public class Glade {
 
         Sun sun = new Sun(new Vector2f(0, 0), new Vector2f(20000, 20000), new Vector3f(1, 1, 1));
 
-        MasterRenderer renderer = new MasterRenderer();
 
         GLModel roverModel = ResourceLoader.loadObjModel(new File("models/rover/rover.obj"), new File("models/rover/rover.png"));
         Rover rover = new Rover(roverModel, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
@@ -45,6 +50,17 @@ public class Glade {
         GLModel dudeModel = ResourceLoader.loadObjModel(new File("models/dude/dude.obj"), new File("models/dude/dude.png"));
         Entity dude = new Entity(dudeModel, new Vector3f(-20, 0, -20), new Vector3f(0, 0, 0), new Vector3f(10, 10, 10));
 
+        File MODEL_FILE = new File("models/boy/boy.dae");
+        File ANIM_FILE = new File("models/boy/boy.dae");
+        File DIFFUSE_FILE = new File("models/boy/boy.png");
+        AnimatedModel entity = AnimatedModelLoader.loadEntity(MODEL_FILE, DIFFUSE_FILE);
+        Animation animation = AnimationLoader.loadAnimation(ANIM_FILE);
+        entity.doAnimation(animation);
+        Scene scene = new Scene(entity, camera);
+        scene.setLightDirection(new Vector3f(0.2f, -0.3f, -0.8f));
+        RenderEngine engine = RenderEngine.init();
+
+        MasterRenderer renderer = new MasterRenderer(camera);
         renderer.processEntity(rover);
         renderer.processEntity(cube);
         for (ModelObject o : ship.objects) {
@@ -60,7 +76,14 @@ public class Glade {
             camera.move();
             sun.move();
             renderer.render(sun, camera);
+
+            scene.getCamera().move();
+            scene.getAnimatedModel().update();
+            engine.renderScene(scene);
+
         });
+
+        engine.close();
 
         renderer.cleanUp();
         DISPLAY_MANAGER.closeDisplay();
