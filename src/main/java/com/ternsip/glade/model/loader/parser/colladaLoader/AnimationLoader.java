@@ -11,7 +11,6 @@ import java.util.List;
 
 public class AnimationLoader {
 
-    // TODO angle maybe -90
     private static final Matrix4f CORRECTION = new Matrix4f().rotate((float) Math.toRadians(-90), new Vector3f(1, 0, 0));
 
     private XmlNode animationData;
