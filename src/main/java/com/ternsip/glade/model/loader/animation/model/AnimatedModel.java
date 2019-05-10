@@ -38,11 +38,22 @@ public class AnimatedModel {
     public Matrix4f[] getJointTransforms() {
         Matrix4f[] jointMatrices = new Matrix4f[jointCount];
         addJointsToArray(rootJoint, jointMatrices);
+
+        // TODO this is just dummy to prevent crashing
+        for (int i = 0; i < jointMatrices.length; ++i) {
+            if (jointMatrices[i] == null) {
+                jointMatrices[i] = new Matrix4f();
+            }
+        }
+
         return jointMatrices;
     }
 
     private void addJointsToArray(Joint headJoint, Matrix4f[] jointMatrices) {
-        jointMatrices[headJoint.index] = headJoint.getAnimatedTransform();
+        // TODO this if is just dummy to prevent crashing
+        if (headJoint.index >= 0 && headJoint.index < jointMatrices.length) {
+            jointMatrices[headJoint.index] = headJoint.getAnimatedTransform();
+        }
         for (Joint childJoint : headJoint.children) {
             addJointsToArray(childJoint, jointMatrices);
         }

@@ -2,7 +2,7 @@ package com.ternsip.glade.model.loader.animation.animation;
 
 public class Animation {
 
-    private final float length;//in seconds
+    private final float length; // In seconds
     private final KeyFrame[] keyFrames;
 
     public Animation(float lengthInSeconds, KeyFrame[] frames) {

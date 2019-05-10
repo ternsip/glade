@@ -20,6 +20,7 @@ import static com.ternsip.glade.utils.Maths.PI;
 
 // BE CAREFUL BUFFER FLIPS
 // TODO CHECKOUT BUFFERS (FLOATBUFFER ETC.) BECAUSE THEY ARE BUGGED
+// TODO TURN ALL Vectors and Matrixes and Quaternions to constant interface (quatenrionfc/matrixfc)
 public class Glade {
 
     public static final DisplayManager DISPLAY_MANAGER = new DisplayManager();
@@ -47,6 +48,7 @@ public class Glade {
         GLModel dudeModel = ResourceLoader.loadObjModel(new File("models/dude/dude.obj"), new File("models/dude/dude.png"));
         Entity dude = new Entity(dudeModel, new Vector3f(-20, 0, -20), new Vector3f(0, 0, 0), new Vector3f(10, 10, 10));
 
+        AnimatedModel spiderModel = AnimatedModelLoader.loadEntity(new File("models/spider/spider.dae"), new File("models/spider/Spinnen_Bein_tex_COLOR_.png"), new File("models/spider/spider.dae"));
         AnimatedModel boyModel = AnimatedModelLoader.loadEntity(new File("models/boy/boy.dae"), new File("models/boy/boy.png"), new File("models/boy/boy.dae"));
         //AnimatedModel lampModel = AnimatedModelLoader.loadEntity(new File("models/lamp/lamp.dae"), new File("models/boy/boy.png"), new File("models/lamp/lamp.dae"));
         //AnimatedModel skeletonModel = AnimatedModelLoader.loadEntity(new File("models/skeleton/skeleton.dae"), new File("models/boy/boy.png"), new File("models/skeleton/skeleton.dae"));
@@ -64,6 +66,7 @@ public class Glade {
         //renderer.processEntity(lampModel);
         //renderer.processEntity(skeletonModel);
         //renderer.processEntity(microwaveModel);
+        renderer.processEntity(spiderModel);
 
 
         // TODO Check performance with runnable and without it

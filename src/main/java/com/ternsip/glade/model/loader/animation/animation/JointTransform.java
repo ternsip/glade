@@ -4,12 +4,12 @@ import com.ternsip.glade.utils.Maths;
 import org.joml.Matrix4f;
 import org.joml.Quaternionfc;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 public class JointTransform {
 
-    // TODO TURN ALL Vectors and Matrixes and Quaternions to constant interface (quatenrionfc/matrixfc)
     // remember, this position and rotation are relative to the parent bone!
-    private final Vector3f position;
+    private final Vector3fc position;
     private final Quaternionfc rotation;
 
     /**
@@ -21,7 +21,7 @@ public class JointTransform {
      * @param rotation - the rotation of the joint relative to the parent joint
      *                 (bone-space) at a certain keyframe.
      */
-    public JointTransform(Vector3f position, Quaternionfc rotation) {
+    public JointTransform(Vector3fc position, Quaternionfc rotation) {
         this.position = position;
         this.rotation = rotation;
     }
@@ -60,10 +60,10 @@ public class JointTransform {
      *                    between the two translations.
      * @return
      */
-    private static Vector3f interpolate(Vector3f start, Vector3f end, float progression) {
-        float x = start.x + (end.x - start.x) * progression;
-        float y = start.y + (end.y - start.y) * progression;
-        float z = start.z + (end.z - start.z) * progression;
+    private static Vector3f interpolate(Vector3fc start, Vector3fc end, float progression) {
+        float x = start.x() + (end.x() - start.x()) * progression;
+        float y = start.y() + (end.y() - start.y()) * progression;
+        float z = start.z() + (end.z() - start.z()) * progression;
         return new Vector3f(x, y, z);
     }
 

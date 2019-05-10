@@ -9,6 +9,8 @@ import org.joml.Vector3f;
 
 import java.util.List;
 
+import static com.ternsip.glade.model.loader.parser.colladaLoader.SkeletonLoader.getChildByPredicate;
+
 public class AnimationLoader {
 
     private static final Matrix4f CORRECTION = new Matrix4f().rotate((float) Math.toRadians(-90), new Vector3f(1, 0, 0));
@@ -101,7 +103,7 @@ public class AnimationLoader {
     }
 
     private String findRootJointName() {
-        XmlNode skeleton = jointHierarchy.getChild("visual_scene").getChildWithAttribute("node", "id", "Armature");
+        XmlNode skeleton = getChildByPredicate(jointHierarchy.getChild("visual_scene"), "node", e -> e.getAttribute("id").contains("Armature"));
         return skeleton.getChild("node").getAttribute("id");
     }
 
