@@ -1,10 +1,14 @@
 package com.ternsip.glade.utils;
 
 import lombok.SneakyThrows;
+import org.lwjgl.BufferUtils;
 
 import java.io.*;
 import java.net.URL;
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 import java.nio.charset.StandardCharsets;
 
 public class Utils {
@@ -43,6 +47,48 @@ public class Utils {
         ByteBuffer buf = ByteBuffer.allocateDirect(array.length);
         buf.put(array);
         buf.rewind();
+        return buf.asReadOnlyBuffer();
+    }
+
+    public static int[] bufferToArray(IntBuffer buf) {
+        buf.rewind();
+        int[] arr = new int[buf.remaining()];
+        buf.get(arr, 0, arr.length);
+        return arr;
+    }
+
+    public static IntBuffer arrayToBuffer(int[] array) {
+        IntBuffer buf = BufferUtils.createIntBuffer(array.length);
+        buf.put(array);
+        buf.flip();
+        return buf.asReadOnlyBuffer();
+    }
+
+    public static float[] bufferToArray(FloatBuffer buf) {
+        buf.rewind();
+        float[] arr = new float[buf.remaining()];
+        buf.get(arr, 0, arr.length);
+        return arr;
+    }
+
+    public static FloatBuffer arrayToBuffer(float[] array) {
+        FloatBuffer buf = BufferUtils.createFloatBuffer(array.length);
+        buf.put(array);
+        buf.flip();
+        return buf.asReadOnlyBuffer();
+    }
+
+    public static short[] bufferToArray(ShortBuffer buf) {
+        buf.rewind();
+        short[] arr = new short[buf.remaining()];
+        buf.get(arr, 0, arr.length);
+        return arr;
+    }
+
+    public static ShortBuffer arrayToBuffer(short[] array) {
+        ShortBuffer buf = BufferUtils.createShortBuffer(array.length);
+        buf.put(array);
+        buf.flip();
         return buf.asReadOnlyBuffer();
     }
 

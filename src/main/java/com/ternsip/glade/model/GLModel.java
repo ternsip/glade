@@ -13,6 +13,7 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
+import static com.ternsip.glade.utils.Utils.arrayToBuffer;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
@@ -71,12 +72,9 @@ public class GLModel {
         if (array == SKIP_ARRAY) {
             return NO_VBO;
         }
-        FloatBuffer verticesBuffer = BufferUtil.newFloatBuffer(array.length);
-        verticesBuffer.put(array);
-        verticesBuffer.flip();
         int vbo = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, verticesBuffer, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, arrayToBuffer(array), GL_STATIC_DRAW);
         glVertexAttribPointer(attributePointerIndex, attributePointerSize, GL_FLOAT, false, 0, 0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         return vbo;
@@ -86,12 +84,9 @@ public class GLModel {
         if (array == SKIP_ELEMENT_ARRAY) {
             return NO_VBO;
         }
-        ShortBuffer indicesBuffer = BufferUtil.newShortBuffer(array.length);
-        indicesBuffer.put(array);
-        indicesBuffer.flip();
         int vbo = glGenBuffers();
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer, GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, arrayToBuffer(array), GL_STATIC_DRAW);
         return vbo;
     }
 
