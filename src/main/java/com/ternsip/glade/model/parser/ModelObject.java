@@ -13,7 +13,7 @@ public class ModelObject {
 
     private String name;
     private float[] vertices;
-    private short[] indices;
+    private int[] indices;
     private float[] textureCoordinates;
 
     private GLModel model;

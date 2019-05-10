@@ -60,7 +60,7 @@ public class Cube {
 
     // index array for glDrawElements()
     // A cube requires 36 indices = 6 sides * 2 tris * 3 verts
-    public static short INDICES[] = {
+    public static int INDICES[] = {
             0, 1, 2, 2, 3, 0,    // v0-v1-v2, v2-v3-v0 (front)
             4, 5, 6, 6, 7, 4,    // v0-v3-v4, v4-v5-v0 (right)
             8, 9, 10, 10, 11, 8,    // v0-v5-v6, v6-v1-v0 (top)

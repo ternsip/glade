@@ -58,7 +58,7 @@ public class ResourceLoader {
                 }
             }
         }
-        short[] indicesArray = new short[indices.size()];
+        int[] indicesArray = new int[indices.size()];
         for (int i = 0; i < indices.size(); ++i) {
             indicesArray[i] = indices.get(i);
         }

@@ -134,7 +134,7 @@ public class Parser {
 
     private void parseFacesDescription() throws IOException {
         short numFaces = reader.getShort();
-        short[] indices = new short[numFaces * 3];
+        int[] indices = new int[numFaces * 3];
         for (int i = 0; i < numFaces; i++) {
             indices[i * 3] = reader.getShort();
             indices[i * 3 + 1] = reader.getShort();

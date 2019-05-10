@@ -21,7 +21,7 @@ import static org.lwjgl.opengl.GL30.*;
 public class GLModel {
 
     public static float[] SKIP_ARRAY = new float[0];
-    public static short[] SKIP_ELEMENT_ARRAY = new short[0];
+    public static int[] SKIP_ELEMENT_ARRAY = new int[0];
     public static File SKIP_TEXTURE = new File("");
 
     public static int VERTICES_ATTRIBUTE_POINTER_INDEX = 0;
@@ -46,7 +46,7 @@ public class GLModel {
             float[] normals,
             float[] colors,
             float[] textures,
-            short[] indices,
+            int[] indices,
             File textureFile
     ) {
         texture = textureFile == SKIP_TEXTURE ? NO_TEXTURE : loadTexturePNG(textureFile);
@@ -75,7 +75,7 @@ public class GLModel {
         return vbo;
     }
 
-    private static int bindElementArrayVBO(short[] array) {
+    private static int bindElementArrayVBO(int[] array) {
         if (array == SKIP_ELEMENT_ARRAY) {
             return NO_VBO;
         }
@@ -140,7 +140,7 @@ public class GLModel {
         if (vboIndices == NO_VBO) {
             glDrawArrays(GL11.GL_TRIANGLES, 0, indicesCount);
         } else {
-            glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_SHORT, 0);
+            glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, 0);
         }
 
         if (vboVertices != NO_VBO) glDisableVertexAttribArray(VERTICES_ATTRIBUTE_POINTER_INDEX);
