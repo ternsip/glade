@@ -5,12 +5,6 @@ import com.ternsip.glade.model.loader.animation.model.AnimatedModel;
 import org.joml.Vector3f;
 
 
-/**
- * Represents all the stuff in the scene (just the camera, light, and model
- * really).
- *
- * @author Karl
- */
 public class Scene {
 
     private final Camera camera;
@@ -24,9 +18,6 @@ public class Scene {
         this.camera = cam;
     }
 
-    /**
-     * @return The scene's camera.
-     */
     public Camera getCamera() {
         return camera;
     }
@@ -35,9 +26,6 @@ public class Scene {
         return animatedModel;
     }
 
-    /**
-     * @return The direction of the light as a vector.
-     */
     public Vector3f getLightDirection() {
         return lightDirection;
     }

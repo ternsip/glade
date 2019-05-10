@@ -16,22 +16,9 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * This class loads up an animation collada file, gets the information from it,
- * and then creates and returns an {@link Animation} from the extracted data.
- *
- * @author Karl
- */
+
 public class AnimationLoader {
 
-    /**
-     * Loads up a collada animation file, and returns and animation created from
-     * the extracted animation data from the file.
-     *
-     * @param colladaFile - the collada file containing data about the desired
-     *                    animation.
-     * @return The animation made from the data in the file.
-     */
     public static Animation loadAnimation(File colladaFile) {
         AnimationData animationData = ColladaLoader.loadColladaAnimation(colladaFile);
         KeyFrame[] frames = new KeyFrame[animationData.keyFrames.length];
@@ -41,13 +28,6 @@ public class AnimationLoader {
         return new Animation(animationData.lengthSeconds, frames);
     }
 
-    /**
-     * Creates a keyframe from the data extracted from the collada file.
-     *
-     * @param data - the data about the keyframe that was extracted from the
-     *             collada file.
-     * @return The keyframe.
-     */
     private static KeyFrame createKeyFrame(KeyFrameData data) {
         Map<String, JointTransform> map = new HashMap<String, JointTransform>();
         for (JointTransformData jointData : data.jointTransforms) {
@@ -57,12 +37,6 @@ public class AnimationLoader {
         return new KeyFrame(data.time, map);
     }
 
-    /**
-     * Creates a joint transform from the data extracted from the collada file.
-     *
-     * @param data - the data from the collada file.
-     * @return The joint transform.
-     */
     private static JointTransform createTransform(JointTransformData data) {
         Matrix4f mat = data.jointLocalTransform;
         // TODO try to wrap this

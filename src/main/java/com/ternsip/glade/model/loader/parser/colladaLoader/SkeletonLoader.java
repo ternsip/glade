@@ -43,8 +43,7 @@ public class SkeletonLoader {
         String nameId = jointNode.getAttribute("id");
         int index = boneOrder.indexOf(nameId);
         String[] matrixData = jointNode.getChild("matrix").getData().split(" ");
-        Matrix4f matrix = new Matrix4f();
-        matrix.get(convertData(matrixData));
+        Matrix4f matrix = convertData(matrixData);
         matrix.transpose();
         if (isRoot) {
             // TODO HEAL THIS
@@ -55,15 +54,25 @@ public class SkeletonLoader {
         return new JointData(index, nameId, matrix);
     }
 
-    private FloatBuffer convertData(String[] rawData) {
-        float[] matrixData = new float[16];
-        for (int i = 0; i < matrixData.length; i++) {
-            matrixData[i] = Float.parseFloat(rawData[i]);
-        }
-        FloatBuffer buffer = BufferUtils.createFloatBuffer(16);
-        buffer.put(matrixData);
-        buffer.flip();
-        return buffer;
+    private Matrix4f convertData(String[] rawData) {
+        return new Matrix4f(
+                Float.parseFloat(rawData[0]),
+                Float.parseFloat(rawData[1]),
+                Float.parseFloat(rawData[2]),
+                Float.parseFloat(rawData[3]),
+                Float.parseFloat(rawData[4]),
+                Float.parseFloat(rawData[5]),
+                Float.parseFloat(rawData[6]),
+                Float.parseFloat(rawData[7]),
+                Float.parseFloat(rawData[8]),
+                Float.parseFloat(rawData[9]),
+                Float.parseFloat(rawData[10]),
+                Float.parseFloat(rawData[11]),
+                Float.parseFloat(rawData[12]),
+                Float.parseFloat(rawData[13]),
+                Float.parseFloat(rawData[14]),
+                Float.parseFloat(rawData[15])
+        );
     }
 
 }

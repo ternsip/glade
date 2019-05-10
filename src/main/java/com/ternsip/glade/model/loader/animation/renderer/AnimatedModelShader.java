@@ -17,12 +17,6 @@ public class AnimatedModelShader extends ShaderProgram {
 	protected UniformMat4Array jointTransforms = new UniformMat4Array("jointTransforms", MAX_JOINTS);
 	private UniformSampler diffuseMap = new UniformSampler("diffuseMap");
 
-	/**
-	 * Creates the shader program for the {@link AnimatedModelRenderer} by
-	 * loading up the vertex and fragment shader code files. It also gets the
-	 * location of all the specified uniform variables, and also indicates that
-	 * the diffuse texture will be sampled from texture unit 0.
-	 */
 	public AnimatedModelShader() {
 		super(VERTEX_SHADER, FRAGMENT_SHADER, "in_position", "in_textureCoords", "in_normal", "in_jointIndices",
 				"in_weights");
@@ -30,9 +24,6 @@ public class AnimatedModelShader extends ShaderProgram {
 		connectTextureUnits();
 	}
 
-	/**
-	 * Indicates which texture unit the diffuse texture should be sampled from.
-	 */
 	private void connectTextureUnits() {
 		super.start();
 		diffuseMap.loadTexUnit(DIFFUSE_TEX_UNIT);

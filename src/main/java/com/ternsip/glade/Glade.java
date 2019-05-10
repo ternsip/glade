@@ -6,7 +6,6 @@ import com.ternsip.glade.model.loader.animation.loaders.AnimationLoader;
 import com.ternsip.glade.model.loader.animation.model.AnimatedModel;
 import com.ternsip.glade.model.loader.animation.animation.Animation;
 import com.ternsip.glade.model.loader.animation.loaders.AnimatedModelLoader;
-import com.ternsip.glade.model.loader.engine.render.RenderEngine;
 import com.ternsip.glade.model.loader.engine.scene.Scene;
 import com.ternsip.glade.model.parser.Model;
 import com.ternsip.glade.model.parser.ModelObject;
@@ -23,6 +22,7 @@ import static com.ternsip.glade.model.GLModel.SKIP_TEXTURE;
 import static com.ternsip.glade.utils.Maths.PI;
 
 // BE CAREFUL BUFFER FLIPS
+// TODO CHECKOUT BUFFERS (FLOATBUFFER ETC.) BECAUSE THEY ARE BUGGED
 public class Glade {
 
     public static final DisplayManager DISPLAY_MANAGER = new DisplayManager();
@@ -58,7 +58,6 @@ public class Glade {
         entity.doAnimation(animation);
         Scene scene = new Scene(entity, camera);
         scene.setLightDirection(new Vector3f(0.2f, -0.3f, -0.8f));
-        RenderEngine engine = RenderEngine.init();
 
         MasterRenderer renderer = new MasterRenderer(camera);
         renderer.processEntity(rover);
@@ -75,15 +74,14 @@ public class Glade {
             rover.move();
             camera.move();
             sun.move();
-            renderer.render(sun, camera);
+            renderer.render(sun, camera, scene);
 
             scene.getCamera().move();
             scene.getAnimatedModel().update();
-            engine.renderScene(scene);
 
         });
 
-        engine.close();
+        scene.getAnimatedModel().delete();
 
         renderer.cleanUp();
         DISPLAY_MANAGER.closeDisplay();

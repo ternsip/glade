@@ -6,13 +6,12 @@ import com.ternsip.glade.model.loader.parser.dataStructures.KeyFrameData;
 import com.ternsip.glade.model.loader.parser.xmlParser.XmlNode;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.lwjgl.BufferUtils;
 
-import java.nio.FloatBuffer;
 import java.util.List;
 
 public class AnimationLoader {
 
+    // TODO angle maybe -90
     private static final Matrix4f CORRECTION = new Matrix4f().rotate((float) Math.toRadians(-90), new Vector3f(1, 0, 0));
 
     private XmlNode animationData;
@@ -73,17 +72,25 @@ public class AnimationLoader {
     }
 
     private void processTransforms(String jointName, String[] rawData, KeyFrameData[] keyFrames, boolean root) {
-        FloatBuffer buffer = BufferUtils.createFloatBuffer(16);
-        float[] matrixData = new float[16];
         for (int i = 0; i < keyFrames.length; i++) {
-            for (int j = 0; j < 16; j++) {
-                matrixData[j] = Float.parseFloat(rawData[i * 16 + j]);
-            }
-            buffer.clear();
-            buffer.put(matrixData);
-            buffer.flip();
-            Matrix4f transform = new Matrix4f();
-            transform.get(buffer);
+            Matrix4f transform = new Matrix4f(
+                    Float.parseFloat(rawData[i * 16]),
+                    Float.parseFloat(rawData[i * 16 + 1]),
+                    Float.parseFloat(rawData[i * 16 + 2]),
+                    Float.parseFloat(rawData[i * 16 + 3]),
+                    Float.parseFloat(rawData[i * 16 + 4]),
+                    Float.parseFloat(rawData[i * 16 + 5]),
+                    Float.parseFloat(rawData[i * 16 + 6]),
+                    Float.parseFloat(rawData[i * 16 + 7]),
+                    Float.parseFloat(rawData[i * 16 + 8]),
+                    Float.parseFloat(rawData[i * 16 + 9]),
+                    Float.parseFloat(rawData[i * 16 + 10]),
+                    Float.parseFloat(rawData[i * 16 + 11]),
+                    Float.parseFloat(rawData[i * 16 + 12]),
+                    Float.parseFloat(rawData[i * 16 + 13]),
+                    Float.parseFloat(rawData[i * 16 + 14]),
+                    Float.parseFloat(rawData[i * 16 + 15])
+            );
             transform.transpose();
             if (root) {
                 // TODO HEAL THIS
