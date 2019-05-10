@@ -9,14 +9,23 @@ import com.ternsip.glade.model.parser.ModelObject;
 import com.ternsip.glade.model.parser.Parser;
 import com.ternsip.glade.renderer.MasterRenderer;
 import com.ternsip.glade.utils.DisplayManager;
+import com.ternsip.glade.utils.Utils;
 import lombok.SneakyThrows;
+import org.apache.commons.io.IOUtils;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.lwjgl.assimp.AIScene;
+import org.lwjgl.assimp.Assimp;
+import org.lwjgl.system.MemoryUtil;
 
 import java.io.File;
+import java.nio.ByteBuffer;
 
 import static com.ternsip.glade.model.GLModel.SKIP_TEXTURE;
 import static com.ternsip.glade.utils.Maths.PI;
+import static org.lwjgl.assimp.Assimp.aiImportFileEx;
+import static org.lwjgl.assimp.Assimp.aiProcess_JoinIdenticalVertices;
+import static org.lwjgl.assimp.Assimp.aiProcess_Triangulate;
 
 // BE CAREFUL BUFFER FLIPS
 // TODO CHECKOUT BUFFERS (FLOATBUFFER ETC.) BECAUSE THEY ARE BUGGED
@@ -54,6 +63,22 @@ public class Glade {
         //AnimatedModel skeletonModel = AnimatedModelLoader.loadEntity(new File("models/skeleton/skeleton.dae"), new File("models/boy/boy.png"), new File("models/skeleton/skeleton.dae"));
         //AnimatedModel microwaveModel = AnimatedModelLoader.loadEntity(new File("models/microwave/microwave.dae"), new File("models/microwave/microwave_col.png"), new File("models/microwave/microwave.dae"));
 
+
+        // Assimp here
+        byte[] _data = IOUtils.toByteArray(Utils.loadResourceAsStream(new File("models/spider/spider.dae")));
+        ByteBuffer data = MemoryUtil.memCalloc(_data.length);
+        data.put(_data);
+        data.flip();
+
+        AIScene scene = Assimp.aiImportFileFromMemory(
+                data,
+                Assimp.aiProcess_Triangulate |
+                        Assimp.aiProcess_ValidateDataStructure,
+                ""
+        );
+        scene.mNumMeshes();
+        MemoryUtil.memFree(data);
+
         MasterRenderer renderer = new MasterRenderer(camera);
         renderer.processEntity(rover);
         renderer.processEntity(cube);
@@ -67,7 +92,6 @@ public class Glade {
         //renderer.processEntity(skeletonModel);
         //renderer.processEntity(microwaveModel);
         renderer.processEntity(spiderModel);
-
 
         // TODO Check performance with runnable and without it
         DISPLAY_MANAGER.loop(() -> {
