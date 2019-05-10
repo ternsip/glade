@@ -48,6 +48,7 @@ public class Glade {
         Entity dude = new Entity(dudeModel, new Vector3f(-20, 0, -20), new Vector3f(0, 0, 0), new Vector3f(10, 10, 10));
 
         AnimatedModel boyModel = AnimatedModelLoader.loadEntity(new File("models/boy/boy.dae"), new File("models/boy/boy.png"), new File("models/boy/boy.dae"));
+        //AnimatedModel lampModel = AnimatedModelLoader.loadEntity(new File("models/lamp/lamp.dae"), new File("models/boy/boy.png"), new File("models/lamp/lamp.dae"));
         //AnimatedModel skeletonModel = AnimatedModelLoader.loadEntity(new File("models/skeleton/skeleton.dae"), new File("models/boy/boy.png"), new File("models/skeleton/skeleton.dae"));
 
         MasterRenderer renderer = new MasterRenderer(camera);
@@ -59,6 +60,7 @@ public class Glade {
         renderer.processEntity(house);
         renderer.processEntity(dude);
         renderer.processEntity(boyModel);
+        //renderer.processEntity(lampModel);
         //renderer.processEntity(skeletonModel);
 
 
