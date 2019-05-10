@@ -13,11 +13,10 @@ import java.nio.FloatBuffer;
 
 public abstract class ShaderProgram {
 
+    private static FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
     private int programID;
     private int vertexShaderID;
     private int fragmentShaderID;
-
-    private static FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
 
     public ShaderProgram(File vertexFile, File fragmentFile) {
         vertexShaderID = loadShader(vertexFile, GL20.GL_VERTEX_SHADER);
@@ -29,6 +28,33 @@ public abstract class ShaderProgram {
         GL20.glLinkProgram(programID);
         GL20.glValidateProgram(programID);
         getAllUniformLocations();
+    }
+
+    private static int loadShader(File file, int type) {
+        StringBuilder shaderSource = new StringBuilder();
+        InputStream in = Utils.loadResourceAsStream(file);
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                shaderSource.append(line).append("//\n");
+            }
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(-1);
+        }
+
+        int shaderID = GL20.glCreateShader(type);
+        GL20.glShaderSource(shaderID, shaderSource);
+        GL20.glCompileShader(shaderID);
+
+        if (GL20.glGetShaderi(shaderID, GL20.GL_COMPILE_STATUS) == GL11.GL_FALSE) {
+            System.out.println(GL20.glGetShaderInfoLog(shaderID, 500));
+            System.err.println("Could not compile shader!");
+            System.exit(-1);
+        }
+        return shaderID;
     }
 
     protected abstract void getAllUniformLocations();
@@ -84,33 +110,6 @@ public abstract class ShaderProgram {
         matrix.get(matrixBuffer);
         //matrixBuffer.flip();
         GL20.glUniformMatrix4fv(location, false, matrixBuffer);
-    }
-
-    private static int loadShader(File file, int type) {
-        StringBuilder shaderSource = new StringBuilder();
-        InputStream in = Utils.loadResourceAsStream(file);
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                shaderSource.append(line).append("//\n");
-            }
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.exit(-1);
-        }
-
-        int shaderID = GL20.glCreateShader(type);
-        GL20.glShaderSource(shaderID, shaderSource);
-        GL20.glCompileShader(shaderID);
-
-        if (GL20.glGetShaderi(shaderID, GL20.GL_COMPILE_STATUS) == GL11.GL_FALSE) {
-            System.out.println(GL20.glGetShaderInfoLog(shaderID, 500));
-            System.err.println("Could not compile shader!");
-            System.exit(-1);
-        }
-        return shaderID;
     }
 
 }

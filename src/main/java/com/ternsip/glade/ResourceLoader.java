@@ -47,7 +47,7 @@ public class ResourceLoader {
                     // TODO THIS IS INCORRECT
                     //https://community.khronos.org/t/vbo-gl-element-array-buffer-with-tex-uv-coords/56627
                     //http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-9-vbo-indexing/
-                    List<Short> refs = objFace.getReferences().stream().map(e -> (short)e.vertexIndex).collect(Collectors.toList());
+                    List<Short> refs = objFace.getReferences().stream().map(e -> (short) e.vertexIndex).collect(Collectors.toList());
                     List<Short> resRefs = new ArrayList<>(); // triangulated arr
                     for (int j = 1; j < refs.size() - 1; ++j) {
                         resRefs.add(refs.get(0));
@@ -64,7 +64,6 @@ public class ResourceLoader {
         }
         return new GLModel(vertices, normals, SKIP_ARRAY, textures, indicesArray, textureFile);
     }
-
 
 
 }

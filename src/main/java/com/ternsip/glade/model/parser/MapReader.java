@@ -1,11 +1,9 @@
 package com.ternsip.glade.model.parser;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.channels.ReadableByteChannel;
 
 /**
  * A reader which maps the entire file into memory. This is the reader which
@@ -43,7 +41,7 @@ public class MapReader implements TypeReader {
         StringBuilder sb = new StringBuilder(256);
         byte ch = buffer.get();
         while (ch != 0) {
-            sb.append((char)ch);
+            sb.append((char) ch);
             ch = buffer.get();
         }
         return sb.toString();

@@ -10,10 +10,8 @@ public class Joint {
     public final int index;// ID
     public final String name;
     public final List<Joint> children = new ArrayList<Joint>();
-
-    private Matrix4f animatedTransform = new Matrix4f();
-
     private final Matrix4f localBindTransform;
+    private Matrix4f animatedTransform = new Matrix4f();
     private Matrix4f inverseBindTransform = new Matrix4f();
 
     public Joint(int index, String name, Matrix4f bindLocalTransform) {

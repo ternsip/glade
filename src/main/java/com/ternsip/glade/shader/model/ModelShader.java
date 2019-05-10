@@ -3,7 +3,6 @@ package com.ternsip.glade.shader.model;
 import com.ternsip.glade.entity.Camera;
 import com.ternsip.glade.entity.Light;
 import com.ternsip.glade.shader.ShaderProgram;
-import com.ternsip.glade.utils.Maths;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 

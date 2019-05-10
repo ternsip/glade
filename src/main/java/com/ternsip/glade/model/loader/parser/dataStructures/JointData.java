@@ -1,33 +1,32 @@
 package com.ternsip.glade.model.loader.parser.dataStructures;
 
+import org.joml.Matrix4f;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.joml.Matrix4f;
 
 /**
  * Contains the extracted data for a single joint in the model. This stores the
  * joint's index, name, and local bind transform.
- * 
- * @author Karl
  *
+ * @author Karl
  */
 public class JointData {
 
-	public final int index;
-	public final String nameId;
-	public final Matrix4f bindLocalTransform;
+    public final int index;
+    public final String nameId;
+    public final Matrix4f bindLocalTransform;
 
-	public final List<JointData> children = new ArrayList<JointData>();
+    public final List<JointData> children = new ArrayList<JointData>();
 
-	public JointData(int index, String nameId, Matrix4f bindLocalTransform) {
-		this.index = index;
-		this.nameId = nameId;
-		this.bindLocalTransform = bindLocalTransform;
-	}
+    public JointData(int index, String nameId, Matrix4f bindLocalTransform) {
+        this.index = index;
+        this.nameId = nameId;
+        this.bindLocalTransform = bindLocalTransform;
+    }
 
-	public void addChild(JointData child) {
-		children.add(child);
-	}
+    public void addChild(JointData child) {
+        children.add(child);
+    }
 
 }

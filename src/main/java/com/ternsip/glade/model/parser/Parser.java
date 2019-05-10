@@ -16,6 +16,10 @@ public class Parser {
     private TypeReader reader;
     private ModelObject currentObject;
 
+    public Parser(TypeReader reader) {
+        this.reader = reader;
+    }
+
     @SneakyThrows
     public static Model load3dModel(File modelFile, File textureFile) {
         FileInputStream stream = Utils.loadResourceAsFileStream(modelFile);
@@ -29,10 +33,6 @@ public class Parser {
         } catch (IOException e) {
             throw new ParserException(e);
         }
-    }
-
-    public Parser(TypeReader reader) {
-        this.reader = reader;
     }
 
     public Model parseFile() throws ParserException {

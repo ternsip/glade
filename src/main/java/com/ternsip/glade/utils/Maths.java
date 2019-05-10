@@ -1,6 +1,5 @@
 package com.ternsip.glade.utils;
 
-import com.ternsip.glade.entity.Camera;
 import org.joml.*;
 
 import java.lang.Math;
@@ -140,6 +139,7 @@ public class Maths {
 
 
     // TODO PROBABLY ALREADY EXISTS (setFromUnnormalized)
+
     /**
      * Extracts the rotation part of a transformation matrix and converts it to
      * a quaternion using the magic of maths.

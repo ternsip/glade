@@ -1,13 +1,11 @@
 package com.ternsip.glade.model.loader.engine.globjects;
 
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL15;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import static com.ternsip.glade.utils.Utils.arrayToBuffer;
-import static com.ternsip.glade.utils.Utils.bufferToArray;
 
 public class Vbo {
 

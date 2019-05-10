@@ -22,7 +22,7 @@ public class Utils {
     }
 
     @SneakyThrows
-    public static FileInputStream  loadResourceAsFileStream(File file) {
+    public static FileInputStream loadResourceAsFileStream(File file) {
         URL resource = Utils.class.getClassLoader().getResource(file.getPath());
         if (resource == null) {
             throw new IllegalArgumentException("Can't find file: " + file.getPath());

@@ -12,10 +12,8 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class DisplayManager {
 
-    private ArrayList<Callback> callbacks = new ArrayList<>();
-
     private final int FPS_CAP = 120;
-
+    private ArrayList<Callback> callbacks = new ArrayList<>();
     private long lastFrameTime;
     private float fps;
     private long window;

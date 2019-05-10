@@ -1,6 +1,5 @@
 package com.ternsip.glade.model;
 
-import com.sun.prism.impl.BufferUtil;
 import com.ternsip.glade.utils.Utils;
 import de.matthiasmann.twl.utils.PNGDecoder;
 import lombok.Getter;
@@ -10,13 +9,9 @@ import org.lwjgl.opengl.GL11;
 
 import java.io.File;
 import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-import java.nio.ShortBuffer;
 
 import static com.ternsip.glade.utils.Utils.arrayToBuffer;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
-import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
@@ -90,41 +85,6 @@ public class GLModel {
         return vbo;
     }
 
-    public void render() {
-
-        if (texture != NO_TEXTURE) {
-            glBindTexture(GL_TEXTURE_2D, texture);
-        }
-
-        glBindVertexArray(vao);
-        if (vboVertices != NO_VBO) glEnableVertexAttribArray(VERTICES_ATTRIBUTE_POINTER_INDEX);
-        if (vboNormals != NO_VBO) glEnableVertexAttribArray(NORMALS_ATTRIBUTE_POINTER_INDEX);
-        if (vboColors != NO_VBO) glEnableVertexAttribArray(COLORS_ATTRIBUTE_POINTER_INDEX);
-        if (vboTextures != NO_VBO) glEnableVertexAttribArray(TEXTURES_ATTRIBUTE_POINTER_INDEX);
-
-        if (vboIndices == NO_VBO) {
-            glDrawArrays(GL11.GL_TRIANGLES, 0, indicesCount);
-        } else {
-            glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_SHORT, 0);
-        }
-
-        if (vboVertices != NO_VBO) glDisableVertexAttribArray(VERTICES_ATTRIBUTE_POINTER_INDEX);
-        if (vboNormals != NO_VBO) glDisableVertexAttribArray(NORMALS_ATTRIBUTE_POINTER_INDEX);
-        if (vboColors != NO_VBO) glDisableVertexAttribArray(COLORS_ATTRIBUTE_POINTER_INDEX);
-        if (vboTextures != NO_VBO) glDisableVertexAttribArray(TEXTURES_ATTRIBUTE_POINTER_INDEX);
-
-        glBindVertexArray(0);
-    }
-
-    void cleanUp() {
-        glDeleteVertexArrays(vao);
-        if (vboVertices != NO_VBO) glDeleteBuffers(vboVertices);
-        if (vboNormals != NO_VBO) glDeleteBuffers(vboNormals);
-        if (vboColors != NO_VBO) glDeleteBuffers(vboColors);
-        if (vboTextures != NO_VBO) glDeleteBuffers(vboTextures);
-        if (texture != NO_TEXTURE) glDeleteTextures(texture);
-    }
-
     @SneakyThrows
     public static int loadTexturePNG(File file) {
 
@@ -163,6 +123,41 @@ public class GLModel {
         glGenerateMipmap(GL_TEXTURE_2D);
 
         return id;
+    }
+
+    public void render() {
+
+        if (texture != NO_TEXTURE) {
+            glBindTexture(GL_TEXTURE_2D, texture);
+        }
+
+        glBindVertexArray(vao);
+        if (vboVertices != NO_VBO) glEnableVertexAttribArray(VERTICES_ATTRIBUTE_POINTER_INDEX);
+        if (vboNormals != NO_VBO) glEnableVertexAttribArray(NORMALS_ATTRIBUTE_POINTER_INDEX);
+        if (vboColors != NO_VBO) glEnableVertexAttribArray(COLORS_ATTRIBUTE_POINTER_INDEX);
+        if (vboTextures != NO_VBO) glEnableVertexAttribArray(TEXTURES_ATTRIBUTE_POINTER_INDEX);
+
+        if (vboIndices == NO_VBO) {
+            glDrawArrays(GL11.GL_TRIANGLES, 0, indicesCount);
+        } else {
+            glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_SHORT, 0);
+        }
+
+        if (vboVertices != NO_VBO) glDisableVertexAttribArray(VERTICES_ATTRIBUTE_POINTER_INDEX);
+        if (vboNormals != NO_VBO) glDisableVertexAttribArray(NORMALS_ATTRIBUTE_POINTER_INDEX);
+        if (vboColors != NO_VBO) glDisableVertexAttribArray(COLORS_ATTRIBUTE_POINTER_INDEX);
+        if (vboTextures != NO_VBO) glDisableVertexAttribArray(TEXTURES_ATTRIBUTE_POINTER_INDEX);
+
+        glBindVertexArray(0);
+    }
+
+    void cleanUp() {
+        glDeleteVertexArrays(vao);
+        if (vboVertices != NO_VBO) glDeleteBuffers(vboVertices);
+        if (vboNormals != NO_VBO) glDeleteBuffers(vboNormals);
+        if (vboColors != NO_VBO) glDeleteBuffers(vboColors);
+        if (vboTextures != NO_VBO) glDeleteBuffers(vboTextures);
+        if (texture != NO_TEXTURE) glDeleteTextures(texture);
     }
 
 }

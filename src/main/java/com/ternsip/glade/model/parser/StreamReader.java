@@ -26,6 +26,17 @@ public class StreamReader implements TypeReader {
         this.stream = new BufferedInputStream(stream);
     }
 
+    static private int makeInt(byte b3, byte b2, byte b1, byte b0) {
+        return (((b3) << 24) |
+                ((b2 & 0xff) << 16) |
+                ((b1 & 0xff) << 8) |
+                ((b0 & 0xff)));
+    }
+
+    static private short makeShort(byte b1, byte b0) {
+        return (short) ((b1 << 8) | (b0 & 0xff));
+    }
+
     public short getShort() throws IOException {
         byte b0 = getByte();
         byte b1 = getByte();
@@ -66,7 +77,7 @@ public class StreamReader implements TypeReader {
         StringBuilder sb = new StringBuilder(64);
         byte ch = getByte();
         while (ch != 0) {
-            sb.append((char)ch);
+            sb.append((char) ch);
             ch = getByte();
         }
         return sb.toString();
@@ -74,17 +85,6 @@ public class StreamReader implements TypeReader {
 
     public int position() {
         return position;
-    }
-
-    static private int makeInt(byte b3, byte b2, byte b1, byte b0) {
-        return (((b3       ) << 24) |
-                ((b2 & 0xff) << 16) |
-                ((b1 & 0xff) <<  8) |
-                ((b0 & 0xff)      ));
-    }
-
-    static private short makeShort(byte b1, byte b0) {
-        return (short)((b1 << 8) | (b0 & 0xff));
     }
 
 }

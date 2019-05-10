@@ -1,10 +1,6 @@
 package com.ternsip.glade.model.loader.parser.colladaLoader;
 
-import com.ternsip.glade.model.loader.parser.dataStructures.AnimatedModelData;
-import com.ternsip.glade.model.loader.parser.dataStructures.AnimationData;
-import com.ternsip.glade.model.loader.parser.dataStructures.MeshData;
-import com.ternsip.glade.model.loader.parser.dataStructures.SkeletonData;
-import com.ternsip.glade.model.loader.parser.dataStructures.SkinningData;
+import com.ternsip.glade.model.loader.parser.dataStructures.*;
 import com.ternsip.glade.model.loader.parser.xmlParser.XmlNode;
 import com.ternsip.glade.model.loader.parser.xmlParser.XmlParser;
 
@@ -12,28 +8,28 @@ import java.io.File;
 
 public class ColladaLoader {
 
-	public static AnimatedModelData loadColladaModel(File colladaFile, int maxWeights) {
-		XmlNode node = XmlParser.loadXmlFile(colladaFile);
+    public static AnimatedModelData loadColladaModel(File colladaFile, int maxWeights) {
+        XmlNode node = XmlParser.loadXmlFile(colladaFile);
 
-		SkinLoader skinLoader = new SkinLoader(node.getChild("library_controllers"), maxWeights);
-		SkinningData skinningData = skinLoader.extractSkinData();
+        SkinLoader skinLoader = new SkinLoader(node.getChild("library_controllers"), maxWeights);
+        SkinningData skinningData = skinLoader.extractSkinData();
 
-		SkeletonLoader jointsLoader = new SkeletonLoader(node.getChild("library_visual_scenes"), skinningData.jointOrder);
-		SkeletonData jointsData = jointsLoader.extractBoneData();
+        SkeletonLoader jointsLoader = new SkeletonLoader(node.getChild("library_visual_scenes"), skinningData.jointOrder);
+        SkeletonData jointsData = jointsLoader.extractBoneData();
 
-		GeometryLoader g = new GeometryLoader(node.getChild("library_geometries"), skinningData.verticesSkinData);
-		MeshData meshData = g.extractModelData();
+        GeometryLoader g = new GeometryLoader(node.getChild("library_geometries"), skinningData.verticesSkinData);
+        MeshData meshData = g.extractModelData();
 
-		return new AnimatedModelData(meshData, jointsData);
-	}
+        return new AnimatedModelData(meshData, jointsData);
+    }
 
-	public static AnimationData loadColladaAnimation(File colladaFile) {
-		XmlNode node = XmlParser.loadXmlFile(colladaFile);
-		XmlNode animNode = node.getChild("library_animations");
-		XmlNode jointsNode = node.getChild("library_visual_scenes");
-		AnimationLoader loader = new AnimationLoader(animNode, jointsNode);
-		AnimationData animData = loader.extractAnimation();
-		return animData;
-	}
+    public static AnimationData loadColladaAnimation(File colladaFile) {
+        XmlNode node = XmlParser.loadXmlFile(colladaFile);
+        XmlNode animNode = node.getChild("library_animations");
+        XmlNode jointsNode = node.getChild("library_visual_scenes");
+        AnimationLoader loader = new AnimationLoader(animNode, jointsNode);
+        AnimationData animData = loader.extractAnimation();
+        return animData;
+    }
 
 }

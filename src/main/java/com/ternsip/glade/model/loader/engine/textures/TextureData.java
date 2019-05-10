@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 public class TextureData {
 
     private final byte[] data;
-	private final int width;
-	private final int height;
+    private final int width;
+    private final int height;
 
 }

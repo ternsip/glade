@@ -5,20 +5,15 @@ import com.ternsip.glade.model.loader.parser.dataStructures.SkeletonData;
 import com.ternsip.glade.model.loader.parser.xmlParser.XmlNode;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.lwjgl.BufferUtils;
 
-import java.nio.FloatBuffer;
 import java.util.List;
 
 public class SkeletonLoader {
 
-    private XmlNode armatureData;
-
-    private List<String> boneOrder;
-
-    private int jointCount = 0;
-
     private static final Matrix4f CORRECTION = new Matrix4f().rotate((float) Math.toRadians(-90), new Vector3f(1, 0, 0));
+    private XmlNode armatureData;
+    private List<String> boneOrder;
+    private int jointCount = 0;
 
     public SkeletonLoader(XmlNode visualSceneNode, List<String> boneOrder) {
         this.armatureData = visualSceneNode.getChild("visual_scene").getChildWithAttribute("node", "id", "Armature");

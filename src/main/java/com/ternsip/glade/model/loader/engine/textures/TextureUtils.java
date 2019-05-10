@@ -4,7 +4,10 @@ import com.ternsip.glade.utils.Utils;
 import de.matthiasmann.twl.utils.PNGDecoder;
 import de.matthiasmann.twl.utils.PNGDecoder.Format;
 import lombok.SneakyThrows;
-import org.lwjgl.opengl.*;
+import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
+import org.lwjgl.opengl.GL12;
+import org.lwjgl.opengl.GL14;
+import org.lwjgl.opengl.GL30;
 
 import java.io.File;
 import java.nio.ByteBuffer;

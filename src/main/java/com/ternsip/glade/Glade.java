@@ -2,10 +2,10 @@ package com.ternsip.glade;
 
 import com.ternsip.glade.entity.*;
 import com.ternsip.glade.model.GLModel;
-import com.ternsip.glade.model.loader.animation.loaders.AnimationLoader;
-import com.ternsip.glade.model.loader.animation.model.AnimatedModel;
 import com.ternsip.glade.model.loader.animation.animation.Animation;
 import com.ternsip.glade.model.loader.animation.loaders.AnimatedModelLoader;
+import com.ternsip.glade.model.loader.animation.loaders.AnimationLoader;
+import com.ternsip.glade.model.loader.animation.model.AnimatedModel;
 import com.ternsip.glade.model.loader.engine.scene.Scene;
 import com.ternsip.glade.model.parser.Model;
 import com.ternsip.glade.model.parser.ModelObject;
@@ -63,7 +63,7 @@ public class Glade {
         renderer.processEntity(rover);
         renderer.processEntity(cube);
         for (ModelObject o : ship.objects) {
-            renderer.processEntity(new Entity(o.getGLModel(), new Vector3f(20, 0, 0), new Vector3f(0, 0, -4f*PI), new Vector3f(0.25f, 0.25f, 0.25f)));
+            renderer.processEntity(new Entity(o.getGLModel(), new Vector3f(20, 0, 0), new Vector3f(0, 0, -4f * PI), new Vector3f(0.25f, 0.25f, 0.25f)));
         }
         renderer.processEntity(house);
         renderer.processEntity(dude);
