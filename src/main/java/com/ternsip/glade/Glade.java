@@ -2,11 +2,8 @@ package com.ternsip.glade;
 
 import com.ternsip.glade.entity.*;
 import com.ternsip.glade.model.GLModel;
-import com.ternsip.glade.model.loader.animation.animation.Animation;
 import com.ternsip.glade.model.loader.animation.loaders.AnimatedModelLoader;
-import com.ternsip.glade.model.loader.animation.loaders.AnimationLoader;
 import com.ternsip.glade.model.loader.animation.model.AnimatedModel;
-import com.ternsip.glade.model.loader.engine.scene.Scene;
 import com.ternsip.glade.model.parser.Model;
 import com.ternsip.glade.model.parser.ModelObject;
 import com.ternsip.glade.model.parser.Parser;
@@ -50,11 +47,8 @@ public class Glade {
         GLModel dudeModel = ResourceLoader.loadObjModel(new File("models/dude/dude.obj"), new File("models/dude/dude.png"));
         Entity dude = new Entity(dudeModel, new Vector3f(-20, 0, -20), new Vector3f(0, 0, 0), new Vector3f(10, 10, 10));
 
-        File MODEL_FILE = new File("models/boy/boy.dae");
-        File ANIM_FILE = new File("models/boy/boy.dae");
-        File DIFFUSE_FILE = new File("models/boy/boy.png");
-        AnimatedModel entity = AnimatedModelLoader.loadEntity(MODEL_FILE, DIFFUSE_FILE, ANIM_FILE);
-        Scene scene = new Scene(entity, camera);
+        AnimatedModel boyModel = AnimatedModelLoader.loadEntity(new File("models/boy/boy.dae"), new File("models/boy/boy.png"), new File("models/boy/boy.dae"));
+        //AnimatedModel skeletonModel = AnimatedModelLoader.loadEntity(new File("models/skeleton/skeleton.dae"), new File("models/boy/boy.png"), new File("models/skeleton/skeleton.dae"));
 
         MasterRenderer renderer = new MasterRenderer(camera);
         renderer.processEntity(rover);
@@ -64,6 +58,8 @@ public class Glade {
         }
         renderer.processEntity(house);
         renderer.processEntity(dude);
+        renderer.processEntity(boyModel);
+        //renderer.processEntity(skeletonModel);
 
 
         // TODO Check performance with runnable and without it
@@ -71,14 +67,11 @@ public class Glade {
             rover.move();
             camera.move();
             sun.move();
-            renderer.render(sun, camera, scene);
-
-            scene.getCamera().move();
-            scene.getAnimatedModel().update();
+            renderer.render(sun, camera);
 
         });
 
-        scene.getAnimatedModel().delete();
+        boyModel.delete();// TODO make in automatic
 
         renderer.cleanUp();
         DISPLAY_MANAGER.closeDisplay();
