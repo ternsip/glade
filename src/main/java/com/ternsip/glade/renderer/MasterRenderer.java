@@ -47,7 +47,7 @@ public class MasterRenderer {
         GL11.glClearColor(SKY_COLOR.x(), SKY_COLOR.y(), SKY_COLOR.z(), 1);
         entityRenderer.render(entities, camera, sun);
         skyRenderer.render(sun, camera);
-        animatedModelRenderer.render(scene.getAnimatedModel(), scene.getCamera(), sun.getPosition().normalize().negate());
+        animatedModelRenderer.render(scene.getAnimatedModel(), scene.getCamera(), sun);
     }
 
     public void processEntity(Entity entity) {
