@@ -1,5 +1,6 @@
 package com.ternsip.glade.model.loader.animation.loaders;
 
+import com.ternsip.glade.model.GLModel;
 import com.ternsip.glade.model.loader.animation.model.AnimatedModel;
 import com.ternsip.glade.model.loader.animation.model.Joint;
 import com.ternsip.glade.model.loader.engine.globjects.Vao;
@@ -12,17 +13,20 @@ import com.ternsip.glade.model.loader.parser.dataStructures.SkeletonData;
 
 import java.io.File;
 
+import static com.ternsip.glade.model.GLModel.SKIP_ARRAY_FLOAT;
+
 public class AnimatedModelLoader {
 
     static int MAX_WEIGHTS = 3;
 
     public static AnimatedModel loadEntity(File modelFile, File textureFile) {
         AnimatedModelData entityData = ColladaLoader.loadColladaModel(modelFile, MAX_WEIGHTS);
-        Vao model = createVao(entityData.getMeshData());
         Texture texture = loadTexture(textureFile);
+        MeshData mesh = entityData.getMeshData();
+        GLModel model = new GLModel(mesh.getVertices(), mesh.getNormals(), SKIP_ARRAY_FLOAT, mesh.getTextureCoords(), mesh.getIndices(), mesh.getVertexWeights(), mesh.getJointIds(), textureFile);
         SkeletonData skeletonData = entityData.getJointsData();
         Joint headJoint = createJoints(skeletonData.headJoint);
-        return new AnimatedModel(model, texture, headJoint, skeletonData.jointCount);
+        return new AnimatedModel(model, headJoint, skeletonData.jointCount);
     }
 
     private static Texture loadTexture(File textureFile) {

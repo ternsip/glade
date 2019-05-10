@@ -18,8 +18,7 @@ public class AnimatedModelShader extends ShaderProgram {
     private UniformSampler diffuseMap = new UniformSampler("diffuseMap");
 
     public AnimatedModelShader() {
-        super(VERTEX_SHADER, FRAGMENT_SHADER, "in_position", "in_textureCoords", "in_normal", "in_jointIndices",
-                "in_weights");
+        super(VERTEX_SHADER, FRAGMENT_SHADER);
         super.storeAllUniformLocations(projectionViewMatrix, diffuseMap, lightDirection, jointTransforms);
         connectTextureUnits();
     }

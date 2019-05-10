@@ -87,7 +87,7 @@ public class GLModel {
         int vbo = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
         glBufferData(GL_ARRAY_BUFFER, arrayToBuffer(array), GL_STATIC_DRAW);
-        glVertexAttribPointer(index, nPerVertex, GL_INT, false, 0, 0);
+        glVertexAttribIPointer(index, nPerVertex, GL_INT, 0, 0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         return vbo;
     }
@@ -132,7 +132,7 @@ public class GLModel {
         glBindVertexArray(0);
     }
 
-    void cleanUp() {
+    public void cleanUp() {
         glDeleteVertexArrays(vao);
         if (vboVertices != NO_VBO) glDeleteBuffers(vboVertices);
         if (vboNormals != NO_VBO) glDeleteBuffers(vboNormals);

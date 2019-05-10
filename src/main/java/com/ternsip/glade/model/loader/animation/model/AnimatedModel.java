@@ -1,5 +1,6 @@
 package com.ternsip.glade.model.loader.animation.model;
 
+import com.ternsip.glade.model.GLModel;
 import com.ternsip.glade.model.loader.animation.animation.Animation;
 import com.ternsip.glade.model.loader.animation.animation.Animator;
 import com.ternsip.glade.model.loader.engine.globjects.Vao;
@@ -11,8 +12,7 @@ import org.joml.Matrix4f;
 public class AnimatedModel {
 
     // skin
-    private final Vao model;
-    private final Texture texture;
+    private final GLModel model;
 
     // skeleton
     private final Joint rootJoint;
@@ -20,9 +20,8 @@ public class AnimatedModel {
 
     private final Animator animator;
 
-    public AnimatedModel(Vao model, Texture texture, Joint rootJoint, int jointCount) {
+    public AnimatedModel(GLModel model, Joint rootJoint, int jointCount) {
         this.model = model;
-        this.texture = texture;
         this.rootJoint = rootJoint;
         this.jointCount = jointCount;
         this.animator = new Animator(this);
@@ -30,8 +29,7 @@ public class AnimatedModel {
     }
 
     public void delete() {
-        model.delete();
-        texture.delete();
+        model.cleanUp();
     }
 
     public void doAnimation(Animation animation) {

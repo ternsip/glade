@@ -2,53 +2,60 @@ package com.ternsip.glade.model.loader.engine.shaders;
 
 import com.ternsip.glade.utils.Utils;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20;
 
 import java.io.BufferedReader;
 import java.io.File;
+
+import static com.ternsip.glade.model.GLModel.*;
+import static com.ternsip.glade.model.GLModel.JOINTS_ATTRIBUTE_POINTER_INDEX;
+import static com.ternsip.glade.model.GLModel.WEIGHTS_ATTRIBUTE_POINTER_INDEX;
+import static org.lwjgl.opengl.GL20.*;
 
 public class ShaderProgram {
 
     private int programID;
 
-    public ShaderProgram(File vertexFile, File fragmentFile, String... inVariables) {
-        int vertexShaderID = loadShader(vertexFile, GL20.GL_VERTEX_SHADER);
-        int fragmentShaderID = loadShader(fragmentFile, GL20.GL_FRAGMENT_SHADER);
-        programID = GL20.glCreateProgram();
-        GL20.glAttachShader(programID, vertexShaderID);
-        GL20.glAttachShader(programID, fragmentShaderID);
-        bindAttributes(inVariables);
-        GL20.glLinkProgram(programID);
-        GL20.glDetachShader(programID, vertexShaderID);
-        GL20.glDetachShader(programID, fragmentShaderID);
-        GL20.glDeleteShader(vertexShaderID);
-        GL20.glDeleteShader(fragmentShaderID);
+    public ShaderProgram(File vertexFile, File fragmentFile) {
+        int vertexShaderID = loadShader(vertexFile, GL_VERTEX_SHADER);
+        int fragmentShaderID = loadShader(fragmentFile, GL_FRAGMENT_SHADER);
+        programID = glCreateProgram();
+        glAttachShader(programID, vertexShaderID);
+        glAttachShader(programID, fragmentShaderID);
+        bindAttributes();
+        glLinkProgram(programID);
+        glDetachShader(programID, vertexShaderID);
+        glDetachShader(programID, fragmentShaderID);
+        glDeleteShader(vertexShaderID);
+        glDeleteShader(fragmentShaderID);
     }
 
     protected void storeAllUniformLocations(Uniform... uniforms) {
         for (Uniform uniform : uniforms) {
             uniform.storeUniformLocation(programID);
         }
-        GL20.glValidateProgram(programID);
+        glValidateProgram(programID);
     }
 
     public void start() {
-        GL20.glUseProgram(programID);
+        glUseProgram(programID);
     }
 
     public void stop() {
-        GL20.glUseProgram(0);
+        glUseProgram(0);
     }
 
     public void cleanUp() {
         stop();
-        GL20.glDeleteProgram(programID);
+        glDeleteProgram(programID);
     }
 
-    private void bindAttributes(String[] inVariables) {
-        for (int i = 0; i < inVariables.length; i++) {
-            GL20.glBindAttribLocation(programID, i, inVariables[i]);
-        }
+    private void bindAttributes() {
+        glBindAttribLocation(programID, VERTICES_ATTRIBUTE_POINTER_INDEX, "in_position");
+        glBindAttribLocation(programID, TEXTURES_ATTRIBUTE_POINTER_INDEX, "in_textureCoords");
+        glBindAttribLocation(programID, NORMALS_ATTRIBUTE_POINTER_INDEX, "in_normal");
+        glBindAttribLocation(programID, JOINTS_ATTRIBUTE_POINTER_INDEX, "in_jointIndices");
+        glBindAttribLocation(programID, WEIGHTS_ATTRIBUTE_POINTER_INDEX, "in_weights");
+        glBindAttribLocation(programID, COLORS_ATTRIBUTE_POINTER_INDEX, "in_colors");
     }
 
     private int loadShader(File file, int type) {
@@ -65,11 +72,11 @@ public class ShaderProgram {
             e.printStackTrace();
             System.exit(-1);
         }
-        int shaderID = GL20.glCreateShader(type);
-        GL20.glShaderSource(shaderID, shaderSource);
-        GL20.glCompileShader(shaderID);
-        if (GL20.glGetShaderi(shaderID, GL20.GL_COMPILE_STATUS) == GL11.GL_FALSE) {
-            System.out.println(GL20.glGetShaderInfoLog(shaderID, 500));
+        int shaderID = glCreateShader(type);
+        glShaderSource(shaderID, shaderSource);
+        glCompileShader(shaderID);
+        if (glGetShaderi(shaderID, GL_COMPILE_STATUS) == GL11.GL_FALSE) {
+            System.out.println(glGetShaderInfoLog(shaderID, 500));
             System.err.println("Could not compile shader " + file);
             System.exit(-1);
         }
