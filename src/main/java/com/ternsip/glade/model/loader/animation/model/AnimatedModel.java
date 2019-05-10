@@ -3,8 +3,6 @@ package com.ternsip.glade.model.loader.animation.model;
 import com.ternsip.glade.model.GLModel;
 import com.ternsip.glade.model.loader.animation.animation.Animation;
 import com.ternsip.glade.model.loader.animation.animation.Animator;
-import com.ternsip.glade.model.loader.engine.globjects.Vao;
-import com.ternsip.glade.model.loader.engine.textures.Texture;
 import lombok.Getter;
 import org.joml.Matrix4f;
 
@@ -20,20 +18,17 @@ public class AnimatedModel {
 
     private final Animator animator;
 
-    public AnimatedModel(GLModel model, Joint rootJoint, int jointCount) {
+    public AnimatedModel(GLModel model, Joint rootJoint, int jointCount, Animation animation) {
         this.model = model;
         this.rootJoint = rootJoint;
         this.jointCount = jointCount;
         this.animator = new Animator(this);
         rootJoint.calcInverseBindTransform(new Matrix4f());
+        animator.doAnimation(animation);
     }
 
     public void delete() {
         model.cleanUp();
-    }
-
-    public void doAnimation(Animation animation) {
-        animator.doAnimation(animation);
     }
 
     public void update() {

@@ -10,14 +10,14 @@ import java.util.Map;
 
 public class Animator {
 
-    private final AnimatedModel entity;
+    private final AnimatedModel animatedModel;
 
     private Animation currentAnimation;
     private float animationTime = 0;
 
 
-    public Animator(AnimatedModel entity) {
-        this.entity = entity;
+    public Animator(AnimatedModel animatedModel) {
+        this.animatedModel = animatedModel;
     }
 
 
@@ -33,7 +33,7 @@ public class Animator {
         }
         increaseAnimationTime();
         Map<String, Matrix4f> currentPose = calculateCurrentAnimationPose();
-        applyPoseToJoints(currentPose, entity.getRootJoint(), new Matrix4f());
+        applyPoseToJoints(currentPose, animatedModel.getRootJoint(), new Matrix4f());
     }
 
     private void increaseAnimationTime() {

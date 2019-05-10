@@ -53,11 +53,8 @@ public class Glade {
         File MODEL_FILE = new File("models/boy/boy.dae");
         File ANIM_FILE = new File("models/boy/boy.dae");
         File DIFFUSE_FILE = new File("models/boy/boy.png");
-        AnimatedModel entity = AnimatedModelLoader.loadEntity(MODEL_FILE, DIFFUSE_FILE);
-        Animation animation = AnimationLoader.loadAnimation(ANIM_FILE);
-        entity.doAnimation(animation);
+        AnimatedModel entity = AnimatedModelLoader.loadEntity(MODEL_FILE, DIFFUSE_FILE, ANIM_FILE);
         Scene scene = new Scene(entity, camera);
-        scene.setLightDirection(new Vector3f(0.2f, -0.3f, -0.8f));
 
         MasterRenderer renderer = new MasterRenderer(camera);
         renderer.processEntity(rover);

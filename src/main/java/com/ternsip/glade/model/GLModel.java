@@ -1,6 +1,7 @@
 package com.ternsip.glade.model;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.lwjgl.opengl.GL11;
 
