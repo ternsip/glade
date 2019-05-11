@@ -163,9 +163,10 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
                 maxKeyFrameLength = Math.max(jointTransforms.size(), maxKeyFrameLength);
                 jointNameToTransforms.put(jointName, jointTransforms);
             }
+
             KeyFrame[] keyFrames = new KeyFrame[maxKeyFrameLength];
             float duration = (float)aiAnimation.mDuration();
-            float deltaTime = duration / maxKeyFrameLength; // TODO check this, probably bug
+            float deltaTime = maxKeyFrameLength == 1 ? duration : (duration / (maxKeyFrameLength - 1));
             for (int j = 0; j < keyFrames.length; ++j) {
                 Map<String, JointTransform> localMap = new HashMap<>();
                 for (Map.Entry<String, List<JointTransform>> entry : jointNameToTransforms.entrySet()) {
@@ -173,6 +174,7 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
                 }
                 keyFrames[j] = new KeyFrame(deltaTime * j, localMap);
             }
+
             AnimationI animation = new AnimationI(duration, keyFrames);
             animations.put(aiAnimation.mName().dataString(), animation);
         }
