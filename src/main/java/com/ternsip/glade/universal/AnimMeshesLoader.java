@@ -30,30 +30,24 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
         List<JointTransform> jointTransforms = new ArrayList<>();
         for (int i = 0; i < numFrames; i++) {
             AIVector3D vec =  positionKeys.get(i).mValue();
-            Matrix4f transfMat = new Matrix4f().translate(vec.x(), vec.y(), vec.z());
+            Matrix4f mat = new Matrix4f().translate(vec.x(), vec.y(), vec.z());
             AIQuaternion aiQuat = rotationKeys.get(i).mValue();
             Quaternionf quat = new Quaternionf(aiQuat.x(), aiQuat.y(), aiQuat.z(), aiQuat.w());
-            transfMat.rotate(quat);
+            mat.rotate(quat);
             Vector3f scale = new Vector3f(1, 1, 1);
             if (i < aiNodeAnim.mNumScalingKeys()) {
                 AIVector3D aiVScale = scalingKeys.get(i).mValue();
                 scale.set(aiVScale.x(), aiVScale.y(), aiVScale.z());
             }
-            jointTransforms.add(createTransform(transfMat, scale));
+            Vector3f translation = new Vector3f(mat.m30(), mat.m31(), mat.m32());
+            Quaternionfc rotation = Maths.fromMatrix(mat);
+            jointTransforms.add(new JointTransform(translation, scale, rotation));
 
         }
         return jointTransforms;
     }
 
-    public static JointTransform createTransform(Matrix4f mat, Vector3f scale) {
-        // TODO try to wrap this
-        Vector3f translation = new Vector3f(mat.m30(), mat.m31(), mat.m32());
-        Quaternionfc rotation = Maths.fromMatrix(mat);
-        return new JointTransform(translation, scale, rotation);
-    }
-
     public static AnimGameItem loadAnimGameItem(File meshFile, File animationFile, File texturesDir) {
-        //return loadAnimGameItem(meshFile, animationFile, texturesDir, 0);
         return loadAnimGameItem(meshFile, animationFile, texturesDir,
                 aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate
                         | aiProcess_FixInfacingNormals | aiProcess_LimitBoneWeights);
