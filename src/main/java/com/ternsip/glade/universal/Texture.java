@@ -54,10 +54,7 @@ public class Texture {
     @SneakyThrows
     public Texture(File file) {
         // TODO MAKE better
-        this(Utils.ioResourceToByteBuffer(file, 1024));
-    }
-
-    public Texture(ByteBuffer imageData) {
+        ByteBuffer imageData = Utils.ioResourceToByteBuffer(file);
         try (MemoryStack stack = stackPush()) {
             IntBuffer w = stack.mallocInt(1);
             IntBuffer h = stack.mallocInt(1);
@@ -69,7 +66,7 @@ public class Texture {
             this.width = w.get();
             this.height = h.get();
 
-            // Create a new OpenGL texture 
+            // Create a new OpenGL texture
             this.id = glGenTextures();
             // Bind the texture
             glBindTexture(GL_TEXTURE_2D, this.id);

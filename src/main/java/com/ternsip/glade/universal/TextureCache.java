@@ -21,11 +21,15 @@ public class TextureCache {
         return INSTANCE;
     }
 
-    public Texture getTexture(File file) throws Exception {
+    public Texture getTexture(File file) {
         Texture texture = texturesMap.get(file.getPath());
         if (texture == null) {
-            texture = new Texture(file);
-            texturesMap.put(file.getPath(), texture);
+            try {
+                texture = new Texture(file);
+                texturesMap.put(file.getPath(), texture);
+            } catch (Exception e) {
+                System.out.println(e.getMessage()); // TODO to logs
+            }
         }
         return texture;
     }

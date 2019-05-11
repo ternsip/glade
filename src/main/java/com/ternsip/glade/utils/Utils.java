@@ -17,10 +17,11 @@ import java.nio.charset.StandardCharsets;
 
 public class Utils {
 
+    @SneakyThrows
     public static InputStream loadResourceAsStream(File file) {
         InputStream in = Utils.class.getClassLoader().getResourceAsStream(file.getPath());
         if (in == null) {
-            throw new IllegalArgumentException("Can't find file: " + file.getPath());
+            throw new FileNotFoundException("Can't find file: " + file.getPath());
         }
         return in;
     }
@@ -105,6 +106,11 @@ public class Utils {
         buf.put(array);
         buf.flip();
         return buf.asReadOnlyBuffer();
+    }
+
+    @SneakyThrows
+    public static byte[] loadResouceAsByteArray(File file) {
+        return IOUtils.toByteArray(loadResourceAsStream(file));
     }
 
 }

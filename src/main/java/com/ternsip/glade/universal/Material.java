@@ -25,7 +25,11 @@ public class Material {
 
     public Material(File textureFile) {
         if (textureFile != SKIP_TEXTURE) {
-            texture = new Texture(textureFile);
+            try {
+                texture = new Texture(textureFile);
+            } catch (Exception e) {
+                System.out.println(e.getMessage()); // TODO to logs
+            }
         }
     }
 

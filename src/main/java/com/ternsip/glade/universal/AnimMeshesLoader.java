@@ -153,7 +153,7 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
 
             // Turn jointNameToTransforms to KeyFrames
             KeyFrame[] keyFrames = new KeyFrame[maxKeyFrameLength];
-            float ticksPerSecond = (float)aiAnimation.mTicksPerSecond();
+            float ticksPerSecond = (float) aiAnimation.mTicksPerSecond();
             float duration = (float) aiAnimation.mDuration() / ticksPerSecond;
             float deltaTime = maxKeyFrameLength == 1 ? duration : (duration / (maxKeyFrameLength - 1));
             for (int j = 0; j < keyFrames.length; ++j) {
