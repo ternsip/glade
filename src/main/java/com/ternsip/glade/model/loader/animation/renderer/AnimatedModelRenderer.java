@@ -26,6 +26,7 @@ public class AnimatedModelRenderer {
     public void render(AnimGameItem animGameItem, Camera camera, Sun sun) {
         shader.start();
         Matrix4f[] jointTransforms = animGameItem.getAnimator().getJointTransforms();
+        //jointTransforms = new Matrix4f[0];
         shader.animated.loadBoolean(jointTransforms.length > 0);
         shader.projectionViewMatrix.loadMatrix(camera.getProjectionViewMatrix());
         shader.lightDirection.loadVec3(sun.getPosition().normalize().negate());

@@ -4,9 +4,10 @@ import com.ternsip.glade.model.loader.engine.shaders.*;
 
 import java.io.File;
 
+import static com.ternsip.glade.universal.AnimatedFrame.MAX_JOINTS;
+
 public class AnimatedModelShader extends ShaderProgram {
 
-    private static final int MAX_JOINTS = 150;// max number of joints in a skeleton
     private static final int DIFFUSE_TEX_UNIT = 0;
 
     private static final File VERTEX_SHADER = new File("shaders/anim/animatedEntityVertex.glsl");

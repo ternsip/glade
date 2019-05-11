@@ -72,6 +72,17 @@ public class Mesh {
             Material material
     ) {
         indicesCount = indices == SKIP_ARRAY_INT ? vertices.length / 3 : indices.length;
+
+        if (textures.length == 0) {
+            textures = new float[vertices.length];
+        }
+
+        assert vertices.length == normals.length;
+        assert vertices.length == textures.length;
+        assert vertices.length == weights.length;
+        assert vertices.length == joints.length;
+
+
         this.material = material;
         vao = glGenVertexArrays();
         glBindVertexArray(vao);

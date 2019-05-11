@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 public class AnimatedFrame {
 
-    public static final int MAX_JOINTS = 150;
+    public static final int MAX_JOINTS = 180;
     private static final Matrix4f IDENTITY_MATRIX = new Matrix4f();
     private final Matrix4f[] jointMatrices;
 

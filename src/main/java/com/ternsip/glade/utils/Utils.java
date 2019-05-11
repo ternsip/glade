@@ -13,7 +13,10 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+
+import static org.lwjgl.assimp.Assimp.aiGetErrorString;
 
 public class Utils {
 
@@ -49,6 +52,9 @@ public class Utils {
         data.flip();
         AIScene scene = Assimp.aiImportFileFromMemory(data, flags, "");
         MemoryUtil.memFree(data);
+        if (scene == null) {
+            throw new IllegalStateException(aiGetErrorString());
+        }
         return scene;
     }
 
