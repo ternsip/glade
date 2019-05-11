@@ -3,7 +3,6 @@ package com.ternsip.glade.renderer;
 import com.ternsip.glade.entity.Camera;
 import com.ternsip.glade.entity.Entity;
 import com.ternsip.glade.entity.Sun;
-import com.ternsip.glade.model.loader.animation.model.AnimatedModel;
 import com.ternsip.glade.model.loader.animation.renderer.AnimatedModelRenderer;
 import com.ternsip.glade.sky.SkyRenderer;
 import com.ternsip.glade.universal.AnimGameItem;
@@ -20,7 +19,6 @@ public class MasterRenderer {
     private EntityRenderer entityRenderer;
 
     private List<Entity> entities = new ArrayList<>();
-    private List<AnimatedModel> animatedModels = new ArrayList<>();
     private List<AnimGameItem> animGameItems = new ArrayList<>();
 
     private SkyRenderer skyRenderer;
@@ -50,15 +48,11 @@ public class MasterRenderer {
         GL11.glClearColor(SKY_COLOR.x(), SKY_COLOR.y(), SKY_COLOR.z(), 1);
         entityRenderer.render(entities, camera, sun);
         skyRenderer.render(sun, camera);
-        animatedModelRenderer.render(animatedModels, animGameItems, camera, sun);
+        animatedModelRenderer.render(animGameItems, camera, sun);
     }
 
     public void processEntity(Entity entity) {
         entities.add(entity);
-    }
-
-    public void processEntity(AnimatedModel animatedModel) {
-        animatedModels.add(animatedModel);
     }
 
     public void processEntity(AnimGameItem animGameItem) {
@@ -69,6 +63,7 @@ public class MasterRenderer {
         entityRenderer.cleanUp();
         skyRenderer.cleanUp();
         animatedModelRenderer.cleanUp();
+        // TODO cleanup entities
     }
 
 

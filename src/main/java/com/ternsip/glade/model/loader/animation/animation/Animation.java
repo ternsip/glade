@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public class AnimationI {
+public class Animation {
 
     private final double length; // In seconds
     private final KeyFrame[] keyFrames;

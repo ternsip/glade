@@ -1,7 +1,7 @@
 package com.ternsip.glade.entity;
 
 
-import com.ternsip.glade.model.GLModel;
+import com.ternsip.glade.model.Mesh;
 import com.ternsip.glade.utils.Maths;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,7 +16,7 @@ import org.joml.Vector3f;
 @Setter
 public class Entity {
 
-    private GLModel model;
+    private Mesh model;
     private Vector3f position;
     private Vector3f rotation;
     private Vector3f scale;

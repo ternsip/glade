@@ -6,9 +6,9 @@ import org.lwjgl.opengl.GL11;
 import java.io.BufferedReader;
 import java.io.File;
 
-import static com.ternsip.glade.model.GLModel.*;
-import static com.ternsip.glade.model.GLModel.JOINTS_ATTRIBUTE_POINTER_INDEX;
-import static com.ternsip.glade.model.GLModel.WEIGHTS_ATTRIBUTE_POINTER_INDEX;
+import static com.ternsip.glade.model.Mesh.*;
+import static com.ternsip.glade.model.Mesh.JOINTS_ATTRIBUTE_POINTER_INDEX;
+import static com.ternsip.glade.model.Mesh.WEIGHTS_ATTRIBUTE_POINTER_INDEX;
 import static org.lwjgl.opengl.GL20.*;
 
 public class ShaderProgram {

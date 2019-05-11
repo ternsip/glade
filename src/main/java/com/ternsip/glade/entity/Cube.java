@@ -1,13 +1,13 @@
 package com.ternsip.glade.entity;
 
 
-import com.ternsip.glade.model.GLModel;
+import com.ternsip.glade.model.Mesh;
 import com.ternsip.glade.universal.Material;
 
 import java.io.File;
 
-import static com.ternsip.glade.model.GLModel.SKIP_ARRAY_FLOAT;
-import static com.ternsip.glade.model.GLModel.SKIP_ARRAY_INT;
+import static com.ternsip.glade.model.Mesh.SKIP_ARRAY_FLOAT;
+import static com.ternsip.glade.model.Mesh.SKIP_ARRAY_INT;
 
 public class Cube {
 
@@ -73,8 +73,8 @@ public class Cube {
             20, 21, 22, 22, 23, 20     // v4-v7-v6, v6-v5-v4 (back)
     };
 
-    public static GLModel generateGLModel() {
-        return new GLModel(VERTICES, NORMALS, TEXCOORDS, INDICES, SKIP_ARRAY_FLOAT, SKIP_ARRAY_INT, new Material(new File("models/others/stall.png")));
+    public static Mesh generateMesh() {
+        return new Mesh(VERTICES, NORMALS, TEXCOORDS, INDICES, SKIP_ARRAY_FLOAT, SKIP_ARRAY_INT, new Material(new File("models/others/stall.png")));
     }
 
 }

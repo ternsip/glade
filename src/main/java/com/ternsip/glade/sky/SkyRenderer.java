@@ -2,13 +2,13 @@ package com.ternsip.glade.sky;
 
 import com.ternsip.glade.entity.Camera;
 import com.ternsip.glade.entity.Sun;
-import com.ternsip.glade.model.GLModel;
+import com.ternsip.glade.model.Mesh;
 import com.ternsip.glade.shader.sky.SkyboxShader;
 import com.ternsip.glade.universal.Material;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-import static com.ternsip.glade.model.GLModel.*;
+import static com.ternsip.glade.model.Mesh.*;
 
 public class SkyRenderer {
 
@@ -60,11 +60,11 @@ public class SkyRenderer {
             SIZE, -SIZE, SIZE
     };
 
-    private GLModel skyBox;
+    private Mesh skyBox;
     private SkyboxShader skyboxShader;
 
     public SkyRenderer(Matrix4f projectionMatrix) {
-        skyBox = new GLModel(VERTICES, SKIP_ARRAY_FLOAT, SKIP_ARRAY_FLOAT, SKIP_ARRAY_INT, SKIP_ARRAY_FLOAT, SKIP_ARRAY_INT, new Material(SKIP_TEXTURE));
+        skyBox = new Mesh(VERTICES, SKIP_ARRAY_FLOAT, SKIP_ARRAY_FLOAT, SKIP_ARRAY_INT, SKIP_ARRAY_FLOAT, SKIP_ARRAY_INT, new Material(SKIP_TEXTURE));
         skyboxShader = new SkyboxShader();
         skyboxShader.start();
         skyboxShader.loadProjectionMatrix(projectionMatrix);

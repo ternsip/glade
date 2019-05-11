@@ -1,6 +1,6 @@
 package com.ternsip.glade.entity;
 
-import com.ternsip.glade.model.GLModel;
+import com.ternsip.glade.model.Mesh;
 import com.ternsip.glade.universal.GameItem;
 import org.joml.Vector3f;
 
@@ -19,7 +19,7 @@ public class Rover extends Entity {
 
     private GameItem gameItem;
 
-    public Rover(GameItem gameItem, GLModel model, Vector3f position, Vector3f rotation, Vector3f scale) {
+    public Rover(GameItem gameItem, Mesh model, Vector3f position, Vector3f rotation, Vector3f scale) {
         super(model, position, rotation, scale);
         this.gameItem = gameItem;
     }

@@ -7,7 +7,7 @@ import org.joml.Vector3f;
 
 import java.io.File;
 
-import static com.ternsip.glade.model.GLModel.VERTICES_ATTRIBUTE_POINTER_INDEX;
+import static com.ternsip.glade.model.Mesh.VERTICES_ATTRIBUTE_POINTER_INDEX;
 
 
 public class SkyboxShader extends ShaderProgram {

@@ -20,7 +20,7 @@ import static org.lwjgl.opengl.GL30.*;
 @Getter
 @Setter
 // TODO rename to Mesh
-public class GLModel {
+public class Mesh {
 
     public static final int MAX_WEIGHTS = 3;
 
@@ -47,7 +47,7 @@ public class GLModel {
     private int vboWeights;
     private int vboJoints;
 
-    public GLModel(
+    public Mesh(
             float[] vertices,
             float[] normals,
             float[] textures,

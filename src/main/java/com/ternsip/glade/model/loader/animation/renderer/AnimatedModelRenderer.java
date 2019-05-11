@@ -2,12 +2,9 @@ package com.ternsip.glade.model.loader.animation.renderer;
 
 import com.ternsip.glade.entity.Camera;
 import com.ternsip.glade.entity.Sun;
-import com.ternsip.glade.model.GLModel;
-import com.ternsip.glade.model.loader.animation.model.AnimatedModel;
+import com.ternsip.glade.model.Mesh;
 import com.ternsip.glade.model.loader.engine.utils.OpenGlUtils;
 import com.ternsip.glade.universal.AnimGameItem;
-import com.ternsip.glade.universal.Mesh;
-import org.joml.Matrix4f;
 
 import java.util.List;
 
@@ -19,27 +16,10 @@ public class AnimatedModelRenderer {
         this.shader = new AnimatedModelShader();
     }
 
-    public void render(List<AnimatedModel> animatedModels, List<AnimGameItem> animGameItems, Camera camera, Sun sun) {
-        for (AnimatedModel animatedModel : animatedModels) {
-            render(animatedModel, camera, sun);
-        }
+    public void render(List<AnimGameItem> animGameItems, Camera camera, Sun sun) {
         for (AnimGameItem animGameItem : animGameItems) {
             render(animGameItem, camera, sun);
         }
-    }
-
-    public void render(AnimatedModel animatedModel, Camera camera, Sun sun) {
-        shader.start();
-        shader.projectionViewMatrix.loadMatrix(camera.getProjectionViewMatrix());
-        shader.lightDirection.loadVec3(sun.getPosition().normalize().negate());
-        shader.jointTransforms.loadMatrixArray(animatedModel.getAnimator().getJointTransforms()); // TODO ANALOG
-        shader.transformationMatrix.loadMatrix(new Matrix4f()); // TODO ANALOG
-        OpenGlUtils.antialias(true);
-        OpenGlUtils.disableBlending();
-        OpenGlUtils.enableDepthTesting(true);
-        animatedModel.getModel().render();
-        shader.stop();
-        animatedModel.getAnimator().update();
     }
 
     public void render(AnimGameItem animGameItem, Camera camera, Sun sun) {
@@ -51,7 +31,7 @@ public class AnimatedModelRenderer {
         OpenGlUtils.antialias(true);
         OpenGlUtils.disableBlending();
         OpenGlUtils.enableDepthTesting(true);
-        for (GLModel mesh : animGameItem.getMeshes()) {
+        for (Mesh mesh : animGameItem.getMeshes()) {
             mesh.render();
         }
         shader.stop();

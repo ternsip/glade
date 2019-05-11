@@ -2,7 +2,7 @@ package com.ternsip.glade;
 
 
 import com.mokiat.data.front.parser.*;
-import com.ternsip.glade.model.GLModel;
+import com.ternsip.glade.model.Mesh;
 import com.ternsip.glade.universal.Material;
 import com.ternsip.glade.utils.Utils;
 import lombok.SneakyThrows;
@@ -12,13 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.ternsip.glade.model.GLModel.SKIP_ARRAY_FLOAT;
-import static com.ternsip.glade.model.GLModel.SKIP_ARRAY_INT;
+import static com.ternsip.glade.model.Mesh.SKIP_ARRAY_FLOAT;
+import static com.ternsip.glade.model.Mesh.SKIP_ARRAY_INT;
 
 public class ResourceLoader {
 
     @SneakyThrows
-    public static GLModel loadObjModel(File modelFile, File textureFile) {
+    public static Mesh loadObjModel(File modelFile, File textureFile) {
         final IOBJParser parser = new OBJParser();
         final OBJModel model = parser.parse(Utils.loadResourceAsStream(modelFile));
         List<OBJVertex> oVertices = model.getVertices();
@@ -64,7 +64,7 @@ public class ResourceLoader {
         for (int i = 0; i < indices.size(); ++i) {
             indicesArray[i] = indices.get(i);
         }
-        return new GLModel(vertices, normals, textures, indicesArray, SKIP_ARRAY_FLOAT, SKIP_ARRAY_INT, new Material(textureFile));
+        return new Mesh(vertices, normals, textures, indicesArray, SKIP_ARRAY_FLOAT, SKIP_ARRAY_INT, new Material(textureFile));
     }
 
 

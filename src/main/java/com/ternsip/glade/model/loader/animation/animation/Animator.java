@@ -1,6 +1,5 @@
 package com.ternsip.glade.model.loader.animation.animation;
 
-import com.ternsip.glade.model.loader.animation.model.AnimatedModel;
 import com.ternsip.glade.model.loader.animation.model.Joint;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +17,7 @@ public class Animator {
     private Joint rootJoint;
     private int jointCount;
 
-    private AnimationI currentAnimation;
+    private Animation currentAnimation;
     private float animationTime = 0;
 
 
@@ -28,7 +27,7 @@ public class Animator {
     }
 
 
-    public void doAnimation(AnimationI animation) {
+    public void doAnimation(Animation animation) {
         this.animationTime = 0;
         this.currentAnimation = animation;
     }

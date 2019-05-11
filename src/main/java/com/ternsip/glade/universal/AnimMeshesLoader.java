@@ -1,23 +1,21 @@
 package com.ternsip.glade.universal;
 
-import com.ternsip.glade.model.GLModel;
-import com.ternsip.glade.model.loader.animation.animation.AnimationI;
+import com.ternsip.glade.model.Mesh;
+import com.ternsip.glade.model.loader.animation.animation.Animation;
 import com.ternsip.glade.model.loader.animation.animation.JointTransform;
 import com.ternsip.glade.model.loader.animation.animation.KeyFrame;
 import com.ternsip.glade.model.loader.animation.model.Joint;
+import com.ternsip.glade.utils.Maths;
 import lombok.SneakyThrows;
-import org.joml.Matrix4f;
-import org.joml.Matrix4fc;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
+import org.joml.*;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
 
 import java.io.File;
+import java.lang.Math;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.ternsip.glade.model.loader.animation.loaders.AnimationLoader.createTransform;
 import static com.ternsip.glade.utils.Utils.loadResourceAsAssimp;
 import static org.lwjgl.assimp.Assimp.*;
 
@@ -63,6 +61,14 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
         return jointTransforms;
     }
 
+    public static JointTransform createTransform(Matrix4f mat) {
+        // TODO try to wrap this
+        Vector3f translation = new Vector3f(mat.m30(), mat.m31(), mat.m32());
+        Vector3f scaling = new Vector3f(mat.m00(), mat.m11(), mat.m33());
+        Quaternionfc rotation = Maths.fromMatrix(mat);
+        return new JointTransform(translation, scaling, rotation);
+    }
+
     public static AnimGameItem loadAnimGameItem(File meshFile, File animationFile, File texturesDir) {
         //return loadAnimGameItem(meshFile, animationFile, texturesDir, 0);
         return loadAnimGameItem(meshFile, animationFile, texturesDir,
@@ -86,10 +92,10 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
         List<Bone> boneList = new ArrayList<>();
         int numMeshes = aiSceneMesh.mNumMeshes();
         PointerBuffer aiMeshes = aiSceneMesh.mMeshes();
-        GLModel[] meshes = new GLModel[numMeshes];
+        Mesh[] meshes = new Mesh[numMeshes];
         for (int i = 0; i < numMeshes; i++) {
             AIMesh aiMesh = AIMesh.create(aiMeshes.get(i));
-            GLModel mesh = processMesh(aiMesh, materials, boneList);
+            Mesh mesh = processMesh(aiMesh, materials, boneList);
             meshes[i] = mesh;
         }
         Map<String, Integer> jointNameToIndex = boneList.stream().collect(
@@ -98,7 +104,7 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
 
         AINode aiRootNode = aiSceneMesh.mRootNode();
         Joint headJoint = createJoints(aiRootNode, new Matrix4f(), jointNameToIndex);
-        Map<String, AnimationI> animations = buildAnimations(aiSceneAnimation);
+        Map<String, Animation> animations = buildAnimations(aiSceneAnimation);
 
         return new AnimGameItem(meshes, boneList.stream().map(Bone::getBoneName).collect(Collectors.toList()), headJoint, animations);
     }
@@ -143,8 +149,8 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
         return frameList;
     }
 
-    private static Map<String, AnimationI> buildAnimations(AIScene aiScene) {
-        Map<String, AnimationI> animations = new HashMap<>();
+    private static Map<String, Animation> buildAnimations(AIScene aiScene) {
+        Map<String, Animation> animations = new HashMap<>();
 
         // Process all animations
         int numAnimations = aiScene.mNumAnimations();
@@ -176,7 +182,7 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
                 keyFrames[j] = new KeyFrame(deltaTime * j, localMap);
             }
 
-            AnimationI animation = new AnimationI(duration, keyFrames);
+            Animation animation = new Animation(duration, keyFrames);
             animations.put(aiAnimation.mName().dataString(), animation);
         }
         return animations;
@@ -247,7 +253,7 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
         }
     }
 
-    private static GLModel processMesh(AIMesh aiMesh, List<Material> materials, List<Bone> boneList) {
+    private static Mesh processMesh(AIMesh aiMesh, List<Material> materials, List<Bone> boneList) {
         List<Float> vertices = new ArrayList<>();
         List<Float> textures = new ArrayList<>();
         List<Float> normals = new ArrayList<>();
@@ -270,7 +276,7 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
         }
 
 
-        return new GLModel(
+        return new Mesh(
                 Utils.listToArray(vertices),
                 Utils.listToArray(normals),
                 Utils.listToArray(textures),
