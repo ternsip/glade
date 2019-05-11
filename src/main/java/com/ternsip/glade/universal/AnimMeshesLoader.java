@@ -63,10 +63,10 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
     }
 
     public static AnimGameItem loadAnimGameItem(File meshFile, File animationFile, File texturesDir) {
-        return loadAnimGameItem(meshFile, animationFile, texturesDir, 0);
-        //return loadAnimGameItem(meshFile, animationFile, texturesDir,
-        //        aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate
-        //        | aiProcess_FixInfacingNormals | aiProcess_LimitBoneWeights);
+        //return loadAnimGameItem(meshFile, animationFile, texturesDir, 0);
+        return loadAnimGameItem(meshFile, animationFile, texturesDir,
+                aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate
+                | aiProcess_FixInfacingNormals | aiProcess_LimitBoneWeights);
     }
 
     @SneakyThrows

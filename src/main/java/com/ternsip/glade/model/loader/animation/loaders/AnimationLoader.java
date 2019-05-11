@@ -27,13 +27,6 @@ public class AnimationLoader {
         for (int i = 0; i < frames.length; i++) {
             frames[i] = createKeyFrame(animationData.keyFrames[i]);
         }
-        //Map<String, List<JointTransform>> transforms = new HashMap<>();
-        //for (int i = 0; i < frames.length; ++i) {
-        //    for (String key : frames[i].getJointKeyFrames().keySet()) {
-        //        transforms.putIfAbsent(key, new ArrayList<>());
-        //        transforms.get(key).add(frames[i].getJointKeyFrames().get(key));
-        //    }
-        //}
         return new AnimationI(animationData.lengthSeconds, frames);
     }
 

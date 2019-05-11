@@ -10,25 +10,15 @@ import com.ternsip.glade.model.parser.Parser;
 import com.ternsip.glade.renderer.MasterRenderer;
 import com.ternsip.glade.universal.AnimGameItem;
 import com.ternsip.glade.universal.AnimMeshesLoader;
-import com.ternsip.glade.universal.Animation;
 import com.ternsip.glade.utils.DisplayManager;
-import com.ternsip.glade.utils.Utils;
 import lombok.SneakyThrows;
-import org.apache.commons.io.IOUtils;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.lwjgl.assimp.AIScene;
-import org.lwjgl.assimp.Assimp;
-import org.lwjgl.system.MemoryUtil;
 
 import java.io.File;
-import java.nio.ByteBuffer;
 
 import static com.ternsip.glade.model.GLModel.SKIP_TEXTURE;
 import static com.ternsip.glade.utils.Maths.PI;
-import static org.lwjgl.assimp.Assimp.aiImportFileEx;
-import static org.lwjgl.assimp.Assimp.aiProcess_JoinIdenticalVertices;
-import static org.lwjgl.assimp.Assimp.aiProcess_Triangulate;
 
 // BE CAREFUL BUFFER FLIPS
 // TODO CHECKOUT BUFFERS (FLOATBUFFER ETC.) BECAUSE THEY ARE BUGGED
@@ -66,8 +56,7 @@ public class Glade {
         //AnimatedModel skeletonModel = AnimatedModelLoader.loadEntity(new File("models/skeleton/skeleton.dae"), new File("models/boy/boy.png"), new File("models/skeleton/skeleton.dae"));
         //AnimatedModel microwaveModel = AnimatedModelLoader.loadEntity(new File("models/microwave/microwave.dae"), new File("models/microwave/microwave_col.png"), new File("models/microwave/microwave.dae"));
 
-       //AnimGameItem animItem = AnimMeshesLoader.loadAnimGameItem(new File("models/bob/boblamp.md5mesh"), new File("models/bob/boblamp.md5anim"),new File("models/bob/"));
-       //animItem.setScale(0.05f);
+        //AnimGameItem animItem = AnimMeshesLoader.loadAnimGameItem(new File("models/bob/boblamp.md5mesh"), new File("models/bob/boblamp.md5anim"), new File("models/bob/"));
 
         AnimGameItem animItem2 = AnimMeshesLoader.loadAnimGameItem(new File("models/boy/boy.dae"), new File("models/boy/boy.dae"),new File("models/boy/"));
         animItem2.setScale(0.05f);
