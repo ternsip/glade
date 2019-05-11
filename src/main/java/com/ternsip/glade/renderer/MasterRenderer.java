@@ -5,7 +5,6 @@ import com.ternsip.glade.entity.Entity;
 import com.ternsip.glade.entity.Sun;
 import com.ternsip.glade.model.loader.animation.model.AnimatedModel;
 import com.ternsip.glade.model.loader.animation.renderer.AnimatedModelRenderer;
-import com.ternsip.glade.model.loader.engine.scene.Scene;
 import com.ternsip.glade.sky.SkyRenderer;
 import org.lwjgl.opengl.GL11;
 

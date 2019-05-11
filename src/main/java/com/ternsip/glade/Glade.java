@@ -8,6 +8,9 @@ import com.ternsip.glade.model.parser.Model;
 import com.ternsip.glade.model.parser.ModelObject;
 import com.ternsip.glade.model.parser.Parser;
 import com.ternsip.glade.renderer.MasterRenderer;
+import com.ternsip.glade.universal.AnimGameItem;
+import com.ternsip.glade.universal.AnimMeshesLoader;
+import com.ternsip.glade.universal.Animation;
 import com.ternsip.glade.utils.DisplayManager;
 import com.ternsip.glade.utils.Utils;
 import lombok.SneakyThrows;
@@ -63,21 +66,11 @@ public class Glade {
         //AnimatedModel skeletonModel = AnimatedModelLoader.loadEntity(new File("models/skeleton/skeleton.dae"), new File("models/boy/boy.png"), new File("models/skeleton/skeleton.dae"));
         //AnimatedModel microwaveModel = AnimatedModelLoader.loadEntity(new File("models/microwave/microwave.dae"), new File("models/microwave/microwave_col.png"), new File("models/microwave/microwave.dae"));
 
+        AnimGameItem animItem = AnimMeshesLoader.loadAnimGameItem(new File("models/bob/boblamp.md5mesh"), new File("models/bob/boblamp.md5anim"),new File("models/bob/"));
+        animItem.setScale(0.05f);
 
-        // Assimp here
-        byte[] _data = IOUtils.toByteArray(Utils.loadResourceAsStream(new File("models/spider/spider.dae")));
-        ByteBuffer data = MemoryUtil.memCalloc(_data.length);
-        data.put(_data);
-        data.flip();
-
-        AIScene scene = Assimp.aiImportFileFromMemory(
-                data,
-                Assimp.aiProcess_Triangulate |
-                        Assimp.aiProcess_ValidateDataStructure,
-                ""
-        );
-        scene.mNumMeshes();
-        MemoryUtil.memFree(data);
+        AnimGameItem animItem2 = AnimMeshesLoader.loadAnimGameItem(new File("models/boy/boy.dae"), new File("models/boy/boy.dae"),new File("models/boy/"));
+        animItem2.setScale(0.05f);
 
         MasterRenderer renderer = new MasterRenderer(camera);
         renderer.processEntity(rover);

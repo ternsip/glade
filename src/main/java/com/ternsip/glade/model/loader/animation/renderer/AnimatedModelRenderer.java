@@ -26,7 +26,7 @@ public class AnimatedModelRenderer {
         shader.start();
         shader.projectionViewMatrix.loadMatrix(camera.getProjectionViewMatrix());
         shader.lightDirection.loadVec3(sun.getPosition().normalize().negate());
-        shader.jointTransforms.loadMatrixArray(animatedModel.getJointTransforms());
+        shader.jointTransforms.loadMatrixArray(animatedModel.getJointTransforms()); // TODO ANALOG
         OpenGlUtils.antialias(true);
         OpenGlUtils.disableBlending();
         OpenGlUtils.enableDepthTesting(true);

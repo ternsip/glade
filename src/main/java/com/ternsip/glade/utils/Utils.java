@@ -1,7 +1,11 @@
 package com.ternsip.glade.utils;
 
 import lombok.SneakyThrows;
+import org.apache.commons.io.IOUtils;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.assimp.AIScene;
+import org.lwjgl.assimp.Assimp;
+import org.lwjgl.system.MemoryUtil;
 
 import java.io.*;
 import java.net.URL;
@@ -34,6 +38,17 @@ public class Utils {
     @SneakyThrows
     public static BufferedReader loadResourceAsBufferedReader(File file) {
         return new BufferedReader(new InputStreamReader(loadResourceAsStream(file), StandardCharsets.UTF_8));
+    }
+
+    @SneakyThrows
+    public static AIScene loadResourceAsAssimp(File file, int flags) {
+        byte[] _data = IOUtils.toByteArray(Utils.loadResourceAsStream(file));
+        ByteBuffer data = MemoryUtil.memCalloc(_data.length);
+        data.put(_data);
+        data.flip();
+        AIScene scene = Assimp.aiImportFileFromMemory(data, flags, "");
+        MemoryUtil.memFree(data);
+        return scene;
     }
 
     public static byte[] bufferToArray(ByteBuffer buf) {
