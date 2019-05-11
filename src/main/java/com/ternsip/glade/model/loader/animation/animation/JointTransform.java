@@ -84,6 +84,7 @@ public class JointTransform {
         Matrix4f matrix = new Matrix4f();
         matrix.translate(position);
         matrix.mul(Maths.toRotationMatrix(rotation), matrix);
+        matrix.scale(scaling, matrix);
         return matrix;
     }
 

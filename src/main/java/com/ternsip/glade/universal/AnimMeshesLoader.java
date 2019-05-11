@@ -29,44 +29,27 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
 
         List<JointTransform> jointTransforms = new ArrayList<>();
         for (int i = 0; i < numFrames; i++) {
-            //AIVector3D aiVPos = positionKeys.get(i).mValue();
-            //Vector3f position = new Vector3f(aiVPos.x(), aiVPos.y(), aiVPos.z());
-            //AIQuaternion aiQRot = rotationKeys.get(i).mValue();
-            //Quaternionf rotation = new Quaternionf(aiQRot.x(), aiQRot.y(), aiQRot.z(), aiQRot.w());
-            //Vector3f scale = new Vector3f(1, 1, 1);
-            //if (i < aiNodeAnim.mNumScalingKeys()) {
-            //    AIVector3D aiVScale = scalingKeys.get(i).mValue();
-            //    scale.set(aiVScale.x(), aiVScale.y(), aiVScale.z());
-            //}
-//
-            //jointTransforms.add(new JointTransform(position, scale, rotation));
-
-            AIVectorKey aiVecKey = positionKeys.get(i);
-            AIVector3D vec = aiVecKey.mValue();
+            AIVector3D vec =  positionKeys.get(i).mValue();
             Matrix4f transfMat = new Matrix4f().translate(vec.x(), vec.y(), vec.z());
-
-            AIQuatKey quatKey = rotationKeys.get(i);
-            AIQuaternion aiQuat = quatKey.mValue();
+            AIQuaternion aiQuat = rotationKeys.get(i).mValue();
             Quaternionf quat = new Quaternionf(aiQuat.x(), aiQuat.y(), aiQuat.z(), aiQuat.w());
             transfMat.rotate(quat);
-
+            Vector3f scale = new Vector3f(1, 1, 1);
             if (i < aiNodeAnim.mNumScalingKeys()) {
-                aiVecKey = scalingKeys.get(i);
-                vec = aiVecKey.mValue();
-                transfMat.scale(vec.x(), vec.y(), vec.z());
+                AIVector3D aiVScale = scalingKeys.get(i).mValue();
+                scale.set(aiVScale.x(), aiVScale.y(), aiVScale.z());
             }
-            jointTransforms.add(createTransform(transfMat));
+            jointTransforms.add(createTransform(transfMat, scale));
 
         }
         return jointTransforms;
     }
 
-    public static JointTransform createTransform(Matrix4f mat) {
+    public static JointTransform createTransform(Matrix4f mat, Vector3f scale) {
         // TODO try to wrap this
         Vector3f translation = new Vector3f(mat.m30(), mat.m31(), mat.m32());
-        Vector3f scaling = new Vector3f(mat.m00(), mat.m11(), mat.m33());
         Quaternionfc rotation = Maths.fromMatrix(mat);
-        return new JointTransform(translation, scaling, rotation);
+        return new JointTransform(translation, scale, rotation);
     }
 
     public static AnimGameItem loadAnimGameItem(File meshFile, File animationFile, File texturesDir) {
