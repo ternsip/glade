@@ -1,6 +1,7 @@
 package com.ternsip.glade.entity;
 
 import com.ternsip.glade.model.GLModel;
+import com.ternsip.glade.universal.GameItem;
 import org.joml.Vector3f;
 
 import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
@@ -16,8 +17,11 @@ public class Rover extends Entity {
     private float currentTurnSpeed = 0;
     private float upwardsSpeed = 0;
 
-    public Rover(GLModel model, Vector3f position, Vector3f rotation, Vector3f scale) {
+    private GameItem gameItem;
+
+    public Rover(GameItem gameItem, GLModel model, Vector3f position, Vector3f rotation, Vector3f scale) {
         super(model, position, rotation, scale);
+        this.gameItem = gameItem;
     }
 
     public void move() {
@@ -34,7 +38,8 @@ public class Rover extends Entity {
             upwardsSpeed = 0;
             super.getPosition().y = terrainHeight;
         }
-
+        gameItem.setPosition(getPosition());
+        gameItem.setRotation(getRotation().add(0, 0, -90, new Vector3f()));
     }
 
     private void checkInputs() {

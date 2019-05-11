@@ -34,11 +34,6 @@ public class Glade {
 
         Sun sun = new Sun(new Vector2f(0, 0), new Vector2f(20000, 20000), new Vector3f(1, 1, 1));
 
-
-        GLModel roverModel = ResourceLoader.loadObjModel(new File("models/rover/rover.obj"), new File("models/rover/rover.png"));
-        Rover rover = new Rover(roverModel, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
-
-        Camera camera = new Camera(rover);
         Model ship = Parser.load3dModel(new File("models/ship/ship.3ds"), new File("models/ship/ship.png"));
 
         GLModel cubeModel = Cube.generateGLModel();
@@ -58,11 +53,16 @@ public class Glade {
 
         //AnimGameItem hagreedModel = AnimMeshesLoader.loadAnimGameItem(new File("models/bob/boblamp.md5mesh"), new File("models/bob/boblamp.md5anim"), new File("models/bob/"));
         AnimGameItem spiderModel = AnimMeshesLoader.loadAnimGameItem(new File("models/spider/spider.dae"), new File("models/spider/spider.dae"), new File("models/spider/"));
-        AnimGameItem microwaveModel = AnimMeshesLoader.loadAnimGameItem(new File("models/microwave/microwave.dae"), new File("models/microwave/microwave.dae"), new File("models/microwave/"));
+        //AnimGameItem microwaveModel = AnimMeshesLoader.loadAnimGameItem(new File("models/microwave/microwave.dae"), new File("models/microwave/microwave.dae"), new File("models/microwave/"));
+        //microwaveModel.setScale(new Vector3f(10, 10, 10));
 
         AnimGameItem boyModel = AnimMeshesLoader.loadAnimGameItem(new File("models/boy/boy.dae"), new File("models/boy/boy.dae"),new File("models/boy/"));
         boyModel.setPosition(new Vector3f(2f, 2, 2));
         boyModel.setRotation(new Vector3f(0, 0, -90));
+
+        GLModel roverModel = ResourceLoader.loadObjModel(new File("models/rover/rover.obj"), new File("models/rover/rover.png"));
+        Rover rover = new Rover(boyModel, roverModel, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
+        Camera camera = new Camera(rover);
 
         MasterRenderer renderer = new MasterRenderer(camera);
         renderer.processEntity(rover);
