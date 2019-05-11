@@ -29,7 +29,7 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
 
         List<JointTransform> jointTransforms = new ArrayList<>();
         for (int i = 0; i < numFrames; i++) {
-            AIVector3D vec =  positionKeys.get(i).mValue();
+            AIVector3D vec = positionKeys.get(i).mValue();
             Matrix4f mat = new Matrix4f().translate(vec.x(), vec.y(), vec.z());
             AIQuaternion aiQuat = rotationKeys.get(i).mValue();
             Quaternionf quat = new Quaternionf(aiQuat.x(), aiQuat.y(), aiQuat.z(), aiQuat.w());

@@ -49,8 +49,8 @@ public class Glade {
         AnimGameItem shipModel = AnimMeshesLoader.loadAnimGameItem(new File("models/ship/ship.3ds"), new File("models/ship/ship.3ds"), new File("models/ship/"));
         shipModel.setPosition(new Vector3f(-10f, 2, 2));
         shipModel.setRotation(new Vector3f(0, 0, -90));
-        //AnimGameItem microwaveModel = AnimMeshesLoader.loadAnimGameItem(new File("models/microwave/microwave.dae"), new File("models/microwave/microwave.dae"), new File("models/microwave/"));
-        //microwaveModel.setScale(new Vector3f(10, 10, 10));
+        AnimGameItem microwaveModel = AnimMeshesLoader.loadAnimGameItem(new File("models/microwave/microwave.dae"), new File("models/microwave/microwave.dae"), new File("models/microwave/"));
+        microwaveModel.setScale(new Vector3f(2, 2, 2));
 
         AnimGameItem boyModel = AnimMeshesLoader.loadAnimGameItem(new File("models/boy/boy.dae"), new File("models/boy/boy.dae"), new File("models/boy/"));
         boyModel.setPosition(new Vector3f(2f, 2, 2));
@@ -66,7 +66,7 @@ public class Glade {
         renderer.processEntity(house);
         renderer.processEntity(dude);
         renderer.processEntity(boyModel);
-        renderer.processEntity(shipModel);
+        //renderer.processEntity(shipModel);
         //renderer.processEntity(lampModel);
         //renderer.processEntity(skeletonModel);
         //renderer.processEntity(microwaveModel);

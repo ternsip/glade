@@ -25,4 +25,7 @@ public class AnimGameItem extends GameItem {
         animator.doAnimation(entry.isPresent() ? entry.get().getValue() : null);
     }
 
+    public boolean isAnimated() {
+        return animator.getCurrentAnimation() != null;
+    }
 }
