@@ -10,8 +10,11 @@ import com.ternsip.glade.model.loader.parser.dataStructures.AnimatedModelData;
 import com.ternsip.glade.model.loader.parser.dataStructures.JointData;
 import com.ternsip.glade.model.loader.parser.dataStructures.MeshData;
 import com.ternsip.glade.model.loader.parser.dataStructures.SkeletonData;
+import org.joml.Matrix4f;
 
 import java.io.File;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.ternsip.glade.model.GLModel.SKIP_ARRAY_FLOAT;
 
@@ -25,18 +28,17 @@ public class AnimatedModelLoader {
         MeshData mesh = entityData.getMeshData();
         GLModel model = new GLModel(mesh.getVertices(), mesh.getNormals(), SKIP_ARRAY_FLOAT, mesh.getTextureCoords(), mesh.getIndices(), mesh.getVertexWeights(), mesh.getJointIds(), textureFile);
         SkeletonData skeletonData = entityData.getJointsData();
-        Joint headJoint = createJoints(skeletonData.headJoint);
+        Joint headJoint = createJoints(skeletonData.headJoint, new Matrix4f());
         Animation animation = AnimationLoader.loadAnimation(animationFile);
         AnimatedModel animatedModel = new AnimatedModel(model, headJoint, skeletonData.jointCount, animation);
         return animatedModel;
     }
 
-    private static Joint createJoints(JointData data) {
-        Joint joint = new Joint(data.getIndex(), data.getNameId(), data.getBindLocalTransform());
-        for (JointData child : data.children) {
-            joint.addChild(createJoints(child));
-        }
-        return joint;
+    public static Joint createJoints(JointData data, Matrix4f parentBindTransform) {
+        Matrix4f bindTransform = parentBindTransform.mul(data.getBindLocalTransform(), new Matrix4f());
+        Matrix4f inverseBindTransform = bindTransform.invert(new Matrix4f());
+        List<Joint> children = data.children.stream().map(e -> createJoints(e, bindTransform)).collect(Collectors.toList());
+        return new Joint(data.getIndex(), data.getNameId(), children, data.getBindLocalTransform(), inverseBindTransform);
     }
 
 }

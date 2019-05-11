@@ -1,36 +1,22 @@
 package com.ternsip.glade.universal;
 
-import static com.ternsip.glade.utils.Utils.loadResourceAsAssimp;
-import static org.lwjgl.assimp.Assimp.aiImportFile;
-import static org.lwjgl.assimp.Assimp.aiProcess_FixInfacingNormals;
-import static org.lwjgl.assimp.Assimp.aiProcess_GenSmoothNormals;
-import static org.lwjgl.assimp.Assimp.aiProcess_JoinIdenticalVertices;
-import static org.lwjgl.assimp.Assimp.aiProcess_LimitBoneWeights;
-import static org.lwjgl.assimp.Assimp.aiProcess_Triangulate;
+import com.ternsip.glade.model.loader.animation.model.Joint;
+import com.ternsip.glade.model.loader.parser.dataStructures.JointData;
+import lombok.SneakyThrows;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.lwjgl.PointerBuffer;
+import org.lwjgl.assimp.*;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import lombok.SneakyThrows;
-import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-import org.lwjgl.PointerBuffer;
-import org.lwjgl.assimp.AIAnimation;
-import org.lwjgl.assimp.AIBone;
-import org.lwjgl.assimp.AIMaterial;
-import org.lwjgl.assimp.AIMatrix4x4;
-import org.lwjgl.assimp.AIMesh;
-import org.lwjgl.assimp.AINode;
-import org.lwjgl.assimp.AINodeAnim;
-import org.lwjgl.assimp.AIQuatKey;
-import org.lwjgl.assimp.AIQuaternion;
-import org.lwjgl.assimp.AIScene;
-import org.lwjgl.assimp.AIVector3D;
-import org.lwjgl.assimp.AIVectorKey;
-import org.lwjgl.assimp.AIVertexWeight;
+import static com.ternsip.glade.utils.Utils.loadResourceAsAssimp;
+import static org.lwjgl.assimp.Assimp.*;
 
 public class AnimMeshesLoader extends StaticMeshesLoader {
 
@@ -89,13 +75,34 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
             Mesh mesh = processMesh(aiMesh, materials, boneList);
             meshes[i] = mesh;
         }
+        Map<String, Integer> jointNameToIndex = boneList.stream().collect(
+                Collectors.toMap(Bone::getBoneName, Bone::getBoneId,  (o, n) -> o)
+        );
 
         AINode aiRootNode = aiSceneMesh.mRootNode();
+        Joint headJoint = createJoints(aiRootNode, new Matrix4f(), jointNameToIndex);
         Matrix4f rootTransfromation = AnimMeshesLoader.toMatrix(aiRootNode.mTransformation());
         Node rootNode = processNodesHierarchy(aiRootNode, null);
         Map<String, Animation> animations = processAnimations(aiSceneAnimation, boneList, rootNode, rootTransfromation);
 
         return new AnimGameItem(meshes, animations);
+    }
+
+    public static Joint createJoints(AINode aiNode, Matrix4f parentTransform, Map<String, Integer> jointNameToIndex) {
+        Matrix4f localBindTransform = AnimMeshesLoader.toMatrix(aiNode.mTransformation());
+        Matrix4f bindTransform = parentTransform.mul(localBindTransform, new Matrix4f());
+        Matrix4f inverseBindTransform = bindTransform.invert(new Matrix4f());
+        String jointName = aiNode.mName().dataString();
+        int jointIndex = jointNameToIndex.getOrDefault(jointName, -1);
+        List<Joint> children = new ArrayList<>();
+        int numChildren = aiNode.mNumChildren();
+        PointerBuffer aiChildren = aiNode.mChildren();
+        for (int i = 0; i < numChildren; i++) {
+            AINode aiChildNode = AINode.create(aiChildren.get(i));
+            Joint childJoint = createJoints(aiChildNode, bindTransform, jointNameToIndex);
+            children.add(childJoint);
+        }
+        return new Joint(jointIndex, jointName, children, localBindTransform, inverseBindTransform);
     }
 
     private static List<AnimatedFrame> buildAnimationFrames(List<Bone> boneList, Node rootNode,

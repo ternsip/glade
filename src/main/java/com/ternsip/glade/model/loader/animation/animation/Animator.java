@@ -58,7 +58,7 @@ public class Animator {
             applyPoseToJoints(currentPose, childJoint, currentTransform);
         }
         currentTransform.mul(joint.getInverseBindTransform(), currentTransform);
-        joint.setAnimationTransform(currentTransform);
+        joint.setAnimatedTransform(currentTransform);
     }
 
     private KeyFrame[] getPreviousAndNextFrames() {

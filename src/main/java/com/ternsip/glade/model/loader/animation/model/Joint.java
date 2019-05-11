@@ -1,48 +1,28 @@
 package com.ternsip.glade.model.loader.animation.model;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.joml.Matrix4f;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 public class Joint {
 
     public final int index;// ID
     public final String name;
-    public final List<Joint> children = new ArrayList<Joint>();
+    public final List<Joint> children;
     private final Matrix4f localBindTransform;
     private Matrix4f animatedTransform = new Matrix4f();
-    private Matrix4f inverseBindTransform = new Matrix4f();
+    private final Matrix4f inverseBindTransform;
 
-    public Joint(int index, String name, Matrix4f bindLocalTransform) {
+    public Joint(int index, String name, List<Joint> children, Matrix4f bindLocalTransform, Matrix4f inverseBindTransform) {
         this.index = index;
         this.name = name;
+        this.children = children;
         this.localBindTransform = bindLocalTransform;
+        this.inverseBindTransform = inverseBindTransform;
     }
-
-    public void addChild(Joint child) {
-        this.children.add(child);
-    }
-
-    public Matrix4f getAnimatedTransform() {
-        return animatedTransform;
-    }
-
-    public void setAnimationTransform(Matrix4f animationTransform) {
-        this.animatedTransform = animationTransform;
-    }
-
-    public Matrix4f getInverseBindTransform() {
-        return inverseBindTransform;
-    }
-
-    protected void calcInverseBindTransform(Matrix4f parentBindTransform) {
-        // TODO CHECK THIS IS OK (THIS/NEW)
-        Matrix4f bindTransform = parentBindTransform.mul(localBindTransform, new Matrix4f());
-        bindTransform.invert(inverseBindTransform);
-        for (Joint child : children) {
-            child.calcInverseBindTransform(bindTransform);
-        }
-    }
-
 }

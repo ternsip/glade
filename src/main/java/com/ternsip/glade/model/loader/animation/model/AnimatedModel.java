@@ -23,7 +23,6 @@ public class AnimatedModel {
         this.rootJoint = rootJoint;
         this.jointCount = jointCount;
         this.animator = new Animator(this);
-        rootJoint.calcInverseBindTransform(new Matrix4f());
         animator.doAnimation(animation);
     }
 
