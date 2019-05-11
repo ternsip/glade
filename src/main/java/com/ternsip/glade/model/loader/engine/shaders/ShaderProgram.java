@@ -7,8 +7,6 @@ import java.io.BufferedReader;
 import java.io.File;
 
 import static com.ternsip.glade.model.Mesh.*;
-import static com.ternsip.glade.model.Mesh.JOINTS_ATTRIBUTE_POINTER_INDEX;
-import static com.ternsip.glade.model.Mesh.WEIGHTS_ATTRIBUTE_POINTER_INDEX;
 import static org.lwjgl.opengl.GL20.*;
 
 public class ShaderProgram {

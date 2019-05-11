@@ -1,17 +1,17 @@
 package com.ternsip.glade.universal;
 
-import java.io.File;
-import java.nio.IntBuffer;
-
-import java.nio.ByteBuffer;
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL12.*;
-import static org.lwjgl.opengl.GL30.*;
-import static org.lwjgl.stb.STBImage.*;
-
 import lombok.SneakyThrows;
 import org.lwjgl.system.MemoryStack;
-import static org.lwjgl.system.MemoryStack.*;
+
+import java.io.File;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE;
+import static org.lwjgl.opengl.GL30.glGenerateMipmap;
+import static org.lwjgl.stb.STBImage.stbi_load_from_memory;
+import static org.lwjgl.system.MemoryStack.stackPush;
 
 public class Texture {
 
@@ -28,8 +28,8 @@ public class Texture {
     /**
      * Creates an empty texture.
      *
-     * @param width Width of the texture
-     * @param height Height of the texture
+     * @param width       Width of the texture
+     * @param height      Height of the texture
      * @param pixelFormat Specifies the format of the pixel data (GL_RGBA, etc.)
      * @throws Exception
      */

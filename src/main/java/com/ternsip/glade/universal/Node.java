@@ -1,9 +1,9 @@
 package com.ternsip.glade.universal;
 
+import org.joml.Matrix4f;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.joml.Matrix4f;
 
 public class Node {
 
@@ -32,7 +32,7 @@ public class Node {
             int transfSize = transformations.size();
             if (framePos < transfSize) {
                 nodeTransform = transformations.get(framePos);
-            } else if ( transfSize > 0 ) {
+            } else if (transfSize > 0) {
                 nodeTransform = transformations.get(transfSize - 1);
             } else {
                 nodeTransform = new Matrix4f();

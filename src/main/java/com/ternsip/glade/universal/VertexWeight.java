@@ -22,12 +22,12 @@ public class VertexWeight {
         return vertexId;
     }
 
-    public float getWeight() {
-        return weight;
-    }
-
     public void setVertexId(int vertexId) {
         this.vertexId = vertexId;
+    }
+
+    public float getWeight() {
+        return weight;
     }
 
     public void setWeight(float weight) {

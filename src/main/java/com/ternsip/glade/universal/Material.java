@@ -14,13 +14,13 @@ public class Material {
     private Vector4f diffuseColour;
 
     private Vector4f specularColour;
-    
+
     private float shininess;
 
     private float reflectance;
 
     private Texture texture;
-    
+
     private Texture normalMap;
 
     public Material(File textureFile) {
@@ -94,7 +94,7 @@ public class Material {
     public void setTexture(Texture texture) {
         this.texture = texture;
     }
-    
+
     public boolean hasNormalMap() {
         return this.normalMap != null;
     }

@@ -11,10 +11,10 @@ import java.util.List;
 @Getter
 public class JointData {
 
+    public final List<JointData> children = new ArrayList<JointData>();
     private final int index;
     private final String nameId;
     private final Matrix4f bindLocalTransform;
-    public final List<JointData> children = new ArrayList<JointData>();
 
     public void addChild(JointData child) {
         children.add(child);

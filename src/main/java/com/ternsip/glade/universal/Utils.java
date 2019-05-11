@@ -1,6 +1,12 @@
 package com.ternsip.glade.universal;
 
-import java.io.*;
+import lombok.SneakyThrows;
+import org.lwjgl.BufferUtils;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
@@ -12,11 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import lombok.SneakyThrows;
-import org.lwjgl.BufferUtils;
-
 import static com.ternsip.glade.utils.Utils.loadResourceAsStream;
-import static org.lwjgl.BufferUtils.*;
+import static org.lwjgl.BufferUtils.createByteBuffer;
 
 public class Utils {
 

@@ -73,7 +73,7 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
         //return loadAnimGameItem(meshFile, animationFile, texturesDir, 0);
         return loadAnimGameItem(meshFile, animationFile, texturesDir,
                 aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate
-                | aiProcess_FixInfacingNormals | aiProcess_LimitBoneWeights);
+                        | aiProcess_FixInfacingNormals | aiProcess_LimitBoneWeights);
     }
 
     @SneakyThrows
@@ -99,7 +99,7 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
             meshes[i] = mesh;
         }
         Map<String, Integer> jointNameToIndex = boneList.stream().collect(
-                Collectors.toMap(Bone::getBoneName, Bone::getBoneId,  (o, n) -> o)
+                Collectors.toMap(Bone::getBoneName, Bone::getBoneId, (o, n) -> o)
         );
 
         AINode aiRootNode = aiSceneMesh.mRootNode();
@@ -126,8 +126,10 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
         return new Joint(jointIndex, jointName, children, localBindTransform, inverseBindTransform);
     }
 
-    private static List<AnimatedFrame> buildAnimationFrames(List<Bone> boneList, Node rootNode,
-            Matrix4f rootTransformation) {
+    private static List<AnimatedFrame> buildAnimationFrames(
+            List<Bone> boneList, Node rootNode,
+            Matrix4f rootTransformation
+    ) {
 
         int numFrames = rootNode.getAnimationFrames();
         List<AnimatedFrame> frameList = new ArrayList<>();
@@ -172,7 +174,7 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
             }
 
             KeyFrame[] keyFrames = new KeyFrame[maxKeyFrameLength];
-            float duration = (float)aiAnimation.mDuration();
+            float duration = (float) aiAnimation.mDuration();
             float deltaTime = maxKeyFrameLength == 1 ? duration : (duration / (maxKeyFrameLength - 1));
             for (int j = 0; j < keyFrames.length; ++j) {
                 Map<String, JointTransform> localMap = new HashMap<>();
@@ -188,8 +190,10 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
         return animations;
     }
 
-    private static void processBones(AIMesh aiMesh, List<Bone> boneList, List<Integer> boneIds,
-            List<Float> weights) {
+    private static void processBones(
+            AIMesh aiMesh, List<Bone> boneList, List<Integer> boneIds,
+            List<Float> weights
+    ) {
         Map<Integer, List<VertexWeight>> weightSet = new HashMap<>();
         int numBones = aiMesh.mNumBones();
         PointerBuffer aiBones = aiMesh.mBones();

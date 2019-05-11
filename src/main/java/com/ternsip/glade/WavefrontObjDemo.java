@@ -10,7 +10,8 @@ import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLCapabilities;
 import org.lwjgl.opengl.GLUtil;
-import org.lwjgl.system.*;
+import org.lwjgl.system.Callback;
+import org.lwjgl.system.MemoryStack;
 
 import java.io.*;
 import java.net.URL;
@@ -23,7 +24,7 @@ import java.util.List;
 
 import static org.lwjgl.assimp.Assimp.*;
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.ARBFragmentShader.*;
+import static org.lwjgl.opengl.ARBFragmentShader.GL_FRAGMENT_SHADER_ARB;
 import static org.lwjgl.opengl.ARBShaderObjects.*;
 import static org.lwjgl.opengl.ARBVertexBufferObject.*;
 import static org.lwjgl.opengl.ARBVertexShader.*;
@@ -66,14 +67,6 @@ public class WavefrontObjDemo {
     Matrix4f viewProjectionMatrix = new Matrix4f();
     Vector3f viewPosition = new Vector3f();
     Vector3f lightPosition = new Vector3f(-5f, 5f, 5f);
-
-    private FloatBuffer modelMatrixBuffer = BufferUtils.createFloatBuffer(4 * 4);
-    private FloatBuffer viewProjectionMatrixBuffer = BufferUtils.createFloatBuffer(4 * 4);
-    private Matrix3f normalMatrix = new Matrix3f();
-    private FloatBuffer normalMatrixBuffer = BufferUtils.createFloatBuffer(3 * 3);
-    private FloatBuffer lightPositionBuffer = BufferUtils.createFloatBuffer(3);
-    private FloatBuffer viewPositionBuffer = BufferUtils.createFloatBuffer(3);
-
     GLCapabilities caps;
     GLFWKeyCallback keyCallback;
     GLFWFramebufferSizeCallback fbCallback;
@@ -81,6 +74,84 @@ public class WavefrontObjDemo {
     GLFWCursorPosCallback cpCallback;
     GLFWScrollCallback sCallback;
     Callback debugProc;
+    private FloatBuffer modelMatrixBuffer = BufferUtils.createFloatBuffer(4 * 4);
+    private FloatBuffer viewProjectionMatrixBuffer = BufferUtils.createFloatBuffer(4 * 4);
+    private Matrix3f normalMatrix = new Matrix3f();
+    private FloatBuffer normalMatrixBuffer = BufferUtils.createFloatBuffer(3 * 3);
+    private FloatBuffer lightPositionBuffer = BufferUtils.createFloatBuffer(3);
+    private FloatBuffer viewPositionBuffer = BufferUtils.createFloatBuffer(3);
+
+    /**
+     * Reads the specified resource and returns the raw data as a ByteBuffer.
+     *
+     * @param resource   the resource to read
+     * @param bufferSize the initial buffer size
+     * @return the resource data
+     * @throws IOException if an IO error occurs
+     */
+    public static ByteBuffer ioResourceToByteBuffer(String resource, int bufferSize) throws IOException {
+        ByteBuffer buffer;
+        URL url = Thread.currentThread().getContextClassLoader().getResource(resource);
+        File file = new File(url.getFile());
+        if (file.isFile()) {
+            FileInputStream fis = new FileInputStream(file);
+            FileChannel fc = fis.getChannel();
+            buffer = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
+            fc.close();
+            fis.close();
+        } else {
+            buffer = BufferUtils.createByteBuffer(bufferSize);
+            InputStream source = url.openStream();
+            if (source == null)
+                throw new FileNotFoundException(resource);
+            try {
+                byte[] buf = new byte[8192];
+                while (true) {
+                    int bytes = source.read(buf, 0, buf.length);
+                    if (bytes == -1)
+                        break;
+                    if (buffer.remaining() < bytes)
+                        buffer = resizeBuffer(buffer, buffer.capacity() * 2);
+                    buffer.put(buf, 0, bytes);
+                }
+                buffer.flip();
+            } finally {
+                source.close();
+            }
+        }
+        return buffer;
+    }
+
+    private static ByteBuffer resizeBuffer(ByteBuffer buffer, int newCapacity) {
+        ByteBuffer newBuffer = BufferUtils.createByteBuffer(newCapacity);
+        buffer.flip();
+        newBuffer.put(buffer);
+        return newBuffer;
+    }
+
+    static int createShader(String resource, int type) throws IOException {
+        int shader = glCreateShaderObjectARB(type);
+        ByteBuffer source = ioResourceToByteBuffer(resource, 1024);
+        PointerBuffer strings = BufferUtils.createPointerBuffer(1);
+        IntBuffer lengths = BufferUtils.createIntBuffer(1);
+        strings.put(0, source);
+        lengths.put(0, source.remaining());
+        glShaderSourceARB(shader, strings, lengths);
+        glCompileShaderARB(shader);
+        int compiled = glGetObjectParameteriARB(shader, GL_OBJECT_COMPILE_STATUS_ARB);
+        String shaderLog = glGetInfoLogARB(shader);
+        if (shaderLog.trim().length() > 0) {
+            System.err.println(shaderLog);
+        }
+        if (compiled == 0) {
+            throw new AssertionError("Could not compile shader");
+        }
+        return shader;
+    }
+
+    public static void main(String[] args) {
+        new WavefrontObjDemo().run();
+    }
 
     void init() throws IOException {
 
@@ -243,76 +314,6 @@ public class WavefrontObjDemo {
         model = new Model(scene);
     }
 
-    /**
-     * Reads the specified resource and returns the raw data as a ByteBuffer.
-     *
-     * @param resource   the resource to read
-     * @param bufferSize the initial buffer size
-     *
-     * @return the resource data
-     *
-     * @throws IOException if an IO error occurs
-     */
-    public static ByteBuffer ioResourceToByteBuffer(String resource, int bufferSize) throws IOException {
-        ByteBuffer buffer;
-        URL url = Thread.currentThread().getContextClassLoader().getResource(resource);
-        File file = new File(url.getFile());
-        if (file.isFile()) {
-            FileInputStream fis = new FileInputStream(file);
-            FileChannel fc = fis.getChannel();
-            buffer = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
-            fc.close();
-            fis.close();
-        } else {
-            buffer = BufferUtils.createByteBuffer(bufferSize);
-            InputStream source = url.openStream();
-            if (source == null)
-                throw new FileNotFoundException(resource);
-            try {
-                byte[] buf = new byte[8192];
-                while (true) {
-                    int bytes = source.read(buf, 0, buf.length);
-                    if (bytes == -1)
-                        break;
-                    if (buffer.remaining() < bytes)
-                        buffer = resizeBuffer(buffer, buffer.capacity() * 2);
-                    buffer.put(buf, 0, bytes);
-                }
-                buffer.flip();
-            } finally {
-                source.close();
-            }
-        }
-        return buffer;
-    }
-
-    private static ByteBuffer resizeBuffer(ByteBuffer buffer, int newCapacity) {
-        ByteBuffer newBuffer = BufferUtils.createByteBuffer(newCapacity);
-        buffer.flip();
-        newBuffer.put(buffer);
-        return newBuffer;
-    }
-
-    static int createShader(String resource, int type) throws IOException {
-        int shader = glCreateShaderObjectARB(type);
-        ByteBuffer source = ioResourceToByteBuffer(resource, 1024);
-        PointerBuffer strings = BufferUtils.createPointerBuffer(1);
-        IntBuffer lengths = BufferUtils.createIntBuffer(1);
-        strings.put(0, source);
-        lengths.put(0, source.remaining());
-        glShaderSourceARB(shader, strings, lengths);
-        glCompileShaderARB(shader);
-        int compiled = glGetObjectParameteriARB(shader, GL_OBJECT_COMPILE_STATUS_ARB);
-        String shaderLog = glGetInfoLogARB(shader);
-        if (shaderLog.trim().length() > 0) {
-            System.err.println(shaderLog);
-        }
-        if (compiled == 0) {
-            throw new AssertionError("Could not compile shader");
-        }
-        return shader;
-    }
-
     void createProgram() throws IOException {
 
         program = glCreateProgramObjectARB();
@@ -413,10 +414,6 @@ public class WavefrontObjDemo {
         } finally {
             glfwTerminate();
         }
-    }
-
-    public static void main(String[] args) {
-        new WavefrontObjDemo().run();
     }
 
     static class Model {

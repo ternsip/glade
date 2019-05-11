@@ -13,7 +13,6 @@ import org.joml.Vector3f;
 import java.io.File;
 
 import static com.ternsip.glade.model.Mesh.SKIP_TEXTURE;
-import static com.ternsip.glade.utils.Maths.PI;
 
 // BE CAREFUL BUFFER FLIPS
 // TODO CHECKOUT BUFFERS (FLOATBUFFER ETC.) BECAUSE THEY ARE BUGGED
@@ -40,7 +39,7 @@ public class Glade {
         Entity dude = new Entity(dudeModel, new Vector3f(-20, 0, -20), new Vector3f(0, 0, 0), new Vector3f(10, 10, 10));
 
         //AnimatedModel spiderModel = AnimatedModelLoader.loadEntity(new File("models/spider/spider.dae"), new File("models/spider/Spinnen_Bein_tex_COLOR_.png"), new File("models/spider/spider.dae"));
-       // AnimatedModel boyModel = AnimatedModelLoader.loadEntity(new File("models/boy/boy.dae"), new File("models/boy/boy.png"), new File("models/boy/boy.dae"));
+        // AnimatedModel boyModel = AnimatedModelLoader.loadEntity(new File("models/boy/boy.dae"), new File("models/boy/boy.png"), new File("models/boy/boy.dae"));
         //AnimatedModel lampModel = AnimatedModelLoader.loadEntity(new File("models/lamp/lamp.dae"), new File("models/boy/boy.png"), new File("models/lamp/lamp.dae"));
         //AnimatedModel skeletonModel = AnimatedModelLoader.loadEntity(new File("models/skeleton/skeleton.dae"), new File("models/boy/boy.png"), new File("models/skeleton/skeleton.dae"));
         //AnimatedModel microwaveModel = AnimatedModelLoader.loadEntity(new File("models/microwave/microwave.dae"), new File("models/microwave/microwave_col.png"), new File("models/microwave/microwave.dae"));
@@ -53,7 +52,7 @@ public class Glade {
         //AnimGameItem microwaveModel = AnimMeshesLoader.loadAnimGameItem(new File("models/microwave/microwave.dae"), new File("models/microwave/microwave.dae"), new File("models/microwave/"));
         //microwaveModel.setScale(new Vector3f(10, 10, 10));
 
-        AnimGameItem boyModel = AnimMeshesLoader.loadAnimGameItem(new File("models/boy/boy.dae"), new File("models/boy/boy.dae"),new File("models/boy/"));
+        AnimGameItem boyModel = AnimMeshesLoader.loadAnimGameItem(new File("models/boy/boy.dae"), new File("models/boy/boy.dae"), new File("models/boy/"));
         boyModel.setPosition(new Vector3f(2f, 2, 2));
         boyModel.setRotation(new Vector3f(0, 0, -90));
 

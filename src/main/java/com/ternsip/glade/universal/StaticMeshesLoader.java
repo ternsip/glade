@@ -1,17 +1,13 @@
 package com.ternsip.glade.universal;
 
 import lombok.SneakyThrows;
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.assimp.*;
 
 import java.io.File;
 import java.nio.IntBuffer;
-import java.util.ArrayList;
 import java.util.List;
 
-import static com.ternsip.glade.utils.Utils.bufferToArray;
 import static org.lwjgl.assimp.Assimp.*;
 
 public class StaticMeshesLoader {

@@ -1,6 +1,5 @@
 package com.ternsip.glade.model.loader.parser.colladaLoader;
 
-import com.sun.deploy.xml.XMLNode;
 import com.ternsip.glade.model.loader.parser.dataStructures.JointData;
 import com.ternsip.glade.model.loader.parser.dataStructures.SkeletonData;
 import com.ternsip.glade.model.loader.parser.xmlParser.XmlNode;
@@ -8,9 +7,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class SkeletonLoader {
 
@@ -22,6 +19,20 @@ public class SkeletonLoader {
     public SkeletonLoader(XmlNode visualSceneNode, List<String> boneOrder) {
         this.armatureData = getChildByPredicate(visualSceneNode.getChild("visual_scene"), "node", e -> e.getAttribute("id").contains("Armature"));
         this.boneOrder = boneOrder;
+    }
+
+    // TODO this should not be here
+    public static XmlNode getChildByPredicate(XmlNode node, String childName, Function<XmlNode, Boolean> filter) {
+        List<XmlNode> children = node.getChildren(childName);
+        if (children == null || children.isEmpty()) {
+            return null;
+        }
+        for (XmlNode child : children) {
+            if (filter.apply(child)) {
+                return child;
+            }
+        }
+        return null;
     }
 
     public SkeletonData extractBoneData() {
@@ -72,20 +83,6 @@ public class SkeletonLoader {
                 Float.parseFloat(rawData[14]),
                 Float.parseFloat(rawData[15])
         );
-    }
-
-    // TODO this should not be here
-    public static XmlNode getChildByPredicate(XmlNode node, String childName, Function<XmlNode, Boolean> filter) {
-        List<XmlNode> children = node.getChildren(childName);
-        if (children == null || children.isEmpty()) {
-            return null;
-        }
-        for (XmlNode child : children) {
-            if (filter.apply(child)) {
-                return child;
-            }
-        }
-        return null;
     }
 
 }

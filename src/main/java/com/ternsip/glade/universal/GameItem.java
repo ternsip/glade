@@ -24,7 +24,7 @@ public class GameItem {
     private Vector3f rotation;
 
     private int textPos;
-    
+
     private boolean disableFrustumCulling;
 
     private boolean insideFrustum;
