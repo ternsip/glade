@@ -34,6 +34,7 @@ public class AnimatedModelRenderer {
         OpenGlUtils.antialias(true);
         OpenGlUtils.disableBlending();
         OpenGlUtils.enableDepthTesting(true);
+        //animGameItem.getMesh().render();
         for (Mesh mesh : animGameItem.getMeshes()) {
             mesh.render();
         }

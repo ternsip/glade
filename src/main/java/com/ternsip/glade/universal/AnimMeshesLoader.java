@@ -88,12 +88,13 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
 
     public static Joint createJoints(AINode aiNode, Matrix4fc parentTransform, Map<String, Integer> jointNameToIndex) {
         String jointName = aiNode.mName().dataString();
+        int numChildren = aiNode.mNumChildren();
         int jointIndex = jointNameToIndex.getOrDefault(jointName, -1);
         Matrix4f localBindTransform = AnimMeshesLoader.toMatrix(aiNode.mTransformation());
-        Matrix4f bindTransform = jointIndex == -1 ? new Matrix4f() : parentTransform.mul(localBindTransform, new Matrix4f());
+        boolean marginal = jointIndex == -1;
+        Matrix4f bindTransform = marginal ? new Matrix4f() : parentTransform.mul(localBindTransform, new Matrix4f());
         Matrix4f inverseBindTransform = bindTransform.invert(new Matrix4f());
         List<Joint> children = new ArrayList<>();
-        int numChildren = aiNode.mNumChildren();
         PointerBuffer aiChildren = aiNode.mChildren();
         for (int i = 0; i < numChildren; i++) {
             AINode aiChildNode = AINode.create(aiChildren.get(i));
@@ -150,8 +151,10 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
                 jointNameToTransforms.put(jointName, jointTransforms);
             }
 
+            // Turn jointNameToTransforms to KeyFrames
             KeyFrame[] keyFrames = new KeyFrame[maxKeyFrameLength];
-            float duration = (float) aiAnimation.mDuration();
+            float ticksPerSecond = (float)aiAnimation.mTicksPerSecond();
+            float duration = (float) aiAnimation.mDuration() / ticksPerSecond;
             float deltaTime = maxKeyFrameLength == 1 ? duration : (duration / (maxKeyFrameLength - 1));
             for (int j = 0; j < keyFrames.length; ++j) {
                 Map<String, JointTransform> localMap = new HashMap<>();

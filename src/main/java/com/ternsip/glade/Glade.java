@@ -45,7 +45,7 @@ public class Glade {
         //AnimatedModel skeletonModel = AnimatedModelLoader.loadEntity(new File("models/skeleton/skeleton.dae"), new File("models/boy/boy.png"), new File("models/skeleton/skeleton.dae"));
         //AnimatedModel microwaveModel = AnimatedModelLoader.loadEntity(new File("models/microwave/microwave.dae"), new File("models/microwave/microwave_col.png"), new File("models/microwave/microwave.dae"));
 
-        //AnimGameItem hagreedModel = AnimMeshesLoader.loadAnimGameItem(new File("models/bob/boblamp.md5mesh"), new File("models/bob/boblamp.md5anim"), new File("models/bob/"));
+        AnimGameItem hagreedModel = AnimMeshesLoader.loadAnimGameItem(new File("models/bob/boblamp.md5mesh"), new File("models/bob/boblamp.md5anim"), new File("models/bob/"));
         AnimGameItem spiderModel = AnimMeshesLoader.loadAnimGameItem(new File("models/spider/spider.dae"), new File("models/spider/spider.dae"), new File("models/spider/"));
         AnimGameItem shipModel = AnimMeshesLoader.loadAnimGameItem(new File("models/ship/ship.3ds"), new File("models/ship/ship.3ds"), new File("models/ship/"));
         shipModel.setPosition(new Vector3f(-10f, 2, 2));
@@ -66,13 +66,13 @@ public class Glade {
         renderer.processEntity(cube);
         renderer.processEntity(house);
         renderer.processEntity(dude);
-        renderer.processEntity(boyModel);
+        //renderer.processEntity(boyModel);
         //renderer.processEntity(shipModel);
         //renderer.processEntity(lampModel);
         //renderer.processEntity(skeletonModel);
-        renderer.processEntity(microwaveModel);
+        //renderer.processEntity(microwaveModel);
         //renderer.processEntity(spiderModel);
-        //renderer.processEntity(hagreedModel);
+        renderer.processEntity(hagreedModel);
 
         // TODO Check performance with runnable and without it
         DISPLAY_MANAGER.loop(() -> {
