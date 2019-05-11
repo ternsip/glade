@@ -12,7 +12,7 @@ public class Animator {
 
     private final AnimatedModel animatedModel;
 
-    private Animation currentAnimation;
+    private AnimationI currentAnimation;
     private float animationTime = 0;
 
 
@@ -21,7 +21,7 @@ public class Animator {
     }
 
 
-    public void doAnimation(Animation animation) {
+    public void doAnimation(AnimationI animation) {
         this.animationTime = 0;
         this.currentAnimation = animation;
     }

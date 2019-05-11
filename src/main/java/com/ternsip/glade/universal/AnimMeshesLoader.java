@@ -1,10 +1,13 @@
 package com.ternsip.glade.universal;
 
+import com.ternsip.glade.model.loader.animation.animation.AnimationI;
+import com.ternsip.glade.model.loader.animation.animation.JointTransform;
+import com.ternsip.glade.model.loader.animation.animation.KeyFrame;
 import com.ternsip.glade.model.loader.animation.model.Joint;
-import com.ternsip.glade.model.loader.parser.dataStructures.JointData;
 import lombok.SneakyThrows;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
+import org.joml.Vector3f;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
 
@@ -47,6 +50,29 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
         }
     }
 
+    private static List<JointTransform> buildJointTransforms(AINodeAnim aiNodeAnim) {
+        int numFrames = aiNodeAnim.mNumPositionKeys();
+        AIVectorKey.Buffer positionKeys = aiNodeAnim.mPositionKeys();
+        AIVectorKey.Buffer scalingKeys = aiNodeAnim.mScalingKeys();
+        AIQuatKey.Buffer rotationKeys = aiNodeAnim.mRotationKeys();
+
+        List<JointTransform> jointTransforms = new ArrayList<>();
+        for (int i = 0; i < numFrames; i++) {
+            AIVector3D aiVPos = positionKeys.get(i).mValue();
+            Vector3f position = new Vector3f(aiVPos.x(), aiVPos.y(), aiVPos.z());
+            AIQuaternion aiQRot = rotationKeys.get(i).mValue();
+            Quaternionf rotation = new Quaternionf(aiQRot.x(), aiQRot.y(), aiQRot.z(), aiQRot.w());
+            Vector3f scale = new Vector3f(1, 1, 1);
+            if (i < aiNodeAnim.mNumScalingKeys()) {
+                AIVector3D aiVScale = scalingKeys.get(i).mValue();
+                scale.set(aiVScale.x(), aiVScale.y(), aiVScale.z());
+            }
+
+            jointTransforms.add(new JointTransform(position, scale, rotation));
+        }
+        return jointTransforms;
+    }
+
     public static AnimGameItem loadAnimGameItem(File meshFile, File animationFile, File texturesDir) {
         return loadAnimGameItem(meshFile, animationFile, texturesDir,
                 aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate
@@ -84,6 +110,7 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
         Matrix4f rootTransfromation = AnimMeshesLoader.toMatrix(aiRootNode.mTransformation());
         Node rootNode = processNodesHierarchy(aiRootNode, null);
         Map<String, Animation> animations = processAnimations(aiSceneAnimation, boneList, rootNode, rootTransfromation);
+        Map<String, AnimationI> anims = buildAnimations(aiSceneAnimation);
 
         return new AnimGameItem(meshes, animations);
     }
@@ -151,6 +178,43 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
             List<AnimatedFrame> frames = buildAnimationFrames(boneList, rootNode, rootTransformation);
             Animation animation = new Animation(aiAnimation.mName().dataString(), frames, aiAnimation.mDuration());
             animations.put(animation.getName(), animation);
+        }
+        return animations;
+    }
+
+    private static Map<String, AnimationI> buildAnimations(AIScene aiScene) {
+        Map<String, AnimationI> animations = new HashMap<>();
+
+        // Process all animations
+        int numAnimations = aiScene.mNumAnimations();
+        PointerBuffer aiAnimations = aiScene.mAnimations();
+        for (int i = 0; i < numAnimations; i++) {
+            AIAnimation aiAnimation = AIAnimation.create(aiAnimations.get(i));
+
+            // Calculate transformation matrices for each node
+            int numJoints = aiAnimation.mNumChannels();
+            PointerBuffer aiNodeAnimList = aiAnimation.mChannels();
+            Map<String, List<JointTransform>> jointNameToTransforms = new HashMap<>();
+            int maxKeyFrameLength = 0;
+            for (int j = 0; j < numJoints; j++) {
+                AINodeAnim aiNodeAnim = AINodeAnim.create(aiNodeAnimList.get(j));
+                String jointName = aiNodeAnim.mNodeName().dataString();
+                List<JointTransform> jointTransforms = buildJointTransforms(aiNodeAnim);
+                maxKeyFrameLength = Math.max(jointTransforms.size(), maxKeyFrameLength);
+                jointNameToTransforms.put(jointName, jointTransforms);
+            }
+            KeyFrame[] keyFrames = new KeyFrame[maxKeyFrameLength];
+            float duration = (float)aiAnimation.mDuration();
+            float deltaTime = duration / maxKeyFrameLength; // TODO check this, probably bug
+            for (int j = 0; j < keyFrames.length; ++j) {
+                Map<String, JointTransform> localMap = new HashMap<>();
+                for (Map.Entry<String, List<JointTransform>> entry : jointNameToTransforms.entrySet()) {
+                    localMap.put(entry.getKey(), entry.getValue().get(j % entry.getValue().size()));
+                }
+                keyFrames[j] = new KeyFrame(deltaTime, localMap);
+            }
+            AnimationI animation = new AnimationI(duration, keyFrames);
+            animations.put(aiAnimation.mName().dataString(), animation);
         }
         return animations;
     }

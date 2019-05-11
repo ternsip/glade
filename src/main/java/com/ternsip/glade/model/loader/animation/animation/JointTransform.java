@@ -1,15 +1,20 @@
 package com.ternsip.glade.model.loader.animation.animation;
 
 import com.ternsip.glade.utils.Maths;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.joml.Matrix4f;
 import org.joml.Quaternionfc;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
+@RequiredArgsConstructor
+@Getter
 public class JointTransform {
 
     // remember, this position and rotation are relative to the parent bone!
     private final Vector3fc position;
+    private final Vector3fc scaling;
     private final Quaternionfc rotation;
 
     /**
@@ -21,10 +26,6 @@ public class JointTransform {
      * @param rotation - the rotation of the joint relative to the parent joint
      *                 (bone-space) at a certain keyframe.
      */
-    public JointTransform(Vector3fc position, Quaternionfc rotation) {
-        this.position = position;
-        this.rotation = rotation;
-    }
 
     /**
      * Interpolates between two transforms based on the progression value. The
@@ -45,9 +46,10 @@ public class JointTransform {
      * @return
      */
     protected static JointTransform interpolate(JointTransform frameA, JointTransform frameB, float progression) {
-        Vector3f pos = interpolate(frameA.position, frameB.position, progression);
-        Quaternionfc rot = Maths.interpolate(frameA.rotation, frameB.rotation, progression);
-        return new JointTransform(pos, rot);
+        Vector3f pos = interpolate(frameA.getPosition(), frameB.getPosition(), progression);
+        Vector3f scale = interpolate(frameA.getScaling(), frameB.getScaling(), progression);
+        Quaternionfc rot = Maths.interpolate(frameA.getRotation(), frameB.getRotation(), progression);
+        return new JointTransform(pos, scale, rot);
     }
 
     /**

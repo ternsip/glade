@@ -1,10 +1,9 @@
 package com.ternsip.glade.model.loader.animation.loaders;
 
 import com.ternsip.glade.model.GLModel;
-import com.ternsip.glade.model.loader.animation.animation.Animation;
+import com.ternsip.glade.model.loader.animation.animation.AnimationI;
 import com.ternsip.glade.model.loader.animation.model.AnimatedModel;
 import com.ternsip.glade.model.loader.animation.model.Joint;
-import com.ternsip.glade.model.loader.engine.textures.Texture;
 import com.ternsip.glade.model.loader.parser.colladaLoader.ColladaLoader;
 import com.ternsip.glade.model.loader.parser.dataStructures.AnimatedModelData;
 import com.ternsip.glade.model.loader.parser.dataStructures.JointData;
@@ -29,7 +28,7 @@ public class AnimatedModelLoader {
         GLModel model = new GLModel(mesh.getVertices(), mesh.getNormals(), SKIP_ARRAY_FLOAT, mesh.getTextureCoords(), mesh.getIndices(), mesh.getVertexWeights(), mesh.getJointIds(), textureFile);
         SkeletonData skeletonData = entityData.getJointsData();
         Joint headJoint = createJoints(skeletonData.headJoint, new Matrix4f());
-        Animation animation = AnimationLoader.loadAnimation(animationFile);
+        AnimationI animation = AnimationLoader.loadAnimation(animationFile);
         AnimatedModel animatedModel = new AnimatedModel(model, headJoint, skeletonData.jointCount, animation);
         return animatedModel;
     }

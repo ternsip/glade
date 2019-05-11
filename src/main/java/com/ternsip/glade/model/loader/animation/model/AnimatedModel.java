@@ -1,7 +1,7 @@
 package com.ternsip.glade.model.loader.animation.model;
 
 import com.ternsip.glade.model.GLModel;
-import com.ternsip.glade.model.loader.animation.animation.Animation;
+import com.ternsip.glade.model.loader.animation.animation.AnimationI;
 import com.ternsip.glade.model.loader.animation.animation.Animator;
 import lombok.Getter;
 import org.joml.Matrix4f;
@@ -18,7 +18,7 @@ public class AnimatedModel {
 
     private final Animator animator;
 
-    public AnimatedModel(GLModel model, Joint rootJoint, int jointCount, Animation animation) {
+    public AnimatedModel(GLModel model, Joint rootJoint, int jointCount, AnimationI animation) {
         this.model = model;
         this.rootJoint = rootJoint;
         this.jointCount = jointCount;

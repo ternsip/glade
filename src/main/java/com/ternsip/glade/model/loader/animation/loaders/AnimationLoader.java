@@ -1,6 +1,6 @@
 package com.ternsip.glade.model.loader.animation.loaders;
 
-import com.ternsip.glade.model.loader.animation.animation.Animation;
+import com.ternsip.glade.model.loader.animation.animation.AnimationI;
 import com.ternsip.glade.model.loader.animation.animation.JointTransform;
 import com.ternsip.glade.model.loader.animation.animation.KeyFrame;
 import com.ternsip.glade.model.loader.parser.colladaLoader.ColladaLoader;
@@ -13,19 +13,28 @@ import org.joml.Quaternionfc;
 import org.joml.Vector3f;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
 public class AnimationLoader {
 
-    public static Animation loadAnimation(File colladaFile) {
+    public static AnimationI loadAnimation(File colladaFile) {
         AnimationData animationData = ColladaLoader.loadColladaAnimation(colladaFile);
         KeyFrame[] frames = new KeyFrame[animationData.keyFrames.length];
         for (int i = 0; i < frames.length; i++) {
             frames[i] = createKeyFrame(animationData.keyFrames[i]);
         }
-        return new Animation(animationData.lengthSeconds, frames);
+        //Map<String, List<JointTransform>> transforms = new HashMap<>();
+        //for (int i = 0; i < frames.length; ++i) {
+        //    for (String key : frames[i].getJointKeyFrames().keySet()) {
+        //        transforms.putIfAbsent(key, new ArrayList<>());
+        //        transforms.get(key).add(frames[i].getJointKeyFrames().get(key));
+        //    }
+        //}
+        return new AnimationI(animationData.lengthSeconds, frames);
     }
 
     private static KeyFrame createKeyFrame(KeyFrameData data) {
@@ -41,8 +50,9 @@ public class AnimationLoader {
         Matrix4f mat = data.jointLocalTransform;
         // TODO try to wrap this
         Vector3f translation = new Vector3f(mat.m30(), mat.m31(), mat.m32());
+        Vector3f scaling = new Vector3f(mat.m00(), mat.m11(), mat.m33());
         Quaternionfc rotation = Maths.fromMatrix(mat);
-        return new JointTransform(translation, rotation);
+        return new JointTransform(translation, scaling, rotation);
     }
 
 }
