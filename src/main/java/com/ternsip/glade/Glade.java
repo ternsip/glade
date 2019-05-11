@@ -18,6 +18,7 @@ import static com.ternsip.glade.model.Mesh.SKIP_TEXTURE;
 // TODO CHECKOUT BUFFERS (FLOATBUFFER ETC.) BECAUSE THEY ARE BUGGED
 // TODO TURN ALL Vectors and Matrixes and Quaternions to constant interface (quatenrionfc/matrixfc)
 // TODO MemoryUtil.memFree(posBuffer); ??
+// TODO add texture manual assign in case model dont have schema
 public class Glade {
 
     public static final DisplayManager DISPLAY_MANAGER = new DisplayManager();
@@ -69,7 +70,7 @@ public class Glade {
         //renderer.processEntity(shipModel);
         //renderer.processEntity(lampModel);
         //renderer.processEntity(skeletonModel);
-        //renderer.processEntity(microwaveModel);
+        renderer.processEntity(microwaveModel);
         //renderer.processEntity(spiderModel);
         //renderer.processEntity(hagreedModel);
 

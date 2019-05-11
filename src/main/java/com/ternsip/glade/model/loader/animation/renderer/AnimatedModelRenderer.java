@@ -5,6 +5,7 @@ import com.ternsip.glade.entity.Sun;
 import com.ternsip.glade.model.Mesh;
 import com.ternsip.glade.model.loader.engine.utils.OpenGlUtils;
 import com.ternsip.glade.universal.AnimGameItem;
+import org.joml.Matrix4f;
 
 import java.util.List;
 
@@ -24,11 +25,12 @@ public class AnimatedModelRenderer {
 
     public void render(AnimGameItem animGameItem, Camera camera, Sun sun) {
         shader.start();
-        shader.animated.loadBoolean(animGameItem.isAnimated());
+        Matrix4f[] jointTransforms = animGameItem.getAnimator().getJointTransforms();
+        shader.animated.loadBoolean(jointTransforms.length > 0);
         shader.projectionViewMatrix.loadMatrix(camera.getProjectionViewMatrix());
         shader.lightDirection.loadVec3(sun.getPosition().normalize().negate());
-        shader.jointTransforms.loadMatrixArray(animGameItem.getAnimator().getJointTransforms()); // TODO ANALOG
-        shader.transformationMatrix.loadMatrix(animGameItem.getTransformationMatrix()); // TODO ANALOG
+        shader.jointTransforms.loadMatrixArray(jointTransforms); // TODO ANALOG
+        shader.transformationMatrix.loadMatrix(animGameItem.getTransformationMatrix());
         OpenGlUtils.antialias(true);
         OpenGlUtils.disableBlending();
         OpenGlUtils.enableDepthTesting(true);
