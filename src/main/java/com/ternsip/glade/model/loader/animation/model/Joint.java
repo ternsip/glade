@@ -11,7 +11,7 @@ import java.util.List;
 @Setter
 public class Joint {
 
-    public final int index;// ID
+    public final int index;// ID TODO think about excessive
     public final String name;
     public final List<Joint> children;
     private final Matrix4f localBindTransform;

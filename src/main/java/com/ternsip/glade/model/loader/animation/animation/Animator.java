@@ -2,22 +2,27 @@ package com.ternsip.glade.model.loader.animation.animation;
 
 import com.ternsip.glade.model.loader.animation.model.AnimatedModel;
 import com.ternsip.glade.model.loader.animation.model.Joint;
+import lombok.Getter;
 import org.joml.Matrix4f;
 
 import java.util.HashMap;
 import java.util.Map;
 
-
+@Getter
 public class Animator {
 
-    private final AnimatedModel animatedModel;
+
+    // skeleton
+    private final Joint rootJoint;
+    private final int jointCount;
 
     private AnimationI currentAnimation;
     private float animationTime = 0;
 
 
-    public Animator(AnimatedModel animatedModel) {
-        this.animatedModel = animatedModel;
+    public Animator(Joint rootJoint, int jointCount) {
+        this.rootJoint = rootJoint;
+        this.jointCount = jointCount;
     }
 
 
@@ -33,7 +38,7 @@ public class Animator {
         }
         increaseAnimationTime();
         Map<String, Matrix4f> currentPose = calculateCurrentAnimationPose();
-        applyPoseToJoints(currentPose, animatedModel.getRootJoint(), new Matrix4f());
+        applyPoseToJoints(currentPose, rootJoint, new Matrix4f());
     }
 
     private void increaseAnimationTime() {
@@ -92,6 +97,30 @@ public class Animator {
             currentPose.put(jointName, currentTransform.getLocalTransform());
         }
         return currentPose;
+    }
+
+    public Matrix4f[] getJointTransforms() {
+        Matrix4f[] jointMatrices = new Matrix4f[jointCount];
+        addJointsToArray(rootJoint, jointMatrices);
+
+        // TODO this is just dummy to prevent crashing
+        for (int i = 0; i < jointMatrices.length; ++i) {
+            if (jointMatrices[i] == null) {
+                jointMatrices[i] = new Matrix4f();
+            }
+        }
+
+        return jointMatrices;
+    }
+
+    private void addJointsToArray(Joint headJoint, Matrix4f[] jointMatrices) {
+        // TODO this if is just dummy to prevent crashing
+        if (headJoint.index >= 0 && headJoint.index < jointMatrices.length) {
+            jointMatrices[headJoint.index] = headJoint.getAnimatedTransform();
+        }
+        for (Joint childJoint : headJoint.children) {
+            addJointsToArray(childJoint, jointMatrices);
+        }
     }
 
 }

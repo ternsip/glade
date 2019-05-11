@@ -4,6 +4,7 @@ import com.ternsip.glade.entity.Camera;
 import com.ternsip.glade.entity.Sun;
 import com.ternsip.glade.model.loader.animation.model.AnimatedModel;
 import com.ternsip.glade.model.loader.engine.utils.OpenGlUtils;
+import com.ternsip.glade.universal.AnimGameItem;
 import org.lwjgl.opengl.GL11;
 
 import java.util.List;
@@ -16,9 +17,12 @@ public class AnimatedModelRenderer {
         this.shader = new AnimatedModelShader();
     }
 
-    public void render(List<AnimatedModel> animatedModels, Camera camera, Sun sun) {
+    public void render(List<AnimatedModel> animatedModels, List<AnimGameItem> animGameItems, Camera camera, Sun sun) {
         for (AnimatedModel animatedModel : animatedModels) {
             render(animatedModel, camera, sun);
+        }
+        for (AnimGameItem animGameItem : animGameItems) {
+            render(animGameItem, camera, sun);
         }
     }
 
@@ -26,13 +30,26 @@ public class AnimatedModelRenderer {
         shader.start();
         shader.projectionViewMatrix.loadMatrix(camera.getProjectionViewMatrix());
         shader.lightDirection.loadVec3(sun.getPosition().normalize().negate());
-        shader.jointTransforms.loadMatrixArray(animatedModel.getJointTransforms()); // TODO ANALOG
+        shader.jointTransforms.loadMatrixArray(animatedModel.getAnimator().getJointTransforms()); // TODO ANALOG
         OpenGlUtils.antialias(true);
         OpenGlUtils.disableBlending();
         OpenGlUtils.enableDepthTesting(true);
         animatedModel.getModel().render();
         shader.stop();
-        animatedModel.update();
+        animatedModel.getAnimator().update();
+    }
+
+    public void render(AnimGameItem animGameItem, Camera camera, Sun sun) {
+        shader.start();
+        shader.projectionViewMatrix.loadMatrix(camera.getProjectionViewMatrix());
+        shader.lightDirection.loadVec3(sun.getPosition().normalize().negate());
+        shader.jointTransforms.loadMatrixArray(animGameItem.getJointTransforms()); // TODO ANALOG
+        OpenGlUtils.antialias(true);
+        OpenGlUtils.disableBlending();
+        OpenGlUtils.enableDepthTesting(true);
+        animGameItem.getMesh().render();
+        shader.stop();
+        animGameItem.update();
     }
 
     public void cleanUp() {

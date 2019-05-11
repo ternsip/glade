@@ -45,7 +45,7 @@ public class JointTransform {
      *                    transform somewhere in-between the two.
      * @return
      */
-    protected static JointTransform interpolate(JointTransform frameA, JointTransform frameB, float progression) {
+    public static JointTransform interpolate(JointTransform frameA, JointTransform frameB, float progression) {
         Vector3f pos = interpolate(frameA.getPosition(), frameB.getPosition(), progression);
         Vector3f scale = interpolate(frameA.getScaling(), frameB.getScaling(), progression);
         Quaternionfc rot = Maths.interpolate(frameA.getRotation(), frameB.getRotation(), progression);
@@ -80,7 +80,7 @@ public class JointTransform {
      * transform as represented by the position and rotation in this
      * instance, just in matrix form.
      */
-    protected Matrix4f getLocalTransform() {
+    public Matrix4f getLocalTransform() {
         Matrix4f matrix = new Matrix4f();
         matrix.translate(position);
         matrix.mul(Maths.toRotationMatrix(rotation), matrix);

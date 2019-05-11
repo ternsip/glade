@@ -1,31 +1,142 @@
 package com.ternsip.glade.universal;
 
+import com.ternsip.glade.model.loader.animation.animation.AnimationI;
+import com.ternsip.glade.model.loader.animation.animation.JointTransform;
+import com.ternsip.glade.model.loader.animation.animation.KeyFrame;
+import com.ternsip.glade.model.loader.animation.model.Joint;
+import lombok.Getter;
+import lombok.Setter;
+import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
+
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 
+@Getter
+@Setter
 public class AnimGameItem extends GameItem {
 
-    private Map<String, Animation> animations;
+    private Map<String, AnimationI> animations;
 
-    private Animation currentAnimation;
+    private Joint rootJoint;
+    private List<String> jointNames;
+    private AnimationI currentAnimation;
+    private float animationTime = 0;
 
-    public AnimGameItem(Mesh[] meshes, Map<String, Animation> animations) {
+    public AnimGameItem(Mesh[] meshes, List<String> jointNames, Joint rootJoint, Map<String, AnimationI> animations) {
         super(meshes);
         this.animations = animations;
-        Optional<Map.Entry<String, Animation>> entry = animations.entrySet().stream().findFirst();
+        this.jointNames = jointNames;
+        this.rootJoint = rootJoint;
+        Optional<Map.Entry<String, AnimationI>> entry = animations.entrySet().stream().findFirst();
         currentAnimation = entry.isPresent() ? entry.get().getValue() : null;
     }
 
-    public Animation getAnimation(String name) {
-        return animations.get(name);
+    // TODO do it by name
+    public void doAnimation(AnimationI animation) {
+        this.animationTime = 0;
+        this.currentAnimation = animation;
     }
 
-    public Animation getCurrentAnimation() {
-        return currentAnimation;
+
+    public void update() {
+        if (currentAnimation == null) {
+            return;
+        }
+        increaseAnimationTime();
+        Map<String, Matrix4f> currentPose = calculateCurrentAnimationPose();
+        applyPoseToJoints(currentPose, rootJoint, new Matrix4f());
     }
 
-    public void setCurrentAnimation(Animation currentAnimation) {
-        this.currentAnimation = currentAnimation;
+    private void increaseAnimationTime() {
+        // TODO bind to delta between render shots in seconds = 1 / fps
+        animationTime += 0.016;
+        // animationTime += DisplayManager.getFrameTime();
+        if (animationTime > currentAnimation.getLength()) {
+            this.animationTime %= currentAnimation.getLength();
+        }
     }
+
+    private Map<String, Matrix4f> calculateCurrentAnimationPose() {
+        KeyFrame[] frames = getPreviousAndNextFrames();
+        float progression = calculateProgression(frames[0], frames[1]);
+        return interpolatePoses(frames[0], frames[1], progression);
+    }
+
+    private void applyPoseToJoints(Map<String, Matrix4f> currentPose, Joint joint, Matrix4fc parentTransform) {
+        if (!currentPose.containsKey(joint.getName())) {
+            for (Joint childJoint : joint.children) {
+                applyPoseToJoints(currentPose, childJoint, parentTransform);
+            }
+            return;
+        }
+        Matrix4f currentLocalTransform = currentPose.get(joint.name);
+        Matrix4f currentTransform = parentTransform.mul(currentLocalTransform, new Matrix4f());
+        for (Joint childJoint : joint.children) {
+            applyPoseToJoints(currentPose, childJoint, currentTransform);
+        }
+        currentTransform.mul(joint.getInverseBindTransform(), currentTransform);
+        joint.setAnimatedTransform(currentTransform);
+    }
+
+    private KeyFrame[] getPreviousAndNextFrames() {
+        KeyFrame[] allFrames = currentAnimation.getKeyFrames();
+        KeyFrame previousFrame = allFrames[0];
+        KeyFrame nextFrame = allFrames[0];
+        for (int i = 1; i < allFrames.length; i++) {
+            nextFrame = allFrames[i];
+            if (nextFrame.getTimeStamp() > animationTime) {
+                break;
+            }
+            previousFrame = allFrames[i];
+        }
+        return new KeyFrame[]{previousFrame, nextFrame};
+    }
+
+
+    private float calculateProgression(KeyFrame previousFrame, KeyFrame nextFrame) {
+        float totalTime = nextFrame.getTimeStamp() - previousFrame.getTimeStamp();
+        float currentTime = animationTime - previousFrame.getTimeStamp();
+        return currentTime / totalTime; // TODO DIVISION BY ZERO ??
+    }
+
+
+    private Map<String, Matrix4f> interpolatePoses(KeyFrame previousFrame, KeyFrame nextFrame, float progression) {
+        Map<String, Matrix4f> currentPose = new HashMap<>();
+        for (String jointName : previousFrame.getJointKeyFrames().keySet()) {
+            JointTransform previousTransform = previousFrame.getJointKeyFrames().get(jointName);
+            JointTransform nextTransform = nextFrame.getJointKeyFrames().get(jointName);
+            JointTransform currentTransform = JointTransform.interpolate(previousTransform, nextTransform, progression);
+            currentPose.put(jointName, currentTransform.getLocalTransform());
+        }
+        return currentPose;
+    }
+
+    public Matrix4f[] getJointTransforms() {
+        Matrix4f[] jointMatrices = new Matrix4f[jointNames.size()];
+        addJointsToArray(rootJoint, jointMatrices);
+
+        // TODO this is just dummy to prevent crashing
+        for (int i = 0; i < jointMatrices.length; ++i) {
+            if (jointMatrices[i] == null) {
+                jointMatrices[i] = new Matrix4f();
+            }
+        }
+
+        return jointMatrices;
+    }
+
+    private void addJointsToArray(Joint headJoint, Matrix4f[] jointMatrices) {
+        // TODO this if is just dummy to prevent crashing
+        if (headJoint.index >= 0 && headJoint.index < jointMatrices.length) {
+            jointMatrices[headJoint.index] = headJoint.getAnimatedTransform();
+        }
+        for (Joint childJoint : headJoint.children) {
+            addJointsToArray(childJoint, jointMatrices);
+        }
+    }
+
 }

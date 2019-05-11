@@ -66,7 +66,7 @@ public class GeometryLoader {
             float y = Float.parseFloat(posData[i * 3 + 1]);
             float z = Float.parseFloat(posData[i * 3 + 2]);
             Vector4f position = new Vector4f(x, y, z, 1);
-            CORRECTION.transform(position, position);
+            //CORRECTION.transform(position, position);
             vertices.add(new Vertex(vertices.size(), new Vector3f(position.x, position.y, position.z), vertexWeights.get(vertices.size())));
         }
     }
@@ -82,7 +82,7 @@ public class GeometryLoader {
             float y = Float.parseFloat(normData[i * 3 + 1]);
             float z = Float.parseFloat(normData[i * 3 + 2]);
             Vector4f norm = new Vector4f(x, y, z, 0f);
-            CORRECTION.transform(norm, norm);
+            //CORRECTION.transform(norm, norm);
             normals.add(new Vector3f(norm.x, norm.y, norm.z));
         }
     }

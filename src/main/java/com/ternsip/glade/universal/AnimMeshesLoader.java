@@ -12,27 +12,37 @@ import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.ternsip.glade.model.loader.animation.loaders.AnimationLoader.createTransform;
 import static com.ternsip.glade.utils.Utils.loadResourceAsAssimp;
 import static org.lwjgl.assimp.Assimp.*;
 
 public class AnimMeshesLoader extends StaticMeshesLoader {
 
-    private static void buildTransFormationMatrices(AINodeAnim aiNodeAnim, Node node) {
+    private static List<JointTransform> buildJointTransforms(AINodeAnim aiNodeAnim) {
         int numFrames = aiNodeAnim.mNumPositionKeys();
         AIVectorKey.Buffer positionKeys = aiNodeAnim.mPositionKeys();
         AIVectorKey.Buffer scalingKeys = aiNodeAnim.mScalingKeys();
         AIQuatKey.Buffer rotationKeys = aiNodeAnim.mRotationKeys();
 
+        List<JointTransform> jointTransforms = new ArrayList<>();
         for (int i = 0; i < numFrames; i++) {
+            //AIVector3D aiVPos = positionKeys.get(i).mValue();
+            //Vector3f position = new Vector3f(aiVPos.x(), aiVPos.y(), aiVPos.z());
+            //AIQuaternion aiQRot = rotationKeys.get(i).mValue();
+            //Quaternionf rotation = new Quaternionf(aiQRot.x(), aiQRot.y(), aiQRot.z(), aiQRot.w());
+            //Vector3f scale = new Vector3f(1, 1, 1);
+            //if (i < aiNodeAnim.mNumScalingKeys()) {
+            //    AIVector3D aiVScale = scalingKeys.get(i).mValue();
+            //    scale.set(aiVScale.x(), aiVScale.y(), aiVScale.z());
+            //}
+//
+            //jointTransforms.add(new JointTransform(position, scale, rotation));
+
             AIVectorKey aiVecKey = positionKeys.get(i);
             AIVector3D vec = aiVecKey.mValue();
-
             Matrix4f transfMat = new Matrix4f().translate(vec.x(), vec.y(), vec.z());
 
             AIQuatKey quatKey = rotationKeys.get(i);
@@ -45,38 +55,17 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
                 vec = aiVecKey.mValue();
                 transfMat.scale(vec.x(), vec.y(), vec.z());
             }
+            jointTransforms.add(createTransform(transfMat));
 
-            node.addTransformation(transfMat);
-        }
-    }
-
-    private static List<JointTransform> buildJointTransforms(AINodeAnim aiNodeAnim) {
-        int numFrames = aiNodeAnim.mNumPositionKeys();
-        AIVectorKey.Buffer positionKeys = aiNodeAnim.mPositionKeys();
-        AIVectorKey.Buffer scalingKeys = aiNodeAnim.mScalingKeys();
-        AIQuatKey.Buffer rotationKeys = aiNodeAnim.mRotationKeys();
-
-        List<JointTransform> jointTransforms = new ArrayList<>();
-        for (int i = 0; i < numFrames; i++) {
-            AIVector3D aiVPos = positionKeys.get(i).mValue();
-            Vector3f position = new Vector3f(aiVPos.x(), aiVPos.y(), aiVPos.z());
-            AIQuaternion aiQRot = rotationKeys.get(i).mValue();
-            Quaternionf rotation = new Quaternionf(aiQRot.x(), aiQRot.y(), aiQRot.z(), aiQRot.w());
-            Vector3f scale = new Vector3f(1, 1, 1);
-            if (i < aiNodeAnim.mNumScalingKeys()) {
-                AIVector3D aiVScale = scalingKeys.get(i).mValue();
-                scale.set(aiVScale.x(), aiVScale.y(), aiVScale.z());
-            }
-
-            jointTransforms.add(new JointTransform(position, scale, rotation));
         }
         return jointTransforms;
     }
 
     public static AnimGameItem loadAnimGameItem(File meshFile, File animationFile, File texturesDir) {
-        return loadAnimGameItem(meshFile, animationFile, texturesDir,
-                aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate
-                | aiProcess_FixInfacingNormals | aiProcess_LimitBoneWeights);
+        return loadAnimGameItem(meshFile, animationFile, texturesDir, 0);
+        //return loadAnimGameItem(meshFile, animationFile, texturesDir,
+        //        aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate
+        //        | aiProcess_FixInfacingNormals | aiProcess_LimitBoneWeights);
     }
 
     @SneakyThrows
@@ -106,16 +95,13 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
         );
 
         AINode aiRootNode = aiSceneMesh.mRootNode();
-        Joint headJoint = createJoints(aiRootNode, new Matrix4f(), jointNameToIndex);
-        Matrix4f rootTransfromation = AnimMeshesLoader.toMatrix(aiRootNode.mTransformation());
-        Node rootNode = processNodesHierarchy(aiRootNode, null);
-        Map<String, Animation> animations = processAnimations(aiSceneAnimation, boneList, rootNode, rootTransfromation);
-        Map<String, AnimationI> anims = buildAnimations(aiSceneAnimation);
+        Joint headJoint = createJoints(aiRootNode, new Matrix4f(), jointNameToIndex, true);
+        Map<String, AnimationI> animations = buildAnimations(aiSceneAnimation);
 
-        return new AnimGameItem(meshes, animations);
+        return new AnimGameItem(meshes, boneList.stream().map(Bone::getBoneName).collect(Collectors.toList()), headJoint, animations);
     }
 
-    public static Joint createJoints(AINode aiNode, Matrix4f parentTransform, Map<String, Integer> jointNameToIndex) {
+    public static Joint createJoints(AINode aiNode, Matrix4f parentTransform, Map<String, Integer> jointNameToIndex, boolean root) {
         Matrix4f localBindTransform = AnimMeshesLoader.toMatrix(aiNode.mTransformation());
         Matrix4f bindTransform = parentTransform.mul(localBindTransform, new Matrix4f());
         Matrix4f inverseBindTransform = bindTransform.invert(new Matrix4f());
@@ -126,7 +112,7 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
         PointerBuffer aiChildren = aiNode.mChildren();
         for (int i = 0; i < numChildren; i++) {
             AINode aiChildNode = AINode.create(aiChildren.get(i));
-            Joint childJoint = createJoints(aiChildNode, bindTransform, jointNameToIndex);
+            Joint childJoint = createJoints(aiChildNode, bindTransform, jointNameToIndex, false);
             children.add(childJoint);
         }
         return new Joint(jointIndex, jointName, children, localBindTransform, inverseBindTransform);
@@ -153,33 +139,6 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
         }
 
         return frameList;
-    }
-
-    private static Map<String, Animation> processAnimations(AIScene aiScene, List<Bone> boneList,
-            Node rootNode, Matrix4f rootTransformation) {
-        Map<String, Animation> animations = new HashMap<>();
-
-        // Process all animations
-        int numAnimations = aiScene.mNumAnimations();
-        PointerBuffer aiAnimations = aiScene.mAnimations();
-        for (int i = 0; i < numAnimations; i++) {
-            AIAnimation aiAnimation = AIAnimation.create(aiAnimations.get(i));
-
-            // Calculate transformation matrices for each node
-            int numChanels = aiAnimation.mNumChannels();
-            PointerBuffer aiChannels = aiAnimation.mChannels();
-            for (int j = 0; j < numChanels; j++) {
-                AINodeAnim aiNodeAnim = AINodeAnim.create(aiChannels.get(j));
-                String nodeName = aiNodeAnim.mNodeName().dataString();
-                Node node = rootNode.findByName(nodeName);
-                buildTransFormationMatrices(aiNodeAnim, node);
-            }
-
-            List<AnimatedFrame> frames = buildAnimationFrames(boneList, rootNode, rootTransformation);
-            Animation animation = new Animation(aiAnimation.mName().dataString(), frames, aiAnimation.mDuration());
-            animations.put(animation.getName(), animation);
-        }
-        return animations;
     }
 
     private static Map<String, AnimationI> buildAnimations(AIScene aiScene) {
@@ -211,7 +170,7 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
                 for (Map.Entry<String, List<JointTransform>> entry : jointNameToTransforms.entrySet()) {
                     localMap.put(entry.getKey(), entry.getValue().get(j % entry.getValue().size()));
                 }
-                keyFrames[j] = new KeyFrame(deltaTime, localMap);
+                keyFrames[j] = new KeyFrame(deltaTime * j, localMap);
             }
             AnimationI animation = new AnimationI(duration, keyFrames);
             animations.put(aiAnimation.mName().dataString(), animation);
@@ -257,6 +216,29 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
                     weights.add(0.0f);
                     boneIds.add(0);
                 }
+            }
+        }
+    }
+
+    // TODO REMOVE THIS (THINK)
+    private static void processBones2(AIMesh aiMesh, List<Bone> boneList, List<Integer> boneIds, List<Float> weights) {
+        int numBones = aiMesh.mNumBones();
+        PointerBuffer aiBones = aiMesh.mBones();
+        int numVertices = aiMesh.mNumVertices();
+        boneIds = Arrays.asList(new Integer[numVertices]);
+        weights = Arrays.asList(new Float[numVertices]);
+        for (int i = 0; i < numBones; i++) {
+            AIBone aiBone = AIBone.create(aiBones.get(i));
+            int id = boneList.size();
+            Bone bone = new Bone(id, aiBone.mName().dataString(), toMatrix(aiBone.mOffsetMatrix()));
+            boneList.add(bone);
+            int numWeights = aiBone.mNumWeights();
+            AIVertexWeight.Buffer aiWeights = aiBone.mWeights();
+            for (int j = 0; j < numWeights; j++) {
+                AIVertexWeight aiWeight = aiWeights.get(j);
+                int vertexIndex = aiWeight.mVertexId();
+                boneIds.set(vertexIndex, bone.getBoneId());
+                weights.set(vertexIndex, aiWeight.mWeight());
             }
         }
     }

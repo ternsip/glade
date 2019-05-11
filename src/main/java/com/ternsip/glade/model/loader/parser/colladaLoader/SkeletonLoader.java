@@ -47,7 +47,7 @@ public class SkeletonLoader {
         if (isRoot) {
             // TODO HEAL THIS
             //because in Blender z is up, but in our game y is up.
-            CORRECTION.mul(matrix, matrix);
+            //CORRECTION.mul(matrix, matrix);
         }
         jointCount++;
         return new JointData(index, nameId, matrix);

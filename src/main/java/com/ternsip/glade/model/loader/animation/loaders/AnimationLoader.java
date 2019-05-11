@@ -40,14 +40,13 @@ public class AnimationLoader {
     private static KeyFrame createKeyFrame(KeyFrameData data) {
         Map<String, JointTransform> map = new HashMap<String, JointTransform>();
         for (JointTransformData jointData : data.jointTransforms) {
-            JointTransform jointTransform = createTransform(jointData);
+            JointTransform jointTransform = createTransform(jointData.jointLocalTransform);
             map.put(jointData.jointNameId, jointTransform);
         }
         return new KeyFrame(data.time, map);
     }
 
-    private static JointTransform createTransform(JointTransformData data) {
-        Matrix4f mat = data.jointLocalTransform;
+    public static JointTransform createTransform(Matrix4f mat) {
         // TODO try to wrap this
         Vector3f translation = new Vector3f(mat.m30(), mat.m31(), mat.m32());
         Vector3f scaling = new Vector3f(mat.m00(), mat.m11(), mat.m33());

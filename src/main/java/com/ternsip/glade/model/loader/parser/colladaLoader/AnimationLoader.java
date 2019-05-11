@@ -96,7 +96,7 @@ public class AnimationLoader {
             if (root) {
                 // TODO HEAL THIS
                 //because up axis in Blender is different to up axis in game
-                CORRECTION.mul(transform, transform);
+                //CORRECTION.mul(transform, transform);
             }
             keyFrames[i].addJointTransform(new JointTransformData(jointName, transform));
         }
