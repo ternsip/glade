@@ -5,7 +5,6 @@ import com.ternsip.glade.entity.Sun;
 import com.ternsip.glade.model.loader.animation.model.AnimatedModel;
 import com.ternsip.glade.model.loader.engine.utils.OpenGlUtils;
 import com.ternsip.glade.universal.AnimGameItem;
-import org.lwjgl.opengl.GL11;
 
 import java.util.List;
 

@@ -83,7 +83,7 @@ public class Mesh {
             weightsBuffer.put(weights).flip();
             glBindBuffer(GL_ARRAY_BUFFER, vboId);
             glBufferData(GL_ARRAY_BUFFER, weightsBuffer, GL_STATIC_DRAW);
-            glVertexAttribPointer(WEIGHTS_ATTRIBUTE_POINTER_INDEX, 3, GL_FLOAT, false, 0, 0);
+            glVertexAttribPointer(WEIGHTS_ATTRIBUTE_POINTER_INDEX, MAX_WEIGHTS, GL_FLOAT, false, 0, 0);
 
             // Joint indices
             vboId = glGenBuffers();
@@ -92,7 +92,7 @@ public class Mesh {
             jointIndicesBuffer.put(jointIndices).flip();
             glBindBuffer(GL_ARRAY_BUFFER, vboId);
             glBufferData(GL_ARRAY_BUFFER, jointIndicesBuffer, GL_STATIC_DRAW);
-            glVertexAttribIPointer(JOINTS_ATTRIBUTE_POINTER_INDEX, 3, GL_INT, 0, 0);
+            glVertexAttribIPointer(JOINTS_ATTRIBUTE_POINTER_INDEX, MAX_WEIGHTS, GL_INT, 0, 0);
 
             // Index VBO
             vboId = glGenBuffers();

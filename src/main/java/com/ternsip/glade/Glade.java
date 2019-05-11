@@ -50,16 +50,17 @@ public class Glade {
         GLModel dudeModel = ResourceLoader.loadObjModel(new File("models/dude/dude.obj"), new File("models/dude/dude.png"));
         Entity dude = new Entity(dudeModel, new Vector3f(-20, 0, -20), new Vector3f(0, 0, 0), new Vector3f(10, 10, 10));
 
-        AnimatedModel spiderModel = AnimatedModelLoader.loadEntity(new File("models/spider/spider.dae"), new File("models/spider/Spinnen_Bein_tex_COLOR_.png"), new File("models/spider/spider.dae"));
-        AnimatedModel boyModel = AnimatedModelLoader.loadEntity(new File("models/boy/boy.dae"), new File("models/boy/boy.png"), new File("models/boy/boy.dae"));
+        //AnimatedModel spiderModel = AnimatedModelLoader.loadEntity(new File("models/spider/spider.dae"), new File("models/spider/Spinnen_Bein_tex_COLOR_.png"), new File("models/spider/spider.dae"));
+       // AnimatedModel boyModel = AnimatedModelLoader.loadEntity(new File("models/boy/boy.dae"), new File("models/boy/boy.png"), new File("models/boy/boy.dae"));
         //AnimatedModel lampModel = AnimatedModelLoader.loadEntity(new File("models/lamp/lamp.dae"), new File("models/boy/boy.png"), new File("models/lamp/lamp.dae"));
         //AnimatedModel skeletonModel = AnimatedModelLoader.loadEntity(new File("models/skeleton/skeleton.dae"), new File("models/boy/boy.png"), new File("models/skeleton/skeleton.dae"));
         //AnimatedModel microwaveModel = AnimatedModelLoader.loadEntity(new File("models/microwave/microwave.dae"), new File("models/microwave/microwave_col.png"), new File("models/microwave/microwave.dae"));
 
-        //AnimGameItem animItem = AnimMeshesLoader.loadAnimGameItem(new File("models/bob/boblamp.md5mesh"), new File("models/bob/boblamp.md5anim"), new File("models/bob/"));
+        //AnimGameItem hagreedModel = AnimMeshesLoader.loadAnimGameItem(new File("models/bob/boblamp.md5mesh"), new File("models/bob/boblamp.md5anim"), new File("models/bob/"));
+        AnimGameItem spiderModel = AnimMeshesLoader.loadAnimGameItem(new File("models/spider/spider.dae"), new File("models/spider/spider.dae"), new File("models/spider/"));
 
-        AnimGameItem animItem2 = AnimMeshesLoader.loadAnimGameItem(new File("models/boy/boy.dae"), new File("models/boy/boy.dae"),new File("models/boy/"));
-        animItem2.setScale(0.05f);
+        //AnimGameItem animItem2 = AnimMeshesLoader.loadAnimGameItem(new File("models/boy/boy.dae"), new File("models/boy/boy.dae"),new File("models/boy/"));
+        //animItem2.setScale(0.05f);
 
         MasterRenderer renderer = new MasterRenderer(camera);
         renderer.processEntity(rover);
@@ -74,7 +75,7 @@ public class Glade {
         //renderer.processEntity(skeletonModel);
         //renderer.processEntity(microwaveModel);
         renderer.processEntity(spiderModel);
-        renderer.processEntity(animItem2);
+        //renderer.processEntity(hagreedModel);
 
         // TODO Check performance with runnable and without it
         DISPLAY_MANAGER.loop(() -> {
@@ -85,7 +86,8 @@ public class Glade {
 
         });
 
-        boyModel.delete();// TODO make in automatic
+        spiderModel.cleanup();// TODO make in automatic
+        //hagreedModel.cleanup();// TODO make in automatic
 
         renderer.cleanUp();
         DISPLAY_MANAGER.closeDisplay();

@@ -6,7 +6,7 @@ import java.io.File;
 
 public class AnimatedModelShader extends ShaderProgram {
 
-    private static final int MAX_JOINTS = 50;// max number of joints in a skeleton
+    private static final int MAX_JOINTS = 150;// max number of joints in a skeleton
     private static final int DIFFUSE_TEX_UNIT = 0;
 
     private static final File VERTEX_SHADER = new File("shaders/anim/animatedEntityVertex.glsl");
