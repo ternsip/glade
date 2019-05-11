@@ -103,17 +103,17 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
     }
 
     public static Joint createJoints(AINode aiNode, Matrix4fc parentTransform, Map<String, Integer> jointNameToIndex) {
-        Matrix4f localBindTransform = AnimMeshesLoader.toMatrix(aiNode.mTransformation());
-        Matrix4f bindTransform = parentTransform.mul(localBindTransform, new Matrix4f());
-        Matrix4f inverseBindTransform = bindTransform.invert(new Matrix4f());
         String jointName = aiNode.mName().dataString();
         int jointIndex = jointNameToIndex.getOrDefault(jointName, -1);
+        Matrix4f localBindTransform = AnimMeshesLoader.toMatrix(aiNode.mTransformation());
+        Matrix4f bindTransform = jointIndex == -1 ? new Matrix4f() : parentTransform.mul(localBindTransform, new Matrix4f());
+        Matrix4f inverseBindTransform = bindTransform.invert(new Matrix4f());
         List<Joint> children = new ArrayList<>();
         int numChildren = aiNode.mNumChildren();
         PointerBuffer aiChildren = aiNode.mChildren();
         for (int i = 0; i < numChildren; i++) {
             AINode aiChildNode = AINode.create(aiChildren.get(i));
-            Joint childJoint = createJoints(aiChildNode, jointIndex == -1 ? parentTransform : bindTransform, jointNameToIndex);
+            Joint childJoint = createJoints(aiChildNode, bindTransform, jointNameToIndex);
             children.add(childJoint);
         }
         return new Joint(jointIndex, jointName, children, localBindTransform, inverseBindTransform);
