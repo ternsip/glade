@@ -1,5 +1,6 @@
 package com.ternsip.glade.universal;
 
+import com.ternsip.glade.model.GLModel;
 import com.ternsip.glade.model.loader.animation.animation.AnimationI;
 import com.ternsip.glade.model.loader.animation.animation.JointTransform;
 import com.ternsip.glade.model.loader.animation.animation.KeyFrame;
@@ -85,10 +86,10 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
         List<Bone> boneList = new ArrayList<>();
         int numMeshes = aiSceneMesh.mNumMeshes();
         PointerBuffer aiMeshes = aiSceneMesh.mMeshes();
-        Mesh[] meshes = new Mesh[numMeshes];
+        GLModel[] meshes = new GLModel[numMeshes];
         for (int i = 0; i < numMeshes; i++) {
             AIMesh aiMesh = AIMesh.create(aiMeshes.get(i));
-            Mesh mesh = processMesh(aiMesh, materials, boneList);
+            GLModel mesh = processMesh(aiMesh, materials, boneList);
             meshes[i] = mesh;
         }
         Map<String, Integer> jointNameToIndex = boneList.stream().collect(
@@ -246,23 +247,20 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
         }
     }
 
-    private static Mesh processMesh(AIMesh aiMesh, List<Material> materials, List<Bone> boneList) {
+    private static GLModel processMesh(AIMesh aiMesh, List<Material> materials, List<Bone> boneList) {
         List<Float> vertices = new ArrayList<>();
         List<Float> textures = new ArrayList<>();
         List<Float> normals = new ArrayList<>();
         List<Integer> indices = new ArrayList<>();
-        List<Integer> boneIds = new ArrayList<>();
+        List<Integer> joints = new ArrayList<>();
         List<Float> weights = new ArrayList<>();
 
         processVertices(aiMesh, vertices);
         processNormals(aiMesh, normals);
         processTextCoords(aiMesh, textures);
         processIndices(aiMesh, indices);
-        processBones(aiMesh, boneList, boneIds, weights);
+        processBones(aiMesh, boneList, joints, weights);
 
-        Mesh mesh = new Mesh(Utils.listToArray(vertices), Utils.listToArray(textures),
-                Utils.listToArray(normals), Utils.listIntToArray(indices),
-                Utils.listIntToArray(boneIds), Utils.listToArray(weights));
         Material material;
         int materialIdx = aiMesh.mMaterialIndex();
         if (materialIdx >= 0 && materialIdx < materials.size()) {
@@ -270,9 +268,17 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
         } else {
             material = new Material();
         }
-        mesh.setMaterial(material);
 
-        return mesh;
+
+        return new GLModel(
+                Utils.listToArray(vertices),
+                Utils.listToArray(normals),
+                Utils.listToArray(textures),
+                Utils.listIntToArray(indices),
+                Utils.listToArray(weights),
+                Utils.listIntToArray(joints),
+                material
+        );
     }
 
     private static Node processNodesHierarchy(AINode aiNode, Node parentNode) {

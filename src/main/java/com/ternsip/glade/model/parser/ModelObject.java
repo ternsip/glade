@@ -1,6 +1,7 @@
 package com.ternsip.glade.model.parser;
 
 import com.ternsip.glade.model.GLModel;
+import com.ternsip.glade.universal.Material;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,7 +26,7 @@ public class ModelObject {
 
     public GLModel getGLModel() {
         if (model == null) {
-            model = new GLModel(vertices, SKIP_ARRAY_FLOAT, SKIP_ARRAY_FLOAT, textureCoordinates, indices, SKIP_ARRAY_FLOAT, SKIP_ARRAY_INT, SKIP_TEXTURE);
+            model = new GLModel(vertices, SKIP_ARRAY_FLOAT, textureCoordinates, indices, SKIP_ARRAY_FLOAT, SKIP_ARRAY_INT, new Material(SKIP_TEXTURE));
         }
         return model;
     }

@@ -11,6 +11,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
+import lombok.SneakyThrows;
 import org.lwjgl.BufferUtils;
 
 import static com.ternsip.glade.utils.Utils.loadResourceAsStream;
@@ -62,7 +64,8 @@ public class Utils {
         return result;
     }
 
-    public static ByteBuffer ioResourceToByteBuffer(File file, int bufferSize) throws IOException {
+    @SneakyThrows
+    public static ByteBuffer ioResourceToByteBuffer(File file, int bufferSize) {
         ByteBuffer buffer;
 
         Path path = Paths.get(file.getPath());

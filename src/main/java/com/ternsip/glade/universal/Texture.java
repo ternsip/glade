@@ -8,6 +8,8 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12.*;
 import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.stb.STBImage.*;
+
+import lombok.SneakyThrows;
 import org.lwjgl.system.MemoryStack;
 import static org.lwjgl.system.MemoryStack.*;
 
@@ -43,13 +45,15 @@ public class Texture {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     }
 
-    public Texture(File file, int numCols, int numRows) throws Exception {
+    public Texture(File file, int numCols, int numRows) {
         this(file);
         this.numCols = numCols;
         this.numRows = numRows;
     }
 
-    public Texture(File file) throws Exception {
+    @SneakyThrows
+    public Texture(File file) {
+        // TODO MAKE better
         this(Utils.ioResourceToByteBuffer(file, 1024));
     }
 
@@ -80,6 +84,7 @@ public class Texture {
             // Generate Mip Map
             glGenerateMipmap(GL_TEXTURE_2D);
 
+            // TODO RESOLVE THIS!!?!?
             //stbi_image_free(imageData);
         }
     }

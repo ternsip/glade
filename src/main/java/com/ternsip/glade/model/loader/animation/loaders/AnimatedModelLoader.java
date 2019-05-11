@@ -9,6 +9,7 @@ import com.ternsip.glade.model.loader.parser.dataStructures.AnimatedModelData;
 import com.ternsip.glade.model.loader.parser.dataStructures.JointData;
 import com.ternsip.glade.model.loader.parser.dataStructures.MeshData;
 import com.ternsip.glade.model.loader.parser.dataStructures.SkeletonData;
+import com.ternsip.glade.universal.Material;
 import org.joml.Matrix4f;
 
 import java.io.File;
@@ -25,7 +26,7 @@ public class AnimatedModelLoader {
     public static AnimatedModel loadEntity(File modelFile, File textureFile, File animationFile) {
         AnimatedModelData entityData = ColladaLoader.loadColladaModel(modelFile, MAX_WEIGHTS);
         MeshData mesh = entityData.getMeshData();
-        GLModel model = new GLModel(mesh.getVertices(), mesh.getNormals(), SKIP_ARRAY_FLOAT, mesh.getTextureCoords(), mesh.getIndices(), mesh.getVertexWeights(), mesh.getJointIds(), textureFile);
+        GLModel model = new GLModel(mesh.getVertices(), mesh.getNormals(), mesh.getTextureCoords(), mesh.getIndices(), mesh.getVertexWeights(), mesh.getJointIds(), new Material(textureFile));
         SkeletonData skeletonData = entityData.getJointsData();
         Joint headJoint = createJoints(skeletonData.headJoint, new Matrix4f());
         AnimationI animation = AnimationLoader.loadAnimation(animationFile);

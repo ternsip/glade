@@ -3,6 +3,7 @@ package com.ternsip.glade;
 
 import com.mokiat.data.front.parser.*;
 import com.ternsip.glade.model.GLModel;
+import com.ternsip.glade.universal.Material;
 import com.ternsip.glade.utils.Utils;
 import lombok.SneakyThrows;
 
@@ -63,7 +64,7 @@ public class ResourceLoader {
         for (int i = 0; i < indices.size(); ++i) {
             indicesArray[i] = indices.get(i);
         }
-        return new GLModel(vertices, normals, SKIP_ARRAY_FLOAT, textures, indicesArray, SKIP_ARRAY_FLOAT, SKIP_ARRAY_INT, textureFile);
+        return new GLModel(vertices, normals, textures, indicesArray, SKIP_ARRAY_FLOAT, SKIP_ARRAY_INT, new Material(textureFile));
     }
 
 

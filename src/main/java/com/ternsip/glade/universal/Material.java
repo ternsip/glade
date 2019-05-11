@@ -2,6 +2,11 @@ package com.ternsip.glade.universal;
 
 import org.joml.Vector4f;
 
+import java.io.File;
+
+import static com.ternsip.glade.model.GLModel.SKIP_TEXTURE;
+import static org.lwjgl.opengl.GL11.glDeleteTextures;
+
 public class Material {
 
     public static final Vector4f DEFAULT_COLOUR = new Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -17,6 +22,12 @@ public class Material {
     private Texture texture;
     
     private Texture normalMap;
+
+    public Material(File textureFile) {
+        if (textureFile != SKIP_TEXTURE) {
+            texture = new Texture(textureFile);
+        }
+    }
 
     public Material() {
         this.diffuseColour = DEFAULT_COLOUR;
@@ -94,5 +105,14 @@ public class Material {
 
     public void setNormalMap(Texture normalMap) {
         this.normalMap = normalMap;
+    }
+
+    public void cleanUp() {
+        if (isTextured()) {
+            glDeleteTextures(getTexture().getId());
+        }
+        if (hasNormalMap()) {
+            glDeleteTextures(getNormalMap().getId());
+        }
     }
 }

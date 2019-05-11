@@ -1,5 +1,6 @@
 package com.ternsip.glade.universal;
 
+import com.ternsip.glade.model.GLModel;
 import com.ternsip.glade.utils.Maths;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,7 +15,7 @@ public class GameItem {
 
     private boolean selected;
 
-    private Mesh[] meshes;
+    private GLModel[] meshes;
 
     private Vector3f position;
 
@@ -38,22 +39,22 @@ public class GameItem {
         disableFrustumCulling = false;
     }
 
-    public GameItem(Mesh mesh) {
+    public GameItem(GLModel mesh) {
         this();
-        this.meshes = new Mesh[]{mesh};
+        this.meshes = new GLModel[]{mesh};
     }
 
-    public GameItem(Mesh[] meshes) {
+    public GameItem(GLModel[] meshes) {
         this();
         this.meshes = meshes;
     }
 
-    public Mesh getMesh() {
+    public GLModel getMesh() {
         return meshes[0];
     }
 
-    public void setMesh(Mesh mesh) {
-        this.meshes = new Mesh[]{mesh};
+    public void setMesh(GLModel mesh) {
+        this.meshes = new GLModel[]{mesh};
     }
 
     public void cleanup() {

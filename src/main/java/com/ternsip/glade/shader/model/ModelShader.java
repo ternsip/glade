@@ -34,7 +34,6 @@ public class ModelShader extends ShaderProgram {
     protected void bindAttributes() {
         super.bindAttribute(VERTICES_ATTRIBUTE_POINTER_INDEX, "position");
         super.bindAttribute(NORMALS_ATTRIBUTE_POINTER_INDEX, "normal");
-        super.bindAttribute(COLORS_ATTRIBUTE_POINTER_INDEX, "color");
         super.bindAttribute(TEXTURES_ATTRIBUTE_POINTER_INDEX, "textureCoordinates");
         super.bindAttribute(WEIGHTS_ATTRIBUTE_POINTER_INDEX, "weights");
         super.bindAttribute(JOINTS_ATTRIBUTE_POINTER_INDEX, "joints");

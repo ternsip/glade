@@ -2,6 +2,7 @@ package com.ternsip.glade.model.loader.animation.renderer;
 
 import com.ternsip.glade.entity.Camera;
 import com.ternsip.glade.entity.Sun;
+import com.ternsip.glade.model.GLModel;
 import com.ternsip.glade.model.loader.animation.model.AnimatedModel;
 import com.ternsip.glade.model.loader.engine.utils.OpenGlUtils;
 import com.ternsip.glade.universal.AnimGameItem;
@@ -50,7 +51,7 @@ public class AnimatedModelRenderer {
         OpenGlUtils.antialias(true);
         OpenGlUtils.disableBlending();
         OpenGlUtils.enableDepthTesting(true);
-        for (Mesh mesh : animGameItem.getMeshes()) {
+        for (GLModel mesh : animGameItem.getMeshes()) {
             mesh.render();
         }
         shader.stop();

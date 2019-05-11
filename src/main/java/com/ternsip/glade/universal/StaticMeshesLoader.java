@@ -16,38 +16,6 @@ import static org.lwjgl.assimp.Assimp.*;
 
 public class StaticMeshesLoader {
 
-    //public static Mesh[] load(String resourcePath, String texturesDir) throws Exception {
-    //    return load(resourcePath, texturesDir,
-    //            aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate
-    //                    | aiProcess_FixInfacingNormals);
-    //}
-//
-    //public static Mesh[] load(String resourcePath, String texturesDir, int flags) throws Exception {
-    //    AIScene aiScene = aiImportFile(resourcePath, flags);
-    //    if (aiScene == null) {
-    //        throw new Exception("Error loading model");
-    //    }
-//
-    //    int numMaterials = aiScene.mNumMaterials();
-    //    PointerBuffer aiMaterials = aiScene.mMaterials();
-    //    List<Material> materials = new ArrayList<>();
-    //    for (int i = 0; i < numMaterials; i++) {
-    //        AIMaterial aiMaterial = AIMaterial.create(aiMaterials.get(i));
-    //        processMaterial(aiMaterial, materials, texturesDir);
-    //    }
-//
-    //    int numMeshes = aiScene.mNumMeshes();
-    //    PointerBuffer aiMeshes = aiScene.mMeshes();
-    //    Mesh[] meshes = new Mesh[numMeshes];
-    //    for (int i = 0; i < numMeshes; i++) {
-    //        AIMesh aiMesh = AIMesh.create(aiMeshes.get(i));
-    //        Mesh mesh = processMesh(aiMesh, materials);
-    //        meshes[i] = mesh;
-    //    }
-//
-    //    return meshes;
-    //}
-
     protected static void processIndices(AIMesh aiMesh, List<Integer> indices) {
         int numFaces = aiMesh.mNumFaces();
         AIFace.Buffer aiFaces = aiMesh.mFaces();
@@ -92,31 +60,6 @@ public class StaticMeshesLoader {
         Material material = new Material(diffuse, specular, 1.0f);
         material.setTexture(texture);
         materials.add(material);
-    }
-
-    private static Mesh processMesh(AIMesh aiMesh, List<Material> materials) {
-        List<Float> vertices = new ArrayList<>();
-        List<Float> textures = new ArrayList<>();
-        List<Float> normals = new ArrayList<>();
-        List<Integer> indices = new ArrayList();
-
-        processVertices(aiMesh, vertices);
-        processNormals(aiMesh, normals);
-        processTextCoords(aiMesh, textures);
-        processIndices(aiMesh, indices);
-
-        Mesh mesh = new Mesh(Utils.listToArray(vertices), Utils.listToArray(textures),
-                Utils.listToArray(normals), Utils.listIntToArray(indices));
-        Material material;
-        int materialIdx = aiMesh.mMaterialIndex();
-        if (materialIdx >= 0 && materialIdx < materials.size()) {
-            material = materials.get(materialIdx);
-        } else {
-            material = new Material();
-        }
-        mesh.setMaterial(material);
-
-        return mesh;
     }
 
     protected static void processNormals(AIMesh aiMesh, List<Float> normals) {

@@ -2,6 +2,7 @@ package com.ternsip.glade.entity;
 
 
 import com.ternsip.glade.model.GLModel;
+import com.ternsip.glade.universal.Material;
 
 import java.io.File;
 
@@ -73,7 +74,7 @@ public class Cube {
     };
 
     public static GLModel generateGLModel() {
-        return new GLModel(VERTICES, NORMALS, COLORS, TEXCOORDS, INDICES, SKIP_ARRAY_FLOAT, SKIP_ARRAY_INT, new File("models/others/stall.png"));
+        return new GLModel(VERTICES, NORMALS, TEXCOORDS, INDICES, SKIP_ARRAY_FLOAT, SKIP_ARRAY_INT, new Material(new File("models/others/stall.png")));
     }
 
 }

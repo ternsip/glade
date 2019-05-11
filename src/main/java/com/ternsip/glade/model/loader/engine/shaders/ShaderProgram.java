@@ -55,7 +55,6 @@ public class ShaderProgram {
         glBindAttribLocation(programID, NORMALS_ATTRIBUTE_POINTER_INDEX, "in_normal");
         glBindAttribLocation(programID, JOINTS_ATTRIBUTE_POINTER_INDEX, "in_jointIndices");
         glBindAttribLocation(programID, WEIGHTS_ATTRIBUTE_POINTER_INDEX, "in_weights");
-        glBindAttribLocation(programID, COLORS_ATTRIBUTE_POINTER_INDEX, "in_colors");
     }
 
     private int loadShader(File file, int type) {
