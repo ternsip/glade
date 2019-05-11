@@ -3,18 +3,20 @@ package com.ternsip.glade.model.loader.animation.animation;
 import com.ternsip.glade.model.loader.animation.model.AnimatedModel;
 import com.ternsip.glade.model.loader.animation.model.Joint;
 import lombok.Getter;
+import lombok.Setter;
 import org.joml.Matrix4f;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Getter
+@Setter
 public class Animator {
 
 
     // skeleton
-    private final Joint rootJoint;
-    private final int jointCount;
+    private Joint rootJoint;
+    private int jointCount;
 
     private AnimationI currentAnimation;
     private float animationTime = 0;
@@ -57,6 +59,12 @@ public class Animator {
     }
 
     private void applyPoseToJoints(Map<String, Matrix4f> currentPose, Joint joint, Matrix4f parentTransform) {
+        if (!currentPose.containsKey(joint.getName())) {
+            for (Joint childJoint : joint.children) {
+                applyPoseToJoints(currentPose, childJoint, parentTransform);
+            }
+            return;
+        }
         Matrix4f currentLocalTransform = currentPose.get(joint.name);
         Matrix4f currentTransform = parentTransform.mul(currentLocalTransform, new Matrix4f());
         for (Joint childJoint : joint.children) {

@@ -43,13 +43,13 @@ public class AnimatedModelRenderer {
         shader.start();
         shader.projectionViewMatrix.loadMatrix(camera.getProjectionViewMatrix());
         shader.lightDirection.loadVec3(sun.getPosition().normalize().negate());
-        shader.jointTransforms.loadMatrixArray(animGameItem.getJointTransforms()); // TODO ANALOG
+        shader.jointTransforms.loadMatrixArray(animGameItem.getAnimator().getJointTransforms()); // TODO ANALOG
         OpenGlUtils.antialias(true);
         OpenGlUtils.disableBlending();
         OpenGlUtils.enableDepthTesting(true);
         animGameItem.getMesh().render();
         shader.stop();
-        animGameItem.update();
+        animGameItem.getAnimator().update();
     }
 
     public void cleanUp() {

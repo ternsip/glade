@@ -6,6 +6,7 @@ import com.ternsip.glade.model.loader.animation.animation.KeyFrame;
 import com.ternsip.glade.model.loader.animation.model.Joint;
 import lombok.SneakyThrows;
 import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.lwjgl.PointerBuffer;
@@ -95,13 +96,13 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
         );
 
         AINode aiRootNode = aiSceneMesh.mRootNode();
-        Joint headJoint = createJoints(aiRootNode, new Matrix4f(), jointNameToIndex, true);
+        Joint headJoint = createJoints(aiRootNode, new Matrix4f(), jointNameToIndex);
         Map<String, AnimationI> animations = buildAnimations(aiSceneAnimation);
 
         return new AnimGameItem(meshes, boneList.stream().map(Bone::getBoneName).collect(Collectors.toList()), headJoint, animations);
     }
 
-    public static Joint createJoints(AINode aiNode, Matrix4f parentTransform, Map<String, Integer> jointNameToIndex, boolean root) {
+    public static Joint createJoints(AINode aiNode, Matrix4fc parentTransform, Map<String, Integer> jointNameToIndex) {
         Matrix4f localBindTransform = AnimMeshesLoader.toMatrix(aiNode.mTransformation());
         Matrix4f bindTransform = parentTransform.mul(localBindTransform, new Matrix4f());
         Matrix4f inverseBindTransform = bindTransform.invert(new Matrix4f());
@@ -112,7 +113,7 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
         PointerBuffer aiChildren = aiNode.mChildren();
         for (int i = 0; i < numChildren; i++) {
             AINode aiChildNode = AINode.create(aiChildren.get(i));
-            Joint childJoint = createJoints(aiChildNode, bindTransform, jointNameToIndex, false);
+            Joint childJoint = createJoints(aiChildNode, jointIndex == -1 ? parentTransform : bindTransform, jointNameToIndex);
             children.add(childJoint);
         }
         return new Joint(jointIndex, jointName, children, localBindTransform, inverseBindTransform);

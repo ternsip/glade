@@ -71,7 +71,6 @@ public class Glade {
 
         AnimGameItem animItem2 = AnimMeshesLoader.loadAnimGameItem(new File("models/boy/boy.dae"), new File("models/boy/boy.dae"),new File("models/boy/"));
         animItem2.setScale(0.05f);
-        //animItem2.setCurrentAnimation(boyModel.getAnimator().getCurrentAnimation());
 
         MasterRenderer renderer = new MasterRenderer(camera);
         renderer.processEntity(rover);
@@ -81,7 +80,7 @@ public class Glade {
         }
         renderer.processEntity(house);
         renderer.processEntity(dude);
-        renderer.processEntity(boyModel);
+        //renderer.processEntity(boyModel);
         //renderer.processEntity(lampModel);
         //renderer.processEntity(skeletonModel);
         //renderer.processEntity(microwaveModel);
