@@ -1,19 +1,26 @@
 package com.ternsip.glade.universal;
 
+import com.ternsip.glade.utils.Maths;
+import lombok.Getter;
+import lombok.Setter;
+import org.joml.Matrix4f;
 import org.joml.Quaternionf;
+import org.joml.Quaternionfc;
 import org.joml.Vector3f;
 
+@Getter
+@Setter
 public class GameItem {
 
     private boolean selected;
 
     private Mesh[] meshes;
 
-    private final Vector3f position;
+    private Vector3f position;
 
-    private float scale;
+    private Vector3f scale;
 
-    private final Quaternionf rotation;
+    private Vector3f rotation;
 
     private int textPos;
     
@@ -24,8 +31,8 @@ public class GameItem {
     public GameItem() {
         selected = false;
         position = new Vector3f(0, 0, 0);
-        scale = 1;
-        rotation = new Quaternionf();
+        scale = new Vector3f(1, 1, 1);
+        rotation = new Vector3f(0, 0, 0);
         textPos = 0;
         insideFrustum = true;
         disableFrustumCulling = false;
@@ -41,50 +48,8 @@ public class GameItem {
         this.meshes = meshes;
     }
 
-    public Vector3f getPosition() {
-        return position;
-    }
-
-    public int getTextPos() {
-        return textPos;
-    }
-
-    public boolean isSelected() {
-        return selected;
-    }
-
-    public final void setPosition(float x, float y, float z) {
-        this.position.x = x;
-        this.position.y = y;
-        this.position.z = z;
-    }
-
-    public float getScale() {
-        return scale;
-    }
-
-    public final void setScale(float scale) {
-        this.scale = scale;
-    }
-
-    public Quaternionf getRotation() {
-        return rotation;
-    }
-
-    public final void setRotation(Quaternionf q) {
-        this.rotation.set(q);
-    }
-
     public Mesh getMesh() {
         return meshes[0];
-    }
-
-    public Mesh[] getMeshes() {
-        return meshes;
-    }
-
-    public void setMeshes(Mesh[] meshes) {
-        this.meshes = meshes;
     }
 
     public void setMesh(Mesh mesh) {
@@ -98,27 +63,28 @@ public class GameItem {
         }
     }
 
-    public void setSelected(boolean selected) {
-        this.selected = selected;
+    public Quaternionfc getRotationQuaternion() {
+        float attitude = Maths.toRadians(rotation.x());
+        float heading = Maths.toRadians(rotation.y());
+        float bank = Maths.toRadians(rotation.z());
+
+        // Assuming the angles are in radians.
+        float c1 = (float) Math.cos(heading);
+        float s1 = (float) Math.sin(heading);
+        float c2 = (float) Math.cos(attitude);
+        float s2 = (float) Math.sin(attitude);
+        float c3 = (float) Math.cos(bank);
+        float s3 = (float) Math.sin(bank);
+        float w = (float) (Math.sqrt(1.0 + c1 * c2 + c1 * c3 - s1 * s2 * s3 + c2 * c3) / 2.0);
+        float w4 = (4.0f * w);
+        float x = (c2 * s3 + c1 * s3 + s1 * s2 * c3) / w4;
+        float y = (s1 * c2 + s1 * c3 + c1 * s2 * s3) / w4;
+        float z = (-s1 * s3 + c1 * s2 * c3 + s2) / w4;
+        return new Quaternionf(x, y, z, w);
     }
 
-    public void setTextPos(int textPos) {
-        this.textPos = textPos;
+    public Matrix4f getTransformationMatrix() {
+        return Maths.createTransformationMatrix(getPosition(), getRotationQuaternion(), getScale());
     }
 
-    public boolean isInsideFrustum() {
-        return insideFrustum;
-    }
-
-    public void setInsideFrustum(boolean insideFrustum) {
-        this.insideFrustum = insideFrustum;
-    }
-    
-    public boolean isDisableFrustumCulling() {
-        return disableFrustumCulling;
-    }
-
-    public void setDisableFrustumCulling(boolean disableFrustumCulling) {
-        this.disableFrustumCulling = disableFrustumCulling;
-    }    
 }

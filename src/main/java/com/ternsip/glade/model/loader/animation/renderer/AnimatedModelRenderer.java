@@ -5,6 +5,8 @@ import com.ternsip.glade.entity.Sun;
 import com.ternsip.glade.model.loader.animation.model.AnimatedModel;
 import com.ternsip.glade.model.loader.engine.utils.OpenGlUtils;
 import com.ternsip.glade.universal.AnimGameItem;
+import com.ternsip.glade.universal.Mesh;
+import org.joml.Matrix4f;
 
 import java.util.List;
 
@@ -30,6 +32,7 @@ public class AnimatedModelRenderer {
         shader.projectionViewMatrix.loadMatrix(camera.getProjectionViewMatrix());
         shader.lightDirection.loadVec3(sun.getPosition().normalize().negate());
         shader.jointTransforms.loadMatrixArray(animatedModel.getAnimator().getJointTransforms()); // TODO ANALOG
+        shader.transformationMatrix.loadMatrix(new Matrix4f()); // TODO ANALOG
         OpenGlUtils.antialias(true);
         OpenGlUtils.disableBlending();
         OpenGlUtils.enableDepthTesting(true);
@@ -43,10 +46,13 @@ public class AnimatedModelRenderer {
         shader.projectionViewMatrix.loadMatrix(camera.getProjectionViewMatrix());
         shader.lightDirection.loadVec3(sun.getPosition().normalize().negate());
         shader.jointTransforms.loadMatrixArray(animGameItem.getAnimator().getJointTransforms()); // TODO ANALOG
+        shader.transformationMatrix.loadMatrix(animGameItem.getTransformationMatrix()); // TODO ANALOG
         OpenGlUtils.antialias(true);
         OpenGlUtils.disableBlending();
         OpenGlUtils.enableDepthTesting(true);
-        animGameItem.getMesh().render();
+        for (Mesh mesh : animGameItem.getMeshes()) {
+            mesh.render();
+        }
         shader.stop();
         animGameItem.getAnimator().update();
     }
