@@ -1,9 +1,9 @@
-package com.ternsip.glade.model.loader.animation.renderer;
+package com.ternsip.glade.model.loader.animation.animation;
 
 import com.ternsip.glade.entity.Camera;
 import com.ternsip.glade.entity.Sun;
 import com.ternsip.glade.model.Mesh;
-import com.ternsip.glade.model.loader.engine.utils.OpenGlUtils;
+import com.ternsip.glade.utils.OpenGlUtils;
 import com.ternsip.glade.universal.Model;
 import org.joml.Matrix4f;
 

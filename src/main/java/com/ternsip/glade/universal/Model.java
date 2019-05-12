@@ -3,7 +3,7 @@ package com.ternsip.glade.universal;
 import com.ternsip.glade.model.Mesh;
 import com.ternsip.glade.model.loader.animation.animation.Animation;
 import com.ternsip.glade.model.loader.animation.animation.Animator;
-import com.ternsip.glade.model.loader.animation.model.Joint;
+import com.ternsip.glade.model.loader.animation.animation.Joint;
 import com.ternsip.glade.utils.Maths;
 import lombok.Getter;
 import lombok.Setter;

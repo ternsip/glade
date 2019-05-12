@@ -1,10 +1,11 @@
-package com.ternsip.glade.model.loader.animation.renderer;
+package com.ternsip.glade.model.loader.animation.animation;
 
 import com.ternsip.glade.model.loader.engine.shaders.*;
 
 import java.io.File;
 
-import static com.ternsip.glade.universal.AnimatedFrame.MAX_JOINTS;
+import static com.ternsip.glade.model.Mesh.MAX_JOINTS;
+
 
 public class AnimatedModelShader extends ShaderProgram {
 

@@ -4,7 +4,7 @@ import com.ternsip.glade.model.Mesh;
 import com.ternsip.glade.model.loader.animation.animation.Animation;
 import com.ternsip.glade.model.loader.animation.animation.JointTransform;
 import com.ternsip.glade.model.loader.animation.animation.KeyFrame;
-import com.ternsip.glade.model.loader.animation.model.Joint;
+import com.ternsip.glade.model.loader.animation.animation.Joint;
 import com.ternsip.glade.utils.Maths;
 import lombok.SneakyThrows;
 import org.joml.*;
@@ -26,34 +26,6 @@ import static org.lwjgl.assimp.Assimp.*;
 public class AssimpLoader {
 
     public static final int FLAG_ALLOW_ORIGINS_WITHOUT_BONES = 0x1;
-
-    private static List<JointTransform> buildJointTransforms(AINodeAnim aiNodeAnim) {
-        int numFrames = aiNodeAnim.mNumPositionKeys();
-        AIVectorKey.Buffer positionKeys = aiNodeAnim.mPositionKeys();
-        AIVectorKey.Buffer scalingKeys = aiNodeAnim.mScalingKeys();
-        AIQuatKey.Buffer rotationKeys = aiNodeAnim.mRotationKeys();
-
-        List<JointTransform> jointTransforms = new ArrayList<>();
-        for (int i = 0; i < numFrames; i++) {
-            AIVector3D vec = positionKeys.get(i).mValue();
-            Matrix4f mat = new Matrix4f().translate(vec.x(), vec.y(), vec.z());
-            if (i < aiNodeAnim.mNumRotationKeys()) {
-                AIQuaternion aiQuat = rotationKeys.get(i).mValue();
-                Quaternionf quat = new Quaternionf(aiQuat.x(), aiQuat.y(), aiQuat.z(), aiQuat.w());
-                mat.rotate(quat);
-            }
-            Vector3f scale = new Vector3f(1, 1, 1);
-            if (i < aiNodeAnim.mNumScalingKeys()) {
-                AIVector3D aiVScale = scalingKeys.get(i).mValue();
-                scale.set(aiVScale.x(), aiVScale.y(), aiVScale.z());
-            }
-            Vector3f translation = new Vector3f(mat.m30(), mat.m31(), mat.m32());
-            Quaternionfc rotation = Maths.fromMatrix(mat);
-            jointTransforms.add(new JointTransform(translation, scale, rotation));
-
-        }
-        return jointTransforms;
-    }
 
     public static Model loadModel(File meshFile, File animationFile, File texturesDir) {
         return loadModel(meshFile, animationFile, texturesDir, 0);
@@ -184,6 +156,34 @@ public class AssimpLoader {
             animations.put(aiAnimation.mName().dataString(), animation);
         }
         return animations;
+    }
+
+    private static List<JointTransform> buildJointTransforms(AINodeAnim aiNodeAnim) {
+        int numFrames = aiNodeAnim.mNumPositionKeys();
+        AIVectorKey.Buffer positionKeys = aiNodeAnim.mPositionKeys();
+        AIVectorKey.Buffer scalingKeys = aiNodeAnim.mScalingKeys();
+        AIQuatKey.Buffer rotationKeys = aiNodeAnim.mRotationKeys();
+
+        List<JointTransform> jointTransforms = new ArrayList<>();
+        for (int i = 0; i < numFrames; i++) {
+            AIVector3D vec = positionKeys.get(i).mValue();
+            Matrix4f mat = new Matrix4f().translate(vec.x(), vec.y(), vec.z());
+            if (i < aiNodeAnim.mNumRotationKeys()) {
+                AIQuaternion aiQuat = rotationKeys.get(i).mValue();
+                Quaternionf quat = new Quaternionf(aiQuat.x(), aiQuat.y(), aiQuat.z(), aiQuat.w());
+                mat.rotate(quat);
+            }
+            Vector3f scale = new Vector3f(1, 1, 1);
+            if (i < aiNodeAnim.mNumScalingKeys()) {
+                AIVector3D aiVScale = scalingKeys.get(i).mValue();
+                scale.set(aiVScale.x(), aiVScale.y(), aiVScale.z());
+            }
+            Vector3f translation = new Vector3f(mat.m30(), mat.m31(), mat.m32());
+            Quaternionfc rotation = Maths.fromMatrix(mat);
+            jointTransforms.add(new JointTransform(translation, scale, rotation));
+
+        }
+        return jointTransforms;
     }
 
     private static Skeleton processBones(PointerBuffer aiBones) {

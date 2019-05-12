@@ -1,6 +1,5 @@
 package com.ternsip.glade.model.loader.animation.animation;
 
-import com.ternsip.glade.model.loader.animation.model.Joint;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.Matrix4f;

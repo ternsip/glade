@@ -1,4 +1,4 @@
-package com.ternsip.glade.model.loader.engine.utils;
+package com.ternsip.glade.utils;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
