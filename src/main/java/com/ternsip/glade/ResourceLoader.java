@@ -2,8 +2,8 @@ package com.ternsip.glade;
 
 
 import com.mokiat.data.front.parser.*;
-import com.ternsip.glade.universal.Mesh;
 import com.ternsip.glade.universal.Material;
+import com.ternsip.glade.universal.Mesh;
 import com.ternsip.glade.utils.Utils;
 import lombok.SneakyThrows;
 

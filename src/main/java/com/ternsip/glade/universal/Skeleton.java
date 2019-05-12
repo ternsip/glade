@@ -16,7 +16,7 @@ public class Skeleton {
         this.meshBones = meshBones;
         Map<String, Bone> boneNameToBone = new HashMap<>();
         for (Bone[] bones : meshBones) {
-            for (Bone bone : bones)  {
+            for (Bone bone : bones) {
                 boneNameToBone.put(bone.getBoneName(), bone);
             }
         }

@@ -2,9 +2,9 @@ package com.ternsip.glade.sky;
 
 import com.ternsip.glade.entity.Camera;
 import com.ternsip.glade.entity.Sun;
-import com.ternsip.glade.universal.Mesh;
 import com.ternsip.glade.shader.sky.SkyboxShader;
 import com.ternsip.glade.universal.Material;
+import com.ternsip.glade.universal.Mesh;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 

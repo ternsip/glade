@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @RequiredArgsConstructor

@@ -1,9 +1,9 @@
 package com.ternsip.glade;
 
 import com.ternsip.glade.entity.*;
-import com.ternsip.glade.universal.Mesh;
 import com.ternsip.glade.renderer.MasterRenderer;
 import com.ternsip.glade.universal.AssimpLoader;
+import com.ternsip.glade.universal.Mesh;
 import com.ternsip.glade.universal.Model;
 import com.ternsip.glade.utils.DisplayManager;
 import lombok.SneakyThrows;
@@ -91,7 +91,7 @@ public class Glade {
         //horror.setRotation(new Vector3f(0, 0, -90));
 
         MasterRenderer renderer = new MasterRenderer(camera);
-        renderer.processEntity(rover);
+        //renderer.processEntity(rover);
         renderer.processEntity(cube);
         //renderer.processEntity(teapotModel);
         //renderer.processEntity(dude);

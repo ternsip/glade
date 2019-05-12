@@ -1,8 +1,8 @@
 package com.ternsip.glade.entity;
 
 
-import com.ternsip.glade.universal.Mesh;
 import com.ternsip.glade.universal.Material;
+import com.ternsip.glade.universal.Mesh;
 
 import java.io.File;
 
