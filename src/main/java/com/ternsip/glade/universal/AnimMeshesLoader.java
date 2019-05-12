@@ -6,6 +6,8 @@ import com.ternsip.glade.model.loader.animation.animation.JointTransform;
 import com.ternsip.glade.model.loader.animation.animation.KeyFrame;
 import com.ternsip.glade.model.loader.animation.model.Joint;
 import com.ternsip.glade.utils.Maths;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.joml.*;
 import org.lwjgl.PointerBuffer;
@@ -13,11 +15,10 @@ import org.lwjgl.assimp.*;
 
 import java.io.File;
 import java.lang.Math;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static com.ternsip.glade.utils.Utils.loadResourceAsAssimp;
 import static org.lwjgl.assimp.Assimp.*;
@@ -64,7 +65,7 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
                 aiProcess_Triangulate |
                 aiProcess_FixInfacingNormals |
                 aiProcess_LimitBoneWeights;
-        return loadAnimGameItem(meshFile, animationFile, texturesDir,assimpFlags, loaderFlags);
+        return loadAnimGameItem(meshFile, animationFile, texturesDir, assimpFlags, loaderFlags);
     }
 
     @SneakyThrows
@@ -86,24 +87,41 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
             processMaterial(aiMaterial, materials, texturesDir);
         }
 
-        List<Bone> boneList = new ArrayList<>();
+        List<Bone> allBones = new ArrayList<>();
         int numMeshes = aiSceneMesh.mNumMeshes();
         PointerBuffer aiMeshes = aiSceneMesh.mMeshes();
         Mesh[] meshes = new Mesh[numMeshes];
         for (int i = 0; i < numMeshes; i++) {
             AIMesh aiMesh = AIMesh.create(aiMeshes.get(i));
-            Mesh mesh = processMesh(aiMesh, materials, boneList);
+            int materialIdx = aiMesh.mMaterialIndex();
+            Material material = (materialIdx >= 0 && materialIdx < materials.size()) ? materials.get(materialIdx) : new Material();
+            float[] vertices = process3DVectorBuffer(aiMesh.mVertices());
+            float[] normals = process3DVectorBuffer(aiMesh.mNormals());
+            float[] textures = process3DVectorBufferTextures(aiMesh.mTextureCoords(0));
+            int[] indices = process3DVectorBufferIndices(aiMesh.mFaces());
+            Skeleton skeleton = processBones(aiMesh.mBones());
+            Mesh mesh = new Mesh(
+                    vertices,
+                    normals,
+                    textures,
+                    indices,
+                    skeleton.getBonesWeights(vertices.length, Mesh.MAX_WEIGHTS),
+                    skeleton.getBonesIndices(vertices.length, Mesh.MAX_WEIGHTS),
+                    material
+            );
             meshes[i] = mesh;
+            allBones.addAll(Arrays.asList(skeleton.getBones()));
         }
-        Map<String, Integer> jointNameToIndex = boneList.stream().collect(
-                Collectors.toMap(Bone::getBoneName, Bone::getBoneId, (o, n) -> o)
-        );
+        Map<String, Integer> jointNameToIndex = IntStream
+                .range(0, allBones.size())
+                .boxed()
+                .collect(Collectors.toMap(i -> allBones.get(i).getBoneName(), i -> i, (o, n) -> o));
 
         AINode aiRootNode = aiSceneMesh.mRootNode();
         Joint headJoint = createJoints(aiRootNode, new Matrix4f(), jointNameToIndex, loaderFlags);
         Map<String, Animation> animations = buildAnimations(aiSceneAnimation);
 
-        return new AnimGameItem(meshes, boneList.stream().map(Bone::getBoneName).collect(Collectors.toList()), headJoint, animations);
+        return new AnimGameItem(meshes, allBones.stream().map(Bone::getBoneName).collect(Collectors.toList()), headJoint, animations);
     }
 
     public static Joint createJoints(
@@ -115,7 +133,7 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
         String jointName = aiNode.mName().dataString();
         int numChildren = aiNode.mNumChildren();
         int jointIndex = jointNameToIndex.getOrDefault(jointName, -1);
-        Matrix4f localBindTransform = AnimMeshesLoader.toMatrix(aiNode.mTransformation());
+        Matrix4f localBindTransform = toMatrix(aiNode.mTransformation());
         boolean marginal = ((loaderFlags & FLAG_ALLOW_ORIGINS_WITHOUT_BONES) == 0) && (jointIndex == -1);
         Matrix4f bindTransform = marginal ? new Matrix4f() : parentTransform.mul(localBindTransform, new Matrix4f());
         Matrix4f inverseBindTransform = bindTransform.invert(new Matrix4f());
@@ -170,118 +188,35 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
         return animations;
     }
 
-    private static void processBones(
-            AIMesh aiMesh, List<Bone> boneList, List<Integer> boneIds,
-            List<Float> weights
-    ) {
-        Map<Integer, List<VertexWeight>> weightSet = new HashMap<>();
-        int numBones = aiMesh.mNumBones();
-        PointerBuffer aiBones = aiMesh.mBones();
-        for (int i = 0; i < numBones; i++) {
-            AIBone aiBone = AIBone.create(aiBones.get(i));
-            int id = boneList.size();
-            Bone bone = new Bone(id, aiBone.mName().dataString(), toMatrix(aiBone.mOffsetMatrix()));
-            boneList.add(bone);
-            int numWeights = aiBone.mNumWeights();
+    private static Skeleton processBones(PointerBuffer aiBones) {
+        if (aiBones == null) {
+            return new Skeleton(new Bone[0]);
+        }
+        aiBones.rewind();
+        Bone[] bones = new Bone[aiBones.remaining()];
+        for (int i = 0; aiBones.remaining() > 0; i++) {
+            AIBone aiBone = AIBone.create(aiBones.get());
+            String boneName = aiBone.mName().dataString();
             AIVertexWeight.Buffer aiWeights = aiBone.mWeights();
-            for (int j = 0; j < numWeights; j++) {
-                AIVertexWeight aiWeight = aiWeights.get(j);
-                VertexWeight vw = new VertexWeight(bone.getBoneId(), aiWeight.mVertexId(),
-                        aiWeight.mWeight());
-                List<VertexWeight> vertexWeightList = weightSet.get(vw.getVertexId());
-                if (vertexWeightList == null) {
-                    vertexWeightList = new ArrayList<>();
-                    weightSet.put(vw.getVertexId(), vertexWeightList);
-                }
-                vertexWeightList.add(vw);
+            aiWeights.rewind();
+            Map<Integer, List<Float>> boneWeights = new HashMap<>();
+            while (aiWeights.remaining() > 0) {
+                AIVertexWeight aiWeight = aiWeights.get();
+                boneWeights.computeIfAbsent(aiWeight.mVertexId(), e -> new ArrayList<>()).add(aiWeight.mWeight());
             }
+            bones[i] = new Bone(boneName, toMatrix(aiBone.mOffsetMatrix()), boneWeights);
         }
-
-        int numVertices = aiMesh.mNumVertices();
-        for (int i = 0; i < numVertices; i++) {
-            List<VertexWeight> vertexWeightList = weightSet.get(i);
-            int size = vertexWeightList != null ? vertexWeightList.size() : 0;
-            for (int j = 0; j < Mesh.MAX_WEIGHTS; j++) {
-                if (j < size) {
-                    VertexWeight vw = vertexWeightList.get(j);
-                    weights.add(vw.getWeight());
-                    boneIds.add(vw.getBoneId());
-                } else {
-                    weights.add(0.0f);
-                    boneIds.add(0);
-                }
-            }
-        }
+        return new Skeleton(bones);
     }
 
-    private static Mesh processMesh(AIMesh aiMesh, List<Material> materials, List<Bone> boneList) {
-        List<Float> vertices = new ArrayList<>();
-        List<Float> textures = new ArrayList<>();
-        List<Float> normals = new ArrayList<>();
-        List<Integer> indices = new ArrayList<>();
-        List<Integer> joints = new ArrayList<>();
-        List<Float> weights = new ArrayList<>();
-
-        processVertices(aiMesh, vertices);
-        processNormals(aiMesh, normals);
-        processTextCoords(aiMesh, textures);
-        processIndices(aiMesh, indices);
-        processBones(aiMesh, boneList, joints, weights);
-
-        Material material;
-        int materialIdx = aiMesh.mMaterialIndex();
-        if (materialIdx >= 0 && materialIdx < materials.size()) {
-            material = materials.get(materialIdx);
-        } else {
-            material = new Material();
-        }
-
-
-        return new Mesh(
-                Utils.listToArray(vertices),
-                Utils.listToArray(normals),
-                Utils.listToArray(textures),
-                Utils.listIntToArray(indices),
-                Utils.listToArray(weights),
-                Utils.listIntToArray(joints),
-                material
+    private static Matrix4f toMatrix(AIMatrix4x4 mat) {
+        return new Matrix4f(
+                mat.a1(), mat.b1(), mat.c1(), mat.d1(),
+                mat.a2(), mat.b2(), mat.c2(), mat.d2(),
+                mat.a3(), mat.b3(), mat.c3(), mat.d3(),
+                mat.a4(), mat.b4(), mat.c4(), mat.d4()
         );
     }
 
-    private static Node processNodesHierarchy(AINode aiNode, Node parentNode) {
-        String nodeName = aiNode.mName().dataString();
-        Node node = new Node(nodeName, parentNode);
 
-        int numChildren = aiNode.mNumChildren();
-        PointerBuffer aiChildren = aiNode.mChildren();
-        for (int i = 0; i < numChildren; i++) {
-            AINode aiChildNode = AINode.create(aiChildren.get(i));
-            Node childNode = processNodesHierarchy(aiChildNode, node);
-            node.addChild(childNode);
-        }
-
-        return node;
-    }
-
-    private static Matrix4f toMatrix(AIMatrix4x4 aiMatrix4x4) {
-        Matrix4f result = new Matrix4f();
-        result.m00(aiMatrix4x4.a1());
-        result.m10(aiMatrix4x4.a2());
-        result.m20(aiMatrix4x4.a3());
-        result.m30(aiMatrix4x4.a4());
-        result.m01(aiMatrix4x4.b1());
-        result.m11(aiMatrix4x4.b2());
-        result.m21(aiMatrix4x4.b3());
-        result.m31(aiMatrix4x4.b4());
-        result.m02(aiMatrix4x4.c1());
-        result.m12(aiMatrix4x4.c2());
-        result.m22(aiMatrix4x4.c3());
-        result.m32(aiMatrix4x4.c4());
-        result.m03(aiMatrix4x4.d1());
-        result.m13(aiMatrix4x4.d2());
-        result.m23(aiMatrix4x4.d3());
-        result.m33(aiMatrix4x4.d4());
-
-        return result;
-    }
 }

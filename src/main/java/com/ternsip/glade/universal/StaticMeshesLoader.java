@@ -6,23 +6,12 @@ import org.lwjgl.assimp.*;
 
 import java.io.File;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.lwjgl.assimp.Assimp.*;
 
 public class StaticMeshesLoader {
-
-    protected static void processIndices(AIMesh aiMesh, List<Integer> indices) {
-        int numFaces = aiMesh.mNumFaces();
-        AIFace.Buffer aiFaces = aiMesh.mFaces();
-        for (int i = 0; i < numFaces; i++) {
-            AIFace aiFace = aiFaces.get(i);
-            IntBuffer buffer = aiFace.mIndices();
-            while (buffer.remaining() > 0) {
-                indices.add(buffer.get());
-            }
-        }
-    }
 
     @SneakyThrows
     protected static void processMaterial(AIMaterial aiMaterial, List<Material> materials, File texturesDir) {
@@ -58,33 +47,43 @@ public class StaticMeshesLoader {
         materials.add(material);
     }
 
-    protected static void processNormals(AIMesh aiMesh, List<Float> normals) {
-        AIVector3D.Buffer aiNormals = aiMesh.mNormals();
-        while (aiNormals != null && aiNormals.remaining() > 0) {
-            AIVector3D aiNormal = aiNormals.get();
-            normals.add(aiNormal.x());
-            normals.add(aiNormal.y());
-            normals.add(aiNormal.z());
+    protected static int[] process3DVectorBufferIndices(AIFace.Buffer aiFaces) {
+        if (aiFaces == null) return new int[0];
+        aiFaces.rewind();
+        ArrayList<Integer> indices = new ArrayList<>();
+        while (aiFaces.remaining() > 0) {
+            AIFace aiFace = aiFaces.get();
+            IntBuffer buffer = aiFace.mIndices();
+            buffer.rewind();
+            while (buffer.remaining() > 0) {
+                indices.add(buffer.get());
+            }
         }
+        return indices.stream().mapToInt(i -> i).toArray();
     }
 
-    protected static void processTextCoords(AIMesh aiMesh, List<Float> textures) {
-        AIVector3D.Buffer textCoords = aiMesh.mTextureCoords(0);
-        int numTextCoords = textCoords != null ? textCoords.remaining() : 0;
-        for (int i = 0; i < numTextCoords; i++) {
-            AIVector3D textCoord = textCoords.get();
-            textures.add(textCoord.x());
-            textures.add(1 - textCoord.y());
+    protected static float[] process3DVectorBufferTextures(AIVector3D.Buffer aiVector) {
+        if (aiVector == null) return new float[0];
+        aiVector.rewind();
+        float[] texUV = new float[aiVector.remaining() * 2];
+        for (int i = 0; aiVector.remaining() > 0; i++) {
+            AIVector3D aiV = aiVector.get();
+            texUV[i * 2] = aiV.x();
+            texUV[i * 2 + 1] = 1 - aiV.y();
         }
+        return texUV;
     }
 
-    protected static void processVertices(AIMesh aiMesh, List<Float> vertices) {
-        AIVector3D.Buffer aiVertices = aiMesh.mVertices();
-        while (aiVertices.remaining() > 0) {
-            AIVector3D aiVertex = aiVertices.get();
-            vertices.add(aiVertex.x());
-            vertices.add(aiVertex.y());
-            vertices.add(aiVertex.z());
+    protected static float[] process3DVectorBuffer(AIVector3D.Buffer aiVector) {
+        if (aiVector == null) return new float[0];
+        aiVector.rewind();
+        float[] array = new float[aiVector.remaining() * 3];
+        for (int i = 0; aiVector.remaining() > 0; ++i) {
+            AIVector3D aiV = aiVector.get();
+            array[i * 3] = aiV.x();
+            array[i * 3 + 1] = aiV.y();
+            array[i * 3 + 2] = aiV.z();
         }
+        return array;
     }
 }

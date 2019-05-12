@@ -1,31 +1,19 @@
 package com.ternsip.glade.universal;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.joml.Matrix4f;
 
+import java.util.List;
+import java.util.Map;
+
+@RequiredArgsConstructor
+@Getter
 public class Bone {
 
-    private final int boneId;
-
     private final String boneName;
+    private final Matrix4f offsetMatrix;
+    private final Map<Integer, List<Float>> weights;
 
-    private Matrix4f offsetMatrix;
-
-    public Bone(int boneId, String boneName, Matrix4f offsetMatrix) {
-        this.boneId = boneId;
-        this.boneName = boneName;
-        this.offsetMatrix = offsetMatrix;
-    }
-
-    public int getBoneId() {
-        return boneId;
-    }
-
-    public String getBoneName() {
-        return boneName;
-    }
-
-    public Matrix4f getOffsetMatrix() {
-        return offsetMatrix;
-    }
 
 }

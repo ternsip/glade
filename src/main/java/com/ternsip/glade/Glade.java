@@ -51,6 +51,10 @@ public class Glade {
         //AnimatedModel microwaveModel = AnimatedModelLoader.loadEntity(new File("models/microwave/microwave.dae"), new File("models/microwave/microwave_col.png"), new File("models/microwave/microwave.dae"));
 
         AnimGameItem hagreedModel = AnimMeshesLoader.loadAnimGameItem(new File("models/bob/boblamp.md5mesh"), new File("models/bob/boblamp.md5anim"), new File("models/bob/"), FLAG_ALLOW_ORIGINS_WITHOUT_BONES);
+        hagreedModel.setPosition(new Vector3f(20f, 2, 2));
+        hagreedModel.setScale(new Vector3f(0.25f, 0.25f, 0.25f));
+        hagreedModel.setRotation(new Vector3f(0, 0, -179)); // TODO BUG IF I PUT 180 ROTATION
+
         //AnimGameItem spiderModel = AnimMeshesLoader.loadAnimGameItem(new File("models/spider/spider.dae"), new File("models/spider/spider.dae"), new File("models/spider/"));
         //AnimGameItem spiderModel2 = AnimMeshesLoader.loadAnimGameItem(new File("models/spider2/spider.3ds"), new File("models/spider2/spider.3ds"), new File("models/spider2/textures"));
         AnimGameItem warriorModel = AnimMeshesLoader.loadAnimGameItem(new File("models/warrior/warrior.3ds"), new File("models/warrior/warrior.3ds"), new File("models/warrior/textures"));
@@ -95,7 +99,7 @@ public class Glade {
         renderer.processEntity(cube);
         //renderer.processEntity(teapotModel);
         //renderer.processEntity(dude);
-        //renderer.processEntity(dude2Model);
+        renderer.processEntity(dude2Model);
         renderer.processEntity(repModel);
         //renderer.processEntity(horror);
         //renderer.processEntity(spiderModel2);
