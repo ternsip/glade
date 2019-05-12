@@ -8,6 +8,8 @@ import org.joml.Matrix4f;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
+
 @Getter
 @Setter
 public class Animator {
@@ -43,8 +45,7 @@ public class Animator {
     }
 
     private void increaseAnimationTime() {
-        // TODO bind to delta between render shots in seconds = 1 / fps
-        animationTime += 0.016;
+        animationTime += DISPLAY_MANAGER.getDeltaTime();
         // animationTime += DisplayManager.getFrameTime();
         if (animationTime > currentAnimation.getLength()) {
             this.animationTime %= currentAnimation.getLength();

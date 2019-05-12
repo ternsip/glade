@@ -191,29 +191,6 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
         }
     }
 
-    // TODO REMOVE THIS (THINK)
-    private static void processBones2(AIMesh aiMesh, List<Bone> boneList, List<Integer> boneIds, List<Float> weights) {
-        int numBones = aiMesh.mNumBones();
-        PointerBuffer aiBones = aiMesh.mBones();
-        int numVertices = aiMesh.mNumVertices();
-        boneIds = Arrays.asList(new Integer[numVertices]);
-        weights = Arrays.asList(new Float[numVertices]);
-        for (int i = 0; i < numBones; i++) {
-            AIBone aiBone = AIBone.create(aiBones.get(i));
-            int id = boneList.size();
-            Bone bone = new Bone(id, aiBone.mName().dataString(), toMatrix(aiBone.mOffsetMatrix()));
-            boneList.add(bone);
-            int numWeights = aiBone.mNumWeights();
-            AIVertexWeight.Buffer aiWeights = aiBone.mWeights();
-            for (int j = 0; j < numWeights; j++) {
-                AIVertexWeight aiWeight = aiWeights.get(j);
-                int vertexIndex = aiWeight.mVertexId();
-                boneIds.set(vertexIndex, bone.getBoneId());
-                weights.set(vertexIndex, aiWeight.mWeight());
-            }
-        }
-    }
-
     private static Mesh processMesh(AIMesh aiMesh, List<Material> materials, List<Bone> boneList) {
         List<Float> vertices = new ArrayList<>();
         List<Float> textures = new ArrayList<>();

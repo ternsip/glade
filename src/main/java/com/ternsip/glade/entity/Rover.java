@@ -26,13 +26,13 @@ public class Rover extends Entity {
 
     public void move() {
         checkInputs();
-        super.increaseRotation(new Vector3f(0, currentTurnSpeed * DISPLAY_MANAGER.getFrameTimeSeconds(), 0));
-        float distance = currentSpeed * DISPLAY_MANAGER.getFrameTimeSeconds();
+        super.increaseRotation(new Vector3f(0, currentTurnSpeed * DISPLAY_MANAGER.getDeltaTime(), 0));
+        float distance = currentSpeed * DISPLAY_MANAGER.getDeltaTime();
         float dx = (float) (distance * Math.sin(Math.toRadians(super.getRotation().y())));
         float dz = (float) (distance * Math.cos(Math.toRadians(super.getRotation().y())));
         super.increasePosition(new Vector3f(dx, 0, dz));
-        upwardsSpeed += GRAVITY * DISPLAY_MANAGER.getFrameTimeSeconds();
-        super.increasePosition(new Vector3f(0, upwardsSpeed * DISPLAY_MANAGER.getFrameTimeSeconds(), 0));
+        upwardsSpeed += GRAVITY * DISPLAY_MANAGER.getDeltaTime();
+        super.increasePosition(new Vector3f(0, upwardsSpeed * DISPLAY_MANAGER.getDeltaTime(), 0));
         float terrainHeight = -5;
         if (super.getPosition().y < terrainHeight) {
             upwardsSpeed = 0;

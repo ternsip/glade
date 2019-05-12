@@ -1,5 +1,6 @@
 package com.ternsip.glade.utils;
 
+import lombok.Getter;
 import org.joml.Vector2i;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
@@ -10,11 +11,13 @@ import java.util.ArrayList;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
+@Getter
 public class DisplayManager {
 
     private final int FPS_CAP = 120;
     private ArrayList<Callback> callbacks = new ArrayList<>();
     private long lastFrameTime;
+    private float deltaTime;
     private float fps;
     private long window;
 
@@ -63,16 +66,13 @@ public class DisplayManager {
 
             // Calc fps
             long currentFrameTime = getCurrentTime();
-            fps = (currentFrameTime - lastFrameTime) / 1000f;
+            deltaTime = (currentFrameTime - lastFrameTime) / 1000f;
+            fps = 1 / deltaTime;
             lastFrameTime = currentFrameTime;
 
             glfwSwapBuffers(window);
             glfwPollEvents();
         }
-    }
-
-    public float getFrameTimeSeconds() {
-        return fps;
     }
 
     public void closeDisplay() {
