@@ -1,6 +1,5 @@
 package com.ternsip.glade.universal;
 
-import com.ternsip.glade.model.Mesh;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

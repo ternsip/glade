@@ -21,7 +21,7 @@ import java.util.stream.IntStream;
 import static com.ternsip.glade.utils.Utils.loadResourceAsAssimp;
 import static org.lwjgl.assimp.Assimp.*;
 
-public class AnimMeshesLoader {
+public class AssimpLoader {
 
     public static final int FLAG_ALLOW_ORIGINS_WITHOUT_BONES = 0x1;
 
@@ -212,7 +212,7 @@ public class AnimMeshesLoader {
     }
 
     @SneakyThrows
-    static Material[] processMaterials(PointerBuffer aiMaterials, File texturesDir) {
+    private static Material[] processMaterials(PointerBuffer aiMaterials, File texturesDir) {
         if (aiMaterials == null) {
             return new Material[0];
         }
@@ -220,7 +220,7 @@ public class AnimMeshesLoader {
         Material[] materials = new Material[aiMaterials.remaining()];
         for (int i = 0; aiMaterials.remaining() > 0; ++i) {
             AIMaterial aiMaterial = AIMaterial.create(aiMaterials.get());
-            materials[i]= processMaterial(aiMaterial, texturesDir);
+            materials[i] = processMaterial(aiMaterial, texturesDir);
         }
         return materials;
     }
@@ -257,7 +257,7 @@ public class AnimMeshesLoader {
         return new Material(diffuse, specular, texture, 1.0f);
     }
 
-    static int[] process3DVectorBufferIndices(AIFace.Buffer aiFaces) {
+    private static int[] process3DVectorBufferIndices(AIFace.Buffer aiFaces) {
         if (aiFaces == null) return new int[0];
         aiFaces.rewind();
         ArrayList<Integer> indices = new ArrayList<>();
@@ -272,7 +272,7 @@ public class AnimMeshesLoader {
         return indices.stream().mapToInt(i -> i).toArray();
     }
 
-    static float[] process3DVectorBufferTextures(AIVector3D.Buffer aiVector) {
+    private static float[] process3DVectorBufferTextures(AIVector3D.Buffer aiVector) {
         if (aiVector == null) return new float[0];
         aiVector.rewind();
         float[] texUV = new float[aiVector.remaining() * 2];
@@ -284,7 +284,7 @@ public class AnimMeshesLoader {
         return texUV;
     }
 
-    static float[] process3DVectorBuffer(AIVector3D.Buffer aiVector) {
+    private static float[] process3DVectorBuffer(AIVector3D.Buffer aiVector) {
         if (aiVector == null) return new float[0];
         aiVector.rewind();
         float[] array = new float[aiVector.remaining() * 3];
