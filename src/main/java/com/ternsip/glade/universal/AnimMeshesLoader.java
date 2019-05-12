@@ -13,13 +13,18 @@ import org.lwjgl.assimp.*;
 
 import java.io.File;
 import java.lang.Math;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.ternsip.glade.utils.Utils.loadResourceAsAssimp;
 import static org.lwjgl.assimp.Assimp.*;
 
 public class AnimMeshesLoader extends StaticMeshesLoader {
+
+    public static final int FLAG_ALLOW_ORIGINS_WITHOUT_BONES = 0x1;
 
     private static List<JointTransform> buildJointTransforms(AINodeAnim aiNodeAnim) {
         int numFrames = aiNodeAnim.mNumPositionKeys();
@@ -50,15 +55,28 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
     }
 
     public static AnimGameItem loadAnimGameItem(File meshFile, File animationFile, File texturesDir) {
-        return loadAnimGameItem(meshFile, animationFile, texturesDir,
-                aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate
-                        | aiProcess_FixInfacingNormals | aiProcess_LimitBoneWeights);
+        return loadAnimGameItem(meshFile, animationFile, texturesDir, 0);
+    }
+
+    public static AnimGameItem loadAnimGameItem(File meshFile, File animationFile, File texturesDir, int loaderFlags) {
+        int assimpFlags = aiProcess_GenSmoothNormals |
+                aiProcess_JoinIdenticalVertices |
+                aiProcess_Triangulate |
+                aiProcess_FixInfacingNormals |
+                aiProcess_LimitBoneWeights;
+        return loadAnimGameItem(meshFile, animationFile, texturesDir,assimpFlags, loaderFlags);
     }
 
     @SneakyThrows
-    public static AnimGameItem loadAnimGameItem(File meshFile, File animationFile, File texturesDir, int flags) {
-        AIScene aiSceneMesh = loadResourceAsAssimp(meshFile, flags);
-        AIScene aiSceneAnimation = animationFile.equals(meshFile) ? aiSceneMesh : loadResourceAsAssimp(animationFile, flags);
+    public static AnimGameItem loadAnimGameItem(
+            File meshFile,
+            File animationFile,
+            File texturesDir,
+            int assimpFlags,
+            int loaderFlags
+    ) {
+        AIScene aiSceneMesh = loadResourceAsAssimp(meshFile, assimpFlags);
+        AIScene aiSceneAnimation = animationFile.equals(meshFile) ? aiSceneMesh : loadResourceAsAssimp(animationFile, assimpFlags);
 
         int numMaterials = aiSceneMesh.mNumMaterials();
         PointerBuffer aiMaterials = aiSceneMesh.mMaterials();
@@ -82,25 +100,30 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
         );
 
         AINode aiRootNode = aiSceneMesh.mRootNode();
-        Joint headJoint = createJoints(aiRootNode, new Matrix4f(), jointNameToIndex);
+        Joint headJoint = createJoints(aiRootNode, new Matrix4f(), jointNameToIndex, loaderFlags);
         Map<String, Animation> animations = buildAnimations(aiSceneAnimation);
 
         return new AnimGameItem(meshes, boneList.stream().map(Bone::getBoneName).collect(Collectors.toList()), headJoint, animations);
     }
 
-    public static Joint createJoints(AINode aiNode, Matrix4fc parentTransform, Map<String, Integer> jointNameToIndex) {
+    public static Joint createJoints(
+            AINode aiNode,
+            Matrix4fc parentTransform,
+            Map<String, Integer> jointNameToIndex,
+            int loaderFlags
+    ) {
         String jointName = aiNode.mName().dataString();
         int numChildren = aiNode.mNumChildren();
         int jointIndex = jointNameToIndex.getOrDefault(jointName, -1);
         Matrix4f localBindTransform = AnimMeshesLoader.toMatrix(aiNode.mTransformation());
-        boolean marginal = jointIndex == -1;
+        boolean marginal = ((loaderFlags & FLAG_ALLOW_ORIGINS_WITHOUT_BONES) == 0) && (jointIndex == -1);
         Matrix4f bindTransform = marginal ? new Matrix4f() : parentTransform.mul(localBindTransform, new Matrix4f());
         Matrix4f inverseBindTransform = bindTransform.invert(new Matrix4f());
         List<Joint> children = new ArrayList<>();
         PointerBuffer aiChildren = aiNode.mChildren();
         for (int i = 0; i < numChildren; i++) {
             AINode aiChildNode = AINode.create(aiChildren.get(i));
-            Joint childJoint = createJoints(aiChildNode, bindTransform, jointNameToIndex);
+            Joint childJoint = createJoints(aiChildNode, bindTransform, jointNameToIndex, loaderFlags);
             children.add(childJoint);
         }
         return new Joint(jointIndex, jointName, children, localBindTransform, inverseBindTransform);

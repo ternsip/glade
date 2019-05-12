@@ -13,6 +13,7 @@ import org.joml.Vector3f;
 import java.io.File;
 
 import static com.ternsip.glade.model.Mesh.SKIP_TEXTURE;
+import static com.ternsip.glade.universal.AnimMeshesLoader.FLAG_ALLOW_ORIGINS_WITHOUT_BONES;
 
 // BE CAREFUL BUFFER FLIPS
 // TODO CHECKOUT BUFFERS (FLOATBUFFER ETC.) BECAUSE THEY ARE BUGGED
@@ -22,6 +23,8 @@ import static com.ternsip.glade.model.Mesh.SKIP_TEXTURE;
 public class Glade {
 
     public static final DisplayManager DISPLAY_MANAGER = new DisplayManager();
+
+
 
     @SneakyThrows
     public static void main(String[] args) {
@@ -47,7 +50,7 @@ public class Glade {
         //AnimatedModel skeletonModel = AnimatedModelLoader.loadEntity(new File("models/skeleton/skeleton.dae"), new File("models/boy/boy.png"), new File("models/skeleton/skeleton.dae"));
         //AnimatedModel microwaveModel = AnimatedModelLoader.loadEntity(new File("models/microwave/microwave.dae"), new File("models/microwave/microwave_col.png"), new File("models/microwave/microwave.dae"));
 
-        AnimGameItem hagreedModel = AnimMeshesLoader.loadAnimGameItem(new File("models/bob/boblamp.md5mesh"), new File("models/bob/boblamp.md5anim"), new File("models/bob/"));
+        AnimGameItem hagreedModel = AnimMeshesLoader.loadAnimGameItem(new File("models/bob/boblamp.md5mesh"), new File("models/bob/boblamp.md5anim"), new File("models/bob/"), FLAG_ALLOW_ORIGINS_WITHOUT_BONES);
         //AnimGameItem spiderModel = AnimMeshesLoader.loadAnimGameItem(new File("models/spider/spider.dae"), new File("models/spider/spider.dae"), new File("models/spider/"));
         //AnimGameItem spiderModel2 = AnimMeshesLoader.loadAnimGameItem(new File("models/spider2/spider.3ds"), new File("models/spider2/spider.3ds"), new File("models/spider2/textures"));
         AnimGameItem warriorModel = AnimMeshesLoader.loadAnimGameItem(new File("models/warrior/warrior.3ds"), new File("models/warrior/warrior.3ds"), new File("models/warrior/textures"));
@@ -64,7 +67,6 @@ public class Glade {
         boyModel.setPosition(new Vector3f(2f, 2, 2));
         boyModel.setRotation(new Vector3f(0, 0, -90));
 
-
         AnimGameItem horseModel = AnimMeshesLoader.loadAnimGameItem(new File("models/house/horse.3ds"), new File("models/house/horse.3ds"), new File("models/house/"));
         horseModel.setPosition(new Vector3f(2f, 2, 2));
         horseModel.setRotation(new Vector3f(0, 0, -90));
@@ -73,6 +75,11 @@ public class Glade {
         dude2Model.setPosition(new Vector3f(-20f, 0, -20));
         dude2Model.setScale(new Vector3f(10f, 10f, 10f));
         dude2Model.setRotation(new Vector3f(0, 0, -90));
+
+        AnimGameItem repModel = AnimMeshesLoader.loadAnimGameItem(new File("models/zebra/ZebraLOD1.ms3d"), new File("models/zebra/ZebraLOD1.ms3d"), new File("models/zebra/"), FLAG_ALLOW_ORIGINS_WITHOUT_BONES);
+        repModel.setPosition(new Vector3f(-20f, 0, -20));
+        repModel.setScale(new Vector3f(0.25f, 0.25f, 0.25f));
+        repModel.setRotation(new Vector3f(0, 0, 0));
 
         Mesh roverModel = ResourceLoader.loadObjModel(new File("models/rover/rover.obj"), new File("models/rover/rover.png"));
         Rover rover = new Rover(boyModel, roverModel, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
@@ -88,11 +95,12 @@ public class Glade {
         renderer.processEntity(cube);
         //renderer.processEntity(teapotModel);
         //renderer.processEntity(dude);
-        renderer.processEntity(dude2Model);
+        //renderer.processEntity(dude2Model);
+        renderer.processEntity(repModel);
         //renderer.processEntity(horror);
         //renderer.processEntity(spiderModel2);
         renderer.processEntity(boyModel);
-        renderer.processEntity(horseModel);
+        //renderer.processEntity(horseModel);
         //renderer.processEntity(shipModel);
         //renderer.processEntity(lampModel);
         //renderer.processEntity(skeletonModel);
