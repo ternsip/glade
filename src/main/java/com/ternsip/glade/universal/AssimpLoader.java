@@ -41,29 +41,32 @@ public class AssimpLoader {
 
         Material[] materials = processMaterials(aiSceneMesh.mMaterials(), texturesDir);
 
-        List<Bone> allBones = new ArrayList<>();
+        Skeleton skeleton = processSkeleton(aiSceneMesh);
         PointerBuffer aiMeshes = aiSceneMesh.mMeshes();
+
         Mesh[] meshes = new Mesh[aiSceneMesh.mNumMeshes()];
-        for (int i = 0; i < aiSceneMesh.mNumMeshes(); i++) {
-            AIMesh aiMesh = AIMesh.create(aiMeshes.get(i));
+        for (int meshIndex = 0; meshIndex < aiSceneMesh.mNumMeshes(); meshIndex++) {
+            AIMesh aiMesh = AIMesh.create(aiMeshes.get(meshIndex));
             int materialIdx = aiMesh.mMaterialIndex();
             Material material = (materialIdx >= 0 && materialIdx < materials.length) ? materials[materialIdx] : new Material();
+            int numVertices = aiMesh.mNumVertices();
             float[] vertices = process3DVectorBuffer(aiMesh.mVertices());
             float[] normals = process3DVectorBuffer(aiMesh.mNormals());
             float[] textures = process3DVectorBufferTextures(aiMesh.mTextureCoords(0));
             int[] indices = process3DVectorBufferIndices(aiMesh.mFaces());
-            Skeleton skeleton = processBones(aiMesh.mBones());
+
             Mesh mesh = new Mesh(
                     vertices,
                     normals,
                     textures,
                     indices,
-                    skeleton,
+                    skeleton.getBonesWeights(meshIndex, numVertices, Mesh.MAX_WEIGHTS),
+                    skeleton.getBoneNameToBone(meshIndex, numVertices, Mesh.MAX_WEIGHTS),
                     material
             );
-            meshes[i] = mesh;
-            allBones.addAll(Arrays.asList(skeleton.getBones()));
+            meshes[meshIndex] = mesh;
         }
+        List<Bone> allBones = skeleton.getAllBones();
         Map<String, Integer> jointNameToIndex = IntStream
                 .range(0, allBones.size())
                 .boxed()
@@ -174,9 +177,18 @@ public class AssimpLoader {
         return jointTransforms;
     }
 
-    private static Skeleton processBones(PointerBuffer aiBones) {
+    private static Skeleton processSkeleton(AIScene aiScene) {
+        Bone[][] boneMeshes = new Bone[aiScene.mNumMeshes()][];
+        for (int i = 0; i < aiScene.mNumMeshes(); i++) {
+            AIMesh aiMesh = AIMesh.create(aiScene.mMeshes().get(i));
+            boneMeshes[i] = processBones(aiMesh.mBones());
+        }
+        return new Skeleton(boneMeshes);
+    }
+
+    private static Bone[] processBones(PointerBuffer aiBones) {
         if (aiBones == null) {
-            return new Skeleton(new Bone[0]);
+            return new Bone[0];
         }
         aiBones.rewind();
         Bone[] bones = new Bone[aiBones.remaining()];
@@ -192,7 +204,7 @@ public class AssimpLoader {
             }
             bones[i] = new Bone(boneName, toMatrix(aiBone.mOffsetMatrix()), boneWeights);
         }
-        return new Skeleton(bones);
+        return bones;
     }
 
     private static Matrix4f toMatrix(AIMatrix4x4 mat) {

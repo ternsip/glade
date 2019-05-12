@@ -66,25 +66,6 @@ public class Mesh {
             float[] normals,
             float[] textures,
             int[] indices,
-            Skeleton skeleton,
-            Material material
-    ) {
-        this(
-                vertices,
-                normals,
-                textures,
-                indices,
-                skeleton.getBonesWeights(vertices.length / 3, Mesh.MAX_WEIGHTS),
-                skeleton.getBonesIndices(vertices.length / 3, Mesh.MAX_WEIGHTS),
-                material
-        );
-    }
-
-    public Mesh(
-            float[] vertices,
-            float[] normals,
-            float[] textures,
-            int[] indices,
             float[] weights,
             int[] joints,
             Material material

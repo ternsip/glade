@@ -6,15 +6,26 @@ import lombok.RequiredArgsConstructor;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 @Getter
 public class Skeleton {
 
-    private final Bone[] bones;
+    private final Bone[][] meshBones;
+    private final List<Bone> allBones;
 
-    public float[] getBonesWeights(int numVertices, int weightLimit) {
+    public Skeleton(Bone[][] meshBones) {
+        this.meshBones = meshBones;
+        Map<String, Bone> boneNameToBone = new HashMap<>();
+        for (Bone[] bones : meshBones) {
+            for (Bone bone : bones)  {
+                boneNameToBone.put(bone.getBoneName(), bone);
+            }
+        }
+        this.allBones = new ArrayList<>(boneNameToBone.values());
+    }
+
+    public float[] getBonesWeights(int meshIndex, int numVertices, int weightLimit) {
         float[] weights = new float[numVertices * weightLimit];
-        Map<Integer, List<BoneWeight>> combinedBoneWeights = combineBoneWeights();
+        Map<Integer, List<BoneWeight>> combinedBoneWeights = combineBoneWeights(meshIndex);
         for (int i = 0; i < numVertices; i++) {
             List<BoneWeight> boneWeights = combinedBoneWeights.getOrDefault(i, Collections.emptyList());
             for (int j = 0; j < weightLimit; ++j) {
@@ -24,9 +35,9 @@ public class Skeleton {
         return weights;
     }
 
-    public int[] getBonesIndices(int numVertices, int weightLimit) {
+    public int[] getBoneNameToBone(int meshIndex, int numVertices, int weightLimit) {
         int[] indices = new int[numVertices * weightLimit];
-        Map<Integer, List<BoneWeight>> combinedBoneWeights = combineBoneWeights();
+        Map<Integer, List<BoneWeight>> combinedBoneWeights = combineBoneWeights(meshIndex);
         for (int i = 0; i < numVertices; i++) {
             List<BoneWeight> boneWeights = combinedBoneWeights.getOrDefault(i, Collections.emptyList());
             for (int j = 0; j < weightLimit; ++j) {
@@ -36,11 +47,11 @@ public class Skeleton {
         return indices;
     }
 
-    private Map<Integer, List<BoneWeight>> combineBoneWeights() {
+    private Map<Integer, List<BoneWeight>> combineBoneWeights(int meshIndex) {
         Map<Integer, List<BoneWeight>> combination = new HashMap<>();
-        for (int i = 0; i < bones.length; ++i) {
-            final int boneIndex = i;
-            for (Map.Entry<Integer, List<Float>> entry : bones[i].getWeights().entrySet()) {
+        for (int i = 0; i < meshBones[meshIndex].length; ++i) {
+            final int boneIndex = getBoneIndexByName(meshBones[meshIndex][i].getBoneName());
+            for (Map.Entry<Integer, List<Float>> entry : meshBones[meshIndex][i].getWeights().entrySet()) {
                 int vertexIndex = entry.getKey();
                 List<Float> boneVertexWeights = entry.getValue();
                 List<BoneWeight> weights = boneVertexWeights.stream()
@@ -50,6 +61,11 @@ public class Skeleton {
             }
         }
         return combination;
+    }
+
+    private int getBoneIndexByName(String boneName) {
+        Bone boneFound = getAllBones().stream().filter(bone -> bone.getBoneName().equals(boneName)).findFirst().orElseThrow(() -> new IllegalArgumentException(""));
+        return getAllBones().indexOf(boneFound);
     }
 
     @RequiredArgsConstructor
