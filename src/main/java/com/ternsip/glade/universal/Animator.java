@@ -1,12 +1,12 @@
 package com.ternsip.glade.universal;
 
+import com.ternsip.glade.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 
@@ -15,21 +15,19 @@ import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 public class Animator {
 
     private final Bone rootBone;
-    private final int boneCount;
     private final Map<String, Animation> nameToAnimation;
+    private final int biggestBoneIndex;
 
     private Animation currentAnimation;
     private float animationTime = 0;
 
     public Animator() {
-        this.rootBone = new Bone();
-        this.boneCount = 0;
-        this.nameToAnimation = Collections.emptyMap();
+        this(new Bone(), Collections.emptyMap());
     }
 
-    Animator(Bone rootBone, int boneCount, Map<String, Animation> nameToAnimation) {
+    Animator(Bone rootBone, Map<String, Animation> nameToAnimation) {
         this.rootBone = rootBone;
-        this.boneCount = boneCount;
+        this.biggestBoneIndex = calcBiggestBoneIndex(rootBone);
         this.nameToAnimation = nameToAnimation;
         this.currentAnimation = nameToAnimation.values().stream().findFirst().orElse(null);
     }
@@ -48,8 +46,18 @@ public class Animator {
         if (animationTime > currentAnimation.getLength()) {
             this.animationTime %= currentAnimation.getLength();
         }
-        Map<String, Matrix4f> currentPose = calculateCurrentAnimationPose();
-        applyPoseToBones(currentPose, rootBone, new Matrix4f());
+    }
+
+    private static int calcBiggestBoneIndex(Bone rootBone) {
+        Stack<Bone> bonesStack = new Stack<>();
+        bonesStack.push(rootBone);
+        int biggestBoneIndex = 0;
+        while (!bonesStack.isEmpty()) {
+            Bone topBone = bonesStack.pop();
+            bonesStack.addAll(topBone.getChildren());
+            biggestBoneIndex = Math.max(biggestBoneIndex, topBone.getIndex());
+        }
+        return biggestBoneIndex;
     }
 
     private Map<String, Matrix4f> calculateCurrentAnimationPose() {
@@ -76,38 +84,29 @@ public class Animator {
         return currentPose;
     }
 
-    private void applyPoseToBones(Map<String, Matrix4f> currentPose, Bone bone, Matrix4f parentTransform) {
-        Matrix4f currentLocalTransform = currentPose.getOrDefault(bone.getName(), new Matrix4f());
-        Matrix4f currentTransform = parentTransform.mul(currentLocalTransform, new Matrix4f());
-        for (Bone childBone : bone.getChildren()) {
-            applyPoseToBones(currentPose, childBone, currentTransform);
-        }
-        currentTransform.mul(bone.getInverseBindTransform(), currentTransform);
-        bone.setAnimatedTransform(currentTransform);
-    }
-
     public Matrix4f[] getBoneTransforms() {
-        Matrix4f[] boneMatrices = new Matrix4f[boneCount];
-        addBonesToArray(rootBone, boneMatrices);
-
-        // TODO this is just dummy to prevent crashing
-        for (int i = 0; i < boneMatrices.length; ++i) {
-            if (boneMatrices[i] == null) {
-                boneMatrices[i] = new Matrix4f();
+        if (currentAnimation == null) {
+            return new Matrix4f[0];
+        }
+        Map<String, Matrix4f> currentPose = calculateCurrentAnimationPose();
+        Stack<Map.Entry<Bone, Matrix4f>> dfsStack = new Stack<>();
+        dfsStack.push(new AbstractMap.SimpleEntry<>(rootBone, new Matrix4f()));
+        Matrix4f[] boneMatrices = new Matrix4f[biggestBoneIndex + 1];
+        while (!dfsStack.isEmpty()) {
+            Map.Entry<Bone, Matrix4f> topPath = dfsStack.pop();
+            Bone bone = topPath.getKey();
+            Matrix4f parentTransform = topPath.getValue();
+            Matrix4f currentLocalTransform = currentPose.getOrDefault(bone.getName(), new Matrix4f());
+            Matrix4f currentTransform = parentTransform.mul(currentLocalTransform, new Matrix4f());
+            for (Bone childBone : bone.getChildren()) {
+                dfsStack.add(new AbstractMap.SimpleEntry<>(childBone, new Matrix4f(currentTransform)));
+            }
+            currentTransform.mul(bone.getInverseBindTransform(), currentTransform);
+            if (bone.getIndex() >= 0) {
+                boneMatrices[bone.getIndex()] = currentTransform;
             }
         }
-
         return boneMatrices;
-    }
-
-    private void addBonesToArray(Bone bone, Matrix4f[] boneMatrices) {
-        // TODO this if is just dummy to prevent crashing
-        if (bone.getIndex() >= 0 && bone.getIndex() < boneMatrices.length) {
-            boneMatrices[bone.getIndex()] = bone.getAnimatedTransform();
-        }
-        for (Bone childBone : bone.getChildren()) {
-            addBonesToArray(childBone, boneMatrices);
-        }
     }
 
 }

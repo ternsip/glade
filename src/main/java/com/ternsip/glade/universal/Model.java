@@ -32,12 +32,12 @@ public class Model {
         this(new Mesh[]{mesh});
     }
 
-    public Model(Mesh[] meshes, Bone rootBone, int boneCount, Map<String, Animation> animations) {
+    public Model(Mesh[] meshes, Bone rootBone, Map<String, Animation> animations) {
         this.meshes = meshes;
         this.position = new Vector3f(0, 0, 0);
         this.scale = new Vector3f(1, 1, 1);
         this.rotation = new Vector3f(0, 0, 0);
-        this.animator = new Animator(rootBone, boneCount, animations);
+        this.animator = new Animator(rootBone, animations);
     }
 
     public void cleanup() {

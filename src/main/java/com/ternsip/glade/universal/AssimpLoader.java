@@ -1,6 +1,7 @@
 package com.ternsip.glade.universal;
 
 import com.ternsip.glade.utils.Maths;
+import com.ternsip.glade.utils.Utils;
 import lombok.SneakyThrows;
 import org.joml.*;
 import org.lwjgl.PointerBuffer;
@@ -38,7 +39,7 @@ public class AssimpLoader {
                 .collect(Collectors.toSet());
         Bone rootBone = createBones(aiSceneMesh.mRootNode(), new Matrix4f(), skeleton, allPossibleBoneNames);
         assertThat(MAX_BONES > skeleton.numberOfUniqueBones());
-        return new Model(meshes, rootBone, skeleton.numberOfUniqueBones(), animations);
+        return new Model(meshes, rootBone, animations);
     }
 
     private static Mesh[] processMeshes(
@@ -84,9 +85,6 @@ public class AssimpLoader {
             Skeleton skeleton,
             Set<String> allPossibleBoneNames
     ) {
-        if (aiNode == null) {
-            return new Bone(-1, "Missing", Collections.emptyList(), new Matrix4f(), new Matrix4f());
-        }
         String boneName = aiNode.mName().dataString();
         int boneIndex = skeleton.getSkeletonBoneNameToIndex().getOrDefault(boneName, -1);
         Matrix4f localBindTransform = toMatrix(aiNode.mTransformation());
