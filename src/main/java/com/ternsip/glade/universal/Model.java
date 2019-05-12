@@ -1,6 +1,9 @@
 package com.ternsip.glade.universal;
 
 import com.ternsip.glade.model.Mesh;
+import com.ternsip.glade.model.loader.animation.animation.Animation;
+import com.ternsip.glade.model.loader.animation.animation.Animator;
+import com.ternsip.glade.model.loader.animation.model.Joint;
 import com.ternsip.glade.utils.Maths;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,9 +12,13 @@ import org.joml.Quaternionf;
 import org.joml.Quaternionfc;
 import org.joml.Vector3f;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 @Getter
 @Setter
-public class GameItem {
+public class Model {
 
     private boolean selected;
 
@@ -29,7 +36,9 @@ public class GameItem {
 
     private boolean insideFrustum;
 
-    public GameItem() {
+    private Animator animator;
+
+    public Model() {
         selected = false;
         position = new Vector3f(0, 0, 0);
         scale = new Vector3f(1, 1, 1);
@@ -39,14 +48,12 @@ public class GameItem {
         disableFrustumCulling = false;
     }
 
-    public GameItem(Mesh mesh) {
-        this();
-        this.meshes = new Mesh[]{mesh};
-    }
-
-    public GameItem(Mesh[] meshes) {
+    public Model(Mesh[] meshes, List<String> jointNames, Joint rootJoint, Map<String, Animation> animations) {
         this();
         this.meshes = meshes;
+        this.animator = new Animator(rootJoint, jointNames.size());
+        Optional<Map.Entry<String, Animation>> entry = animations.entrySet().stream().findFirst();
+        animator.doAnimation(entry.isPresent() ? entry.get().getValue() : null);
     }
 
     public Mesh getMesh() {

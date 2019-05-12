@@ -18,6 +18,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.ternsip.glade.model.Mesh.MAX_JOINTS;
+import static com.ternsip.glade.utils.Utils.assertThat;
 import static com.ternsip.glade.utils.Utils.loadResourceAsAssimp;
 import static org.lwjgl.assimp.Assimp.*;
 
@@ -53,21 +55,21 @@ public class AssimpLoader {
         return jointTransforms;
     }
 
-    public static AnimGameItem loadAnimGameItem(File meshFile, File animationFile, File texturesDir) {
-        return loadAnimGameItem(meshFile, animationFile, texturesDir, 0);
+    public static Model loadModel(File meshFile, File animationFile, File texturesDir) {
+        return loadModel(meshFile, animationFile, texturesDir, 0);
     }
 
-    public static AnimGameItem loadAnimGameItem(File meshFile, File animationFile, File texturesDir, int loaderFlags) {
+    public static Model loadModel(File meshFile, File animationFile, File texturesDir, int loaderFlags) {
         int assimpFlags = aiProcess_GenSmoothNormals |
                 aiProcess_JoinIdenticalVertices |
                 aiProcess_Triangulate |
                 aiProcess_FixInfacingNormals |
                 aiProcess_LimitBoneWeights;
-        return loadAnimGameItem(meshFile, animationFile, texturesDir, assimpFlags, loaderFlags);
+        return loadModel(meshFile, animationFile, texturesDir, assimpFlags, loaderFlags);
     }
 
     @SneakyThrows
-    public static AnimGameItem loadAnimGameItem(
+    public static Model loadModel(
             File meshFile,
             File animationFile,
             File texturesDir,
@@ -108,10 +110,13 @@ public class AssimpLoader {
                 .boxed()
                 .collect(Collectors.toMap(i -> allBones.get(i).getBoneName(), i -> i, (o, n) -> o));
 
+        List<String> allBoneNames = allBones.stream().map(Bone::getBoneName).collect(Collectors.toList());
+
         Joint headJoint = createJoints(aiSceneMesh.mRootNode(), new Matrix4f(), jointNameToIndex, loaderFlags);
         Map<String, Animation> animations = buildAnimations(aiSceneAnimation);
 
-        return new AnimGameItem(meshes, allBones.stream().map(Bone::getBoneName).collect(Collectors.toList()), headJoint, animations);
+        assertThat(MAX_JOINTS > allBones.size());
+        return new Model(meshes, allBoneNames, headJoint, animations);
     }
 
     public static Joint createJoints(

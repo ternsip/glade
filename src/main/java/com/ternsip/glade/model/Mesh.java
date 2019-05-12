@@ -40,6 +40,7 @@ import static org.lwjgl.opengl.GL30.*;
 public class Mesh {
 
     public static final int MAX_WEIGHTS = 3;
+    public static final int MAX_JOINTS = 180;
 
     public static float[] SKIP_ARRAY_FLOAT = new float[0];
     public static int[] SKIP_ARRAY_INT = new int[0];

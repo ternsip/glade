@@ -4,7 +4,7 @@ import com.ternsip.glade.entity.Camera;
 import com.ternsip.glade.entity.Sun;
 import com.ternsip.glade.model.Mesh;
 import com.ternsip.glade.model.loader.engine.utils.OpenGlUtils;
-import com.ternsip.glade.universal.AnimGameItem;
+import com.ternsip.glade.universal.Model;
 import org.joml.Matrix4f;
 
 import java.util.List;
@@ -17,13 +17,13 @@ public class AnimatedModelRenderer {
         this.shader = new AnimatedModelShader();
     }
 
-    public void render(List<AnimGameItem> animGameItems, Camera camera, Sun sun) {
-        for (AnimGameItem animGameItem : animGameItems) {
+    public void render(List<Model> animGameItems, Camera camera, Sun sun) {
+        for (Model animGameItem : animGameItems) {
             render(animGameItem, camera, sun);
         }
     }
 
-    public void render(AnimGameItem animGameItem, Camera camera, Sun sun) {
+    public void render(Model animGameItem, Camera camera, Sun sun) {
         shader.start();
         Matrix4f[] jointTransforms = animGameItem.getAnimator().getJointTransforms();
         //jointTransforms = new Matrix4f[0];
