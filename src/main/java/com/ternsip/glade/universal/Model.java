@@ -8,7 +8,6 @@ import org.joml.Quaternionf;
 import org.joml.Quaternionfc;
 import org.joml.Vector3f;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -44,10 +43,10 @@ public class Model {
         disableFrustumCulling = false;
     }
 
-    public Model(Mesh[] meshes, Joint rootJoint, int jointCount, Map<String, Animation> animations) {
+    public Model(Mesh[] meshes, Bone rootBone, int boneCount, Map<String, Animation> animations) {
         this();
         this.meshes = meshes;
-        this.animator = new Animator(rootJoint, jointCount);
+        this.animator = new Animator(rootBone, boneCount);
         Optional<Map.Entry<String, Animation>> entry = animations.entrySet().stream().findFirst();
         animator.doAnimation(entry.isPresent() ? entry.get().getValue() : null);
     }

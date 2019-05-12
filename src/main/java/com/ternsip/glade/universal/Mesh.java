@@ -36,7 +36,7 @@ import static org.lwjgl.opengl.GL30.*;
 public class Mesh {
 
     public static final int MAX_WEIGHTS = 3;
-    public static final int MAX_JOINTS = 180;
+    public static final int MAX_BONES = 180;
 
     public static float[] SKIP_ARRAY_FLOAT = new float[0];
     public static int[] SKIP_ARRAY_INT = new int[0];
@@ -47,7 +47,7 @@ public class Mesh {
     public static int COLORS_ATTRIBUTE_POINTER_INDEX = 2;
     public static int TEXTURES_ATTRIBUTE_POINTER_INDEX = 3;
     public static int WEIGHTS_ATTRIBUTE_POINTER_INDEX = 4;
-    public static int JOINTS_ATTRIBUTE_POINTER_INDEX = 5;
+    public static int BONES_ATTRIBUTE_POINTER_INDEX = 5;
 
     private static int NO_TEXTURE = -1;
     private static int NO_VBO = -1;
@@ -61,7 +61,7 @@ public class Mesh {
     private int vboColors;
     private int vboTextures;
     private int vboWeights;
-    private int vboJoints;
+    private int vboBones;
 
     public Mesh(
             float[] vertices,
@@ -70,7 +70,7 @@ public class Mesh {
             float[] textures,
             int[] indices,
             float[] weights,
-            int[] joints,
+            int[] bones,
             Material material
     ) {
         indicesCount = indices == SKIP_ARRAY_INT ? vertices.length / 3 : indices.length;
@@ -84,7 +84,7 @@ public class Mesh {
         Utils.assertThat(colors.length == 0 || (4 * vertices.length / 3) == colors.length);
         Utils.assertThat(textures.length == 0 || (2 * vertices.length) / 3 == textures.length);
         Utils.assertThat(weights.length == 0 || vertices.length == weights.length);
-        Utils.assertThat(joints.length == 0 || vertices.length == joints.length);
+        Utils.assertThat(bones.length == 0 || vertices.length == bones.length);
 
 
         this.material = material;
@@ -96,7 +96,7 @@ public class Mesh {
         vboColors = bindArrayVBO(COLORS_ATTRIBUTE_POINTER_INDEX, 4, colors);
         vboTextures = bindArrayVBO(TEXTURES_ATTRIBUTE_POINTER_INDEX, 2, textures);
         vboWeights = bindArrayVBO(WEIGHTS_ATTRIBUTE_POINTER_INDEX, MAX_WEIGHTS, weights);
-        vboJoints = bindArrayVBO(JOINTS_ATTRIBUTE_POINTER_INDEX, MAX_WEIGHTS, joints);
+        vboBones = bindArrayVBO(BONES_ATTRIBUTE_POINTER_INDEX, MAX_WEIGHTS, bones);
         glBindVertexArray(0);
 
     }
@@ -158,7 +158,7 @@ public class Mesh {
         if (vboColors != NO_VBO) glEnableVertexAttribArray(COLORS_ATTRIBUTE_POINTER_INDEX);
         if (vboTextures != NO_VBO) glEnableVertexAttribArray(TEXTURES_ATTRIBUTE_POINTER_INDEX);
         if (vboWeights != NO_VBO) glEnableVertexAttribArray(WEIGHTS_ATTRIBUTE_POINTER_INDEX);
-        if (vboJoints != NO_VBO) glEnableVertexAttribArray(JOINTS_ATTRIBUTE_POINTER_INDEX);
+        if (vboBones != NO_VBO) glEnableVertexAttribArray(BONES_ATTRIBUTE_POINTER_INDEX);
 
         if (vboIndices == NO_VBO) {
             glDrawArrays(GL11.GL_TRIANGLES, 0, indicesCount);
@@ -171,7 +171,7 @@ public class Mesh {
         if (vboColors != NO_VBO) glDisableVertexAttribArray(COLORS_ATTRIBUTE_POINTER_INDEX);
         if (vboTextures != NO_VBO) glDisableVertexAttribArray(TEXTURES_ATTRIBUTE_POINTER_INDEX);
         if (vboWeights != NO_VBO) glDisableVertexAttribArray(WEIGHTS_ATTRIBUTE_POINTER_INDEX);
-        if (vboJoints != NO_VBO) glDisableVertexAttribArray(JOINTS_ATTRIBUTE_POINTER_INDEX);
+        if (vboBones != NO_VBO) glDisableVertexAttribArray(BONES_ATTRIBUTE_POINTER_INDEX);
 
         glBindVertexArray(0);
     }
@@ -183,7 +183,7 @@ public class Mesh {
         if (vboColors != NO_VBO) glDeleteBuffers(vboColors);
         if (vboTextures != NO_VBO) glDeleteBuffers(vboTextures);
         if (vboWeights != NO_VBO) glDeleteBuffers(vboWeights);
-        if (vboJoints != NO_VBO) glDeleteBuffers(vboJoints);
+        if (vboBones != NO_VBO) glDeleteBuffers(vboBones);
         material.cleanUp();
     }
 

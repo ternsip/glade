@@ -1,19 +1,19 @@
 #version 150
 
-const int MAX_JOINTS = 180;//max joints allowed in a skeleton
-const int MAX_WEIGHTS = 3;//max number of joints that can affect a vertex
+const int MAX_BONES = 180;//max bones allowed in a skeleton
+const int MAX_WEIGHTS = 3;//max number of bones that can affect a vertex
 
 in vec3 in_position;
 in vec2 in_textureCoords;
 in vec3 in_normal;
-in ivec3 in_jointIndices;
+in ivec3 in_boneIndices;
 in vec3 in_weights;
 
 out vec2 pass_textureCoords;
 out vec3 pass_normal;
 
 uniform bool animated;
-uniform mat4 jointTransforms[MAX_JOINTS];
+uniform mat4 boneTransforms[MAX_BONES];
 uniform mat4 projectionViewMatrix;
 uniform mat4 transformationMatrix;
 
@@ -26,10 +26,10 @@ void main(void) {
         totalLocalPos = vec4(0.0);
         totalNormal = vec4(0.0);
         for (int i=0; i < MAX_WEIGHTS; i++){
-            mat4 jointTransform = jointTransforms[in_jointIndices[i]];
-            vec4 posePosition = jointTransform * vec4(in_position, 1.0);
+            mat4 boneTransform = boneTransforms[in_boneIndices[i]];
+            vec4 posePosition = boneTransform * vec4(in_position, 1.0);
             totalLocalPos += posePosition * in_weights[i];
-            vec4 worldNormal = jointTransform * vec4(in_normal, 0.0);
+            vec4 worldNormal = boneTransform * vec4(in_normal, 0.0);
             totalNormal += worldNormal * in_weights[i];
         }
     }

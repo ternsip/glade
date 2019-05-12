@@ -38,12 +38,15 @@ public class Glade {
         //teapotModel.setScale(new Vector3f(10, 10, 10));
         //teapotModel.setRotation(new Vector3f(0, 0, -90));
 
-        //Mesh dudeModel = ResourceLoader.loadObjModel(new File("models/dude/dude.obj"), new File("models/dude/dude.png"));
-        //Entity dude = new Entity(dudeModel, new Vector3f(-20, 0, -20), new Vector3f(0, 0, 0), new Vector3f(10, 10, 10));
+        Model bottleModel = AssimpLoader.loadModel(new File("models/bottle/bottle.3ds"), new File("models/bottle/bottle.3ds"), new File("models/bottle/"));
+        bottleModel.setPosition(new Vector3f(-30f, 0, -20));
+        bottleModel.setScale(new Vector3f(1f, 1f, 1f));
+        bottleModel.setRotation(new Vector3f(0, 0, 0));
 
-        // AnimatedModel boyModel = AnimatedModelLoader.loadEntity(new File("models/boy/boy.dae"), new File("models/boy/boy.png"), new File("models/boy/boy.dae"));
-        //AnimatedModel skeletonModel = AnimatedModelLoader.loadEntity(new File("models/skeleton/skeleton.dae"), new File("models/boy/boy.png"), new File("models/skeleton/skeleton.dae"));
-        //AnimatedModel microwaveModel = AnimatedModelLoader.loadEntity(new File("models/microwave/microwave.dae"), new File("models/microwave/microwave_col.png"), new File("models/microwave/microwave.dae"));
+        Model zebraModel = AssimpLoader.loadModel(new File("models/zebra/ZebraLOD1.ms3d"), new File("models/zebra/ZebraLOD1.ms3d"), new File("models/zebra/"));
+        zebraModel.setPosition(new Vector3f(-20f, 0, -20));
+        zebraModel.setScale(new Vector3f(0.25f, 0.25f, 0.25f));
+        zebraModel.setRotation(new Vector3f(0, 0, 0));
 
         Model hagreedModel = AssimpLoader.loadModel(new File("models/bob/boblamp.md5mesh"), new File("models/bob/boblamp.md5anim"), new File("models/bob/"));
         hagreedModel.setPosition(new Vector3f(20f, 2, 2));
@@ -74,11 +77,6 @@ public class Glade {
         dude2Model.setScale(new Vector3f(10f, 10f, 10f));
         dude2Model.setRotation(new Vector3f(0, 0, -90));
 
-        Model repModel = AssimpLoader.loadModel(new File("models/zebra/ZebraLOD1.ms3d"), new File("models/zebra/ZebraLOD1.ms3d"), new File("models/zebra/"));
-        repModel.setPosition(new Vector3f(-20f, 0, -20));
-        repModel.setScale(new Vector3f(0.25f, 0.25f, 0.25f));
-        repModel.setRotation(new Vector3f(0, 0, 0));
-
         Mesh roverModel = ResourceLoader.loadObjModel(new File("models/rover/rover.obj"), new File("models/rover/rover.png"));
         Rover rover = new Rover(boyModel, roverModel, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
         Camera camera = new Camera(rover);
@@ -94,7 +92,8 @@ public class Glade {
         //renderer.processEntity(teapotModel);
         //renderer.processEntity(dude);
         renderer.processEntity(dude2Model);
-        renderer.processEntity(repModel);
+        renderer.processEntity(zebraModel);
+        renderer.processEntity(bottleModel);
         //renderer.processEntity(horror);
         renderer.processEntity(spiderModel);
         renderer.processEntity(boyModel);

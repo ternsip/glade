@@ -13,12 +13,12 @@ public class Animation {
     private final float length; // In seconds
     private final KeyFrame[] keyFrames;
 
-    public Set<String> findAllDistinctJointNames() {
-        Set<String> jointNames = new HashSet<>();
+    public Set<String> findAllDistinctBonesNames() {
+        Set<String> boneNames = new HashSet<>();
         for (int i = 0; i < keyFrames.length; ++i) {
-            jointNames.addAll(keyFrames[i].getJointKeyFrames().keySet());
+            boneNames.addAll(keyFrames[i].getBoneKeyFrames().keySet());
         }
-        return jointNames;
+        return boneNames;
     }
 
 }

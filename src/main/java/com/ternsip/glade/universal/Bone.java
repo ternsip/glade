@@ -8,19 +8,19 @@ import java.util.List;
 
 @Getter
 @Setter
-public class Joint {
+public class Bone {
 
     private final int index;// ID TODO think about excessive
     private final String name;
-    private final List<Joint> children;
+    private final List<Bone> children;
     private final Matrix4f localBindTransform;
     private final Matrix4f inverseBindTransform;
     private Matrix4f animatedTransform = new Matrix4f();
 
-    public Joint(
+    public Bone(
             int index,
             String name,
-            List<Joint> children,
+            List<Bone> children,
             Matrix4f bindLocalTransform,
             Matrix4f inverseBindTransform
     ) {

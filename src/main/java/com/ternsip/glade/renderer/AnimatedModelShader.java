@@ -4,7 +4,7 @@ import com.ternsip.glade.model.loader.engine.shaders.*;
 
 import java.io.File;
 
-import static com.ternsip.glade.universal.Mesh.MAX_JOINTS;
+import static com.ternsip.glade.universal.Mesh.MAX_BONES;
 
 
 public class AnimatedModelShader extends ShaderProgram {
@@ -18,12 +18,12 @@ public class AnimatedModelShader extends ShaderProgram {
     protected UniformMatrix projectionViewMatrix = new UniformMatrix("projectionViewMatrix");
     protected UniformMatrix transformationMatrix = new UniformMatrix("transformationMatrix");
     protected UniformVec3 lightDirection = new UniformVec3("lightDirection");
-    protected UniformMat4Array jointTransforms = new UniformMat4Array("jointTransforms", MAX_JOINTS);
+    protected UniformMat4Array boneTransforms = new UniformMat4Array("boneTransforms", MAX_BONES);
     private UniformSampler diffuseMap = new UniformSampler("diffuseMap");
 
     public AnimatedModelShader() {
         super(VERTEX_SHADER, FRAGMENT_SHADER);
-        super.storeAllUniformLocations(projectionViewMatrix, transformationMatrix, diffuseMap, lightDirection, jointTransforms, animated);
+        super.storeAllUniformLocations(projectionViewMatrix, transformationMatrix, diffuseMap, lightDirection, boneTransforms, animated);
         connectTextureUnits();
     }
 

@@ -51,7 +51,7 @@ public class ShaderProgram {
         glBindAttribLocation(programID, VERTICES_ATTRIBUTE_POINTER_INDEX, "in_position");
         glBindAttribLocation(programID, TEXTURES_ATTRIBUTE_POINTER_INDEX, "in_textureCoords");
         glBindAttribLocation(programID, NORMALS_ATTRIBUTE_POINTER_INDEX, "in_normal");
-        glBindAttribLocation(programID, JOINTS_ATTRIBUTE_POINTER_INDEX, "in_jointIndices");
+        glBindAttribLocation(programID, BONES_ATTRIBUTE_POINTER_INDEX, "in_boneIndices");
         glBindAttribLocation(programID, WEIGHTS_ATTRIBUTE_POINTER_INDEX, "in_weights");
     }
 

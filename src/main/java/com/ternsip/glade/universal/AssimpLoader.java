@@ -11,9 +11,8 @@ import java.lang.Math;
 import java.nio.IntBuffer;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
-import static com.ternsip.glade.universal.Mesh.MAX_JOINTS;
+import static com.ternsip.glade.universal.Mesh.MAX_BONES;
 import static com.ternsip.glade.utils.Utils.assertThat;
 import static com.ternsip.glade.utils.Utils.loadResourceAsAssimp;
 import static org.lwjgl.assimp.Assimp.*;
@@ -43,12 +42,14 @@ public class AssimpLoader {
         PointerBuffer aiMeshes = aiSceneMesh.mMeshes();
         Mesh[] meshes = processMeshes(aiSceneMesh, materials, skeleton, aiMeshes);
         Map<String, Animation> animations = buildAnimations(aiSceneAnimation);
-        Set<String> allPossibleJointNames = animations.size() > 0
-                ? animations.values().iterator().next().findAllDistinctJointNames()
-                : Collections.emptySet();
-        Joint rootJoint = createJoints(aiSceneMesh.mRootNode(), new Matrix4f(), skeleton, allPossibleJointNames);
-        assertThat(MAX_JOINTS > skeleton.numberOfUniqueBones());
-        return new Model(meshes, rootJoint, skeleton.numberOfUniqueBones(), animations);
+        Set<String> allPossibleBoneNames = animations.values()
+                .stream()
+                .map(Animation::findAllDistinctBonesNames)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toSet());
+        Bone rootBone = createBones(aiSceneMesh.mRootNode(), new Matrix4f(), skeleton, allPossibleBoneNames);
+        assertThat(MAX_BONES > skeleton.numberOfUniqueBones());
+        return new Model(meshes, rootBone, skeleton.numberOfUniqueBones(), animations);
     }
 
     private static Mesh[] processMeshes(
@@ -84,29 +85,29 @@ public class AssimpLoader {
         return meshes;
     }
 
-    public static Joint createJoints(
+    public static Bone createBones(
             AINode aiNode,
             Matrix4fc parentTransform,
             Skeleton skeleton,
-            Set<String> allPossibleJointNames
+            Set<String> allPossibleBoneNames
     ) {
         if (aiNode == null) {
-            return new Joint(-1, "Missing", Collections.emptyList(), new Matrix4f(), new Matrix4f());
+            return new Bone(-1, "Missing", Collections.emptyList(), new Matrix4f(), new Matrix4f());
         }
-        String jointName = aiNode.mName().dataString();
-        int jointIndex = skeleton.getSkeletonBoneNameToIndex().getOrDefault(jointName, -1);
+        String boneName = aiNode.mName().dataString();
+        int boneIndex = skeleton.getSkeletonBoneNameToIndex().getOrDefault(boneName, -1);
         Matrix4f localBindTransform = toMatrix(aiNode.mTransformation());
-        boolean marginal = !allPossibleJointNames.contains(jointName);
+        boolean marginal = !allPossibleBoneNames.contains(boneName);
         Matrix4f bindTransform = marginal ? new Matrix4f() : parentTransform.mul(localBindTransform, new Matrix4f());
         Matrix4f inverseBindTransform = bindTransform.invert(new Matrix4f());
-        List<Joint> children = new ArrayList<>();
+        List<Bone> children = new ArrayList<>();
         PointerBuffer aiChildren = aiNode.mChildren();
         for (int i = 0; i < aiNode.mNumChildren(); i++) {
             AINode aiChildNode = AINode.create(aiChildren.get(i));
-            Joint childJoint = createJoints(aiChildNode, bindTransform, skeleton, allPossibleJointNames);
-            children.add(childJoint);
+            Bone childBone = createBones(aiChildNode, bindTransform, skeleton, allPossibleBoneNames);
+            children.add(childBone);
         }
-        return new Joint(jointIndex, jointName, children, localBindTransform, inverseBindTransform);
+        return new Bone(boneIndex, boneName, children, localBindTransform, inverseBindTransform);
     }
 
     private static Map<String, Animation> buildAnimations(AIScene aiScene) {
@@ -119,24 +120,24 @@ public class AssimpLoader {
 
             // Calculate transformation matrices for each node
             PointerBuffer aiNodeAnimList = aiAnimation.mChannels();
-            Map<String, List<JointTransform>> jointNameToTransforms = new HashMap<>();
+            Map<String, List<BoneTransform>> boneNameToTransforms = new HashMap<>();
             int maxKeyFrameLength = 0;
             for (int j = 0; j < aiAnimation.mNumChannels(); j++) {
                 AINodeAnim aiNodeAnim = AINodeAnim.create(aiNodeAnimList.get(j));
-                String jointName = aiNodeAnim.mNodeName().dataString();
-                List<JointTransform> jointTransforms = buildJointTransforms(aiNodeAnim);
-                maxKeyFrameLength = Math.max(jointTransforms.size(), maxKeyFrameLength);
-                jointNameToTransforms.put(jointName, jointTransforms);
+                String boneName = aiNodeAnim.mNodeName().dataString();
+                List<BoneTransform> boneTransforms = buildBoneTransforms(aiNodeAnim);
+                maxKeyFrameLength = Math.max(boneTransforms.size(), maxKeyFrameLength);
+                boneNameToTransforms.put(boneName, boneTransforms);
             }
 
-            // Turn jointNameToTransforms to KeyFrames
+            // Turn boneNameToTransforms to KeyFrames
             KeyFrame[] keyFrames = new KeyFrame[maxKeyFrameLength];
             float ticksPerSecond = (float) Math.max(aiAnimation.mTicksPerSecond(), 1.0);
             float duration = (float) aiAnimation.mDuration() / ticksPerSecond;
             float deltaTime = maxKeyFrameLength == 1 ? duration : (duration / (maxKeyFrameLength - 1));
             for (int j = 0; j < keyFrames.length; ++j) {
-                Map<String, JointTransform> localMap = new HashMap<>();
-                for (Map.Entry<String, List<JointTransform>> entry : jointNameToTransforms.entrySet()) {
+                Map<String, BoneTransform> localMap = new HashMap<>();
+                for (Map.Entry<String, List<BoneTransform>> entry : boneNameToTransforms.entrySet()) {
                     localMap.put(entry.getKey(), entry.getValue().get(j % entry.getValue().size()));
                 }
                 keyFrames[j] = new KeyFrame(deltaTime * j, localMap);
@@ -148,12 +149,12 @@ public class AssimpLoader {
         return animations;
     }
 
-    private static List<JointTransform> buildJointTransforms(AINodeAnim aiNodeAnim) {
+    private static List<BoneTransform> buildBoneTransforms(AINodeAnim aiNodeAnim) {
         AIVectorKey.Buffer positionKeys = aiNodeAnim.mPositionKeys();
         AIVectorKey.Buffer scalingKeys = aiNodeAnim.mScalingKeys();
         AIQuatKey.Buffer rotationKeys = aiNodeAnim.mRotationKeys();
 
-        List<JointTransform> jointTransforms = new ArrayList<>();
+        List<BoneTransform> boneTransforms = new ArrayList<>();
         for (int i = 0; i < aiNodeAnim.mNumPositionKeys(); i++) {
             AIVector3D vec = positionKeys.get(i).mValue();
             Matrix4f mat = new Matrix4f().translate(vec.x(), vec.y(), vec.z());
@@ -169,10 +170,10 @@ public class AssimpLoader {
             }
             Vector3f translation = new Vector3f(mat.m30(), mat.m31(), mat.m32());
             Quaternionfc rotation = Maths.fromMatrix(mat);
-            jointTransforms.add(new JointTransform(translation, scale, rotation));
+            boneTransforms.add(new BoneTransform(translation, scale, rotation));
 
         }
-        return jointTransforms;
+        return boneTransforms;
     }
 
     private static Skeleton processSkeleton(AIScene aiScene) {
@@ -244,15 +245,13 @@ public class AssimpLoader {
         }
 
         Vector4f diffuse = Material.DEFAULT_COLOUR;
-        int result = aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_DIFFUSE, aiTextureType_NONE, 0,
-                colour);
+        int result = aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_DIFFUSE, aiTextureType_NONE, 0, colour);
         if (result == 0) {
             diffuse = new Vector4f(colour.r(), colour.g(), colour.b(), colour.a());
         }
 
         Vector4f specular = Material.DEFAULT_COLOUR;
-        result = aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_SPECULAR, aiTextureType_NONE, 0,
-                colour);
+        result = aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_SPECULAR, aiTextureType_NONE, 0, colour);
         if (result == 0) {
             specular = new Vector4f(colour.r(), colour.g(), colour.b(), colour.a());
         }

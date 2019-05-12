@@ -14,16 +14,16 @@ import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 public class Animator {
 
     // skeleton
-    private Joint rootJoint;
-    private int jointCount;
+    private Bone rootBone;
+    private int boneCount;
 
     private Animation currentAnimation;
     private float animationTime = 0;
 
 
-    public Animator(Joint rootJoint, int jointCount) {
-        this.rootJoint = rootJoint;
-        this.jointCount = jointCount;
+    public Animator(Bone rootBone, int boneCount) {
+        this.rootBone = rootBone;
+        this.boneCount = boneCount;
     }
 
 
@@ -39,7 +39,7 @@ public class Animator {
         }
         increaseAnimationTime();
         Map<String, Matrix4f> currentPose = calculateCurrentAnimationPose();
-        applyPoseToJoints(currentPose, rootJoint, new Matrix4f());
+        applyPoseToBones(currentPose, rootBone, new Matrix4f());
     }
 
     private void increaseAnimationTime() {
@@ -56,20 +56,20 @@ public class Animator {
         return interpolatePoses(frames[0], frames[1], progression);
     }
 
-    private void applyPoseToJoints(Map<String, Matrix4f> currentPose, Joint joint, Matrix4f parentTransform) {
-        if (!currentPose.containsKey(joint.getName())) {
-            for (Joint childJoint : joint.getChildren()) {
-                applyPoseToJoints(currentPose, childJoint, parentTransform);
+    private void applyPoseToBones(Map<String, Matrix4f> currentPose, Bone bone, Matrix4f parentTransform) {
+        if (!currentPose.containsKey(bone.getName())) {
+            for (Bone childBone : bone.getChildren()) {
+                applyPoseToBones(currentPose, childBone, parentTransform);
             }
             return;
         }
-        Matrix4f currentLocalTransform = currentPose.get(joint.getName());
+        Matrix4f currentLocalTransform = currentPose.get(bone.getName());
         Matrix4f currentTransform = parentTransform.mul(currentLocalTransform, new Matrix4f());
-        for (Joint childJoint : joint.getChildren()) {
-            applyPoseToJoints(currentPose, childJoint, currentTransform);
+        for (Bone childBone : bone.getChildren()) {
+            applyPoseToBones(currentPose, childBone, currentTransform);
         }
-        currentTransform.mul(joint.getInverseBindTransform(), currentTransform);
-        joint.setAnimatedTransform(currentTransform);
+        currentTransform.mul(bone.getInverseBindTransform(), currentTransform);
+        bone.setAnimatedTransform(currentTransform);
     }
 
     private KeyFrame[] getPreviousAndNextFrames() {
@@ -96,36 +96,36 @@ public class Animator {
 
     private Map<String, Matrix4f> interpolatePoses(KeyFrame previousFrame, KeyFrame nextFrame, float progression) {
         Map<String, Matrix4f> currentPose = new HashMap<>();
-        for (String jointName : previousFrame.getJointKeyFrames().keySet()) {
-            JointTransform previousTransform = previousFrame.getJointKeyFrames().get(jointName);
-            JointTransform nextTransform = nextFrame.getJointKeyFrames().get(jointName);
-            JointTransform currentTransform = JointTransform.interpolate(previousTransform, nextTransform, progression);
-            currentPose.put(jointName, currentTransform.getLocalTransform());
+        for (String boneName : previousFrame.getBoneKeyFrames().keySet()) {
+            BoneTransform previousTransform = previousFrame.getBoneKeyFrames().get(boneName);
+            BoneTransform nextTransform = nextFrame.getBoneKeyFrames().get(boneName);
+            BoneTransform currentTransform = BoneTransform.interpolate(previousTransform, nextTransform, progression);
+            currentPose.put(boneName, currentTransform.getLocalTransform());
         }
         return currentPose;
     }
 
-    public Matrix4f[] getJointTransforms() {
-        Matrix4f[] jointMatrices = new Matrix4f[jointCount];
-        addJointsToArray(rootJoint, jointMatrices);
+    public Matrix4f[] getBoneTransforms() {
+        Matrix4f[] boneMatrices = new Matrix4f[boneCount];
+        addBonesToArray(rootBone, boneMatrices);
 
         // TODO this is just dummy to prevent crashing
-        for (int i = 0; i < jointMatrices.length; ++i) {
-            if (jointMatrices[i] == null) {
-                jointMatrices[i] = new Matrix4f();
+        for (int i = 0; i < boneMatrices.length; ++i) {
+            if (boneMatrices[i] == null) {
+                boneMatrices[i] = new Matrix4f();
             }
         }
 
-        return jointMatrices;
+        return boneMatrices;
     }
 
-    private void addJointsToArray(Joint joint, Matrix4f[] jointMatrices) {
+    private void addBonesToArray(Bone bone, Matrix4f[] boneMatrices) {
         // TODO this if is just dummy to prevent crashing
-        if (joint.getIndex() >= 0 && joint.getIndex() < jointMatrices.length) {
-            jointMatrices[joint.getIndex()] = joint.getAnimatedTransform();
+        if (bone.getIndex() >= 0 && bone.getIndex() < boneMatrices.length) {
+            boneMatrices[bone.getIndex()] = bone.getAnimatedTransform();
         }
-        for (Joint childJoint : joint.getChildren()) {
-            addJointsToArray(childJoint, jointMatrices);
+        for (Bone childBone : bone.getChildren()) {
+            addBonesToArray(childBone, boneMatrices);
         }
     }
 
