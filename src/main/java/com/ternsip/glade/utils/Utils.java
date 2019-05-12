@@ -13,7 +13,6 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import static org.lwjgl.assimp.Assimp.aiGetErrorString;
@@ -115,8 +114,13 @@ public class Utils {
     }
 
     @SneakyThrows
-    public static byte[] loadResouceAsByteArray(File file) {
+    public static byte[] loadResourceAsByteArray(File file) {
         return IOUtils.toByteArray(loadResourceAsStream(file));
+    }
+
+    @SneakyThrows
+    public static ByteBuffer ioResourceToByteBuffer(File file) {
+        return arrayToBuffer(loadResourceAsByteArray(file));
     }
 
 }

@@ -7,6 +7,7 @@ import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
+import static com.ternsip.glade.utils.Utils.ioResourceToByteBuffer;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE;
 import static org.lwjgl.opengl.GL30.glGenerateMipmap;
@@ -31,9 +32,8 @@ public class Texture {
      * @param width       Width of the texture
      * @param height      Height of the texture
      * @param pixelFormat Specifies the format of the pixel data (GL_RGBA, etc.)
-     * @throws Exception
      */
-    public Texture(int width, int height, int pixelFormat) throws Exception {
+    public Texture(int width, int height, int pixelFormat) {
         this.id = glGenTextures();
         this.width = width;
         this.height = height;
@@ -54,7 +54,7 @@ public class Texture {
     @SneakyThrows
     public Texture(File file) {
         // TODO MAKE better
-        ByteBuffer imageData = Utils.ioResourceToByteBuffer(file);
+        ByteBuffer imageData = ioResourceToByteBuffer(file);
         try (MemoryStack stack = stackPush()) {
             IntBuffer w = stack.mallocInt(1);
             IntBuffer h = stack.mallocInt(1);
