@@ -49,10 +49,9 @@ public class AssimpLoader {
         Material[] materials = processMaterials(aiSceneMesh.mMaterials(), texturesDir);
 
         List<Bone> allBones = new ArrayList<>();
-        int numMeshes = aiSceneMesh.mNumMeshes();
         PointerBuffer aiMeshes = aiSceneMesh.mMeshes();
-        Mesh[] meshes = new Mesh[numMeshes];
-        for (int i = 0; i < numMeshes; i++) {
+        Mesh[] meshes = new Mesh[aiSceneMesh.mNumMeshes()];
+        for (int i = 0; i < aiSceneMesh.mNumMeshes(); i++) {
             AIMesh aiMesh = AIMesh.create(aiMeshes.get(i));
             int materialIdx = aiMesh.mMaterialIndex();
             Material material = (materialIdx >= 0 && materialIdx < materials.length) ? materials[materialIdx] : new Material();
@@ -96,7 +95,6 @@ public class AssimpLoader {
             return new Joint(-1, "Missing", Collections.emptyList(), new Matrix4f(), new Matrix4f());
         }
         String jointName = aiNode.mName().dataString();
-        int numChildren = aiNode.mNumChildren();
         int jointIndex = jointNameToIndex.getOrDefault(jointName, -1);
         Matrix4f localBindTransform = toMatrix(aiNode.mTransformation());
         boolean marginal = ((loaderFlags & FLAG_ALLOW_ORIGINS_WITHOUT_BONES) == 0) && (jointIndex == -1);
@@ -104,7 +102,7 @@ public class AssimpLoader {
         Matrix4f inverseBindTransform = bindTransform.invert(new Matrix4f());
         List<Joint> children = new ArrayList<>();
         PointerBuffer aiChildren = aiNode.mChildren();
-        for (int i = 0; i < numChildren; i++) {
+        for (int i = 0; i < aiNode.mNumChildren(); i++) {
             AINode aiChildNode = AINode.create(aiChildren.get(i));
             Joint childJoint = createJoints(aiChildNode, bindTransform, jointNameToIndex, loaderFlags);
             children.add(childJoint);
@@ -116,17 +114,15 @@ public class AssimpLoader {
         Map<String, Animation> animations = new HashMap<>();
 
         // Process all animations
-        int numAnimations = aiScene.mNumAnimations();
         PointerBuffer aiAnimations = aiScene.mAnimations();
-        for (int i = 0; i < numAnimations; i++) {
+        for (int i = 0; i < aiScene.mNumAnimations(); i++) {
             AIAnimation aiAnimation = AIAnimation.create(aiAnimations.get(i));
 
             // Calculate transformation matrices for each node
-            int numJoints = aiAnimation.mNumChannels();
             PointerBuffer aiNodeAnimList = aiAnimation.mChannels();
             Map<String, List<JointTransform>> jointNameToTransforms = new HashMap<>();
             int maxKeyFrameLength = 0;
-            for (int j = 0; j < numJoints; j++) {
+            for (int j = 0; j < aiAnimation.mNumChannels(); j++) {
                 AINodeAnim aiNodeAnim = AINodeAnim.create(aiNodeAnimList.get(j));
                 String jointName = aiNodeAnim.mNodeName().dataString();
                 List<JointTransform> jointTransforms = buildJointTransforms(aiNodeAnim);
@@ -154,13 +150,12 @@ public class AssimpLoader {
     }
 
     private static List<JointTransform> buildJointTransforms(AINodeAnim aiNodeAnim) {
-        int numFrames = aiNodeAnim.mNumPositionKeys();
         AIVectorKey.Buffer positionKeys = aiNodeAnim.mPositionKeys();
         AIVectorKey.Buffer scalingKeys = aiNodeAnim.mScalingKeys();
         AIQuatKey.Buffer rotationKeys = aiNodeAnim.mRotationKeys();
 
         List<JointTransform> jointTransforms = new ArrayList<>();
-        for (int i = 0; i < numFrames; i++) {
+        for (int i = 0; i < aiNodeAnim.mNumPositionKeys(); i++) {
             AIVector3D vec = positionKeys.get(i).mValue();
             Matrix4f mat = new Matrix4f().translate(vec.x(), vec.y(), vec.z());
             if (i < aiNodeAnim.mNumRotationKeys()) {
