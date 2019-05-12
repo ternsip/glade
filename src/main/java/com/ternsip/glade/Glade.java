@@ -38,8 +38,8 @@ public class Glade {
         //teapotModel.setScale(new Vector3f(10, 10, 10));
         //teapotModel.setRotation(new Vector3f(0, 0, -90));
 
-        Mesh dudeModel = ResourceLoader.loadObjModel(new File("models/dude/dude.obj"), new File("models/dude/dude.png"));
-        Entity dude = new Entity(dudeModel, new Vector3f(-20, 0, -20), new Vector3f(0, 0, 0), new Vector3f(10, 10, 10));
+        //Mesh dudeModel = ResourceLoader.loadObjModel(new File("models/dude/dude.obj"), new File("models/dude/dude.png"));
+        //Entity dude = new Entity(dudeModel, new Vector3f(-20, 0, -20), new Vector3f(0, 0, 0), new Vector3f(10, 10, 10));
 
         //AnimatedModel spiderModel = AnimatedModelLoader.loadEntity(new File("models/spider/spider.dae"), new File("models/spider/Spinnen_Bein_tex_COLOR_.png"), new File("models/spider/spider.dae"));
         // AnimatedModel boyModel = AnimatedModelLoader.loadEntity(new File("models/boy/boy.dae"), new File("models/boy/boy.png"), new File("models/boy/boy.dae"));
@@ -69,6 +69,11 @@ public class Glade {
         horseModel.setPosition(new Vector3f(2f, 2, 2));
         horseModel.setRotation(new Vector3f(0, 0, -90));
 
+        AnimGameItem dude2Model = AnimMeshesLoader.loadAnimGameItem(new File("models/dude/dude.3ds"), new File("models/dude/dude.3ds"), new File("models/dude2/"));
+        dude2Model.setPosition(new Vector3f(-20f, 0, -20));
+        dude2Model.setScale(new Vector3f(10f, 10f, 10f));
+        dude2Model.setRotation(new Vector3f(0, 0, -90));
+
         Mesh roverModel = ResourceLoader.loadObjModel(new File("models/rover/rover.obj"), new File("models/rover/rover.png"));
         Rover rover = new Rover(boyModel, roverModel, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
         Camera camera = new Camera(rover);
@@ -82,7 +87,8 @@ public class Glade {
         renderer.processEntity(rover);
         renderer.processEntity(cube);
         //renderer.processEntity(teapotModel);
-        renderer.processEntity(dude);
+        //renderer.processEntity(dude);
+        renderer.processEntity(dude2Model);
         //renderer.processEntity(horror);
         //renderer.processEntity(spiderModel2);
         renderer.processEntity(boyModel);
