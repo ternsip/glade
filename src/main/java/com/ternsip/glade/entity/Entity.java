@@ -1,7 +1,7 @@
 package com.ternsip.glade.entity;
 
 
-import com.ternsip.glade.model.Mesh;
+import com.ternsip.glade.universal.Mesh;
 import com.ternsip.glade.utils.Maths;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

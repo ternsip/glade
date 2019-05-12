@@ -2,7 +2,7 @@ package com.ternsip.glade;
 
 
 import com.mokiat.data.front.parser.*;
-import com.ternsip.glade.model.Mesh;
+import com.ternsip.glade.universal.Mesh;
 import com.ternsip.glade.universal.Material;
 import com.ternsip.glade.utils.Utils;
 import lombok.SneakyThrows;
@@ -12,8 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.ternsip.glade.model.Mesh.SKIP_ARRAY_FLOAT;
-import static com.ternsip.glade.model.Mesh.SKIP_ARRAY_INT;
+import static com.ternsip.glade.universal.Mesh.SKIP_ARRAY_FLOAT;
+import static com.ternsip.glade.universal.Mesh.SKIP_ARRAY_INT;
 
 public class ResourceLoader {
 

@@ -1,13 +1,13 @@
 package com.ternsip.glade.entity;
 
 
-import com.ternsip.glade.model.Mesh;
+import com.ternsip.glade.universal.Mesh;
 import com.ternsip.glade.universal.Material;
 
 import java.io.File;
 
-import static com.ternsip.glade.model.Mesh.SKIP_ARRAY_FLOAT;
-import static com.ternsip.glade.model.Mesh.SKIP_ARRAY_INT;
+import static com.ternsip.glade.universal.Mesh.SKIP_ARRAY_FLOAT;
+import static com.ternsip.glade.universal.Mesh.SKIP_ARRAY_INT;
 
 public class Cube {
 

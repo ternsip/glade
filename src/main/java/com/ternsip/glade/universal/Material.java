@@ -4,7 +4,7 @@ import org.joml.Vector4f;
 
 import java.io.File;
 
-import static com.ternsip.glade.model.Mesh.SKIP_TEXTURE;
+import static com.ternsip.glade.universal.Mesh.SKIP_TEXTURE;
 import static org.lwjgl.opengl.GL11.glDeleteTextures;
 
 public class Material {

@@ -8,7 +8,7 @@ import org.joml.Vector3f;
 
 import java.io.File;
 
-import static com.ternsip.glade.model.Mesh.*;
+import static com.ternsip.glade.universal.Mesh.*;
 
 
 public class ModelShader extends ShaderProgram {

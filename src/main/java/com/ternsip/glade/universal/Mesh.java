@@ -1,8 +1,5 @@
-package com.ternsip.glade.model;
+package com.ternsip.glade.universal;
 
-import com.ternsip.glade.universal.Material;
-import com.ternsip.glade.universal.Skeleton;
-import com.ternsip.glade.universal.Texture;
 import com.ternsip.glade.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,7 +33,6 @@ import static org.lwjgl.opengl.GL30.*;
 
 @Getter
 @Setter
-// TODO rename to Mesh
 public class Mesh {
 
     public static final int MAX_WEIGHTS = 3;

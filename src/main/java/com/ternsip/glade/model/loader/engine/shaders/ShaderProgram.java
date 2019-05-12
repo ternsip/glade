@@ -6,7 +6,7 @@ import org.lwjgl.opengl.GL11;
 import java.io.BufferedReader;
 import java.io.File;
 
-import static com.ternsip.glade.model.Mesh.*;
+import static com.ternsip.glade.universal.Mesh.*;
 import static org.lwjgl.opengl.GL20.*;
 
 public class ShaderProgram {

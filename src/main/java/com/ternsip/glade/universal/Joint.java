@@ -1,4 +1,4 @@
-package com.ternsip.glade.model.loader.animation.animation;
+package com.ternsip.glade.universal;
 
 import lombok.Getter;
 import lombok.Setter;

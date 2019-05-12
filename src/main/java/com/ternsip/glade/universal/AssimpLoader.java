@@ -1,10 +1,5 @@
 package com.ternsip.glade.universal;
 
-import com.ternsip.glade.model.Mesh;
-import com.ternsip.glade.model.loader.animation.animation.Animation;
-import com.ternsip.glade.model.loader.animation.animation.JointTransform;
-import com.ternsip.glade.model.loader.animation.animation.KeyFrame;
-import com.ternsip.glade.model.loader.animation.animation.Joint;
 import com.ternsip.glade.utils.Maths;
 import lombok.SneakyThrows;
 import org.joml.*;
@@ -18,7 +13,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.ternsip.glade.model.Mesh.MAX_JOINTS;
+import static com.ternsip.glade.universal.Mesh.MAX_JOINTS;
 import static com.ternsip.glade.utils.Utils.assertThat;
 import static com.ternsip.glade.utils.Utils.loadResourceAsAssimp;
 import static org.lwjgl.assimp.Assimp.*;

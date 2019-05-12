@@ -1,7 +1,7 @@
 package com.ternsip.glade;
 
 import com.ternsip.glade.entity.*;
-import com.ternsip.glade.model.Mesh;
+import com.ternsip.glade.universal.Mesh;
 import com.ternsip.glade.renderer.MasterRenderer;
 import com.ternsip.glade.universal.AssimpLoader;
 import com.ternsip.glade.universal.Model;
