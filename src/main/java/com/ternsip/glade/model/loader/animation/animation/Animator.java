@@ -120,12 +120,12 @@ public class Animator {
         return jointMatrices;
     }
 
-    private void addJointsToArray(Joint headJoint, Matrix4f[] jointMatrices) {
+    private void addJointsToArray(Joint joint, Matrix4f[] jointMatrices) {
         // TODO this if is just dummy to prevent crashing
-        if (headJoint.index >= 0 && headJoint.index < jointMatrices.length) {
-            jointMatrices[headJoint.index] = headJoint.getAnimatedTransform();
+        if (joint.index >= 0 && joint.index < jointMatrices.length) {
+            jointMatrices[joint.index] = joint.getAnimatedTransform();
         }
-        for (Joint childJoint : headJoint.children) {
+        for (Joint childJoint : joint.children) {
             addJointsToArray(childJoint, jointMatrices);
         }
     }

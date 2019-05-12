@@ -64,24 +64,36 @@ public class Glade {
         boyModel.setPosition(new Vector3f(2f, 2, 2));
         boyModel.setRotation(new Vector3f(0, 0, -90));
 
+
+        AnimGameItem horseModel = AnimMeshesLoader.loadAnimGameItem(new File("models/house/horse.3ds"), new File("models/house/horse.3ds"), new File("models/house/"));
+        horseModel.setPosition(new Vector3f(2f, 2, 2));
+        horseModel.setRotation(new Vector3f(0, 0, -90));
+
         Mesh roverModel = ResourceLoader.loadObjModel(new File("models/rover/rover.obj"), new File("models/rover/rover.png"));
         Rover rover = new Rover(boyModel, roverModel, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
         Camera camera = new Camera(rover);
+
+        //AnimGameItem horror = AnimMeshesLoader.loadAnimGameItem(new File("models/horror/cloth_horror_model.dae"), new File("models/horror/anim/mii_hand_already_end.smd"), new File("models/horror/"));
+        //horror.setPosition(new Vector3f(10f, 2, 2));
+        //horror.setScale(new Vector3f(2, 2, 2));
+        //horror.setRotation(new Vector3f(0, 0, -90));
 
         MasterRenderer renderer = new MasterRenderer(camera);
         renderer.processEntity(rover);
         renderer.processEntity(cube);
         //renderer.processEntity(teapotModel);
         renderer.processEntity(dude);
+        //renderer.processEntity(horror);
         //renderer.processEntity(spiderModel2);
         renderer.processEntity(boyModel);
+        renderer.processEntity(horseModel);
         //renderer.processEntity(shipModel);
         //renderer.processEntity(lampModel);
         //renderer.processEntity(skeletonModel);
         //renderer.processEntity(microwaveModel);
         //renderer.processEntity(spiderModel);
-        //renderer.processEntity(hagreedModel);
-        renderer.processEntity(warriorModel);
+        renderer.processEntity(hagreedModel);
+        //renderer.processEntity(warriorModel);
 
         // TODO Check performance with runnable and without it
         DISPLAY_MANAGER.loop(() -> {

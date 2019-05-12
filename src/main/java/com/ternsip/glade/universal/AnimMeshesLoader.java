@@ -31,9 +31,11 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
         for (int i = 0; i < numFrames; i++) {
             AIVector3D vec = positionKeys.get(i).mValue();
             Matrix4f mat = new Matrix4f().translate(vec.x(), vec.y(), vec.z());
-            AIQuaternion aiQuat = rotationKeys.get(i).mValue();
-            Quaternionf quat = new Quaternionf(aiQuat.x(), aiQuat.y(), aiQuat.z(), aiQuat.w());
-            mat.rotate(quat);
+            if (i < aiNodeAnim.mNumRotationKeys()) {
+                AIQuaternion aiQuat = rotationKeys.get(i).mValue();
+                Quaternionf quat = new Quaternionf(aiQuat.x(), aiQuat.y(), aiQuat.z(), aiQuat.w());
+                mat.rotate(quat);
+            }
             Vector3f scale = new Vector3f(1, 1, 1);
             if (i < aiNodeAnim.mNumScalingKeys()) {
                 AIVector3D aiVScale = scalingKeys.get(i).mValue();
@@ -104,31 +106,6 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
         return new Joint(jointIndex, jointName, children, localBindTransform, inverseBindTransform);
     }
 
-    private static List<AnimatedFrame> buildAnimationFrames(
-            List<Bone> boneList, Node rootNode,
-            Matrix4f rootTransformation
-    ) {
-
-        int numFrames = rootNode.getAnimationFrames();
-        List<AnimatedFrame> frameList = new ArrayList<>();
-        for (int i = 0; i < numFrames; i++) {
-            AnimatedFrame frame = new AnimatedFrame();
-            frameList.add(frame);
-
-            int numBones = boneList.size();
-            for (int j = 0; j < numBones; j++) {
-                Bone bone = boneList.get(j);
-                Node node = rootNode.findByName(bone.getBoneName());
-                Matrix4f boneMatrix = Node.getParentTransforms(node, i);
-                boneMatrix.mul(bone.getOffsetMatrix());
-                boneMatrix = new Matrix4f(rootTransformation).mul(boneMatrix);
-                frame.setMatrix(j, boneMatrix);
-            }
-        }
-
-        return frameList;
-    }
-
     private static Map<String, Animation> buildAnimations(AIScene aiScene) {
         Map<String, Animation> animations = new HashMap<>();
 
@@ -153,7 +130,7 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
 
             // Turn jointNameToTransforms to KeyFrames
             KeyFrame[] keyFrames = new KeyFrame[maxKeyFrameLength];
-            float ticksPerSecond = (float) aiAnimation.mTicksPerSecond();
+            float ticksPerSecond = (float) Math.max(aiAnimation.mTicksPerSecond(), 1.0);
             float duration = (float) aiAnimation.mDuration() / ticksPerSecond;
             float deltaTime = maxKeyFrameLength == 1 ? duration : (duration / (maxKeyFrameLength - 1));
             for (int j = 0; j < keyFrames.length; ++j) {
