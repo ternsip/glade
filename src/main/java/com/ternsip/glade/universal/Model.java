@@ -1,9 +1,7 @@
 package com.ternsip.glade.universal;
 
-import com.sun.org.apache.xpath.internal.operations.Mod;
 import com.ternsip.glade.utils.Maths;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -11,7 +9,6 @@ import org.joml.Quaternionfc;
 import org.joml.Vector3f;
 
 import java.util.Map;
-import java.util.Optional;
 
 @Getter
 @Setter

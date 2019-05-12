@@ -1,6 +1,9 @@
 package com.ternsip.glade;
 
-import com.ternsip.glade.entity.*;
+import com.ternsip.glade.entity.Camera;
+import com.ternsip.glade.entity.Cube;
+import com.ternsip.glade.entity.Rover;
+import com.ternsip.glade.entity.Sun;
 import com.ternsip.glade.renderer.MasterRenderer;
 import com.ternsip.glade.universal.AssimpLoader;
 import com.ternsip.glade.universal.Mesh;

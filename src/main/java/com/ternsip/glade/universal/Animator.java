@@ -1,14 +1,12 @@
 package com.ternsip.glade.universal;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.joml.Matrix4f;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 
@@ -46,40 +44,15 @@ public class Animator {
         if (currentAnimation == null) {
             return;
         }
-        increaseAnimationTime();
-        Map<String, Matrix4f> currentPose = calculateCurrentAnimationPose();
-        applyPoseToBones(currentPose, rootBone, new Matrix4f());
-    }
-
-    private void increaseAnimationTime() {
         animationTime += DISPLAY_MANAGER.getDeltaTime();
         if (animationTime > currentAnimation.getLength()) {
             this.animationTime %= currentAnimation.getLength();
         }
+        Map<String, Matrix4f> currentPose = calculateCurrentAnimationPose();
+        applyPoseToBones(currentPose, rootBone, new Matrix4f());
     }
 
     private Map<String, Matrix4f> calculateCurrentAnimationPose() {
-        KeyFrame[] frames = getPreviousAndNextFrames();
-        return interpolatePoses(frames[0], frames[1]);
-    }
-
-    private void applyPoseToBones(Map<String, Matrix4f> currentPose, Bone bone, Matrix4f parentTransform) {
-        if (!currentPose.containsKey(bone.getName())) {
-            for (Bone childBone : bone.getChildren()) {
-                applyPoseToBones(currentPose, childBone, parentTransform);
-            }
-            return;
-        }
-        Matrix4f currentLocalTransform = currentPose.get(bone.getName());
-        Matrix4f currentTransform = parentTransform.mul(currentLocalTransform, new Matrix4f());
-        for (Bone childBone : bone.getChildren()) {
-            applyPoseToBones(currentPose, childBone, currentTransform);
-        }
-        currentTransform.mul(bone.getInverseBindTransform(), currentTransform);
-        bone.setAnimatedTransform(currentTransform);
-    }
-
-    private KeyFrame[] getPreviousAndNextFrames() {
         KeyFrame[] allFrames = currentAnimation.getKeyFrames();
         KeyFrame previousFrame = allFrames[0];
         KeyFrame nextFrame = allFrames[0];
@@ -90,19 +63,9 @@ public class Animator {
             }
             previousFrame = allFrames[i];
         }
-        return new KeyFrame[]{previousFrame, nextFrame};
-    }
-
-
-    private float calculateProgression(KeyFrame previousFrame, KeyFrame nextFrame) {
         float totalTime = nextFrame.getTimeStamp() - previousFrame.getTimeStamp();
         float currentTime = animationTime - previousFrame.getTimeStamp();
-        return currentTime / totalTime;
-    }
-
-
-    private Map<String, Matrix4f> interpolatePoses(KeyFrame previousFrame, KeyFrame nextFrame) {
-        float progression = calculateProgression(previousFrame, nextFrame);
+        float progression = currentTime / totalTime;
         Map<String, Matrix4f> currentPose = new HashMap<>();
         for (String boneName : previousFrame.getBoneKeyFrames().keySet()) {
             BoneTransform previousTransform = previousFrame.getBoneKeyFrames().get(boneName);
@@ -111,6 +74,16 @@ public class Animator {
             currentPose.put(boneName, currentTransform.getLocalTransform());
         }
         return currentPose;
+    }
+
+    private void applyPoseToBones(Map<String, Matrix4f> currentPose, Bone bone, Matrix4f parentTransform) {
+        Matrix4f currentLocalTransform = currentPose.getOrDefault(bone.getName(), new Matrix4f());
+        Matrix4f currentTransform = parentTransform.mul(currentLocalTransform, new Matrix4f());
+        for (Bone childBone : bone.getChildren()) {
+            applyPoseToBones(currentPose, childBone, currentTransform);
+        }
+        currentTransform.mul(bone.getInverseBindTransform(), currentTransform);
+        bone.setAnimatedTransform(currentTransform);
     }
 
     public Matrix4f[] getBoneTransforms() {
