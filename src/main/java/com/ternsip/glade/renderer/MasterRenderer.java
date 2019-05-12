@@ -15,9 +15,6 @@ import static com.ternsip.glade.sky.SkyRenderer.SKY_COLOR;
 
 public class MasterRenderer {
 
-    private EntityRenderer entityRenderer;
-
-    private List<Entity> entities = new ArrayList<>();
     private List<Model> models = new ArrayList<>();
 
     private SkyRenderer skyRenderer;
@@ -26,7 +23,6 @@ public class MasterRenderer {
     public MasterRenderer(Camera camera) {
         enableCulling();
         Camera.createProjectionMatrix();
-        entityRenderer = new EntityRenderer(camera.getProjectionMatrix());
         skyRenderer = new SkyRenderer(camera.getProjectionMatrix());
         animatedModelRenderer = new AnimatedModelRenderer();
     }
@@ -45,21 +41,14 @@ public class MasterRenderer {
         GL11.glEnable(GL11.GL_DEPTH_TEST);
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
         GL11.glClearColor(SKY_COLOR.x(), SKY_COLOR.y(), SKY_COLOR.z(), 1);
-        entityRenderer.render(entities, camera, sun);
         skyRenderer.render(sun, camera);
         animatedModelRenderer.render(models, camera, sun);
     }
-
-    public void processEntity(Entity entity) {
-        entities.add(entity);
-    }
-
     public void processEntity(Model animGameItem) {
         models.add(animGameItem);
     }
 
     public void cleanUp() {
-        entityRenderer.cleanUp();
         skyRenderer.cleanUp();
         animatedModelRenderer.cleanUp();
         // TODO cleanup entities

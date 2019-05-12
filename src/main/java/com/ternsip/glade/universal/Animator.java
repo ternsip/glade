@@ -1,11 +1,14 @@
 package com.ternsip.glade.universal;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.joml.Matrix4f;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 
@@ -13,23 +16,29 @@ import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 @Setter
 public class Animator {
 
-    // skeleton
-    private Bone rootBone;
-    private int boneCount;
+    private final Bone rootBone;
+    private final int boneCount;
+    private final Map<String, Animation> nameToAnimation;
 
     private Animation currentAnimation;
     private float animationTime = 0;
 
-
-    public Animator(Bone rootBone, int boneCount) {
-        this.rootBone = rootBone;
-        this.boneCount = boneCount;
+    public Animator() {
+        this.rootBone = new Bone();
+        this.boneCount = 0;
+        this.nameToAnimation = Collections.emptyMap();
     }
 
+    Animator(Bone rootBone, int boneCount, Map<String, Animation> nameToAnimation) {
+        this.rootBone = rootBone;
+        this.boneCount = boneCount;
+        this.nameToAnimation = nameToAnimation;
+        this.currentAnimation = nameToAnimation.values().stream().findFirst().orElse(null);
+    }
 
-    public void doAnimation(Animation animation) {
+    public void play(String animationName) {
         this.animationTime = 0;
-        this.currentAnimation = animation;
+        this.currentAnimation = nameToAnimation.get(animationName);
     }
 
 
@@ -44,7 +53,6 @@ public class Animator {
 
     private void increaseAnimationTime() {
         animationTime += DISPLAY_MANAGER.getDeltaTime();
-        // animationTime += DisplayManager.getFrameTime();
         if (animationTime > currentAnimation.getLength()) {
             this.animationTime %= currentAnimation.getLength();
         }
@@ -52,8 +60,7 @@ public class Animator {
 
     private Map<String, Matrix4f> calculateCurrentAnimationPose() {
         KeyFrame[] frames = getPreviousAndNextFrames();
-        float progression = calculateProgression(frames[0], frames[1]);
-        return interpolatePoses(frames[0], frames[1], progression);
+        return interpolatePoses(frames[0], frames[1]);
     }
 
     private void applyPoseToBones(Map<String, Matrix4f> currentPose, Bone bone, Matrix4f parentTransform) {
@@ -94,7 +101,8 @@ public class Animator {
     }
 
 
-    private Map<String, Matrix4f> interpolatePoses(KeyFrame previousFrame, KeyFrame nextFrame, float progression) {
+    private Map<String, Matrix4f> interpolatePoses(KeyFrame previousFrame, KeyFrame nextFrame) {
+        float progression = calculateProgression(previousFrame, nextFrame);
         Map<String, Matrix4f> currentPose = new HashMap<>();
         for (String boneName : previousFrame.getBoneKeyFrames().keySet()) {
             BoneTransform previousTransform = previousFrame.getBoneKeyFrames().get(boneName);

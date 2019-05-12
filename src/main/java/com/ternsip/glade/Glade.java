@@ -28,8 +28,7 @@ public class Glade {
 
         Sun sun = new Sun(new Vector2f(0, 0), new Vector2f(20000, 20000), new Vector3f(1, 1, 1));
 
-        Mesh cubeModel = Cube.generateMesh();
-        Entity cube = new Entity(cubeModel, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
+        Model cube = new Model(Cube.generateMesh());
 
         //Model teapotModel = AssimpLoader.loadModel(new File("models/others/teapot.obj"), new File("models/others/teapot.obj"), new File("models/house"));
         //teapotModel.setPosition(new Vector3f(-20f, 2, 2));

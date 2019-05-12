@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.joml.Matrix4f;
 
+import java.util.Collections;
 import java.util.List;
 
 @Getter
@@ -16,6 +17,14 @@ public class Bone {
     private final Matrix4f localBindTransform;
     private final Matrix4f inverseBindTransform;
     private Matrix4f animatedTransform = new Matrix4f();
+
+    public Bone() {
+        this.index = -1;
+        this.name = "";
+        this.children = Collections.emptyList();
+        this.localBindTransform = new Matrix4f();
+        this.inverseBindTransform = new Matrix4f();
+    }
 
     public Bone(
             int index,

@@ -1,7 +1,9 @@
 package com.ternsip.glade.universal;
 
+import com.sun.org.apache.xpath.internal.operations.Mod;
 import com.ternsip.glade.utils.Maths;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -15,48 +17,30 @@ import java.util.Optional;
 @Setter
 public class Model {
 
-    private boolean selected;
+    private final Mesh[] meshes;
+    private final Vector3f position;
+    private final Vector3f scale;
+    private final Vector3f rotation;
+    private final Animator animator;
 
-    private Mesh[] meshes;
+    public Model(Mesh[] meshes) {
+        this.meshes = meshes;
+        this.position = new Vector3f(0, 0, 0);
+        this.scale = new Vector3f(1, 1, 1);
+        this.rotation = new Vector3f(0, 0, 0);
+        this.animator = new Animator();
+    }
 
-    private Vector3f position;
-
-    private Vector3f scale;
-
-    private Vector3f rotation;
-
-    private int textPos;
-
-    private boolean disableFrustumCulling;
-
-    private boolean insideFrustum;
-
-    private Animator animator;
-
-    public Model() {
-        selected = false;
-        position = new Vector3f(0, 0, 0);
-        scale = new Vector3f(1, 1, 1);
-        rotation = new Vector3f(0, 0, 0);
-        textPos = 0;
-        insideFrustum = true;
-        disableFrustumCulling = false;
+    public Model(Mesh mesh) {
+        this(new Mesh[]{mesh});
     }
 
     public Model(Mesh[] meshes, Bone rootBone, int boneCount, Map<String, Animation> animations) {
-        this();
         this.meshes = meshes;
-        this.animator = new Animator(rootBone, boneCount);
-        Optional<Map.Entry<String, Animation>> entry = animations.entrySet().stream().findFirst();
-        animator.doAnimation(entry.isPresent() ? entry.get().getValue() : null);
-    }
-
-    public Mesh getMesh() {
-        return meshes[0];
-    }
-
-    public void setMesh(Mesh mesh) {
-        this.meshes = new Mesh[]{mesh};
+        this.position = new Vector3f(0, 0, 0);
+        this.scale = new Vector3f(1, 1, 1);
+        this.rotation = new Vector3f(0, 0, 0);
+        this.animator = new Animator(rootBone, boneCount, animations);
     }
 
     public void cleanup() {
@@ -88,6 +72,18 @@ public class Model {
 
     public Matrix4f getTransformationMatrix() {
         return Maths.createTransformationMatrix(getPosition(), getRotationQuaternion(), getScale());
+    }
+
+    public void setPosition(Vector3f position) {
+        this.position.set(position);
+    }
+
+    public void setScale(Vector3f scale) {
+        this.scale.set(scale);
+    }
+
+    public void setRotation(Vector3f rotation) {
+        this.rotation.set(rotation);
     }
 
 }
