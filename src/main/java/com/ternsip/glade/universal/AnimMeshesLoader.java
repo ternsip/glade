@@ -6,8 +6,6 @@ import com.ternsip.glade.model.loader.animation.animation.JointTransform;
 import com.ternsip.glade.model.loader.animation.animation.KeyFrame;
 import com.ternsip.glade.model.loader.animation.model.Joint;
 import com.ternsip.glade.utils.Maths;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.joml.*;
 import org.lwjgl.PointerBuffer;
@@ -15,15 +13,15 @@ import org.lwjgl.assimp.*;
 
 import java.io.File;
 import java.lang.Math;
+import java.nio.IntBuffer;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.ternsip.glade.utils.Utils.loadResourceAsAssimp;
 import static org.lwjgl.assimp.Assimp.*;
 
-public class AnimMeshesLoader extends StaticMeshesLoader {
+public class AnimMeshesLoader {
 
     public static final int FLAG_ALLOW_ORIGINS_WITHOUT_BONES = 0x1;
 
@@ -79,13 +77,7 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
         AIScene aiSceneMesh = loadResourceAsAssimp(meshFile, assimpFlags);
         AIScene aiSceneAnimation = animationFile.equals(meshFile) ? aiSceneMesh : loadResourceAsAssimp(animationFile, assimpFlags);
 
-        int numMaterials = aiSceneMesh.mNumMaterials();
-        PointerBuffer aiMaterials = aiSceneMesh.mMaterials();
-        List<Material> materials = new ArrayList<>();
-        for (int i = 0; i < numMaterials; i++) {
-            AIMaterial aiMaterial = AIMaterial.create(aiMaterials.get(i));
-            processMaterial(aiMaterial, materials, texturesDir);
-        }
+        Material[] materials = processMaterials(aiSceneMesh.mMaterials(), texturesDir);
 
         List<Bone> allBones = new ArrayList<>();
         int numMeshes = aiSceneMesh.mNumMeshes();
@@ -94,7 +86,7 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
         for (int i = 0; i < numMeshes; i++) {
             AIMesh aiMesh = AIMesh.create(aiMeshes.get(i));
             int materialIdx = aiMesh.mMaterialIndex();
-            Material material = (materialIdx >= 0 && materialIdx < materials.size()) ? materials.get(materialIdx) : new Material();
+            Material material = (materialIdx >= 0 && materialIdx < materials.length) ? materials[materialIdx] : new Material();
             float[] vertices = process3DVectorBuffer(aiMesh.mVertices());
             float[] normals = process3DVectorBuffer(aiMesh.mNormals());
             float[] textures = process3DVectorBufferTextures(aiMesh.mTextureCoords(0));
@@ -105,8 +97,7 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
                     normals,
                     textures,
                     indices,
-                    skeleton.getBonesWeights(vertices.length, Mesh.MAX_WEIGHTS),
-                    skeleton.getBonesIndices(vertices.length, Mesh.MAX_WEIGHTS),
+                    skeleton,
                     material
             );
             meshes[i] = mesh;
@@ -117,8 +108,7 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
                 .boxed()
                 .collect(Collectors.toMap(i -> allBones.get(i).getBoneName(), i -> i, (o, n) -> o));
 
-        AINode aiRootNode = aiSceneMesh.mRootNode();
-        Joint headJoint = createJoints(aiRootNode, new Matrix4f(), jointNameToIndex, loaderFlags);
+        Joint headJoint = createJoints(aiSceneMesh.mRootNode(), new Matrix4f(), jointNameToIndex, loaderFlags);
         Map<String, Animation> animations = buildAnimations(aiSceneAnimation);
 
         return new AnimGameItem(meshes, allBones.stream().map(Bone::getBoneName).collect(Collectors.toList()), headJoint, animations);
@@ -130,6 +120,9 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
             Map<String, Integer> jointNameToIndex,
             int loaderFlags
     ) {
+        if (aiNode == null) {
+            return new Joint(-1, "Missing", Collections.emptyList(), new Matrix4f(), new Matrix4f());
+        }
         String jointName = aiNode.mName().dataString();
         int numChildren = aiNode.mNumChildren();
         int jointIndex = jointNameToIndex.getOrDefault(jointName, -1);
@@ -218,5 +211,90 @@ public class AnimMeshesLoader extends StaticMeshesLoader {
         );
     }
 
+    @SneakyThrows
+    static Material[] processMaterials(PointerBuffer aiMaterials, File texturesDir) {
+        if (aiMaterials == null) {
+            return new Material[0];
+        }
+        aiMaterials.rewind();
+        Material[] materials = new Material[aiMaterials.remaining()];
+        for (int i = 0; aiMaterials.remaining() > 0; ++i) {
+            AIMaterial aiMaterial = AIMaterial.create(aiMaterials.get());
+            materials[i]= processMaterial(aiMaterial, texturesDir);
+        }
+        return materials;
+    }
+
+    @SneakyThrows
+    private static Material processMaterial(AIMaterial aiMaterial, File texturesDir) {
+        AIColor4D colour = AIColor4D.create();
+
+        AIString path = AIString.calloc();
+        Assimp.aiGetMaterialTexture(aiMaterial, aiTextureType_DIFFUSE, 0, path, (IntBuffer) null,
+                null, null, null, null, null);
+        String textPath = path.dataString();
+        Texture texture = null;
+        if (textPath != null && textPath.length() > 0) {
+            TextureCache textCache = TextureCache.getInstance();
+            File textureFile = new File(texturesDir, textPath);
+            texture = textCache.getTexture(textureFile);
+        }
+
+        Vector4f diffuse = Material.DEFAULT_COLOUR;
+        int result = aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_DIFFUSE, aiTextureType_NONE, 0,
+                colour);
+        if (result == 0) {
+            diffuse = new Vector4f(colour.r(), colour.g(), colour.b(), colour.a());
+        }
+
+        Vector4f specular = Material.DEFAULT_COLOUR;
+        result = aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_SPECULAR, aiTextureType_NONE, 0,
+                colour);
+        if (result == 0) {
+            specular = new Vector4f(colour.r(), colour.g(), colour.b(), colour.a());
+        }
+
+        return new Material(diffuse, specular, texture, 1.0f);
+    }
+
+    static int[] process3DVectorBufferIndices(AIFace.Buffer aiFaces) {
+        if (aiFaces == null) return new int[0];
+        aiFaces.rewind();
+        ArrayList<Integer> indices = new ArrayList<>();
+        while (aiFaces.remaining() > 0) {
+            AIFace aiFace = aiFaces.get();
+            IntBuffer buffer = aiFace.mIndices();
+            buffer.rewind();
+            while (buffer.remaining() > 0) {
+                indices.add(buffer.get());
+            }
+        }
+        return indices.stream().mapToInt(i -> i).toArray();
+    }
+
+    static float[] process3DVectorBufferTextures(AIVector3D.Buffer aiVector) {
+        if (aiVector == null) return new float[0];
+        aiVector.rewind();
+        float[] texUV = new float[aiVector.remaining() * 2];
+        for (int i = 0; aiVector.remaining() > 0; i++) {
+            AIVector3D aiV = aiVector.get();
+            texUV[i * 2] = aiV.x();
+            texUV[i * 2 + 1] = 1 - aiV.y();
+        }
+        return texUV;
+    }
+
+    static float[] process3DVectorBuffer(AIVector3D.Buffer aiVector) {
+        if (aiVector == null) return new float[0];
+        aiVector.rewind();
+        float[] array = new float[aiVector.remaining() * 3];
+        for (int i = 0; aiVector.remaining() > 0; ++i) {
+            AIVector3D aiV = aiVector.get();
+            array[i * 3] = aiV.x();
+            array[i * 3 + 1] = aiV.y();
+            array[i * 3 + 2] = aiV.z();
+        }
+        return array;
+    }
 
 }

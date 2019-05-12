@@ -123,4 +123,11 @@ public class Utils {
         return arrayToBuffer(loadResourceAsByteArray(file));
     }
 
+    // TODO handle all such situations, it also can cause memory problems
+    public static void assertThat(boolean condition) {
+        if (!condition) {
+            System.out.println("Assertion failed!");
+        }
+    }
+
 }

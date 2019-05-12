@@ -1,7 +1,9 @@
 package com.ternsip.glade.model;
 
 import com.ternsip.glade.universal.Material;
+import com.ternsip.glade.universal.Skeleton;
 import com.ternsip.glade.universal.Texture;
+import com.ternsip.glade.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 import org.lwjgl.opengl.GL11;
@@ -67,6 +69,25 @@ public class Mesh {
             float[] normals,
             float[] textures,
             int[] indices,
+            Skeleton skeleton,
+            Material material
+    ) {
+        this(
+                vertices,
+                normals,
+                textures,
+                indices,
+                skeleton.getBonesWeights(vertices.length / 3, Mesh.MAX_WEIGHTS),
+                skeleton.getBonesIndices(vertices.length / 3, Mesh.MAX_WEIGHTS),
+                material
+        );
+    }
+
+    public Mesh(
+            float[] vertices,
+            float[] normals,
+            float[] textures,
+            int[] indices,
             float[] weights,
             int[] joints,
             Material material
@@ -77,10 +98,12 @@ public class Mesh {
             textures = new float[vertices.length];
         }
 
-        assert vertices.length == normals.length;
-        assert vertices.length == textures.length;
-        assert vertices.length == weights.length;
-        assert vertices.length == joints.length;
+
+        Utils.assertThat(vertices.length > 0);
+        Utils.assertThat(normals == SKIP_ARRAY_FLOAT || vertices.length == normals.length);
+        Utils.assertThat(textures == SKIP_ARRAY_FLOAT || (2 * vertices.length) / 3 == textures.length);
+        Utils.assertThat(weights == SKIP_ARRAY_FLOAT || vertices.length == weights.length);
+        Utils.assertThat(joints == SKIP_ARRAY_INT || vertices.length == joints.length);
 
 
         this.material = material;

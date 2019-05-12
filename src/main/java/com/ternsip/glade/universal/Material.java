@@ -52,10 +52,6 @@ public class Material {
         this(DEFAULT_COLOUR, DEFAULT_COLOUR, texture, reflectance);
     }
 
-    public Material(Vector4f diffuseColour, Vector4f specularColour, float reflectance) {
-        this(diffuseColour, specularColour, null, reflectance);
-    }
-
     public Material(Vector4f diffuseColour, Vector4f specularColour, Texture texture, float reflectance) {
         this.diffuseColour = diffuseColour;
         this.specularColour = specularColour;

@@ -60,14 +60,14 @@ public class Animator {
 
     private void applyPoseToJoints(Map<String, Matrix4f> currentPose, Joint joint, Matrix4f parentTransform) {
         if (!currentPose.containsKey(joint.getName())) {
-            for (Joint childJoint : joint.children) {
+            for (Joint childJoint : joint.getChildren()) {
                 applyPoseToJoints(currentPose, childJoint, parentTransform);
             }
             return;
         }
-        Matrix4f currentLocalTransform = currentPose.get(joint.name);
+        Matrix4f currentLocalTransform = currentPose.get(joint.getName());
         Matrix4f currentTransform = parentTransform.mul(currentLocalTransform, new Matrix4f());
-        for (Joint childJoint : joint.children) {
+        for (Joint childJoint : joint.getChildren()) {
             applyPoseToJoints(currentPose, childJoint, currentTransform);
         }
         currentTransform.mul(joint.getInverseBindTransform(), currentTransform);
@@ -123,10 +123,10 @@ public class Animator {
 
     private void addJointsToArray(Joint joint, Matrix4f[] jointMatrices) {
         // TODO this if is just dummy to prevent crashing
-        if (joint.index >= 0 && joint.index < jointMatrices.length) {
-            jointMatrices[joint.index] = joint.getAnimatedTransform();
+        if (joint.getIndex() >= 0 && joint.getIndex() < jointMatrices.length) {
+            jointMatrices[joint.getIndex()] = joint.getAnimatedTransform();
         }
-        for (Joint childJoint : joint.children) {
+        for (Joint childJoint : joint.getChildren()) {
             addJointsToArray(childJoint, jointMatrices);
         }
     }

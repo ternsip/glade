@@ -10,9 +10,9 @@ import java.util.List;
 @Setter
 public class Joint {
 
-    public final int index;// ID TODO think about excessive
-    public final String name;
-    public final List<Joint> children;
+    private final int index;// ID TODO think about excessive
+    private final String name;
+    private final List<Joint> children;
     private final Matrix4f localBindTransform;
     private final Matrix4f inverseBindTransform;
     private Matrix4f animatedTransform = new Matrix4f();
