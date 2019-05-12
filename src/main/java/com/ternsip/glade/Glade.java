@@ -5,6 +5,7 @@ import com.ternsip.glade.renderer.MasterRenderer;
 import com.ternsip.glade.universal.AssimpLoader;
 import com.ternsip.glade.universal.Mesh;
 import com.ternsip.glade.universal.Model;
+import com.ternsip.glade.universal.Settings;
 import com.ternsip.glade.utils.DisplayManager;
 import lombok.SneakyThrows;
 import org.joml.Vector2f;
@@ -15,9 +16,7 @@ import java.io.File;
 // BE CAREFUL BUFFER FLIPS
 // TODO CHECKOUT BUFFERS (FLOATBUFFER ETC.) BECAUSE THEY ARE BUGGED
 // TODO TURN ALL Vectors and Matrixes and Quaternions to constant interface (quatenrionfc/matrixfc)
-// TODO MemoryUtil.memFree(posBuffer); ??
 // TODO add texture manual assign in case model dont have schema
-// TODO JOINTS -> Bones rename
 public class Glade {
 
     public static final DisplayManager DISPLAY_MANAGER = new DisplayManager();
@@ -38,41 +37,39 @@ public class Glade {
         //teapotModel.setScale(new Vector3f(10, 10, 10));
         //teapotModel.setRotation(new Vector3f(0, 0, -90));
 
-        Model bottleModel = AssimpLoader.loadModel(new File("models/bottle/bottle.3ds"), new File("models/bottle/bottle.3ds"), new File("models/bottle/"));
+        Model bottleModel = AssimpLoader.loadModel(Settings.builder().meshFile(new File("models/bottle/bottle.3ds")).build());
         bottleModel.setPosition(new Vector3f(-30f, 0, -20));
         bottleModel.setScale(new Vector3f(1f, 1f, 1f));
         bottleModel.setRotation(new Vector3f(0, 0, 0));
 
-        Model zebraModel = AssimpLoader.loadModel(new File("models/zebra/ZebraLOD1.ms3d"), new File("models/zebra/ZebraLOD1.ms3d"), new File("models/zebra/"));
+        Model zebraModel = AssimpLoader.loadModel(Settings.builder().meshFile(new File("models/zebra/ZebraLOD1.ms3d")).build());
         zebraModel.setPosition(new Vector3f(-20f, 0, -20));
         zebraModel.setScale(new Vector3f(0.25f, 0.25f, 0.25f));
         zebraModel.setRotation(new Vector3f(0, 0, 0));
 
-        Model hagreedModel = AssimpLoader.loadModel(new File("models/bob/boblamp.md5mesh"), new File("models/bob/boblamp.md5anim"), new File("models/bob/"));
+        Model hagreedModel = AssimpLoader.loadModel(Settings.builder().meshFile(new File("models/bob/boblamp.md5mesh")).animationFile(new File("models/bob/boblamp.md5anim")).build());
         hagreedModel.setPosition(new Vector3f(20f, 2, 2));
         hagreedModel.setScale(new Vector3f(0.25f, 0.25f, 0.25f));
         hagreedModel.setRotation(new Vector3f(0, 0, -90)); // TODO BUG IF I PUT 180 ROTATION
 
-        Model spiderModel = AssimpLoader.loadModel(new File("models/spider/spider.dae"), new File("models/spider/spider.dae"), new File("models/spider/textures"));
+        Model spiderModel = AssimpLoader.loadModel(Settings.builder().meshFile(new File("models/spider/spider.dae")).manualTexture(new File("models/spider/Spinnen_Bein_tex_2.jpg")).build());
         spiderModel.setPosition(new Vector3f(20f, 2, -20));
         spiderModel.setScale(new Vector3f(1, 1, 1));
         spiderModel.setRotation(new Vector3f(0, 0, -90));
 
-        Model warriorModel = AssimpLoader.loadModel(new File("models/warrior/warrior.3ds"), new File("models/warrior/warrior.3ds"), new File("models/warrior"));
+        Model warriorModel = AssimpLoader.loadModel(Settings.builder().meshFile(new File("models/warrior/warrior.3ds")).build());
         warriorModel.setPosition(new Vector3f(-20f, 2, 2));
         warriorModel.setScale(new Vector3f(10, 10, 10));
         warriorModel.setRotation(new Vector3f(0, 0, -90));
-        Model shipModel = AssimpLoader.loadModel(new File("models/ship/ship.3ds"), new File("models/ship/ship.3ds"), new File("models/ship/"));
+        Model shipModel = AssimpLoader.loadModel(Settings.builder().meshFile(new File("models/ship/ship.3ds")).build());
         shipModel.setPosition(new Vector3f(-10f, 2, 2));
         shipModel.setRotation(new Vector3f(0, 0, -90));
-        Model microwaveModel = AssimpLoader.loadModel(new File("models/microwave/microwave.dae"), new File("models/microwave/microwave.dae"), new File("models/microwave/"));
-        microwaveModel.setScale(new Vector3f(2, 2, 2));
 
-        Model boyModel = AssimpLoader.loadModel(new File("models/boy/boy.dae"), new File("models/boy/boy.dae"), new File("models/boy/"));
+        Model boyModel = AssimpLoader.loadModel(Settings.builder().meshFile(new File("models/boy/boy.dae")).build());
         boyModel.setPosition(new Vector3f(2f, 2, 2));
         boyModel.setRotation(new Vector3f(0, 0, -90));
 
-        Model dude2Model = AssimpLoader.loadModel(new File("models/dude/dude.3ds"), new File("models/dude/dude.3ds"), new File("models/dude2/"));
+        Model dude2Model = AssimpLoader.loadModel(Settings.builder().meshFile(new File("models/dude/dude.3ds")).build());
         dude2Model.setPosition(new Vector3f(-20f, 0, -20));
         dude2Model.setScale(new Vector3f(10f, 10f, 10f));
         dude2Model.setRotation(new Vector3f(0, 0, -90));

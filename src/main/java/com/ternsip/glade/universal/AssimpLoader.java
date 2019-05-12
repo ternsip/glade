@@ -19,28 +19,17 @@ import static org.lwjgl.assimp.Assimp.*;
 
 public class AssimpLoader {
 
-    public static Model loadModel(File meshFile, File animationFile, File texturesDir) {
-        int assimpFlags = aiProcess_GenSmoothNormals |
-                aiProcess_JoinIdenticalVertices |
-                aiProcess_Triangulate |
-                aiProcess_FixInfacingNormals |
-                aiProcess_LimitBoneWeights;
-        return loadModel(meshFile, animationFile, texturesDir, assimpFlags);
-    }
 
     @SneakyThrows
-    public static Model loadModel(
-            File meshFile,
-            File animationFile,
-            File texturesDir,
-            int assimpFlags
-    ) {
-        AIScene aiSceneMesh = loadResourceAsAssimp(meshFile, assimpFlags);
-        AIScene aiSceneAnimation = animationFile.equals(meshFile) ? aiSceneMesh : loadResourceAsAssimp(animationFile, assimpFlags);
-        Material[] materials = processMaterials(aiSceneMesh.mMaterials(), texturesDir);
+    public static Model loadModel(Settings settings) {
+        AIScene aiSceneMesh = loadResourceAsAssimp(settings.getMeshFile(), settings.getAssimpFlags());
+        AIScene aiSceneAnimation = settings.isAnimationAndMeshInOneFile()
+                ? aiSceneMesh
+                : loadResourceAsAssimp(settings.getAnimationFile(), settings.getAssimpFlags());
+        Material[] materials = processMaterials(aiSceneMesh.mMaterials(), settings.getTexturesDir());
         Skeleton skeleton = processSkeleton(aiSceneMesh);
         PointerBuffer aiMeshes = aiSceneMesh.mMeshes();
-        Mesh[] meshes = processMeshes(aiSceneMesh, materials, skeleton, aiMeshes);
+        Mesh[] meshes = processMeshes(aiSceneMesh, materials, skeleton, aiMeshes, settings);
         Map<String, Animation> animations = buildAnimations(aiSceneAnimation);
         Set<String> allPossibleBoneNames = animations.values()
                 .stream()
@@ -56,13 +45,17 @@ public class AssimpLoader {
             AIScene aiSceneMesh,
             Material[] materials,
             Skeleton skeleton,
-            PointerBuffer aiMeshes
+            PointerBuffer aiMeshes,
+            Settings settings
     ) {
         Mesh[] meshes = new Mesh[aiSceneMesh.mNumMeshes()];
         for (int meshIndex = 0; meshIndex < aiSceneMesh.mNumMeshes(); meshIndex++) {
             AIMesh aiMesh = AIMesh.create(aiMeshes.get(meshIndex));
             int materialIdx = aiMesh.mMaterialIndex();
             Material material = (materialIdx >= 0 && materialIdx < materials.length) ? materials[materialIdx] : new Material();
+            if (settings.isManualTextureExists()) {
+                material = new Material(TextureCache.getInstance().getTexture(settings.getManualTexture()));
+            }
             int numVertices = aiMesh.mNumVertices();
             float[] vertices = process3DVector(aiMesh.mVertices());
             float[] normals = process3DVector(aiMesh.mNormals());
@@ -239,9 +232,7 @@ public class AssimpLoader {
         String textPath = path.dataString();
         Texture texture = null;
         if (textPath != null && textPath.length() > 0) {
-            TextureCache textCache = TextureCache.getInstance();
-            File textureFile = new File(texturesDir, textPath);
-            texture = textCache.getTexture(textureFile);
+            texture = TextureCache.getInstance().getTexture(new File(texturesDir, textPath));
         }
 
         Vector4f diffuse = Material.DEFAULT_COLOUR;
@@ -312,5 +303,7 @@ public class AssimpLoader {
         }
         return array;
     }
+
+
 
 }
