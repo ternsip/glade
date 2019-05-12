@@ -13,7 +13,6 @@ import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 @Setter
 public class Animator {
 
-
     // skeleton
     private Joint rootJoint;
     private int jointCount;

@@ -44,10 +44,10 @@ public class Model {
         disableFrustumCulling = false;
     }
 
-    public Model(Mesh[] meshes, List<String> jointNames, Joint rootJoint, Map<String, Animation> animations) {
+    public Model(Mesh[] meshes, Joint rootJoint, int jointCount, Map<String, Animation> animations) {
         this();
         this.meshes = meshes;
-        this.animator = new Animator(rootJoint, jointNames.size());
+        this.animator = new Animator(rootJoint, jointCount);
         Optional<Map.Entry<String, Animation>> entry = animations.entrySet().stream().findFirst();
         animator.doAnimation(entry.isPresent() ? entry.get().getValue() : null);
     }

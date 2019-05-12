@@ -2,15 +2,18 @@ package com.ternsip.glade.universal;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.joml.Matrix4f;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Getter
 public class Skeleton {
 
     private final Bone[][] meshBones;
     private final List<Bone> allBones;
+    private final Map<String, Integer> skeletonBoneNameToIndex;
 
     public Skeleton(Bone[][] meshBones) {
         this.meshBones = meshBones;
@@ -21,6 +24,8 @@ public class Skeleton {
             }
         }
         this.allBones = new ArrayList<>(boneNameToBone.values());
+        this.skeletonBoneNameToIndex = IntStream.range(0, allBones.size()).boxed()
+                .collect(Collectors.toMap(i -> allBones.get(i).getBoneName(), i -> i, (o, n) -> o));
     }
 
     public float[] getBonesWeights(int meshIndex, int numVertices, int weightLimit) {
@@ -47,10 +52,14 @@ public class Skeleton {
         return indices;
     }
 
+    public int numberOfUniqueBones() {
+        return skeletonBoneNameToIndex.size();
+    }
+
     private Map<Integer, List<BoneWeight>> combineBoneWeights(int meshIndex) {
         Map<Integer, List<BoneWeight>> combination = new HashMap<>();
         for (int i = 0; i < meshBones[meshIndex].length; ++i) {
-            final int boneIndex = getBoneIndexByName(meshBones[meshIndex][i].getBoneName());
+            final int boneIndex = getSkeletonBoneNameToIndex().get(meshBones[meshIndex][i].getBoneName());
             for (Map.Entry<Integer, List<Float>> entry : meshBones[meshIndex][i].getWeights().entrySet()) {
                 int vertexIndex = entry.getKey();
                 List<Float> boneVertexWeights = entry.getValue();
@@ -63,17 +72,22 @@ public class Skeleton {
         return combination;
     }
 
-    private int getBoneIndexByName(String boneName) {
-        Bone boneFound = getAllBones().stream().filter(bone -> bone.getBoneName().equals(boneName)).findFirst().orElseThrow(() -> new IllegalArgumentException(""));
-        return getAllBones().indexOf(boneFound);
-    }
-
     @RequiredArgsConstructor
     @Getter
     private static class BoneWeight {
 
         private final int boneIndex;
         private final float boneWeight;
+
+    }
+
+    @RequiredArgsConstructor
+    @Getter
+    public static class Bone {
+
+        private final String boneName;
+        private final Matrix4f offsetMatrix;
+        private final Map<Integer, List<Float>> weights;
 
     }
 
