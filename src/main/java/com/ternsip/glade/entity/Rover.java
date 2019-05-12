@@ -1,5 +1,6 @@
 package com.ternsip.glade.entity;
 
+import com.ternsip.glade.universal.Entity;
 import com.ternsip.glade.universal.Mesh;
 import com.ternsip.glade.universal.Model;
 import org.joml.Vector3f;
@@ -10,26 +11,24 @@ import static org.lwjgl.glfw.GLFW.*;
 public class Rover extends Entity {
 
     private static final float RUN_SPEED = 40;
-    private static final float TURN_SPEED = 160.0f;
+    private static final float TURN_SPEED = 2.0f;
     private static final float GRAVITY = -20;
 
     private float currentSpeed = 0;
     private float currentTurnSpeed = 0;
     private float upwardsSpeed = 0;
 
-    private com.ternsip.glade.universal.Entity model;
-
-    public Rover(com.ternsip.glade.universal.Entity gameItem, Mesh model, Vector3f position, Vector3f rotation, Vector3f scale) {
-        super(model, position, rotation, scale);
-        this.model = gameItem;
+    public Rover(Model model) {
+        super(model);
+        increaseRotation(new Vector3f(0, 0, (float) (-Math.PI / 2.0f)));
     }
 
     public void move() {
         checkInputs();
         super.increaseRotation(new Vector3f(0, currentTurnSpeed * DISPLAY_MANAGER.getDeltaTime(), 0));
         float distance = currentSpeed * DISPLAY_MANAGER.getDeltaTime();
-        float dx = (float) (distance * Math.sin(Math.toRadians(super.getRotation().y())));
-        float dz = (float) (distance * Math.cos(Math.toRadians(super.getRotation().y())));
+        float dx = (float) (distance * Math.sin(super.getRotation().y()));
+        float dz = (float) (distance * Math.cos(super.getRotation().y()));
         super.increasePosition(new Vector3f(dx, 0, dz));
         upwardsSpeed += GRAVITY * DISPLAY_MANAGER.getDeltaTime();
         super.increasePosition(new Vector3f(0, upwardsSpeed * DISPLAY_MANAGER.getDeltaTime(), 0));
@@ -38,8 +37,6 @@ public class Rover extends Entity {
             upwardsSpeed = 0;
             super.getPosition().y = terrainHeight;
         }
-        model.setPosition(getPosition());
-        model.setRotation(getRotation().add(0, 0, -90, new Vector3f()));
     }
 
     private void checkInputs() {

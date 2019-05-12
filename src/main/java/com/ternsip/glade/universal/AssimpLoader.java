@@ -159,7 +159,7 @@ public class AssimpLoader {
                 scale.set(aiVScale.x(), aiVScale.y(), aiVScale.z());
             }
             Vector3f translation = new Vector3f(mat.m30(), mat.m31(), mat.m32());
-            Quaternionfc rotation = Maths.fromMatrix(mat);
+            Quaternionfc rotation = mat.getNormalizedRotation(new Quaternionf());
             boneTransforms.add(new BoneTransform(translation, scale, rotation));
 
         }

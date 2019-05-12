@@ -20,7 +20,6 @@ public class DisplayManager {
     private float deltaTime;
     private float fps;
     private long window;
-
     private Vector2i windowSize;
     private float ratio;
 
@@ -49,10 +48,6 @@ public class DisplayManager {
 
         // Enable vertical synchronization
         glfwSwapInterval(1);
-
-        // TODO Should it really be here?
-        //glEnable(GL_TEXTURE_2D);
-        //glActiveTexture(GL_TEXTURE0);
 
         registerCloser();
 

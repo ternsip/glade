@@ -38,7 +38,7 @@ public class BoneTransform {
     public Matrix4f getLocalTransform() {
         Matrix4f matrix = new Matrix4f();
         matrix.translate(position);
-        matrix.mul(Maths.toRotationMatrix(rotation), matrix);
+        matrix.mul(rotation.get(new Matrix4f()), matrix);
         matrix.scale(scaling, matrix);
         return matrix;
     }

@@ -29,16 +29,11 @@ public class Glade {
         Sun sun = new Sun(new Vector2f(0, 0), new Vector2f(20000, 20000), new Vector3f(1, 1, 1));
 
         Model boyModel = AssimpLoader.loadModel(Settings.builder().meshFile(new File("models/boy/boy.dae")).build());
-        Entity entityBoy = new Entity(boyModel);
-        entityBoy.setPosition(new Vector3f(2f, 2, 2));
-        entityBoy.setRotation(new Vector3f(0, 0, -90));
-
-        Mesh roverModel = ResourceLoader.loadObjModel(new File("models/rover/rover.obj"), new File("models/rover/rover.png"));
-        Rover rover = new Rover(entityBoy, roverModel, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
+        Rover rover = new Rover(boyModel);
         Camera camera = new Camera(rover);
 
         MasterRenderer renderer = new MasterRenderer(camera);
-        renderer.processEntity(entityBoy);
+        renderer.processEntity(rover);
         renderer.prepareTestScene();
 
         // TODO Check performance with runnable and without it

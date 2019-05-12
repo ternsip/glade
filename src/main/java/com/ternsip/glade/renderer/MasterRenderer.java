@@ -80,26 +80,26 @@ public class MasterRenderer {
         Entity entityHagreed = new Entity(hagreedModel);
         entityHagreed.setPosition(new Vector3f(20f, 2, 2));
         entityHagreed.setScale(new Vector3f(0.25f, 0.25f, 0.25f));
-        entityHagreed.setRotation(new Vector3f(0, 0, -90)); // TODO BUG IF I PUT 180 ROTATION
+        entityHagreed.setRotation(new Vector3f(0, 0, (float) (-Math.PI / 2))); // TODO BUG IF I PUT 180 ROTATION
 
         Model spiderModel = AssimpLoader.loadModel(Settings.builder().meshFile(new File("models/spider/spider.dae")).manualTexture(new File("models/spider/Spinnen_Bein_tex_2.jpg")).build());
         Entity entitySpider = new Entity(spiderModel);
         entitySpider.setPosition(new Vector3f(20f, 2, -20));
         entitySpider.setScale(new Vector3f(1, 1, 1));
-        entitySpider.setRotation(new Vector3f(0, 0, -90));
+        entitySpider.setRotation(new Vector3f(0, 0, (float) (-Math.PI / 2)));
 
         Model warriorModel = AssimpLoader.loadModel(Settings.builder().meshFile(new File("models/warrior/warrior.3ds")).build());
         Entity entityWarrior = new Entity(warriorModel);
         entityWarrior.setPosition(new Vector3f(-20f, 2, 2));
         entityWarrior.setScale(new Vector3f(10, 10, 10));
-        entityWarrior.setRotation(new Vector3f(0, 0, -90));
+        entityWarrior.setRotation(new Vector3f(0, 0, (float) (-Math.PI / 2)));
 
 
         Model dude2Model = AssimpLoader.loadModel(Settings.builder().meshFile(new File("models/dude/dude.3ds")).build());
         Entity entityDude2 = new Entity(dude2Model);
         entityDude2.setPosition(new Vector3f(-20f, 0, -20));
         entityDude2.setScale(new Vector3f(10f, 10f, 10f));
-        entityDude2.setRotation(new Vector3f(0, 0, -90));
+        entityDude2.setRotation(new Vector3f(0, 0, (float) (-Math.PI / 2)));
 
         processEntity(entityCube);
         processEntity(entityDude2);
