@@ -2,6 +2,7 @@ package com.ternsip.glade.renderer;
 
 import com.ternsip.glade.entity.Camera;
 import com.ternsip.glade.entity.Sun;
+import com.ternsip.glade.universal.Entity;
 import com.ternsip.glade.universal.Mesh;
 import com.ternsip.glade.universal.Model;
 import com.ternsip.glade.utils.OpenGlUtils;
@@ -17,29 +18,28 @@ public class AnimatedModelRenderer {
         this.shader = new AnimatedModelShader();
     }
 
-    public void render(List<Model> animGameItems, Camera camera, Sun sun) {
-        for (Model animGameItem : animGameItems) {
-            render(animGameItem, camera, sun);
+    public void render(List<Entity> animGameItems, Camera camera, Sun sun) {
+        for (Entity entity : animGameItems) {
+            render(entity, camera, sun);
         }
     }
 
-    public void render(Model animGameItem, Camera camera, Sun sun) {
+    public void render(Entity entity, Camera camera, Sun sun) {
         shader.start();
-        Matrix4f[] boneTransforms = animGameItem.getAnimator().getBoneTransforms();
+        Matrix4f[] boneTransforms = entity.getAnimator().getBoneTransforms();
         shader.animated.loadBoolean(boneTransforms.length > 0);
         shader.projectionViewMatrix.loadMatrix(camera.getProjectionViewMatrix());
         shader.lightDirection.loadVec3(sun.getPosition().normalize().negate());
         shader.boneTransforms.loadMatrixArray(boneTransforms); // TODO ANALOG
-        shader.transformationMatrix.loadMatrix(animGameItem.getTransformationMatrix());
+        shader.transformationMatrix.loadMatrix(entity.getTransformationMatrix());
         OpenGlUtils.antialias(true);
         OpenGlUtils.disableBlending();
         OpenGlUtils.enableDepthTesting(true);
-        //animGameItem.getMesh().render();
-        for (Mesh mesh : animGameItem.getMeshes()) {
+        for (Mesh mesh : entity.getAnimator().getModel().getMeshes()) {
             mesh.render();
         }
         shader.stop();
-        animGameItem.getAnimator().update();
+        entity.getAnimator().update();
     }
 
     public void cleanUp() {

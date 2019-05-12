@@ -1,24 +1,38 @@
 package com.ternsip.glade.universal;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
-@RequiredArgsConstructor
 @Getter
+@Setter
 public class Animation {
 
-    private final float length; // In seconds
-    private final KeyFrame[] keyFrames;
+    private final Bone rootBone;
+    private final Map<String, AnimationFrames> nameToAnimation;
+    private final int biggestBoneIndex;
 
-    public Set<String> findAllDistinctBonesNames() {
-        Set<String> boneNames = new HashSet<>();
-        for (int i = 0; i < keyFrames.length; ++i) {
-            boneNames.addAll(keyFrames[i].getBoneKeyFrames().keySet());
+    public Animation() {
+        this(new Bone(), Collections.emptyMap());
+    }
+
+    Animation(Bone rootBone, Map<String, AnimationFrames> nameToAnimation) {
+        this.rootBone = rootBone;
+        this.biggestBoneIndex = calcBiggestBoneIndex(rootBone);
+        this.nameToAnimation = nameToAnimation;
+    }
+
+    private static int calcBiggestBoneIndex(Bone rootBone) {
+        Stack<Bone> bonesStack = new Stack<>();
+        bonesStack.push(rootBone);
+        int biggestBoneIndex = 0;
+        while (!bonesStack.isEmpty()) {
+            Bone topBone = bonesStack.pop();
+            bonesStack.addAll(topBone.getChildren());
+            biggestBoneIndex = Math.max(biggestBoneIndex, topBone.getIndex());
         }
-        return boneNames;
+        return biggestBoneIndex;
     }
 
 }

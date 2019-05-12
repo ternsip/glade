@@ -17,9 +17,9 @@ public class Rover extends Entity {
     private float currentTurnSpeed = 0;
     private float upwardsSpeed = 0;
 
-    private Model model;
+    private com.ternsip.glade.universal.Entity model;
 
-    public Rover(Model gameItem, Mesh model, Vector3f position, Vector3f rotation, Vector3f scale) {
+    public Rover(com.ternsip.glade.universal.Entity gameItem, Mesh model, Vector3f position, Vector3f rotation, Vector3f scale) {
         super(model, position, rotation, scale);
         this.model = gameItem;
     }

@@ -1,7 +1,6 @@
 package com.ternsip.glade.universal;
 
 import com.ternsip.glade.utils.Maths;
-import com.ternsip.glade.utils.Utils;
 import lombok.SneakyThrows;
 import org.joml.*;
 import org.lwjgl.PointerBuffer;
@@ -31,15 +30,15 @@ public class AssimpLoader {
         Skeleton skeleton = processSkeleton(aiSceneMesh);
         PointerBuffer aiMeshes = aiSceneMesh.mMeshes();
         Mesh[] meshes = processMeshes(aiSceneMesh, materials, skeleton, aiMeshes, settings);
-        Map<String, Animation> animations = buildAnimations(aiSceneAnimation);
-        Set<String> allPossibleBoneNames = animations.values()
+        Map<String, AnimationFrames> animationsFrames = buildAnimations(aiSceneAnimation);
+        Set<String> allPossibleBoneNames = animationsFrames.values()
                 .stream()
-                .map(Animation::findAllDistinctBonesNames)
+                .map(AnimationFrames::findAllDistinctBonesNames)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
         Bone rootBone = createBones(aiSceneMesh.mRootNode(), new Matrix4f(), skeleton, allPossibleBoneNames);
         assertThat(MAX_BONES > skeleton.numberOfUniqueBones());
-        return new Model(meshes, rootBone, animations);
+        return new Model(meshes, rootBone, animationsFrames);
     }
 
     private static Mesh[] processMeshes(
@@ -101,8 +100,8 @@ public class AssimpLoader {
         return new Bone(boneIndex, boneName, children, localBindTransform, inverseBindTransform);
     }
 
-    private static Map<String, Animation> buildAnimations(AIScene aiScene) {
-        Map<String, Animation> animations = new HashMap<>();
+    private static Map<String, AnimationFrames> buildAnimations(AIScene aiScene) {
+        Map<String, AnimationFrames> animations = new HashMap<>();
 
         // Process all animations
         PointerBuffer aiAnimations = aiScene.mAnimations();
@@ -134,8 +133,8 @@ public class AssimpLoader {
                 keyFrames[j] = new KeyFrame(deltaTime * j, localMap);
             }
 
-            Animation animation = new Animation(duration, keyFrames);
-            animations.put(aiAnimation.mName().dataString(), animation);
+            AnimationFrames animationFrames = new AnimationFrames(duration, keyFrames);
+            animations.put(aiAnimation.mName().dataString(), animationFrames);
         }
         return animations;
     }
