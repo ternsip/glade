@@ -44,9 +44,10 @@ public class Mesh {
 
     public static int VERTICES_ATTRIBUTE_POINTER_INDEX = 0;
     public static int NORMALS_ATTRIBUTE_POINTER_INDEX = 1;
-    public static int TEXTURES_ATTRIBUTE_POINTER_INDEX = 2;
-    public static int WEIGHTS_ATTRIBUTE_POINTER_INDEX = 3;
-    public static int JOINTS_ATTRIBUTE_POINTER_INDEX = 4;
+    public static int COLORS_ATTRIBUTE_POINTER_INDEX = 2;
+    public static int TEXTURES_ATTRIBUTE_POINTER_INDEX = 3;
+    public static int WEIGHTS_ATTRIBUTE_POINTER_INDEX = 4;
+    public static int JOINTS_ATTRIBUTE_POINTER_INDEX = 5;
 
     private static int NO_TEXTURE = -1;
     private static int NO_VBO = -1;
@@ -57,6 +58,7 @@ public class Mesh {
     private int vboIndices;
     private int vboVertices;
     private int vboNormals;
+    private int vboColors;
     private int vboTextures;
     private int vboWeights;
     private int vboJoints;
@@ -64,6 +66,7 @@ public class Mesh {
     public Mesh(
             float[] vertices,
             float[] normals,
+            float[] colors,
             float[] textures,
             int[] indices,
             float[] weights,
@@ -76,12 +79,12 @@ public class Mesh {
             textures = new float[vertices.length];
         }
 
-
         Utils.assertThat(vertices.length > 0);
-        Utils.assertThat(normals == SKIP_ARRAY_FLOAT || vertices.length == normals.length);
-        Utils.assertThat(textures == SKIP_ARRAY_FLOAT || (2 * vertices.length) / 3 == textures.length);
-        Utils.assertThat(weights == SKIP_ARRAY_FLOAT || vertices.length == weights.length);
-        Utils.assertThat(joints == SKIP_ARRAY_INT || vertices.length == joints.length);
+        Utils.assertThat(normals.length == 0 || vertices.length == normals.length);
+        Utils.assertThat(colors.length == 0 || (4 * vertices.length / 3) == colors.length);
+        Utils.assertThat(textures.length == 0 || (2 * vertices.length) / 3 == textures.length);
+        Utils.assertThat(weights.length == 0 || vertices.length == weights.length);
+        Utils.assertThat(joints.length == 0 || vertices.length == joints.length);
 
 
         this.material = material;
@@ -90,6 +93,7 @@ public class Mesh {
         vboIndices = bindElementArrayVBO(indices);
         vboVertices = bindArrayVBO(VERTICES_ATTRIBUTE_POINTER_INDEX, 3, vertices);
         vboNormals = bindArrayVBO(NORMALS_ATTRIBUTE_POINTER_INDEX, 3, normals);
+        vboColors = bindArrayVBO(COLORS_ATTRIBUTE_POINTER_INDEX, 4, colors);
         vboTextures = bindArrayVBO(TEXTURES_ATTRIBUTE_POINTER_INDEX, 2, textures);
         vboWeights = bindArrayVBO(WEIGHTS_ATTRIBUTE_POINTER_INDEX, MAX_WEIGHTS, weights);
         vboJoints = bindArrayVBO(JOINTS_ATTRIBUTE_POINTER_INDEX, MAX_WEIGHTS, joints);
@@ -98,7 +102,7 @@ public class Mesh {
     }
 
     private static int bindArrayVBO(int index, int nPerVertex, float[] array) {
-        if (array == SKIP_ARRAY_FLOAT) {
+        if (array.length == 0) {
             return NO_VBO;
         }
         int vbo = glGenBuffers();
@@ -110,7 +114,7 @@ public class Mesh {
     }
 
     private static int bindArrayVBO(int index, int nPerVertex, int[] array) {
-        if (array == SKIP_ARRAY_INT) {
+        if (array.length == 0) {
             return NO_VBO;
         }
         int vbo = glGenBuffers();
@@ -151,6 +155,7 @@ public class Mesh {
         glBindVertexArray(vao);
         if (vboVertices != NO_VBO) glEnableVertexAttribArray(VERTICES_ATTRIBUTE_POINTER_INDEX);
         if (vboNormals != NO_VBO) glEnableVertexAttribArray(NORMALS_ATTRIBUTE_POINTER_INDEX);
+        if (vboColors != NO_VBO) glEnableVertexAttribArray(COLORS_ATTRIBUTE_POINTER_INDEX);
         if (vboTextures != NO_VBO) glEnableVertexAttribArray(TEXTURES_ATTRIBUTE_POINTER_INDEX);
         if (vboWeights != NO_VBO) glEnableVertexAttribArray(WEIGHTS_ATTRIBUTE_POINTER_INDEX);
         if (vboJoints != NO_VBO) glEnableVertexAttribArray(JOINTS_ATTRIBUTE_POINTER_INDEX);
@@ -163,6 +168,7 @@ public class Mesh {
 
         if (vboVertices != NO_VBO) glDisableVertexAttribArray(VERTICES_ATTRIBUTE_POINTER_INDEX);
         if (vboNormals != NO_VBO) glDisableVertexAttribArray(NORMALS_ATTRIBUTE_POINTER_INDEX);
+        if (vboColors != NO_VBO) glDisableVertexAttribArray(COLORS_ATTRIBUTE_POINTER_INDEX);
         if (vboTextures != NO_VBO) glDisableVertexAttribArray(TEXTURES_ATTRIBUTE_POINTER_INDEX);
         if (vboWeights != NO_VBO) glDisableVertexAttribArray(WEIGHTS_ATTRIBUTE_POINTER_INDEX);
         if (vboJoints != NO_VBO) glDisableVertexAttribArray(JOINTS_ATTRIBUTE_POINTER_INDEX);
@@ -174,6 +180,7 @@ public class Mesh {
         glDeleteVertexArrays(vao);
         if (vboVertices != NO_VBO) glDeleteBuffers(vboVertices);
         if (vboNormals != NO_VBO) glDeleteBuffers(vboNormals);
+        if (vboColors != NO_VBO) glDeleteBuffers(vboColors);
         if (vboTextures != NO_VBO) glDeleteBuffers(vboTextures);
         if (vboWeights != NO_VBO) glDeleteBuffers(vboWeights);
         if (vboJoints != NO_VBO) glDeleteBuffers(vboJoints);

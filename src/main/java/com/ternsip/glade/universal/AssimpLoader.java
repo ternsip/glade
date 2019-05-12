@@ -50,14 +50,16 @@ public class AssimpLoader {
             int materialIdx = aiMesh.mMaterialIndex();
             Material material = (materialIdx >= 0 && materialIdx < materials.length) ? materials[materialIdx] : new Material();
             int numVertices = aiMesh.mNumVertices();
-            float[] vertices = process3DVectorBuffer(aiMesh.mVertices());
-            float[] normals = process3DVectorBuffer(aiMesh.mNormals());
-            float[] textures = process3DVectorBufferTextures(aiMesh.mTextureCoords(0));
-            int[] indices = process3DVectorBufferIndices(aiMesh.mFaces());
+            float[] vertices = process3DVector(aiMesh.mVertices());
+            float[] normals = process3DVector(aiMesh.mNormals());
+            float[] colors = processColors(aiMesh.mColors(0));
+            float[] textures = processTextures(aiMesh.mTextureCoords(0));
+            int[] indices = processIndices(aiMesh.mFaces());
 
             Mesh mesh = new Mesh(
                     vertices,
                     normals,
+                    colors,
                     textures,
                     indices,
                     skeleton.getBonesWeights(meshIndex, numVertices, Mesh.MAX_WEIGHTS),
@@ -262,7 +264,7 @@ public class AssimpLoader {
         return new Material(diffuse, specular, texture, 1.0f);
     }
 
-    private static int[] process3DVectorBufferIndices(AIFace.Buffer aiFaces) {
+    private static int[] processIndices(AIFace.Buffer aiFaces) {
         if (aiFaces == null) return new int[0];
         aiFaces.rewind();
         ArrayList<Integer> indices = new ArrayList<>();
@@ -277,7 +279,7 @@ public class AssimpLoader {
         return indices.stream().mapToInt(i -> i).toArray();
     }
 
-    private static float[] process3DVectorBufferTextures(AIVector3D.Buffer aiVector) {
+    private static float[] processTextures(AIVector3D.Buffer aiVector) {
         if (aiVector == null) return new float[0];
         aiVector.rewind();
         float[] texUV = new float[aiVector.remaining() * 2];
@@ -289,7 +291,7 @@ public class AssimpLoader {
         return texUV;
     }
 
-    private static float[] process3DVectorBuffer(AIVector3D.Buffer aiVector) {
+    private static float[] process3DVector(AIVector3D.Buffer aiVector) {
         if (aiVector == null) return new float[0];
         aiVector.rewind();
         float[] array = new float[aiVector.remaining() * 3];
@@ -298,6 +300,20 @@ public class AssimpLoader {
             array[i * 3] = aiV.x();
             array[i * 3 + 1] = aiV.y();
             array[i * 3 + 2] = aiV.z();
+        }
+        return array;
+    }
+
+    private static float[] processColors(AIColor4D.Buffer aiVector) {
+        if (aiVector == null) return new float[0];
+        aiVector.rewind();
+        float[] array = new float[aiVector.remaining() * 4];
+        for (int i = 0; aiVector.remaining() > 0; ++i) {
+            AIColor4D aiV = aiVector.get();
+            array[i * 3] = aiV.r();
+            array[i * 3 + 1] = aiV.g();
+            array[i * 3 + 2] = aiV.b();
+            array[i * 3 + 3] = aiV.a();
         }
         return array;
     }

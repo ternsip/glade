@@ -64,7 +64,7 @@ public class SkyRenderer {
     private SkyboxShader skyboxShader;
 
     public SkyRenderer(Matrix4f projectionMatrix) {
-        skyBox = new Mesh(VERTICES, SKIP_ARRAY_FLOAT, SKIP_ARRAY_FLOAT, SKIP_ARRAY_INT, SKIP_ARRAY_FLOAT, SKIP_ARRAY_INT, new Material(SKIP_TEXTURE));
+        skyBox = new Mesh(VERTICES, SKIP_ARRAY_FLOAT, SKIP_ARRAY_FLOAT, SKIP_ARRAY_FLOAT, SKIP_ARRAY_INT, SKIP_ARRAY_FLOAT, SKIP_ARRAY_INT, new Material(SKIP_TEXTURE));
         skyboxShader = new SkyboxShader();
         skyboxShader.start();
         skyboxShader.loadProjectionMatrix(projectionMatrix);

@@ -64,7 +64,7 @@ public class ResourceLoader {
         for (int i = 0; i < indices.size(); ++i) {
             indicesArray[i] = indices.get(i);
         }
-        return new Mesh(vertices, normals, textures, indicesArray, SKIP_ARRAY_FLOAT, SKIP_ARRAY_INT, new Material(textureFile));
+        return new Mesh(vertices, normals, SKIP_ARRAY_FLOAT, textures, indicesArray, SKIP_ARRAY_FLOAT, SKIP_ARRAY_INT, new Material(textureFile));
     }
 
 

@@ -17,6 +17,7 @@ import java.io.File;
 // TODO TURN ALL Vectors and Matrixes and Quaternions to constant interface (quatenrionfc/matrixfc)
 // TODO MemoryUtil.memFree(posBuffer); ??
 // TODO add texture manual assign in case model dont have schema
+// TODO JOINTS -> Bones rename
 public class Glade {
 
     public static final DisplayManager DISPLAY_MANAGER = new DisplayManager();
@@ -40,9 +41,7 @@ public class Glade {
         //Mesh dudeModel = ResourceLoader.loadObjModel(new File("models/dude/dude.obj"), new File("models/dude/dude.png"));
         //Entity dude = new Entity(dudeModel, new Vector3f(-20, 0, -20), new Vector3f(0, 0, 0), new Vector3f(10, 10, 10));
 
-        //AnimatedModel spiderModel = AnimatedModelLoader.loadEntity(new File("models/spider/spider.dae"), new File("models/spider/Spinnen_Bein_tex_COLOR_.png"), new File("models/spider/spider.dae"));
         // AnimatedModel boyModel = AnimatedModelLoader.loadEntity(new File("models/boy/boy.dae"), new File("models/boy/boy.png"), new File("models/boy/boy.dae"));
-        //AnimatedModel lampModel = AnimatedModelLoader.loadEntity(new File("models/lamp/lamp.dae"), new File("models/boy/boy.png"), new File("models/lamp/lamp.dae"));
         //AnimatedModel skeletonModel = AnimatedModelLoader.loadEntity(new File("models/skeleton/skeleton.dae"), new File("models/boy/boy.png"), new File("models/skeleton/skeleton.dae"));
         //AnimatedModel microwaveModel = AnimatedModelLoader.loadEntity(new File("models/microwave/microwave.dae"), new File("models/microwave/microwave_col.png"), new File("models/microwave/microwave.dae"));
 
@@ -51,9 +50,12 @@ public class Glade {
         hagreedModel.setScale(new Vector3f(0.25f, 0.25f, 0.25f));
         hagreedModel.setRotation(new Vector3f(0, 0, -90)); // TODO BUG IF I PUT 180 ROTATION
 
-        //Model spiderModel = AssimpLoader.loadModel(new File("models/spider/spider.dae"), new File("models/spider/spider.dae"), new File("models/spider/"));
-        //Model spiderModel2 = AssimpLoader.loadModel(new File("models/spider2/spider.3ds"), new File("models/spider2/spider.3ds"), new File("models/spider2/textures"));
-        Model warriorModel = AssimpLoader.loadModel(new File("models/warrior/warrior.3ds"), new File("models/warrior/warrior.3ds"), new File("models/warrior/textures"));
+        Model spiderModel = AssimpLoader.loadModel(new File("models/spider/spider.dae"), new File("models/spider/spider.dae"), new File("models/spider/textures"));
+        spiderModel.setPosition(new Vector3f(20f, 2, -20));
+        spiderModel.setScale(new Vector3f(1, 1, 1));
+        spiderModel.setRotation(new Vector3f(0, 0, -90));
+
+        Model warriorModel = AssimpLoader.loadModel(new File("models/warrior/warrior.3ds"), new File("models/warrior/warrior.3ds"), new File("models/warrior"));
         warriorModel.setPosition(new Vector3f(-20f, 2, 2));
         warriorModel.setScale(new Vector3f(10, 10, 10));
         warriorModel.setRotation(new Vector3f(0, 0, -90));
@@ -66,10 +68,6 @@ public class Glade {
         Model boyModel = AssimpLoader.loadModel(new File("models/boy/boy.dae"), new File("models/boy/boy.dae"), new File("models/boy/"));
         boyModel.setPosition(new Vector3f(2f, 2, 2));
         boyModel.setRotation(new Vector3f(0, 0, -90));
-
-        Model horseModel = AssimpLoader.loadModel(new File("models/house/horse.3ds"), new File("models/house/horse.3ds"), new File("models/house/"));
-        horseModel.setPosition(new Vector3f(2f, 2, 2));
-        horseModel.setRotation(new Vector3f(0, 0, -90));
 
         Model dude2Model = AssimpLoader.loadModel(new File("models/dude/dude.3ds"), new File("models/dude/dude.3ds"), new File("models/dude2/"));
         dude2Model.setPosition(new Vector3f(-20f, 0, -20));
@@ -98,16 +96,14 @@ public class Glade {
         renderer.processEntity(dude2Model);
         renderer.processEntity(repModel);
         //renderer.processEntity(horror);
-        //renderer.processEntity(spiderModel2);
+        renderer.processEntity(spiderModel);
         renderer.processEntity(boyModel);
-        //renderer.processEntity(horseModel);
         //renderer.processEntity(shipModel);
-        //renderer.processEntity(lampModel);
         //renderer.processEntity(skeletonModel);
         //renderer.processEntity(microwaveModel);
         //renderer.processEntity(spiderModel);
         renderer.processEntity(hagreedModel);
-        //renderer.processEntity(warriorModel);
+        renderer.processEntity(warriorModel);
 
         // TODO Check performance with runnable and without it
         DISPLAY_MANAGER.loop(() -> {
