@@ -1,6 +1,5 @@
 package com.ternsip.glade.universal;
 
-import com.ternsip.glade.utils.Maths;
 import lombok.SneakyThrows;
 import org.joml.*;
 import org.lwjgl.PointerBuffer;

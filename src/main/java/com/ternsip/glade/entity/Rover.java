@@ -1,7 +1,6 @@
 package com.ternsip.glade.entity;
 
 import com.ternsip.glade.universal.Entity;
-import com.ternsip.glade.universal.Mesh;
 import com.ternsip.glade.universal.Model;
 import org.joml.Vector3f;
 

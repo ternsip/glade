@@ -3,8 +3,6 @@ package com.ternsip.glade.universal;
 import com.ternsip.glade.utils.Maths;
 import lombok.Getter;
 import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-import org.joml.Quaternionfc;
 import org.joml.Vector3f;
 
 @Getter

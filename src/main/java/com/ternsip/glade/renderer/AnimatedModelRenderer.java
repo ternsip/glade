@@ -4,7 +4,6 @@ import com.ternsip.glade.entity.Camera;
 import com.ternsip.glade.entity.Sun;
 import com.ternsip.glade.universal.Entity;
 import com.ternsip.glade.universal.Mesh;
-import com.ternsip.glade.universal.Model;
 import com.ternsip.glade.utils.OpenGlUtils;
 import org.joml.Matrix4f;
 

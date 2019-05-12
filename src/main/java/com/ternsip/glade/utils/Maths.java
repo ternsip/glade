@@ -1,8 +1,9 @@
 package com.ternsip.glade.utils;
 
-import org.joml.*;
-
-import java.lang.Math;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Quaternionfc;
+import org.joml.Vector3f;
 
 public class Maths {
 
@@ -18,7 +19,7 @@ public class Maths {
     public static Quaternionfc getRotationQuaternion(Vector3f rotation) {
         float attitude = rotation.x();
         float heading = rotation.y();
-        float bank =rotation.z();
+        float bank = rotation.z();
 
         // Assuming the angles are in radians.
         float c1 = (float) Math.cos(heading);
