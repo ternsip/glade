@@ -20,19 +20,13 @@ import static org.lwjgl.assimp.Assimp.*;
 
 public class AssimpLoader {
 
-    public static final int FLAG_ALLOW_ORIGINS_WITHOUT_BONES = 0x1;
-
     public static Model loadModel(File meshFile, File animationFile, File texturesDir) {
-        return loadModel(meshFile, animationFile, texturesDir, 0);
-    }
-
-    public static Model loadModel(File meshFile, File animationFile, File texturesDir, int loaderFlags) {
         int assimpFlags = aiProcess_GenSmoothNormals |
                 aiProcess_JoinIdenticalVertices |
                 aiProcess_Triangulate |
                 aiProcess_FixInfacingNormals |
                 aiProcess_LimitBoneWeights;
-        return loadModel(meshFile, animationFile, texturesDir, assimpFlags, loaderFlags);
+        return loadModel(meshFile, animationFile, texturesDir, assimpFlags);
     }
 
     @SneakyThrows
@@ -40,8 +34,7 @@ public class AssimpLoader {
             File meshFile,
             File animationFile,
             File texturesDir,
-            int assimpFlags,
-            int loaderFlags
+            int assimpFlags
     ) {
         AIScene aiSceneMesh = loadResourceAsAssimp(meshFile, assimpFlags);
         AIScene aiSceneAnimation = animationFile.equals(meshFile) ? aiSceneMesh : loadResourceAsAssimp(animationFile, assimpFlags);
@@ -78,8 +71,13 @@ public class AssimpLoader {
 
         List<String> allBoneNames = allBones.stream().map(Bone::getBoneName).collect(Collectors.toList());
 
-        Joint headJoint = createJoints(aiSceneMesh.mRootNode(), new Matrix4f(), jointNameToIndex, loaderFlags);
         Map<String, Animation> animations = buildAnimations(aiSceneAnimation);
+
+        Set<String> allPossibleJointNames = animations.size() > 0
+                ? animations.values().iterator().next().findAllDistinctJointNames()
+                : Collections.emptySet();
+
+        Joint headJoint = createJoints(aiSceneMesh.mRootNode(), new Matrix4f(), jointNameToIndex, allPossibleJointNames);
 
         assertThat(MAX_JOINTS > allBones.size());
         return new Model(meshes, allBoneNames, headJoint, animations);
@@ -89,7 +87,7 @@ public class AssimpLoader {
             AINode aiNode,
             Matrix4fc parentTransform,
             Map<String, Integer> jointNameToIndex,
-            int loaderFlags
+            Set<String> allPossibleJointNames
     ) {
         if (aiNode == null) {
             return new Joint(-1, "Missing", Collections.emptyList(), new Matrix4f(), new Matrix4f());
@@ -97,14 +95,14 @@ public class AssimpLoader {
         String jointName = aiNode.mName().dataString();
         int jointIndex = jointNameToIndex.getOrDefault(jointName, -1);
         Matrix4f localBindTransform = toMatrix(aiNode.mTransformation());
-        boolean marginal = ((loaderFlags & FLAG_ALLOW_ORIGINS_WITHOUT_BONES) == 0) && (jointIndex == -1);
+        boolean marginal = !allPossibleJointNames.contains(jointName);
         Matrix4f bindTransform = marginal ? new Matrix4f() : parentTransform.mul(localBindTransform, new Matrix4f());
         Matrix4f inverseBindTransform = bindTransform.invert(new Matrix4f());
         List<Joint> children = new ArrayList<>();
         PointerBuffer aiChildren = aiNode.mChildren();
         for (int i = 0; i < aiNode.mNumChildren(); i++) {
             AINode aiChildNode = AINode.create(aiChildren.get(i));
-            Joint childJoint = createJoints(aiChildNode, bindTransform, jointNameToIndex, loaderFlags);
+            Joint childJoint = createJoints(aiChildNode, bindTransform, jointNameToIndex, allPossibleJointNames);
             children.add(childJoint);
         }
         return new Joint(jointIndex, jointName, children, localBindTransform, inverseBindTransform);

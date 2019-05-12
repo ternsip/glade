@@ -12,8 +12,6 @@ import org.joml.Vector3f;
 
 import java.io.File;
 
-import static com.ternsip.glade.universal.AssimpLoader.FLAG_ALLOW_ORIGINS_WITHOUT_BONES;
-
 // BE CAREFUL BUFFER FLIPS
 // TODO CHECKOUT BUFFERS (FLOATBUFFER ETC.) BECAUSE THEY ARE BUGGED
 // TODO TURN ALL Vectors and Matrixes and Quaternions to constant interface (quatenrionfc/matrixfc)
@@ -48,10 +46,10 @@ public class Glade {
         //AnimatedModel skeletonModel = AnimatedModelLoader.loadEntity(new File("models/skeleton/skeleton.dae"), new File("models/boy/boy.png"), new File("models/skeleton/skeleton.dae"));
         //AnimatedModel microwaveModel = AnimatedModelLoader.loadEntity(new File("models/microwave/microwave.dae"), new File("models/microwave/microwave_col.png"), new File("models/microwave/microwave.dae"));
 
-        Model hagreedModel = AssimpLoader.loadModel(new File("models/bob/boblamp.md5mesh"), new File("models/bob/boblamp.md5anim"), new File("models/bob/"), FLAG_ALLOW_ORIGINS_WITHOUT_BONES);
+        Model hagreedModel = AssimpLoader.loadModel(new File("models/bob/boblamp.md5mesh"), new File("models/bob/boblamp.md5anim"), new File("models/bob/"));
         hagreedModel.setPosition(new Vector3f(20f, 2, 2));
         hagreedModel.setScale(new Vector3f(0.25f, 0.25f, 0.25f));
-        hagreedModel.setRotation(new Vector3f(0, 0, -179)); // TODO BUG IF I PUT 180 ROTATION
+        hagreedModel.setRotation(new Vector3f(0, 0, -90)); // TODO BUG IF I PUT 180 ROTATION
 
         //Model spiderModel = AssimpLoader.loadModel(new File("models/spider/spider.dae"), new File("models/spider/spider.dae"), new File("models/spider/"));
         //Model spiderModel2 = AssimpLoader.loadModel(new File("models/spider2/spider.3ds"), new File("models/spider2/spider.3ds"), new File("models/spider2/textures"));
@@ -78,7 +76,7 @@ public class Glade {
         dude2Model.setScale(new Vector3f(10f, 10f, 10f));
         dude2Model.setRotation(new Vector3f(0, 0, -90));
 
-        Model repModel = AssimpLoader.loadModel(new File("models/zebra/ZebraLOD1.ms3d"), new File("models/zebra/ZebraLOD1.ms3d"), new File("models/zebra/"), FLAG_ALLOW_ORIGINS_WITHOUT_BONES);
+        Model repModel = AssimpLoader.loadModel(new File("models/zebra/ZebraLOD1.ms3d"), new File("models/zebra/ZebraLOD1.ms3d"), new File("models/zebra/"));
         repModel.setPosition(new Vector3f(-20f, 0, -20));
         repModel.setScale(new Vector3f(0.25f, 0.25f, 0.25f));
         repModel.setRotation(new Vector3f(0, 0, 0));
