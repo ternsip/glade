@@ -16,7 +16,6 @@ import java.io.File;
 // BE CAREFUL BUFFER FLIPS
 // TODO CHECKOUT BUFFERS (FLOATBUFFER ETC.) BECAUSE THEY ARE BUGGED
 // TODO TURN ALL Vectors and Matrixes and Quaternions to constant interface (quatenrionfc/matrixfc)
-// TODO move sky on good shader
 // TODO remove toRadians etc
 public class Glade {
 
