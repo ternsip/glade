@@ -108,7 +108,17 @@ public class MasterRenderer {
         processEntity(entitySpider);
         processEntity(entityHagreed);
         processEntity(entityWarrior);
-    }
+
+        for (int i = 0; i < 10; ++i) {
+            for (int j = 0; j < 10; ++j) {
+                Entity entity = new Entity(hagreedModel);
+                entity.setPosition(new Vector3f(20f + 10 * i, 2, 2 + 10 * j));
+                entity.setScale(new Vector3f(0.25f, 0.25f, 0.25f));
+                entity.setRotation(new Vector3f(0, 0, (float) (-Math.PI / 2)));
+                processEntity(entity);
+            }
+        }
+     }
 
 
 }
