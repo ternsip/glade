@@ -118,7 +118,7 @@ public class MasterRenderer {
                 processEntity(entity);
             }
         }
-     }
+    }
 
 
 }

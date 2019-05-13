@@ -2,7 +2,8 @@ package com.ternsip.glade.sky;
 
 import com.ternsip.glade.entity.Camera;
 import com.ternsip.glade.entity.Sun;
-import com.ternsip.glade.shader.sky.SkyboxShader;
+import com.ternsip.glade.shader.base.ShaderProgram;
+import com.ternsip.glade.shader.impl.SkyboxShader;
 import com.ternsip.glade.universal.Material;
 import com.ternsip.glade.universal.Mesh;
 import org.joml.Matrix4f;
@@ -65,16 +66,16 @@ public class SkyRenderer {
 
     public SkyRenderer(Matrix4f projectionMatrix) {
         skyBox = new Mesh(VERTICES, SKIP_ARRAY_FLOAT, SKIP_ARRAY_FLOAT, SKIP_ARRAY_FLOAT, SKIP_ARRAY_INT, SKIP_ARRAY_FLOAT, SKIP_ARRAY_INT, new Material(SKIP_TEXTURE));
-        skyboxShader = new SkyboxShader();
+        skyboxShader = ShaderProgram.createShader(SkyboxShader.class);
         skyboxShader.start();
-        skyboxShader.loadProjectionMatrix(projectionMatrix);
+        skyboxShader.getProjectionMatrix().load(projectionMatrix);
         skyboxShader.stop();
     }
 
     public void render(Sun sun, Camera camera) {
         skyboxShader.start();
-        skyboxShader.loadSunVector(sun.getPosition());
-        skyboxShader.loadViewMatrix(camera);
+        skyboxShader.getSunVector().load(sun.getPosition());
+        skyboxShader.getViewMatrix().load(camera.createSkyViewMatrix());
         skyBox.render();
         skyboxShader.stop();
     }

@@ -8,7 +8,6 @@ import com.ternsip.glade.universal.AssimpLoader;
 import com.ternsip.glade.universal.Model;
 import com.ternsip.glade.universal.Settings;
 import com.ternsip.glade.utils.DisplayManager;
-import lombok.SneakyThrows;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -24,7 +23,6 @@ public class Glade {
     public static final DisplayManager DISPLAY_MANAGER = new DisplayManager();
 
 
-    @SneakyThrows
     public static void main(String[] args) {
 
         DISPLAY_MANAGER.createDisplay();

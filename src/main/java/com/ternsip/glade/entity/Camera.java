@@ -155,6 +155,14 @@ public class Camera {
         return viewMatrix;
     }
 
+    public Matrix4f createSkyViewMatrix() {
+        Matrix4f matrix = createViewMatrix();
+        matrix.m30(0);
+        matrix.m31(0);
+        matrix.m32(0);
+        return matrix;
+    }
+
     public Matrix4f getProjectionViewMatrix() {
         return projectionMatrix.mul(createViewMatrix(), new Matrix4f());
     }
