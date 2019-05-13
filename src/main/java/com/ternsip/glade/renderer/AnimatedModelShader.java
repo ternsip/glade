@@ -15,7 +15,8 @@ public class AnimatedModelShader extends ShaderProgram {
     private static final File FRAGMENT_SHADER = new File("shaders/anim/animatedEntityFragment.glsl");
 
     protected UniformBoolean animated = new UniformBoolean("animated");
-    protected UniformMatrix projectionViewMatrix = new UniformMatrix("projectionViewMatrix");
+    protected UniformMatrix projectionMatrix = new UniformMatrix("projectionMatrix");
+    protected UniformMatrix viewMatrix = new UniformMatrix("viewMatrix");
     protected UniformMatrix transformationMatrix = new UniformMatrix("transformationMatrix");
     protected UniformVec3 lightDirection = new UniformVec3("lightDirection");
     protected UniformMat4Array boneTransforms = new UniformMat4Array("boneTransforms", MAX_BONES);
@@ -23,7 +24,7 @@ public class AnimatedModelShader extends ShaderProgram {
 
     public AnimatedModelShader() {
         super(VERTEX_SHADER, FRAGMENT_SHADER);
-        super.storeAllUniformLocations(projectionViewMatrix, transformationMatrix, diffuseMap, lightDirection, boneTransforms, animated);
+        super.storeAllUniformLocations(projectionMatrix, viewMatrix, transformationMatrix, diffuseMap, lightDirection, boneTransforms, animated);
         connectTextureUnits();
     }
 

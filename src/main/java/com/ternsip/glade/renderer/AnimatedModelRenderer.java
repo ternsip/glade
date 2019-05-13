@@ -27,9 +27,10 @@ public class AnimatedModelRenderer {
         shader.start();
         Matrix4f[] boneTransforms = entity.getAnimator().getBoneTransforms();
         shader.animated.loadBoolean(boneTransforms.length > 0);
-        shader.projectionViewMatrix.loadMatrix(camera.getProjectionViewMatrix());
+        shader.projectionMatrix.loadMatrix(camera.getProjectionMatrix());
+        shader.viewMatrix.loadMatrix(camera.createViewMatrix());
         shader.lightDirection.loadVec3(sun.getPosition().normalize().negate());
-        shader.boneTransforms.loadMatrixArray(boneTransforms); // TODO ANALOG
+        shader.boneTransforms.loadMatrixArray(boneTransforms);
         shader.transformationMatrix.loadMatrix(entity.getTransformationMatrix());
         OpenGlUtils.antialias(true);
         OpenGlUtils.disableBlending();
