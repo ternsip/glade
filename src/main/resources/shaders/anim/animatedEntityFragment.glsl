@@ -106,7 +106,7 @@ vec4 getMainTextureColor(bool isColorPresent, bool isTexturePresent, sampler2DAr
     return getTextureColor(isColorPresent, isTexturePresent, atlas, uv, maxUV, layer, color);
 }
 
-// TODO turn into structures, remove color present flag
+// TODO turn into structures
 void main(void){
 
     vec3 light_color = vec3(1, 1, 1);
@@ -116,19 +116,27 @@ void main(void){
     float diffuseFactor = 0.6;
 
     vec3 unitNormal = normalize(pass_normal);
-    vec3 unitLight = -normalize(lightDirection);// TODO REMOVE - (minus)
-    float surfaceLight = max(dot(unitLight, unitNormal), 0.0);
+    float surfaceLight = max(dot(lightDirection, unitNormal), 0.0);
 
+    // Main texture color
     vec4 texColor = getMainTextureColor(textureIsColorPresent, textureIsTexturePresent, textureAtlasNumber, pass_textureCoords, textureMaxUV, textureLayer, textureColor);
 
+    // Diffuse color
     vec4 diffuseTexColor = getTextureColor(diffuseMapIsColorPresent, diffuseMapIsTexturePresent, diffuseMapAtlasNumber, pass_textureCoords, diffuseMapMaxUV, diffuseMapLayer, diffuseMapColor);
     vec3 diffuseColor = diffuseTexColor.xyz * light_color * light_intensity * surfaceLight;
 
+    // Ambient color
     vec4 ambientTexColor = getTextureColor(ambientMapIsColorPresent, ambientMapIsTexturePresent, ambientMapAtlasNumber, pass_textureCoords, ambientMapMaxUV, ambientMapLayer, ambientMapColor);
     vec3 ambientColor = ambientTexColor.xyz * ambient_multiplier + base_ambient;
 
+    // Emissive light
     vec4 emmissiveTexColor = getTextureColor(emissiveMapIsColorPresent, emissiveMapIsTexturePresent, emissiveMapAtlasNumber, pass_textureCoords, emissiveMapMaxUV, emissiveMapLayer, emissiveMapColor);
+    vec3 emmissiveColor = emmissiveTexColor.xyz;
 
-    out_colour = vec4(diffuseColor + ambientColor + emmissiveTexColor.xyz, 1) * texColor;
+    // Specular Light
+    vec4 specularTexColor = getTextureColor(specularMapIsColorPresent, specularMapIsTexturePresent, specularMapAtlasNumber, pass_textureCoords, specularMapMaxUV, specularMapLayer, specularMapColor);
+    vec3 specColour = vec3(0, 0, 0);
+
+    out_colour = vec4((diffuseColor + ambientColor + emmissiveColor + specColour) * texColor.xyz, 1);
 
 }
