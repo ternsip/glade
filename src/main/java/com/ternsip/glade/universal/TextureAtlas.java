@@ -73,7 +73,6 @@ public class TextureAtlas {
                 // set the whole texture to transparent (so min/mag filters don't find bad data off the edge of the actual image data)
                 glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, layer, atlasResolution, atlasResolution, 1, GL_RGBA, GL_UNSIGNED_BYTE, cleanData);
                 glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, layer, image.getWidth(), image.getHeight(), 1, GL_RGBA, GL_UNSIGNED_BYTE, image.getDataBuffer());
-                // TODO atlas numbers different sizes
                 Vector2f maxUV = new Vector2f(image.getWidth() / (float) atlasResolution, image.getHeight() / (float) atlasResolution);
                 Texture texture = new Texture(atlasNumber, layer, maxUV);
                 this.fileToTexture.put(image.getFile(), texture);
