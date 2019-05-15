@@ -1,5 +1,7 @@
-package com.ternsip.glade.universal;
+package com.ternsip.glade.universe.entities.base;
 
+import com.ternsip.glade.universal.Animator;
+import com.ternsip.glade.universal.Model;
 import com.ternsip.glade.utils.Maths;
 import com.ternsip.glade.utils.Utils;
 import lombok.Getter;

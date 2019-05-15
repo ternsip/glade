@@ -1,6 +1,7 @@
-package com.ternsip.glade.universal.entities;
+package com.ternsip.glade.universe.entities.impl;
 
 import com.ternsip.glade.universal.*;
+import com.ternsip.glade.universe.entities.base.Entity;
 
 import java.io.File;
 

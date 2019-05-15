@@ -19,7 +19,7 @@ public class Animator {
     private AnimationFrames currentAnimationFrames;
     private float animationTime;
 
-    Animator(Model model) {
+    public Animator(Model model) {
         this.model = model;
         this.currentAnimationFrames = model.getAnimation().getNameToAnimation().values().stream().findFirst().orElse(null);
         this.animationTime = 0;

@@ -1,6 +1,6 @@
 package com.ternsip.glade.entity;
 
-import com.ternsip.glade.universal.entities.EntityBoy;
+import com.ternsip.glade.universe.entities.impl.EntityBoy;
 import org.joml.Vector3f;
 
 import static com.ternsip.glade.Glade.DISPLAY_MANAGER;

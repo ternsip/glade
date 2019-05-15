@@ -26,10 +26,10 @@ public class Model {
         this.animation = new Animation(rootBone, animations);
     }
 
-    public void cleanUp() {
+    public void finish() {
         int numMeshes = this.meshes != null ? this.meshes.length : 0;
         for (int i = 0; i < numMeshes; i++) {
-            this.meshes[i].cleanUp();
+            this.meshes[i].finish();
         }
     }
 

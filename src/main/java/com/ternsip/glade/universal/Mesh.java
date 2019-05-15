@@ -150,7 +150,7 @@ public class Mesh {
 
     }
 
-    public void cleanUp() {
+    public void finish() {
         glDeleteVertexArrays(vao);
         if (vboVertices != NO_VBO) glDeleteBuffers(vboVertices);
         if (vboNormals != NO_VBO) glDeleteBuffers(vboNormals);

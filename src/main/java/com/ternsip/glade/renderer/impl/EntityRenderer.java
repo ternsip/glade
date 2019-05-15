@@ -1,39 +1,36 @@
-package com.ternsip.glade.renderer;
+package com.ternsip.glade.renderer.impl;
 
-import com.ternsip.glade.entity.Camera;
-import com.ternsip.glade.entity.Sun;
+import com.ternsip.glade.renderer.base.Renderer;
 import com.ternsip.glade.shader.base.ShaderProgram;
-import com.ternsip.glade.shader.impl.AnimatedModelShader;
-import com.ternsip.glade.universal.Entity;
+import com.ternsip.glade.shader.impl.EntityShader;
 import com.ternsip.glade.universal.Mesh;
+import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.utils.OpenGlUtils;
 import org.joml.Matrix4f;
 
-import java.util.List;
-
 import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
+import static com.ternsip.glade.Glade.UNIVERSE;
 
-public class AnimatedModelRenderer {
+@SuppressWarnings("unused")
+public class EntityRenderer implements Renderer {
 
-    private AnimatedModelShader shader;
+    private EntityShader shader = ShaderProgram.createShader(EntityShader.class);
 
-    public AnimatedModelRenderer() {
-        this.shader = ShaderProgram.createShader(AnimatedModelShader.class);
+    public void render() {
+        UNIVERSE.getEntities().forEach(this::render);
     }
 
-    public void render(List<Entity> animGameItems, Camera camera, Sun sun) {
-        for (Entity entity : animGameItems) {
-            render(entity, camera, sun);
-        }
+    public void finish() {
+        shader.finish();
     }
 
-    public void render(Entity entity, Camera camera, Sun sun) {
+    private void render(Entity entity) {
         shader.start();
         Matrix4f[] boneTransforms = entity.getAnimator().getBoneTransforms();
         shader.getAnimated().load(boneTransforms.length > 0);
-        shader.getProjectionMatrix().load(camera.getProjectionMatrix());
-        shader.getViewMatrix().load(camera.createViewMatrix());
-        shader.getLightDirection().load(sun.getPosition().normalize().negate());
+        shader.getProjectionMatrix().load(UNIVERSE.getCamera().getProjectionMatrix());
+        shader.getViewMatrix().load(UNIVERSE.getCamera().createViewMatrix());
+        shader.getLightDirection().load(UNIVERSE.getSun().getPosition().normalize().negate());
         shader.getBoneTransforms().load(boneTransforms);
         shader.getTransformationMatrix().load(entity.getTransformationMatrix());
         OpenGlUtils.antialias(true); // TODO move to upper level
@@ -57,10 +54,6 @@ public class AnimatedModelRenderer {
         }
         shader.stop();
         entity.getAnimator().update();
-    }
-
-    public void cleanUp() {
-        shader.cleanUp();
     }
 
 }

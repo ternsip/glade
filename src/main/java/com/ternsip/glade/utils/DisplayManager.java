@@ -4,6 +4,7 @@ import com.ternsip.glade.universal.ModelRepository;
 import com.ternsip.glade.universal.TextureRepository;
 import lombok.Getter;
 import org.joml.Vector2i;
+import org.joml.Vector3f;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.Callback;
@@ -17,8 +18,8 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 @Getter
 public class DisplayManager {
 
+    public static final Vector3f BACKGROUND_COLOR = new Vector3f(1f, 0f, 0f);
     private static final int FPS_CAP = 120;
-
     private ArrayList<Callback> callbacks = new ArrayList<>();
     private TextureRepository textureRepository;
     private ModelRepository modelRepository;
@@ -29,7 +30,7 @@ public class DisplayManager {
     private Vector2i windowSize;
     private float ratio;
 
-    public void createDisplay() {
+    public void initialize() {
         registerErrorCallback(GLFWErrorCallback.createPrint(System.err));
         if (!glfwInit()) {
             throw new IllegalStateException("Unable to initialize GLFW");
@@ -45,6 +46,7 @@ public class DisplayManager {
         registerFrameBufferSizeCallback(((window, width, height) -> {
             windowSize = new Vector2i(width, height);
             ratio = (float) windowSize.x() / windowSize.y();
+            glViewport(0, 0, getWidth(), getHeight());
         }));
         glfwSetWindowPos(window, (int) (mainDisplaySize.x() * 0.1), (int) (mainDisplaySize.y() * 0.1));
 
@@ -57,6 +59,13 @@ public class DisplayManager {
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+        glClearColor(BACKGROUND_COLOR.x(), BACKGROUND_COLOR.y(), BACKGROUND_COLOR.z(), 1);
+
+        glViewport(0, 0, getWidth(), getHeight());
 
         textureRepository = new TextureRepository();
         textureRepository.bind();
@@ -72,6 +81,7 @@ public class DisplayManager {
     public void loop(Runnable runnable) {
         /* Loop until window gets closed */
         while (!glfwWindowShouldClose(window)) {
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             runnable.run();
 
             // Calc fps
@@ -85,12 +95,12 @@ public class DisplayManager {
         }
     }
 
-    public void closeDisplay() {
+    public void finish() {
 
-        modelRepository.cleanUp();
+        modelRepository.finish();
 
         textureRepository.unbind();
-        textureRepository.cleanup();
+        textureRepository.finish();
 
         // Release window
         glfwDestroyWindow(window);
@@ -171,4 +181,5 @@ public class DisplayManager {
     private long getCurrentTime() {
         return System.currentTimeMillis();
     }
+
 }

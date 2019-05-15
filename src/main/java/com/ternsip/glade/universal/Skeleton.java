@@ -9,13 +9,13 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Getter
-public class Skeleton {
+class Skeleton {
 
     private final Bone[][] meshBones;
     private final List<Bone> allBones;
     private final Map<String, Integer> skeletonBoneNameToIndex;
 
-    public Skeleton(Bone[][] meshBones) {
+    Skeleton(Bone[][] meshBones) {
         this.meshBones = meshBones;
         Map<String, Bone> boneNameToBone = new HashMap<>();
         for (Bone[] bones : meshBones) {
@@ -28,7 +28,7 @@ public class Skeleton {
                 .collect(Collectors.toMap(i -> allBones.get(i).getBoneName(), i -> i, (o, n) -> o));
     }
 
-    public float[] getBonesWeights(int meshIndex, int numVertices, int weightLimit) {
+    float[] getBonesWeights(int meshIndex, int numVertices, int weightLimit) {
         float[] weights = new float[numVertices * weightLimit];
         Map<Integer, List<BoneWeight>> combinedBoneWeights = combineBoneWeights(meshIndex);
         for (int i = 0; i < numVertices; i++) {
@@ -40,7 +40,7 @@ public class Skeleton {
         return weights;
     }
 
-    public int[] getBoneNameToBone(int meshIndex, int numVertices, int weightLimit) {
+    int[] getBoneNameToBone(int meshIndex, int numVertices, int weightLimit) {
         int[] indices = new int[numVertices * weightLimit];
         Map<Integer, List<BoneWeight>> combinedBoneWeights = combineBoneWeights(meshIndex);
         for (int i = 0; i < numVertices; i++) {
@@ -52,7 +52,7 @@ public class Skeleton {
         return indices;
     }
 
-    public int numberOfUniqueBones() {
+    int numberOfUniqueBones() {
         return skeletonBoneNameToIndex.size();
     }
 

@@ -1,61 +1,32 @@
-package com.ternsip.glade.renderer;
+package com.ternsip.glade.universe;
 
 import com.ternsip.glade.entity.Camera;
+import com.ternsip.glade.entity.Player;
 import com.ternsip.glade.entity.Sun;
-import com.ternsip.glade.sky.SkyRenderer;
-import com.ternsip.glade.universal.Entity;
-import com.ternsip.glade.universal.entities.*;
+import com.ternsip.glade.universe.entities.base.Entity;
+import com.ternsip.glade.universe.entities.impl.*;
+import lombok.Getter;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
-import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
-import static com.ternsip.glade.sky.SkyRenderer.SKY_COLOR;
-import static org.lwjgl.opengl.GL11.*;
+import static com.ternsip.glade.Glade.UNIVERSE;
 
-public class MasterRenderer {
+@Getter
+public class Universe {
 
-    private List<Entity> entities = new ArrayList<>();
+    private Set<Entity> entities = new HashSet<>();
 
-    private SkyRenderer skyRenderer;
-    private AnimatedModelRenderer animatedModelRenderer;
+    private Sun sun;
+    private Player player;
+    private Camera camera;
 
-    public MasterRenderer(Camera camera) {
-        enableCulling();
-        Camera.createProjectionMatrix();
-        skyRenderer = new SkyRenderer(camera.getProjectionMatrix());
-        animatedModelRenderer = new AnimatedModelRenderer();
-    }
-
-    public static void enableCulling() {
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
-        glViewport(0, 0, DISPLAY_MANAGER.getWidth(), DISPLAY_MANAGER.getHeight());
-    }
-
-    public static void disableCulling() {
-        glDisable(GL_CULL_FACE);
-    }
-
-    public void render(Sun sun, Camera camera) {
-        glEnable(GL_DEPTH_TEST);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glClearColor(SKY_COLOR.x(), SKY_COLOR.y(), SKY_COLOR.z(), 1);
-        skyRenderer.render(sun, camera);
-        animatedModelRenderer.render(entities, camera, sun);
-    }
-
-    public void processEntity(Entity entity) {
-        entities.add(entity);
-    }
-
-    public void cleanUp() {
-        skyRenderer.cleanUp();
-        animatedModelRenderer.cleanUp();
-    }
-
-    public void prepareTestScene() {
+    public void initialize() {
+        sun = new Sun(new Vector2f(0, 0), new Vector2f(20000, 20000), new Vector3f(1, 1, 1));
+        player = new Player();
+        camera = new Camera(player);
 
         Entity entityCube = new EntityCube();
 
@@ -94,14 +65,15 @@ public class MasterRenderer {
         entityDude2.setScale(new Vector3f(10f, 10f, 10f));
         entityDude2.setRotation(new Vector3f(0, 0, (float) (-Math.PI / 2)));
 
-        processEntity(entityCube);
-        processEntity(entityLamp);
-        processEntity(entityDude2);
-        processEntity(entityZebra);
-        processEntity(entityBottle);
-        processEntity(entitySpider);
-        processEntity(entityHagrid);
-        processEntity(entityWarrior);
+        UNIVERSE.getEntities().add(player);
+        UNIVERSE.getEntities().add(entityCube);
+        UNIVERSE.getEntities().add(entityLamp);
+        UNIVERSE.getEntities().add(entityDude2);
+        UNIVERSE.getEntities().add(entityZebra);
+        UNIVERSE.getEntities().add(entityBottle);
+        UNIVERSE.getEntities().add(entitySpider);
+        UNIVERSE.getEntities().add(entityHagrid);
+        UNIVERSE.getEntities().add(entityWarrior);
 
         for (int i = 0; i < 10; ++i) {
             for (int j = 0; j < 10; ++j) {
@@ -109,10 +81,19 @@ public class MasterRenderer {
                 entity.setPosition(new Vector3f(20f + 10 * i, 2, 2 + 10 * j));
                 entity.setScale(new Vector3f(0.25f, 0.25f, 0.25f));
                 entity.setRotation(new Vector3f(0, 0, (float) (-Math.PI / 2)));
-                processEntity(entity);
+                UNIVERSE.getEntities().add(entity);
             }
         }
+
     }
 
+    public void update() {
+        player.move();
+        camera.move();
+        sun.move();
+    }
 
+    public void finish() {
+
+    }
 }

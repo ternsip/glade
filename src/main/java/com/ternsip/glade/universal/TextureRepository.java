@@ -112,7 +112,7 @@ public class TextureRepository {
         }
     }
 
-    public void cleanup() {
+    public void finish() {
         for (int atlasNumber = 0; atlasNumber < ATLAS_RESOLUTIONS.length; ++atlasNumber) {
             glDeleteTextures(atlases[atlasNumber]);
         }

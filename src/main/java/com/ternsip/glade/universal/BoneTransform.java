@@ -8,19 +8,15 @@ import org.joml.Quaternionfc;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
-/**
- * Position, rotation, scaling are relative to the parent bone
- */
 @RequiredArgsConstructor
 @Getter
-public class BoneTransform {
-
+class BoneTransform {
 
     private final Vector3fc position;
     private final Vector3fc scaling;
     private final Quaternionfc rotation;
 
-    public static BoneTransform interpolate(BoneTransform frameA, BoneTransform frameB, float progression) {
+    static BoneTransform interpolate(BoneTransform frameA, BoneTransform frameB, float progression) {
         Vector3f pos = interpolate(frameA.getPosition(), frameB.getPosition(), progression);
         Vector3f scale = interpolate(frameA.getScaling(), frameB.getScaling(), progression);
         Quaternionfc rot = Maths.interpolate(frameA.getRotation(), frameB.getRotation(), progression);

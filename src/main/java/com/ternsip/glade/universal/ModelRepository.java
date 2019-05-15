@@ -1,7 +1,8 @@
 package com.ternsip.glade.universal;
 
+import com.ternsip.glade.universe.entities.base.Entity;
+import com.ternsip.glade.utils.Utils;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Method;
@@ -15,16 +16,11 @@ public class ModelRepository {
 
     public void loadAllModels() {
         Reflections reflections = new Reflections();
-        reflections.getSubTypesOf(Entity.class).forEach(this::runModelLoading);
+        reflections.getSubTypesOf(Entity.class).forEach(Utils::createInstanceSilently);
     }
 
-    @SneakyThrows
-    private void runModelLoading(Class<? extends Entity> clazz) {
-        clazz.newInstance();
-    }
-
-    public void cleanUp() {
-        getMethodToModel().values().forEach(Model::cleanUp);
+    public void finish() {
+        getMethodToModel().values().forEach(Model::finish);
     }
 
 }

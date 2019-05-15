@@ -11,7 +11,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public class Bone {
+class Bone {
 
     private final int index;
     private final String name;
@@ -19,7 +19,7 @@ public class Bone {
     private final Matrix4f localBindTransform;
     private final Matrix4f inverseBindTransform;
 
-    public Bone() {
+    Bone() {
         this.index = -1;
         this.name = "";
         this.children = Collections.emptyList();

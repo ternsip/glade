@@ -9,13 +9,13 @@ import java.util.Stack;
 
 @Getter
 @Setter
-public class Animation {
+class Animation {
 
     private final Bone rootBone;
     private final Map<String, AnimationFrames> nameToAnimation;
     private final int biggestBoneIndex;
 
-    public Animation() {
+    Animation() {
         this(new Bone(), Collections.emptyMap());
     }
 

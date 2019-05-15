@@ -98,7 +98,7 @@ public abstract class ShaderProgram {
         glUseProgram(0);
     }
 
-    public void cleanUp() {
+    public void finish() {
         stop();
         glDeleteProgram(programID);
     }
