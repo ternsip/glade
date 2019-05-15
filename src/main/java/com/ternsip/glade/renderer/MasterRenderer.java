@@ -107,7 +107,7 @@ public class MasterRenderer {
         entityWarrior.setScale(new Vector3f(10, 10, 10));
         entityWarrior.setRotation(new Vector3f(0, 0, (float) (-Math.PI / 2)));
 
-        Model dude2Model = AssimpLoader.loadModel(Settings.builder().meshFile(new File("models/dude/dude.3ds")).manualMeshMaterials((new Material[]{new Material(new File("models/dude/dude.png"))})).build());
+        Model dude2Model = AssimpLoader.loadModel(Settings.builder().meshFile(new File("models/dude/dude.3ds")).manualMeshMaterials((new Material[]{new Material(new Texture(new File("models/dude/dude.png")))})).build());
         Entity entityDude2 = new Entity(dude2Model);
         entityDude2.setPosition(new Vector3f(-20f, 0, -20));
         entityDude2.setScale(new Vector3f(10f, 10f, 10f));

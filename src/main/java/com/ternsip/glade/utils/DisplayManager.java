@@ -10,6 +10,7 @@ import org.lwjgl.system.Callback;
 import java.util.ArrayList;
 
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 @Getter
@@ -51,6 +52,9 @@ public class DisplayManager {
 
         // Enable vertical synchronization
         glfwSwapInterval(1);
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         textureAtlas = new TextureAtlas();
         textureAtlas.bind();

@@ -9,7 +9,8 @@ import com.ternsip.glade.universal.Mesh;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-import static com.ternsip.glade.universal.Mesh.*;
+import static com.ternsip.glade.universal.Mesh.SKIP_ARRAY_FLOAT;
+import static com.ternsip.glade.universal.Mesh.SKIP_ARRAY_INT;
 
 public class SkyRenderer {
 

@@ -6,7 +6,6 @@ import com.ternsip.glade.shader.base.ShaderProgram;
 import com.ternsip.glade.shader.impl.AnimatedModelShader;
 import com.ternsip.glade.universal.Entity;
 import com.ternsip.glade.universal.Mesh;
-import com.ternsip.glade.universal.TextureAtlas;
 import com.ternsip.glade.utils.OpenGlUtils;
 import org.joml.Matrix4f;
 

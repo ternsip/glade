@@ -91,19 +91,27 @@ uniform vec2                reflectionMapMaxUV;
 
 uniform vec3 lightDirection;
 
-vec4 getTextureColor(bool isPresent, sampler2DArray atlas, vec2 uv, vec2 maxUV, int layer, vec4 color) {
-    if (isPresent) {
-        return texture(atlas, vec3(uv * maxUV, layer)) * color;
-    } else {
-        return color;
+vec4 getTextureColor(bool isColorPresent, bool isTexturePresent, sampler2DArray atlas, vec2 uv, vec2 maxUV, int layer, vec4 color) {
+    if (isTexturePresent) {
+        vec4 texel = texture(atlas, vec3(uv * maxUV, layer));
+        return isColorPresent ? (texel * color) : texel;
     }
+    return isColorPresent ? color : vec4(0, 0, 0, 0);
+}
+
+vec4 getMainTextureColor(bool isColorPresent, bool isTexturePresent, sampler2DArray atlas, vec2 uv, vec2 maxUV, int layer, vec4 color) {
+    if (!isColorPresent && !isTexturePresent) {
+        return getTextureColor(true, true, atlas, uv, maxUV, layer, color);
+    }
+    return getTextureColor(isColorPresent, isTexturePresent, atlas, uv, maxUV, layer, color);
 }
 
 // TODO turn into structures, remove color present flag
 void main(void){
 
-    vec4 light_color = vec4(1, 1, 1, 1);
-    vec4 light_ambient = vec4(0.5, 0.5, 0.5, 1);
+    vec3 light_color = vec3(1, 1, 1);
+    vec3 base_ambient = vec3(0.5, 0.5, 0.5);
+    float ambient_multiplier = 0.5;
     float light_intensity = 1.0;
     float diffuseFactor = 0.6;
 
@@ -111,14 +119,16 @@ void main(void){
     vec3 unitLight = -normalize(lightDirection);// TODO REMOVE - (minus)
     float surfaceLight = max(dot(unitLight, unitNormal), 0.0);
 
-    vec4 texColor = getTextureColor(true, textureAtlasNumber, pass_textureCoords, textureMaxUV, textureLayer, textureColor);
+    vec4 texColor = getMainTextureColor(textureIsColorPresent, textureIsTexturePresent, textureAtlasNumber, pass_textureCoords, textureMaxUV, textureLayer, textureColor);
 
-    vec4 diffuseTexColor = getTextureColor(diffuseMapIsTexturePresent, diffuseMapAtlasNumber, pass_textureCoords, diffuseMapMaxUV, diffuseMapLayer, diffuseMapColor);
-    vec4 diffuseColor = diffuseTexColor * light_color * light_intensity * surfaceLight;
+    vec4 diffuseTexColor = getTextureColor(diffuseMapIsColorPresent, diffuseMapIsTexturePresent, diffuseMapAtlasNumber, pass_textureCoords, diffuseMapMaxUV, diffuseMapLayer, diffuseMapColor);
+    vec3 diffuseColor = diffuseTexColor.xyz * light_color * light_intensity * surfaceLight;
 
-    vec4 ambientTexColor = getTextureColor(ambientMapIsTexturePresent, ambientMapAtlasNumber, pass_textureCoords, ambientMapMaxUV, ambientMapLayer, ambientMapColor);
-    vec4 ambientColor = ambientTexColor * light_ambient;
+    vec4 ambientTexColor = getTextureColor(ambientMapIsColorPresent, ambientMapIsTexturePresent, ambientMapAtlasNumber, pass_textureCoords, ambientMapMaxUV, ambientMapLayer, ambientMapColor);
+    vec3 ambientColor = ambientTexColor.xyz * ambient_multiplier + base_ambient;
 
-    out_colour = (diffuseColor + ambientColor) * texColor;
+    vec4 emmissiveTexColor = getTextureColor(emissiveMapIsColorPresent, emissiveMapIsTexturePresent, emissiveMapAtlasNumber, pass_textureCoords, emissiveMapMaxUV, emissiveMapLayer, emissiveMapColor);
+
+    out_colour = vec4(diffuseColor + ambientColor + emmissiveTexColor.xyz, 1) * texColor;
 
 }

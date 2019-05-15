@@ -2,8 +2,6 @@ package com.ternsip.glade.universal;
 
 import com.sun.istack.internal.Nullable;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.Wither;
 import org.joml.Vector4f;
 
 import java.io.File;
