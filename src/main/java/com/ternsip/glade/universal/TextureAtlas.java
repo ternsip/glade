@@ -9,9 +9,7 @@ import org.lwjgl.BufferUtils;
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.ternsip.glade.utils.Utils.ioResourceToByteBuffer;
@@ -26,55 +24,72 @@ import static org.lwjgl.stb.STBImage.stbi_load_from_memory;
 
 public class TextureAtlas {
 
+    private final static int MIPMAP_LEVELS = 5;
     private final static File MISSING_TEXTURE = new File("tools/missing.jpg");
     private final static String[] EXTENSIONS = {"jpg", "png", "bmp", "jpeg"};
+    private final static int[] ATLAS_RESOLUTIONS = new int[]{16, 32, 64, 128, 256, 512, 1024, 2048, 4096};
 
-    private final int atlasIndex;
+    private final int[] atlases;
     private final Map<File, Texture> fileToTexture;
 
     public TextureAtlas() {
-
-        atlasIndex = glGenTextures();
-
-        glBindTexture(GL_TEXTURE_2D_ARRAY, atlasIndex);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); // GL_NEAREST_MIPMAP_LINEAR
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
         ArrayList<Image> images = Utils.getResourceListing(EXTENSIONS)
                 .stream()
                 .map(Image::new)
                 .collect(Collectors.toCollection(ArrayList::new));
 
-        int maxWidth = 0;
-        int maxHeight = 0;
+        Set<Image> usedImages = new HashSet<>();
 
-        for (Image image : images) {
-            maxWidth = Math.max(maxWidth, image.getWidth());
-            maxHeight = Math.max(maxHeight, image.getHeight());
+        this.atlases = new int[ATLAS_RESOLUTIONS.length];
+        this.fileToTexture = new HashMap<>();
+
+        for (int atlasNumber = 0; atlasNumber < ATLAS_RESOLUTIONS.length; ++atlasNumber) {
+
+            this.atlases[atlasNumber] = glGenTextures();
+
+            glBindTexture(GL_TEXTURE_2D_ARRAY, this.atlases[atlasNumber]);
+
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); // GL_NEAREST_MIPMAP_LINEAR
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+
+            final int atlasResolution = ATLAS_RESOLUTIONS[atlasNumber];
+
+            ArrayList<Image> suitableImages = images
+                    .stream()
+                    .filter(image -> !usedImages.contains(image) && image.getWidth() <= atlasResolution && image.getHeight() <= atlasResolution)
+                    .collect(Collectors.toCollection(ArrayList::new));
+
+            usedImages.addAll(suitableImages);
+
+            glTexStorage3D(GL_TEXTURE_2D_ARRAY, MIPMAP_LEVELS, GL_RGBA8, atlasResolution, atlasResolution, suitableImages.size());
+            ByteBuffer cleanData = Utils.arrayToBuffer(new byte[atlasResolution * atlasResolution * 4]);
+
+            for (int layer = 0; layer < suitableImages.size(); ++layer) {
+                Image image = suitableImages.get(layer);
+                cleanData.rewind();
+                // TODO level = mipmap level 0,1,2...
+                // set the whole texture to transparent (so min/mag filters don't find bad data off the edge of the actual image data)
+                glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, layer, atlasResolution, atlasResolution, 1, GL_RGBA, GL_UNSIGNED_BYTE, cleanData);
+                glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, layer, image.getWidth(), image.getHeight(), 1, GL_RGBA, GL_UNSIGNED_BYTE, image.getDataBuffer());
+                // TODO atlas numbers different sizes
+                Vector2f maxUV = new Vector2f(image.getWidth() / (float) atlasResolution, image.getHeight() / (float) atlasResolution);
+                Texture texture = new Texture(atlasNumber, layer, maxUV);
+                this.fileToTexture.put(image.getFile(), texture);
+            }
+
+            glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
+            glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
         }
 
-        glTexStorage3D(GL_TEXTURE_2D_ARRAY, 3, GL_RGBA8, maxWidth, maxHeight, images.size());
-        ByteBuffer cleanData = Utils.arrayToBuffer(new byte[maxWidth * maxHeight * 4]);
-
-        fileToTexture = new HashMap<>();
-        for (int layer = 0; layer < images.size(); ++layer) {
-            Image image = images.get(layer);
-            cleanData.rewind();
-            // TODO level = mipmap level 0,1,2...
-            // set the whole texture to transparent (so min/mag filters don't find bad data off the edge of the actual image data)
-            glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, layer, maxWidth, maxHeight, 1, GL_RGBA, GL_UNSIGNED_BYTE, cleanData);
-            glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, layer, image.getWidth(), image.getHeight(), 1, GL_RGBA, GL_UNSIGNED_BYTE, image.getDataBuffer());
-            // TODO atlas numbers different sizes
-            Vector2f maxUV = new Vector2f(image.getWidth() / (float) maxWidth, image.getHeight() / (float) maxHeight);
-            Texture texture = new Texture(0, layer, maxUV);
-            fileToTexture.put(image.getFile(), texture);
-        }
-
-        glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
-        glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+        images.forEach(image -> {
+            if (!usedImages.contains(image)) {
+                // TODO to logs
+                System.out.println(String.format("Image %s has not been loaded into atlas because it exceeds maximal size", image.getFile()));
+            }
+        });
 
     }
 
@@ -87,25 +102,23 @@ public class TextureAtlas {
     }
 
     public void bind() {
-        glActiveTexture(GL_TEXTURE0 + 0);
-        glBindTexture(GL_TEXTURE_2D_ARRAY, atlasIndex);
-        //glActiveTexture(GL_TEXTURE1);
-        //glBindTexture(GL_TEXTURE_2D_ARRAY, atlasIndex);
-        //glActiveTexture(GL_TEXTURE2);
-        //glBindTexture(GL_TEXTURE_2D_ARRAY, atlasIndex);
+        for (int atlasNumber = 0; atlasNumber < ATLAS_RESOLUTIONS.length; ++atlasNumber) {
+            glActiveTexture(GL_TEXTURE0 + atlasNumber);
+            glBindTexture(GL_TEXTURE_2D_ARRAY, atlases[atlasNumber]);
+        }
     }
 
     public void unbind() {
-        glActiveTexture(GL_TEXTURE0 + 0);
-        glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
-        //glActiveTexture(GL_TEXTURE1);
-        //glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
-        //glActiveTexture(GL_TEXTURE2);
-        //glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+        for (int atlasNumber = 0; atlasNumber < ATLAS_RESOLUTIONS.length; ++atlasNumber) {
+            glActiveTexture(GL_TEXTURE0 + atlasNumber);
+            glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+        }
     }
 
     public void cleanup() {
-        glDeleteTextures(atlasIndex);
+        for (int atlasNumber = 0; atlasNumber < ATLAS_RESOLUTIONS.length; ++atlasNumber) {
+            glDeleteTextures(atlases[atlasNumber]);
+        }
     }
 
     @Getter
