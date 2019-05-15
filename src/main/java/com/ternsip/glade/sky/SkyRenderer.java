@@ -9,9 +9,6 @@ import com.ternsip.glade.universal.Mesh;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-import static com.ternsip.glade.universal.Mesh.SKIP_ARRAY_FLOAT;
-import static com.ternsip.glade.universal.Mesh.SKIP_ARRAY_INT;
-
 public class SkyRenderer {
 
     public static final Vector3f SKY_COLOR = new Vector3f(0.823f, 0.722f, 0.535f);
@@ -66,7 +63,7 @@ public class SkyRenderer {
     private SkyboxShader skyboxShader;
 
     public SkyRenderer(Matrix4f projectionMatrix) {
-        skyBox = new Mesh(VERTICES, SKIP_ARRAY_FLOAT, SKIP_ARRAY_FLOAT, SKIP_ARRAY_FLOAT, SKIP_ARRAY_INT, SKIP_ARRAY_FLOAT, SKIP_ARRAY_INT, new Material());
+        skyBox = new Mesh(VERTICES, new float[0], new float[0], new float[0], new int[0], new float[0], new int[0], new Material());
         skyboxShader = ShaderProgram.createShader(SkyboxShader.class);
         skyboxShader.start();
         skyboxShader.getProjectionMatrix().load(projectionMatrix);
@@ -83,6 +80,7 @@ public class SkyRenderer {
 
     public void cleanUp() {
         skyboxShader.cleanUp();
+        skyBox.cleanUp();
     }
 
 }

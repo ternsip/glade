@@ -30,9 +30,6 @@ public class Mesh {
     public static final int MAX_WEIGHTS = 3;
     public static final int MAX_BONES = 180;
 
-    public static float[] SKIP_ARRAY_FLOAT = new float[0];
-    public static int[] SKIP_ARRAY_INT = new int[0]; // TODO REPLACE ON NULLS
-
     public static int VERTICES_ATTRIBUTE_POINTER_INDEX = 0;
     public static int NORMALS_ATTRIBUTE_POINTER_INDEX = 1;
     public static int COLORS_ATTRIBUTE_POINTER_INDEX = 2;
@@ -63,7 +60,7 @@ public class Mesh {
             int[] bones,
             Material material
     ) {
-        indicesCount = indices == SKIP_ARRAY_INT ? vertices.length / 3 : indices.length;
+        indicesCount = indices.length == 0 ? vertices.length / 3 : indices.length;
 
         if (textures.length == 0) {
             textures = new float[vertices.length];
@@ -116,7 +113,7 @@ public class Mesh {
     }
 
     private static int bindElementArrayVBO(int[] array) {
-        if (array == SKIP_ARRAY_INT) {
+        if (array.length == 0) {
             return NO_VBO;
         }
         int vbo = glGenBuffers();

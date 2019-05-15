@@ -8,8 +8,6 @@ import org.joml.Vector4f;
 
 import java.io.File;
 
-import static com.ternsip.glade.universal.Mesh.SKIP_ARRAY_FLOAT;
-import static com.ternsip.glade.universal.Mesh.SKIP_ARRAY_INT;
 
 public class Cube {
 
@@ -76,7 +74,7 @@ public class Cube {
     };
 
     public static Mesh generateMesh() {
-        return new Mesh(VERTICES, NORMALS, COLORS, TEXCOORDS, INDICES, SKIP_ARRAY_FLOAT, SKIP_ARRAY_INT, new Material(new Texture(new Vector4f(1.0f, 1.0f, 1.0f, 0.5f), new File("models/others/stall.png"))));
+        return new Mesh(VERTICES, NORMALS, COLORS, TEXCOORDS, INDICES, new float[0], new int[0], new Material(new Texture(new Vector4f(1.0f, 1.0f, 1.0f, 0.5f), new File("models/others/stall.png"))));
     }
 
 }
