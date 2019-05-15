@@ -14,12 +14,12 @@ public class UniformTextureAddress extends Uniform<Texture> {
 
     @Override
     public void locate(int programID, String name) {
-        isTexturePresent.locate(programID, name + "IsTexturePresent");
-        isColorPresent.locate(programID, name + "IsColorPresent");
-        atlasNumber.locate(programID, name + "AtlasNumber");
-        layer.locate(programID, name + "Layer");
-        maxUV.locate(programID, name + "MaxUV");
-        color.locate(programID, name + "Color");
+        isTexturePresent.locate(programID, name + ".isTexturePresent");
+        isColorPresent.locate(programID, name + ".isColorPresent");
+        atlasNumber.locate(programID, name + ".atlasNumber");
+        layer.locate(programID, name + ".layer");
+        maxUV.locate(programID, name + ".maxUV");
+        color.locate(programID, name + ".color");
     }
 
     @Override

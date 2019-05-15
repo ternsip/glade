@@ -63,7 +63,7 @@ public class MasterRenderer {
 
         Material[] lampMaterials = new Material[]{
                 new Material()
-                        .withTexture(new Texture(new File("models/lamp/color.png")))
+                        .withTextureMap(new Texture(new File("models/lamp/color.png")))
                         .withDiffuseMap(new Texture(new File("models/lamp/Diffuse.png")))
                         .withAmbientMap(new Texture(new File("models/lamp/ambient occlusion.png")))
                         .withEmissiveMap(new Texture(new File("models/lamp/emissive.jpg")))

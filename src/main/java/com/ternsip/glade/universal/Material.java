@@ -9,7 +9,7 @@ import lombok.experimental.Wither;
 @Getter
 public class Material {
 
-    private final Texture texture;
+    private final Texture textureMap;
     private final Texture diffuseMap;
     private final Texture specularMap;
     private final Texture ambientMap;
@@ -39,9 +39,9 @@ public class Material {
         );
     }
 
-    public Material(Texture texture) {
+    public Material(Texture textureMap) {
         this(
-                texture,
+                textureMap,
                 new Texture(),
                 new Texture(),
                 new Texture(),
