@@ -15,6 +15,9 @@ public class Settings {
     private File animationFile;
     private File texturesDir;
     private File manualTexture;
+
+    @SuppressWarnings("UnusedAssignment")
+    @Builder.Default
     private int assimpFlags =
             aiProcess_GenSmoothNormals |
                     aiProcess_JoinIdenticalVertices |

@@ -243,13 +243,15 @@ public class AssimpLoader {
         AIString path = AIString.calloc(); // TODO think about removal
         Assimp.aiGetMaterialTexture(aiMaterial, aiTextureType, 0, path, (IntBuffer) null, null, null, null, null, null);
         String textPath = path.dataString();
-        File file = textPath == null || textPath.isEmpty() ? new File("") : new File(texturesDir, textPath);
+        File file = textPath == null || textPath.isEmpty() ? null : new File(texturesDir, textPath);
         AIColor4D aiColor4D = AIColor4D.create(); // TODO think about removal buffer
+        Vector4f color = null;
         if (aiGetMaterialColor(aiMaterial, aiMaterialColor, aiTextureType_NONE, 0, aiColor4D) == 0) {
-            Vector4f color = new Vector4f(aiColor4D.r(), aiColor4D.g(), aiColor4D.b(), aiColor4D.a());
-            return new Texture(color, file);
+            color = new Vector4f(aiColor4D.r(), aiColor4D.g(), aiColor4D.b(), aiColor4D.a());
+            // TODO WHY IS THIS HAPPENS? THIS IS BUG (MODELS SHOULD NOT CONTAIN 1,1,1,1 colors
+            color = color.equals(new Vector4f(1, 1, 1, 1), 1f-3) ? new Vector4f(0, 0, 0, 0) : color;
         }
-        return new Texture(file);
+        return new Texture(color, file);
     }
 
     private static int[] processIndices(AIFace.Buffer aiFaces) {
