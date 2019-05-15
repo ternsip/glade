@@ -1,17 +1,12 @@
 package com.ternsip.glade;
 
 import com.ternsip.glade.entity.Camera;
-import com.ternsip.glade.entity.Rover;
+import com.ternsip.glade.entity.Player;
 import com.ternsip.glade.entity.Sun;
 import com.ternsip.glade.renderer.MasterRenderer;
-import com.ternsip.glade.universal.AssimpLoader;
-import com.ternsip.glade.universal.Model;
-import com.ternsip.glade.universal.Settings;
 import com.ternsip.glade.utils.DisplayManager;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-
-import java.io.File;
 
 // TODO TURN ALL Vectors and Matrixes and Quaternions to constant interface (quatenrionfc/matrixfc)]
 // TODO handle resize normally
@@ -25,17 +20,16 @@ public class Glade {
 
         Sun sun = new Sun(new Vector2f(0, 0), new Vector2f(20000, 20000), new Vector3f(1, 1, 1));
 
-        Model boyModel = AssimpLoader.loadModel(Settings.builder().meshFile(new File("models/boy/boy.dae")).build());
-        Rover rover = new Rover(boyModel);
-        Camera camera = new Camera(rover);
+        Player player = new Player();
+        Camera camera = new Camera(player);
 
         MasterRenderer renderer = new MasterRenderer(camera);
-        renderer.processEntity(rover);
+        renderer.processEntity(player);
         renderer.prepareTestScene();
 
         // TODO Check performance with runnable and without it
         DISPLAY_MANAGER.loop(() -> {
-            rover.move();
+            player.move();
             camera.move();
             sun.move();
             renderer.render(sun, camera);

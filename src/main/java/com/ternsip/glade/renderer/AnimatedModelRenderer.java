@@ -39,7 +39,7 @@ public class AnimatedModelRenderer {
         OpenGlUtils.antialias(true); // TODO move to upper level
         OpenGlUtils.disableBlending();
         OpenGlUtils.enableDepthTesting(true);
-        DISPLAY_MANAGER.getTextureAtlas().bind();
+        DISPLAY_MANAGER.getTextureRepository().bind();
         for (Mesh mesh : entity.getAnimator().getModel().getMeshes()) {
             shader.getTextureMap().load(mesh.getMaterial().getTextureMap());
             shader.getDiffuseMap().load(mesh.getMaterial().getDiffuseMap());

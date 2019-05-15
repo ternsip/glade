@@ -7,7 +7,7 @@ import org.joml.Vector4f;
 import java.io.File;
 
 import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
-import static com.ternsip.glade.universal.TextureAtlas.MISSING_TEXTURE;
+import static com.ternsip.glade.universal.TextureRepository.MISSING_TEXTURE;
 
 @Getter
 public class Texture {
@@ -17,7 +17,7 @@ public class Texture {
     private final boolean texturePresent;
     private final boolean colorPresent;
     private final Vector4f color;
-    private final TextureAtlas.Texture atlasTexture;
+    private final TextureRepository.Texture atlasTexture;
 
     public Texture() {
         this(null, null);
@@ -35,7 +35,7 @@ public class Texture {
         this.texturePresent = file != null;
         this.colorPresent = color != null;
         this.color = colorPresent ? color : DEFAULT_COLOR;
-        this.atlasTexture = DISPLAY_MANAGER.getTextureAtlas().getTexture(this.texturePresent ? file : MISSING_TEXTURE);
+        this.atlasTexture = DISPLAY_MANAGER.getTextureRepository().getTexture(this.texturePresent ? file : MISSING_TEXTURE);
     }
 
 }

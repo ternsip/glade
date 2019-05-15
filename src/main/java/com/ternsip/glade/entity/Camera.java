@@ -25,11 +25,11 @@ public class Camera {
     private float yaw;
     private float roll;
 
-    private Rover rover;
+    private Player player;
 
-    public Camera(Rover rover) {
+    public Camera(Player player) {
         this.projectionMatrix = createProjectionMatrix();
-        this.rover = rover;
+        this.player = player;
         DISPLAY_MANAGER.registerScrollCallback(((window, xoffset, yoffset) -> {
             recalculateZoom((float) yoffset);
         }));
@@ -75,7 +75,7 @@ public class Camera {
         float horizontalDistance = calculateHorizontalDistance();
         float verticalDistance = calculateVerticalDistance();
         calculateCameraPosition(horizontalDistance, verticalDistance);
-        this.yaw = 180 - (rover.getRotation().y() + angleAroundRover);
+        this.yaw = 180 - (player.getRotation().y() + angleAroundRover);
     }
 
     public Vector3f getPosition() {
@@ -95,12 +95,12 @@ public class Camera {
     }
 
     private void calculateCameraPosition(float horizontalDistance, float verticalDistance) {
-        float theta = rover.getRotation().y() + angleAroundRover;
+        float theta = player.getRotation().y() + angleAroundRover;
         float offsetX = (float) (horizontalDistance * Math.sin(Math.toRadians(theta)));
         float offsetZ = (float) (horizontalDistance * Math.cos(Math.toRadians(theta)));
-        position.x = rover.getPosition().x - offsetX;
-        position.z = rover.getPosition().z - offsetZ;
-        position.y = rover.getPosition().y + verticalDistance;
+        position.x = player.getPosition().x - offsetX;
+        position.z = player.getPosition().z - offsetZ;
+        position.y = player.getPosition().y + verticalDistance;
     }
 
     private float calculateHorizontalDistance() {

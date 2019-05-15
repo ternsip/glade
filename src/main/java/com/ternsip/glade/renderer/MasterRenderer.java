@@ -1,13 +1,12 @@
 package com.ternsip.glade.renderer;
 
 import com.ternsip.glade.entity.Camera;
-import com.ternsip.glade.entity.Cube;
 import com.ternsip.glade.entity.Sun;
 import com.ternsip.glade.sky.SkyRenderer;
-import com.ternsip.glade.universal.*;
+import com.ternsip.glade.universal.Entity;
+import com.ternsip.glade.universal.entities.*;
 import org.joml.Vector3f;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,57 +57,40 @@ public class MasterRenderer {
     }
 
     public void prepareTestScene() {
-        Model cubeModel = new Model(Cube.generateMesh());
-        Entity entityCube = new Entity(cubeModel);
 
-        Material[] lampMaterials = new Material[]{
-                new Material()
-                        .withTextureMap(new Texture(new File("models/lamp/color.png")))
-                        .withDiffuseMap(new Texture(new File("models/lamp/Diffuse.png")))
-                        .withAmbientMap(new Texture(new File("models/lamp/ambient occlusion.png")))
-                        .withEmissiveMap(new Texture(new File("models/lamp/emissive.jpg")))
-                        .withSpecularMap(new Texture(new File("models/lamp/Specular.png")))
-                        .withNormalsMap(new Texture(new File("models/lamp/normal.png")))
-        };
-        Model lampModel = AssimpLoader.loadModel(Settings.builder().meshFile(new File("models/lamp/crystal_lamp_ring.fbx")).manualMeshMaterials(lampMaterials).build());
-        Entity entityLamp = new Entity(lampModel);
+        Entity entityCube = new EntityCube();
+
+        Entity entityLamp = new EntityLamp();
         entityLamp.setPosition(new Vector3f(-60f, 0, -60));
         entityLamp.setScale(new Vector3f(0.05f, 0.05f, 0.05f));
         entityLamp.setRotation(new Vector3f(0, 0, 0));
 
-        Model bottleModel = AssimpLoader.loadModel(Settings.builder().meshFile(new File("models/bottle/bottle.3ds")).build());
-        Entity entityBottle = new Entity(bottleModel);
+        Entity entityBottle = new EntityBottle();
         entityBottle.setPosition(new Vector3f(-30f, 0, -20));
         entityBottle.setScale(new Vector3f(1f, 1f, 1f));
         entityBottle.setRotation(new Vector3f(0, 0, 0));
 
-        Model zebraModel = AssimpLoader.loadModel(Settings.builder().meshFile(new File("models/zebra/ZebraLOD1.ms3d")).build());
-        Entity entityZebra = new Entity(zebraModel);
+        Entity entityZebra = new EntityZebra();
         entityZebra.setPosition(new Vector3f(-20f, 0, -20));
         entityZebra.setScale(new Vector3f(0.25f, 0.25f, 0.25f));
         entityZebra.setRotation(new Vector3f(0, 0, 0));
 
-        Model hagreedModel = AssimpLoader.loadModel(Settings.builder().meshFile(new File("models/bob/boblamp.md5mesh")).animationFile(new File("models/bob/boblamp.md5anim")).build());
-        Entity entityHagreed = new Entity(hagreedModel);
-        entityHagreed.setPosition(new Vector3f(20f, 2, 2));
-        entityHagreed.setScale(new Vector3f(0.25f, 0.25f, 0.25f));
-        entityHagreed.setRotation(new Vector3f(0, 0, (float) (-Math.PI / 2))); // TODO BUG IF I PUT 180 ROTATION
+        Entity entityHagrid = new EntityHagrid();
+        entityHagrid.setPosition(new Vector3f(20f, 2, 2));
+        entityHagrid.setScale(new Vector3f(0.25f, 0.25f, 0.25f));
+        entityHagrid.setRotation(new Vector3f(0, 0, (float) (-Math.PI / 2))); // TODO BUG IF I PUT 180 ROTATION
 
-        Material[] spiderMaterials = new Material[]{new Material().withDiffuseMap(new Texture(new File("models/spider/Spinnen_Bein_tex_2.jpg")))};
-        Model spiderModel = AssimpLoader.loadModel(Settings.builder().meshFile(new File("models/spider/spider.dae")).manualMeshMaterials(spiderMaterials).build());
-        Entity entitySpider = new Entity(spiderModel);
+        Entity entitySpider = new EntitySpider();
         entitySpider.setPosition(new Vector3f(20f, 2, -20));
         entitySpider.setScale(new Vector3f(1, 1, 1));
         entitySpider.setRotation(new Vector3f(0, 0, (float) (-Math.PI / 2)));
 
-        Model warriorModel = AssimpLoader.loadModel(Settings.builder().meshFile(new File("models/warrior/warrior.3ds")).build());
-        Entity entityWarrior = new Entity(warriorModel);
+        Entity entityWarrior = new EntityWarrior();
         entityWarrior.setPosition(new Vector3f(-20f, 2, 2));
         entityWarrior.setScale(new Vector3f(10, 10, 10));
         entityWarrior.setRotation(new Vector3f(0, 0, (float) (-Math.PI / 2)));
 
-        Model dude2Model = AssimpLoader.loadModel(Settings.builder().meshFile(new File("models/dude/dude.3ds")).manualMeshMaterials((new Material[]{new Material(new Texture(new File("models/dude/dude.png")))})).build());
-        Entity entityDude2 = new Entity(dude2Model);
+        Entity entityDude2 = new EntityDude();
         entityDude2.setPosition(new Vector3f(-20f, 0, -20));
         entityDude2.setScale(new Vector3f(10f, 10f, 10f));
         entityDude2.setRotation(new Vector3f(0, 0, (float) (-Math.PI / 2)));
@@ -119,12 +101,12 @@ public class MasterRenderer {
         processEntity(entityZebra);
         processEntity(entityBottle);
         processEntity(entitySpider);
-        processEntity(entityHagreed);
+        processEntity(entityHagrid);
         processEntity(entityWarrior);
 
         for (int i = 0; i < 10; ++i) {
             for (int j = 0; j < 10; ++j) {
-                Entity entity = new Entity(hagreedModel);
+                Entity entity = new EntityHagrid();
                 entity.setPosition(new Vector3f(20f + 10 * i, 2, 2 + 10 * j));
                 entity.setScale(new Vector3f(0.25f, 0.25f, 0.25f));
                 entity.setRotation(new Vector3f(0, 0, (float) (-Math.PI / 2)));

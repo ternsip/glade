@@ -70,6 +70,6 @@ void main(void){
     vec4 specularTexColor = getTextureColor(specularMap, false);
     vec3 specColour = vec3(0, 0, 0);
 
-    out_colour = vec4((diffuseColor + ambientColor + emmissiveColor + specColour) * texColor.xyz, 1);
+    out_colour = vec4((diffuseColor + ambientColor + emmissiveColor + specColour) * texColor.xyz, texColor.a);
 
 }

@@ -22,7 +22,7 @@ import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 import static org.lwjgl.opengl.GL42.glTexStorage3D;
 import static org.lwjgl.stb.STBImage.stbi_load_from_memory;
 
-public class TextureAtlas {
+public class TextureRepository {
 
     public final static int MIPMAP_LEVELS = 5;
     public final static File MISSING_TEXTURE = new File("tools/missing.jpg");
@@ -32,7 +32,7 @@ public class TextureAtlas {
     private final int[] atlases;
     private final Map<File, Texture> fileToTexture;
 
-    public TextureAtlas() {
+    public TextureRepository() {
 
         ArrayList<Image> images = Utils.getResourceListing(EXTENSIONS)
                 .stream()

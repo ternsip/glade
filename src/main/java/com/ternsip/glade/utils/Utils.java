@@ -9,6 +9,7 @@ import org.reflections.Reflections;
 import org.reflections.scanners.ResourcesScanner;
 
 import java.io.*;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -141,6 +142,20 @@ public class Utils {
                 .stream()
                 .map(File::new)
                 .collect(Collectors.toList());
+    }
+
+    public static Method findDeclaredMethodInHierarchy(
+            Class<?> objectClass,
+            String methodName
+    ) throws NoSuchMethodException {
+        try {
+            return objectClass.getDeclaredMethod(methodName);
+        } catch (NoSuchMethodException e) {
+            if (objectClass.getSuperclass() != null) {
+                return findDeclaredMethodInHierarchy(objectClass.getSuperclass(), methodName);
+            }
+            throw e;
+        }
     }
 
 }

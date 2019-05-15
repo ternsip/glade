@@ -1,6 +1,7 @@
 package com.ternsip.glade.utils;
 
-import com.ternsip.glade.universal.TextureAtlas;
+import com.ternsip.glade.universal.ModelRepository;
+import com.ternsip.glade.universal.TextureRepository;
 import lombok.Getter;
 import org.joml.Vector2i;
 import org.lwjgl.glfw.*;
@@ -19,7 +20,8 @@ public class DisplayManager {
     private static final int FPS_CAP = 120;
 
     private ArrayList<Callback> callbacks = new ArrayList<>();
-    private TextureAtlas textureAtlas;
+    private TextureRepository textureRepository;
+    private ModelRepository modelRepository;
     private long lastFrameTime;
     private float deltaTime;
     private float fps;
@@ -56,8 +58,11 @@ public class DisplayManager {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        textureAtlas = new TextureAtlas();
-        textureAtlas.bind();
+        textureRepository = new TextureRepository();
+        textureRepository.bind();
+
+        modelRepository = new ModelRepository();
+        modelRepository.loadAllModels();
 
         registerCloser();
 
@@ -82,8 +87,8 @@ public class DisplayManager {
 
     public void closeDisplay() {
 
-        textureAtlas.unbind();
-        textureAtlas.cleanup();
+        textureRepository.unbind();
+        textureRepository.cleanup();
 
         // Release window
         glfwDestroyWindow(window);

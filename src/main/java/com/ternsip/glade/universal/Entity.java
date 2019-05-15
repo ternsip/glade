@@ -1,24 +1,23 @@
 package com.ternsip.glade.universal;
 
 import com.ternsip.glade.utils.Maths;
+import com.ternsip.glade.utils.Utils;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
+import java.lang.reflect.Method;
+
+import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
+
 @Getter
-public class Entity {
+public abstract class Entity {
 
-    private final Animator animator;
-    private final Vector3f position;
-    private final Vector3f scale;
-    private final Vector3f rotation;
-
-    public Entity(Model model) {
-        this.animator = new Animator(model);
-        this.position = new Vector3f(0, 0, 0);
-        this.scale = new Vector3f(1, 1, 1);
-        this.rotation = new Vector3f(0, 0, 0);
-    }
+    private final Animator animator = new Animator(getModelInternally());
+    private final Vector3f position = new Vector3f(0, 0, 0);
+    private final Vector3f scale = new Vector3f(1, 1, 1);
+    private final Vector3f rotation = new Vector3f(0, 0, 0);
 
     public Matrix4f getTransformationMatrix() {
         return Maths.createTransformationMatrix(getPosition(), Maths.getRotationQuaternion(getRotation()), getScale());
@@ -42,6 +41,14 @@ public class Entity {
 
     public void increaseRotation(Vector3f delta) {
         rotation.add(delta);
+    }
+
+    protected abstract Model loadModel();
+
+    @SneakyThrows
+    private Model getModelInternally() {
+        Method method = Utils.findDeclaredMethodInHierarchy(getClass(), "loadModel");
+        return DISPLAY_MANAGER.getModelRepository().getMethodToModel().computeIfAbsent(method, e -> loadModel());
     }
 
 }

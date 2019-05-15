@@ -1,13 +1,12 @@
 package com.ternsip.glade.entity;
 
-import com.ternsip.glade.universal.Entity;
-import com.ternsip.glade.universal.Model;
+import com.ternsip.glade.universal.entities.EntityBoy;
 import org.joml.Vector3f;
 
 import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 import static org.lwjgl.glfw.GLFW.*;
 
-public class Rover extends Entity {
+public class Player extends EntityBoy {
 
     private static final float RUN_SPEED = 40;
     private static final float TURN_SPEED = 2.0f;
@@ -17,8 +16,7 @@ public class Rover extends Entity {
     private float currentTurnSpeed = 0;
     private float upwardsSpeed = 0;
 
-    public Rover(Model model) {
-        super(model);
+    public Player() {
         increaseRotation(new Vector3f(0, 0, (float) (-Math.PI / 2.0f)));
     }
 
@@ -87,16 +85,4 @@ public class Rover extends Entity {
 
     }
 
-    @Override
-    public String toString() {
-        StringBuilder str = new StringBuilder();
-
-        str.append("#################################\n");
-        str.append("x:\t" + this.getPosition().x + "\n");
-        str.append("y:\t" + this.getPosition().y + "\n");
-        str.append("z:\t" + this.getPosition().z + "\n");
-        str.append("---------------------------------\n");
-
-        return str.toString();
-    }
 }

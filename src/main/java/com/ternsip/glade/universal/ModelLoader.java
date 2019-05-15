@@ -16,7 +16,7 @@ import static com.ternsip.glade.utils.Utils.assertThat;
 import static com.ternsip.glade.utils.Utils.loadResourceAsAssimp;
 import static org.lwjgl.assimp.Assimp.*;
 
-public class AssimpLoader {
+public class ModelLoader {
 
 
     @SneakyThrows
