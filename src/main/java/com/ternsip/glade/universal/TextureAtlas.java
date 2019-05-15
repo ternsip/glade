@@ -50,8 +50,8 @@ public class TextureAtlas {
 
             glBindTexture(GL_TEXTURE_2D_ARRAY, this.atlases[atlasNumber]);
 
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); // GL_NEAREST_MIPMAP_LINEAR
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
@@ -70,7 +70,6 @@ public class TextureAtlas {
             for (int layer = 0; layer < suitableImages.size(); ++layer) {
                 Image image = suitableImages.get(layer);
                 cleanData.rewind();
-                // TODO level = mipmap level 0,1,2...
                 // set the whole texture to transparent (so min/mag filters don't find bad data off the edge of the actual image data)
                 glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, layer, atlasResolution, atlasResolution, 1, GL_RGBA, GL_UNSIGNED_BYTE, cleanData);
                 glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, layer, image.getWidth(), image.getHeight(), 1, GL_RGBA, GL_UNSIGNED_BYTE, image.getDataBuffer());
@@ -79,7 +78,6 @@ public class TextureAtlas {
                 Texture texture = new Texture(atlasNumber, layer, maxUV);
                 this.fileToTexture.put(image.getFile(), texture);
             }
-
             glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
             glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
         }
