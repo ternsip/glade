@@ -23,4 +23,8 @@ public class ModelRepository {
         clazz.newInstance();
     }
 
+    public void cleanUp() {
+        getMethodToModel().values().forEach(Model::cleanUp);
+    }
+
 }

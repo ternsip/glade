@@ -87,6 +87,8 @@ public class DisplayManager {
 
     public void closeDisplay() {
 
+        modelRepository.cleanUp();
+
         textureRepository.unbind();
         textureRepository.cleanup();
 

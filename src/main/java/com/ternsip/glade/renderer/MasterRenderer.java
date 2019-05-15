@@ -53,7 +53,6 @@ public class MasterRenderer {
     public void cleanUp() {
         skyRenderer.cleanUp();
         animatedModelRenderer.cleanUp();
-        // TODO cleanup entities
     }
 
     public void prepareTestScene() {
