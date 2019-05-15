@@ -23,9 +23,17 @@ public final class AnimatedModelShader extends ShaderProgram {
     private UniformMatrix4 transformationMatrix = new UniformMatrix4();
     private UniformVec3 lightDirection = new UniformVec3();
     private UniformMatrix4Array boneTransforms = new UniformMatrix4Array(MAX_BONES);
+
     private UniformTextureAddress diffuseMap = new UniformTextureAddress();
-    private UniformTextureAddress localNormalMap = new UniformTextureAddress();
     private UniformTextureAddress specularMap = new UniformTextureAddress();
-    private UniformTextureAddress glowMap = new UniformTextureAddress();
+    private UniformTextureAddress ambientMap = new UniformTextureAddress();
+    private UniformTextureAddress emissiveMap = new UniformTextureAddress();
+    private UniformTextureAddress heightMap = new UniformTextureAddress();
+    private UniformTextureAddress normalsMap = new UniformTextureAddress();
+    private UniformTextureAddress shininessMap = new UniformTextureAddress();
+    private UniformTextureAddress opacityMap = new UniformTextureAddress();
+    private UniformTextureAddress displacementMap = new UniformTextureAddress();
+    private UniformTextureAddress lightMap = new UniformTextureAddress();
+    private UniformTextureAddress reflectionMap = new UniformTextureAddress();
 
 }

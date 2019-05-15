@@ -43,9 +43,16 @@ public class AnimatedModelRenderer {
         DISPLAY_MANAGER.getTextureAtlas().bind();
         for (Mesh mesh : entity.getAnimator().getModel().getMeshes()) {
             shader.getDiffuseMap().load(mesh.getMaterial().getDiffuseMap());
-            shader.getLocalNormalMap().load(mesh.getMaterial().getLocalNormalMap());
             shader.getSpecularMap().load(mesh.getMaterial().getSpecularMap());
-            shader.getGlowMap().load(mesh.getMaterial().getGlowMap());
+            shader.getAmbientMap().load(mesh.getMaterial().getAmbientMap());
+            shader.getEmissiveMap().load(mesh.getMaterial().getEmissiveMap());
+            shader.getHeightMap().load(mesh.getMaterial().getHeightMap());
+            shader.getNormalsMap().load(mesh.getMaterial().getNormalsMap());
+            shader.getShininessMap().load(mesh.getMaterial().getShininessMap());
+            shader.getOpacityMap().load(mesh.getMaterial().getOpacityMap());
+            shader.getDisplacementMap().load(mesh.getMaterial().getDisplacementMap());
+            shader.getLightMap().load(mesh.getMaterial().getLightMap());
+            shader.getReflectionMap().load(mesh.getMaterial().getReflectionMap());
             mesh.render();
         }
         shader.stop();

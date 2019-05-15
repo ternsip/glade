@@ -64,6 +64,12 @@ public class MasterRenderer {
         Model cubeModel = new Model(Cube.generateMesh());
         Entity entityCube = new Entity(cubeModel);
 
+        Model ballModel = AssimpLoader.loadModel(Settings.builder().meshFile(new File("models/ball/ball.3ds")).build());
+        Entity entityBall = new Entity(ballModel);
+        entityBall.setPosition(new Vector3f(-60f, 0, -60));
+        entityBall.setScale(new Vector3f(3f, 3f, 3f));
+        entityBall.setRotation(new Vector3f(0, 0, 0));
+
         Model bottleModel = AssimpLoader.loadModel(Settings.builder().meshFile(new File("models/bottle/bottle.3ds")).build());
         Entity entityBottle = new Entity(bottleModel);
         entityBottle.setPosition(new Vector3f(-30f, 0, -20));
@@ -101,6 +107,7 @@ public class MasterRenderer {
         entityDude2.setRotation(new Vector3f(0, 0, (float) (-Math.PI / 2)));
 
         processEntity(entityCube);
+        processEntity(entityBall);
         processEntity(entityDude2);
         processEntity(entityZebra);
         processEntity(entityBottle);
