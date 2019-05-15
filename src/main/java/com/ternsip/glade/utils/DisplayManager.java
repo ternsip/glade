@@ -1,5 +1,6 @@
 package com.ternsip.glade.utils;
 
+import com.ternsip.glade.universal.TextureAtlas;
 import lombok.Getter;
 import org.joml.Vector2i;
 import org.lwjgl.glfw.*;
@@ -14,8 +15,10 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 @Getter
 public class DisplayManager {
 
-    private final int FPS_CAP = 120;
+    private static final int FPS_CAP = 120;
+
     private ArrayList<Callback> callbacks = new ArrayList<>();
+    private TextureAtlas textureAtlas;
     private long lastFrameTime;
     private float deltaTime;
     private float fps;
@@ -49,6 +52,9 @@ public class DisplayManager {
         // Enable vertical synchronization
         glfwSwapInterval(1);
 
+        textureAtlas = new TextureAtlas();
+        textureAtlas.bind();
+
         registerCloser();
 
         lastFrameTime = getCurrentTime();
@@ -71,6 +77,9 @@ public class DisplayManager {
     }
 
     public void closeDisplay() {
+
+        textureAtlas.unbind();
+        textureAtlas.cleanup();
 
         // Release window
         glfwDestroyWindow(window);

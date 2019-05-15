@@ -6,10 +6,13 @@ import com.ternsip.glade.shader.base.ShaderProgram;
 import com.ternsip.glade.shader.impl.AnimatedModelShader;
 import com.ternsip.glade.universal.Entity;
 import com.ternsip.glade.universal.Mesh;
+import com.ternsip.glade.universal.TextureAtlas;
 import com.ternsip.glade.utils.OpenGlUtils;
 import org.joml.Matrix4f;
 
 import java.util.List;
+
+import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 
 public class AnimatedModelRenderer {
 
@@ -28,17 +31,21 @@ public class AnimatedModelRenderer {
     public void render(Entity entity, Camera camera, Sun sun) {
         shader.start();
         Matrix4f[] boneTransforms = entity.getAnimator().getBoneTransforms();
-        shader.getDiffuseMap().load(0);
         shader.getAnimated().load(boneTransforms.length > 0);
         shader.getProjectionMatrix().load(camera.getProjectionMatrix());
         shader.getViewMatrix().load(camera.createViewMatrix());
         shader.getLightDirection().load(sun.getPosition().normalize().negate());
         shader.getBoneTransforms().load(boneTransforms);
         shader.getTransformationMatrix().load(entity.getTransformationMatrix());
-        OpenGlUtils.antialias(true);
+        OpenGlUtils.antialias(true); // TODO move to upper level
         OpenGlUtils.disableBlending();
         OpenGlUtils.enableDepthTesting(true);
+        DISPLAY_MANAGER.getTextureAtlas().bind();
         for (Mesh mesh : entity.getAnimator().getModel().getMeshes()) {
+            shader.getDiffuseMap().load(mesh.getMaterial().getDiffuseMap());
+            shader.getLocalNormalMap().load(mesh.getMaterial().getLocalNormalMap());
+            shader.getSpecularMap().load(mesh.getMaterial().getSpecularMap());
+            shader.getGlowMap().load(mesh.getMaterial().getGlowMap());
             mesh.render();
         }
         shader.stop();

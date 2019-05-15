@@ -1,4 +1,4 @@
-#version 150
+#version 400 core
 
 const int MAX_BONES = 180; // Maximal number of bones allowed in a skeleton
 const int MAX_WEIGHTS = 3; // Maximal number of bones that can affect a vertex

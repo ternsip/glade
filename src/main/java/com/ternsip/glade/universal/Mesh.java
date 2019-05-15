@@ -3,25 +3,17 @@ package com.ternsip.glade.universal;
 import com.ternsip.glade.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
-import org.lwjgl.opengl.GL11;
-
-import java.io.File;
 
 import static com.ternsip.glade.utils.Utils.arrayToBuffer;
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL11.GL_INT;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
-import static org.lwjgl.opengl.GL11.glBindTexture;
 import static org.lwjgl.opengl.GL11.glDrawArrays;
 import static org.lwjgl.opengl.GL11.glDrawElements;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
-import static org.lwjgl.opengl.GL15.GL_TEXTURE0;
-import static org.lwjgl.opengl.GL15.GL_TEXTURE1;
-import static org.lwjgl.opengl.GL15.glActiveTexture;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
@@ -39,8 +31,7 @@ public class Mesh {
     public static final int MAX_BONES = 180;
 
     public static float[] SKIP_ARRAY_FLOAT = new float[0];
-    public static int[] SKIP_ARRAY_INT = new int[0];
-    public static File SKIP_TEXTURE = new File("");
+    public static int[] SKIP_ARRAY_INT = new int[0]; // TODO REPLACE ON NULLS
 
     public static int VERTICES_ATTRIBUTE_POINTER_INDEX = 0;
     public static int NORMALS_ATTRIBUTE_POINTER_INDEX = 1;
@@ -49,19 +40,18 @@ public class Mesh {
     public static int WEIGHTS_ATTRIBUTE_POINTER_INDEX = 4;
     public static int BONES_ATTRIBUTE_POINTER_INDEX = 5;
 
-    private static int NO_TEXTURE = -1;
     private static int NO_VBO = -1;
 
-    private int indicesCount;
-    private Material material;
-    private int vao;
-    private int vboIndices;
-    private int vboVertices;
-    private int vboNormals;
-    private int vboColors;
-    private int vboTextures;
-    private int vboWeights;
-    private int vboBones;
+    private final int indicesCount;
+    private final Material material;
+    private final int vao;
+    private final int vboIndices;
+    private final int vboVertices;
+    private final int vboNormals;
+    private final int vboColors;
+    private final int vboTextures;
+    private final int vboWeights;
+    private final int vboBones;
 
     public Mesh(
             float[] vertices,
@@ -137,22 +127,8 @@ public class Mesh {
 
     public void render() {
 
-        // Bind textures
-        Texture texture = material != null ? material.getTexture() : null;
-        if (texture != null) {
-            // Activate first texture bank
-            glActiveTexture(GL_TEXTURE0);
-
-            glBindTexture(GL_TEXTURE_2D, texture.getId());
-        }
-        Texture normalMap = material != null ? material.getNormalMap() : null;
-        if (normalMap != null) {
-            // Activate second texture bank
-            glActiveTexture(GL_TEXTURE1);
-            glBindTexture(GL_TEXTURE_2D, normalMap.getId());
-        }
-
         glBindVertexArray(vao);
+
         if (vboVertices != NO_VBO) glEnableVertexAttribArray(VERTICES_ATTRIBUTE_POINTER_INDEX);
         if (vboNormals != NO_VBO) glEnableVertexAttribArray(NORMALS_ATTRIBUTE_POINTER_INDEX);
         if (vboColors != NO_VBO) glEnableVertexAttribArray(COLORS_ATTRIBUTE_POINTER_INDEX);
@@ -161,7 +137,7 @@ public class Mesh {
         if (vboBones != NO_VBO) glEnableVertexAttribArray(BONES_ATTRIBUTE_POINTER_INDEX);
 
         if (vboIndices == NO_VBO) {
-            glDrawArrays(GL11.GL_TRIANGLES, 0, indicesCount);
+            glDrawArrays(GL_TRIANGLES, 0, indicesCount);
         } else {
             glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, 0);
         }
@@ -174,6 +150,7 @@ public class Mesh {
         if (vboBones != NO_VBO) glDisableVertexAttribArray(BONES_ATTRIBUTE_POINTER_INDEX);
 
         glBindVertexArray(0);
+
     }
 
     public void cleanUp() {
@@ -184,7 +161,6 @@ public class Mesh {
         if (vboTextures != NO_VBO) glDeleteBuffers(vboTextures);
         if (vboWeights != NO_VBO) glDeleteBuffers(vboWeights);
         if (vboBones != NO_VBO) glDeleteBuffers(vboBones);
-        material.cleanUp();
     }
 
 }

@@ -13,12 +13,11 @@ import org.joml.Vector3f;
 
 import java.io.File;
 
-// TODO TURN ALL Vectors and Matrixes and Quaternions to constant interface (quatenrionfc/matrixfc)
-// TODO REMOVE MemoryUtil.memAlloc + memFree
+// TODO TURN ALL Vectors and Matrixes and Quaternions to constant interface (quatenrionfc/matrixfc)]
+// TODO handle resize normally
 public class Glade {
 
     public static final DisplayManager DISPLAY_MANAGER = new DisplayManager();
-
 
     public static void main(String[] args) {
 

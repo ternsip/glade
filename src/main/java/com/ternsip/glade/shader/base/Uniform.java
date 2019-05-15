@@ -14,7 +14,7 @@ public abstract class Uniform<T> {
     public void locate(int programID, String name) {
         int location = glGetUniformLocation(programID, name);
         if (location == -1) {
-            throw new IllegalArgumentException("Uniform variable " + name + " not found in shader!");
+            System.out.println("Uniform variable " + name + " not found in shader!"); // TODO to logs
         }
         setLocation(location);
     }

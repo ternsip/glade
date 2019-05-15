@@ -5,7 +5,8 @@ import org.apache.commons.io.IOUtils;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.assimp.AIScene;
 import org.lwjgl.assimp.Assimp;
-import org.lwjgl.system.MemoryUtil;
+import org.reflections.Reflections;
+import org.reflections.scanners.ResourcesScanner;
 
 import java.io.*;
 import java.net.URL;
@@ -14,6 +15,9 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static org.lwjgl.assimp.Assimp.aiGetErrorString;
 
@@ -46,11 +50,10 @@ public class Utils {
     @SneakyThrows
     public static AIScene loadResourceAsAssimp(File file, int flags) {
         byte[] _data = IOUtils.toByteArray(Utils.loadResourceAsStream(file));
-        ByteBuffer data = MemoryUtil.memCalloc(_data.length);
+        ByteBuffer data = BufferUtils.createByteBuffer(_data.length);
         data.put(_data);
         data.flip();
         AIScene scene = Assimp.aiImportFileFromMemory(data, flags, "");
-        MemoryUtil.memFree(data);
         if (scene == null) {
             throw new IllegalStateException(aiGetErrorString());
         }
@@ -128,6 +131,16 @@ public class Utils {
         if (!condition) {
             System.out.println("Assertion failed!");
         }
+    }
+
+    public static List<File> getResourceListing(String[] extensions) {
+        Reflections reflections = new Reflections("", new ResourcesScanner());
+        String pattern = "(.*\\." + String.join(")|(.*\\.", extensions) + ")";
+        return reflections
+                .getResources(Pattern.compile(pattern))
+                .stream()
+                .map(File::new)
+                .collect(Collectors.toList());
     }
 
 }

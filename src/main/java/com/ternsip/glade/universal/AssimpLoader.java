@@ -1,5 +1,6 @@
 package com.ternsip.glade.universal;
 
+import com.sun.istack.internal.Nullable;
 import lombok.SneakyThrows;
 import org.joml.*;
 import org.lwjgl.PointerBuffer;
@@ -53,7 +54,7 @@ public class AssimpLoader {
             int materialIdx = aiMesh.mMaterialIndex();
             Material material = (materialIdx >= 0 && materialIdx < materials.length) ? materials[materialIdx] : new Material();
             if (settings.isManualTextureExists()) {
-                material = new Material(TextureCache.getInstance().getTexture(settings.getManualTexture()));
+                material = new Material(settings.getManualTexture());
             }
             int numVertices = aiMesh.mNumVertices();
             float[] vertices = process3DVector(aiMesh.mVertices());
@@ -220,30 +221,31 @@ public class AssimpLoader {
 
     @SneakyThrows
     private static Material processMaterial(AIMaterial aiMaterial, File texturesDir) {
-        AIColor4D colour = AIColor4D.create();
-
-        AIString path = AIString.calloc();
-        Assimp.aiGetMaterialTexture(aiMaterial, aiTextureType_DIFFUSE, 0, path, (IntBuffer) null,
-                null, null, null, null, null);
-        String textPath = path.dataString();
-        Texture texture = null;
-        if (textPath != null && textPath.length() > 0) {
-            texture = TextureCache.getInstance().getTexture(new File(texturesDir, textPath));
-        }
 
         Vector4f diffuse = Material.DEFAULT_COLOUR;
-        int result = aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_DIFFUSE, aiTextureType_NONE, 0, colour);
-        if (result == 0) {
+        Vector4f specular = Material.DEFAULT_COLOUR;
+        // TODO process all other types of textures
+        File diffuseMap = processTexture(aiMaterial, aiTextureType_DIFFUSE, texturesDir);
+        File localNormalMap = processTexture(aiMaterial, aiTextureType_NORMALS, texturesDir);
+        File specularMap = processTexture(aiMaterial, aiTextureType_SPECULAR, texturesDir);
+        File glowMap = processTexture(aiMaterial, aiTextureType_LIGHTMAP, texturesDir);
+
+        AIColor4D colour = AIColor4D.create();
+
+        if (aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_DIFFUSE, aiTextureType_NONE, 0, colour) == 0) {
             diffuse = new Vector4f(colour.r(), colour.g(), colour.b(), colour.a());
         }
-
-        Vector4f specular = Material.DEFAULT_COLOUR;
-        result = aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_SPECULAR, aiTextureType_NONE, 0, colour);
-        if (result == 0) {
+        if (aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_SPECULAR, aiTextureType_NONE, 0, colour) == 0) {
             specular = new Vector4f(colour.r(), colour.g(), colour.b(), colour.a());
         }
+        return new Material(diffuse, specular, diffuseMap, localNormalMap, specularMap, glowMap);
+    }
 
-        return new Material(diffuse, specular, texture, 1.0f);
+    private static File processTexture(AIMaterial aiMaterial, int aiTextureType, File texturesDir) {
+        AIString path = AIString.calloc(); // TODO think about removal
+        Assimp.aiGetMaterialTexture(aiMaterial, aiTextureType, 0, path, (IntBuffer) null, null, null, null, null, null);
+        String textPath = path.dataString();
+        return textPath == null || textPath.isEmpty() ? new File("") :  new File(texturesDir, textPath);
     }
 
     private static int[] processIndices(AIFace.Buffer aiFaces) {

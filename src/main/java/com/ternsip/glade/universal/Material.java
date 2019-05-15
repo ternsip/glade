@@ -1,118 +1,61 @@
 package com.ternsip.glade.universal;
 
+import com.sun.istack.internal.Nullable;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.joml.Vector4f;
 
 import java.io.File;
 
-import static com.ternsip.glade.universal.Mesh.SKIP_TEXTURE;
-import static org.lwjgl.opengl.GL11.glDeleteTextures;
+import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 
+@Getter
 public class Material {
 
     public static final Vector4f DEFAULT_COLOUR = new Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
 
-    private Vector4f diffuseColour;
-
-    private Vector4f specularColour;
-
-    private float shininess;
-
-    private float reflectance;
-
-    private Texture texture;
-
-    private Texture normalMap;
-
-    public Material(File textureFile) {
-        if (textureFile != SKIP_TEXTURE) {
-            try {
-                texture = new Texture(textureFile);
-            } catch (Exception e) {
-                System.out.println(e.getMessage()); // TODO to logs
-            }
-        }
-    }
+    private final Vector4f diffuseColour;
+    private final Vector4f specularColour;
+    private final @Nullable TextureAtlas.Texture diffuseMap;
+    private final @Nullable TextureAtlas.Texture localNormalMap;
+    private final @Nullable TextureAtlas.Texture specularMap;
+    private final @Nullable TextureAtlas.Texture glowMap;
 
     public Material() {
-        this.diffuseColour = DEFAULT_COLOUR;
-        this.specularColour = DEFAULT_COLOUR;
-        this.texture = null;
-        this.reflectance = 0;
+        this(
+                DEFAULT_COLOUR,
+                DEFAULT_COLOUR,
+                new File(""),
+                new File(""),
+                new File(""),
+                new File("")
+        );
     }
 
-    public Material(Vector4f colour, float reflectance) {
-        this(colour, colour, null, reflectance);
+    public Material(File diffuseTexture) {
+        this(
+                DEFAULT_COLOUR,
+                DEFAULT_COLOUR,
+                diffuseTexture,
+                new File(""),
+                new File(""),
+                new File("")
+        );
     }
 
-    public Material(Texture texture) {
-        this(DEFAULT_COLOUR, DEFAULT_COLOUR, texture, 0);
-    }
-
-    public Material(Texture texture, float reflectance) {
-        this(DEFAULT_COLOUR, DEFAULT_COLOUR, texture, reflectance);
-    }
-
-    public Material(Vector4f diffuseColour, Vector4f specularColour, Texture texture, float reflectance) {
+    public Material(
+            Vector4f diffuseColour,
+            Vector4f specularColour,
+            File diffuseMap,
+            File localNormalMap,
+            File specularMap,
+            File glowMap
+    ) {
         this.diffuseColour = diffuseColour;
         this.specularColour = specularColour;
-        this.texture = texture;
-        this.reflectance = reflectance;
-    }
-
-    public Vector4f getDiffuseColour() {
-        return diffuseColour;
-    }
-
-    public void setDiffuseColour(Vector4f diffuseColour) {
-        this.diffuseColour = diffuseColour;
-    }
-
-    public Vector4f getSpecularColour() {
-        return specularColour;
-    }
-
-    public void setSpecularColour(Vector4f specularColour) {
-        this.specularColour = specularColour;
-    }
-
-    public float getReflectance() {
-        return reflectance;
-    }
-
-    public void setReflectance(float reflectance) {
-        this.reflectance = reflectance;
-    }
-
-    public boolean isTextured() {
-        return this.texture != null;
-    }
-
-    public Texture getTexture() {
-        return texture;
-    }
-
-    public void setTexture(Texture texture) {
-        this.texture = texture;
-    }
-
-    public boolean hasNormalMap() {
-        return this.normalMap != null;
-    }
-
-    public Texture getNormalMap() {
-        return normalMap;
-    }
-
-    public void setNormalMap(Texture normalMap) {
-        this.normalMap = normalMap;
-    }
-
-    public void cleanUp() {
-        if (isTextured()) {
-            glDeleteTextures(getTexture().getId());
-        }
-        if (hasNormalMap()) {
-            glDeleteTextures(getNormalMap().getId());
-        }
+        this.diffuseMap = diffuseMap.getPath().isEmpty() ? null : DISPLAY_MANAGER.getTextureAtlas().getTexture(diffuseMap);
+        this.localNormalMap = localNormalMap.getPath().isEmpty()? null : DISPLAY_MANAGER.getTextureAtlas().getTexture(localNormalMap);
+        this.specularMap = specularMap.getPath().isEmpty() ? null : DISPLAY_MANAGER.getTextureAtlas().getTexture(specularMap);
+        this.glowMap = glowMap.getPath().isEmpty() ? null : DISPLAY_MANAGER.getTextureAtlas().getTexture(glowMap);
     }
 }
