@@ -14,7 +14,7 @@ public class Settings {
     private File meshFile;
     private File animationFile;
     private File texturesDir;
-    private File manualTexture;
+    private Material[] manualMeshMaterials;
 
     @SuppressWarnings("UnusedAssignment")
     @Builder.Default
@@ -44,8 +44,8 @@ public class Settings {
         return texturesDir;
     }
 
-    public boolean isManualTextureExists() {
-        return getManualTexture() != null;
+    public boolean isManualMeshMaterialsExists(int meshIndex) {
+        return getManualMeshMaterials() != null && getManualMeshMaterials().length > meshIndex;
     }
 
 }

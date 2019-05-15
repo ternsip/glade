@@ -5,6 +5,12 @@ in vec3 pass_normal;
 
 out vec4 out_colour;
 
+uniform bool                textureIsTexturePresent;
+uniform vec4                textureColor;
+uniform sampler2DArray      textureAtlasNumber;
+uniform int                 textureLayer;
+uniform vec2                textureMaxUV;
+
 uniform bool                diffuseMapIsTexturePresent;
 uniform vec4                diffuseMapColor;
 uniform sampler2DArray      diffuseMapAtlasNumber;
@@ -92,12 +98,14 @@ void main(void){
     vec3 unitLight = -normalize(lightDirection);// TODO REMOVE - (minus)
     float surfaceLight = max(dot(unitLight, unitNormal), 0.0);
 
+    vec4 texColor = getTextureColor(textureIsTexturePresent, textureAtlasNumber, pass_textureCoords, textureMaxUV, textureLayer, textureColor);
+
     vec4 diffuseTexColor = getTextureColor(diffuseMapIsTexturePresent, diffuseMapAtlasNumber, pass_textureCoords, diffuseMapMaxUV, diffuseMapLayer, diffuseMapColor);
     vec4 diffuseColor = diffuseTexColor * light_color * light_intensity * surfaceLight * 0.5;
 
     vec4 ambientTexColor = getTextureColor(ambientMapIsTexturePresent, ambientMapAtlasNumber, pass_textureCoords, ambientMapMaxUV, ambientMapLayer, ambientMapColor);
-    vec4 ambientColor = ambientTexColor * 0.25;
+    vec4 ambientColor = ambientTexColor * 0.7;
 
-    out_colour = diffuseColor + ambientColor;
+    out_colour = (diffuseColor + ambientColor) * texColor;
 
 }

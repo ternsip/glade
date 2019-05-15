@@ -51,9 +51,9 @@ public class AssimpLoader {
         for (int meshIndex = 0; meshIndex < aiSceneMesh.mNumMeshes(); meshIndex++) {
             AIMesh aiMesh = AIMesh.create(aiMeshes.get(meshIndex));
             int materialIdx = aiMesh.mMaterialIndex();
-            Material material = (materialIdx >= 0 && materialIdx < materials.length) ? materials[materialIdx] : new Material();
-            if (settings.isManualTextureExists()) {
-                material = new Material(settings.getManualTexture());
+            Material material = materialIdx < materials.length ? materials[materialIdx] : new Material();
+            if (settings.isManualMeshMaterialsExists(meshIndex)) {
+                material = settings.getManualMeshMaterials()[meshIndex];
             }
             int numVertices = aiMesh.mNumVertices();
             float[] vertices = process3DVector(aiMesh.mVertices());
@@ -220,6 +220,7 @@ public class AssimpLoader {
 
     @SneakyThrows
     private static Material processMaterial(AIMaterial aiMaterial, File texturesDir) {
+        Texture texture = processTexture(aiMaterial, aiTextureType_DIFFUSE, AI_MATKEY_COLOR_DIFFUSE, texturesDir);
         Texture diffuseMap = processTexture(aiMaterial, aiTextureType_DIFFUSE, AI_MATKEY_COLOR_DIFFUSE, texturesDir);
         Texture specularMap = processTexture(aiMaterial, aiTextureType_SPECULAR, AI_MATKEY_COLOR_SPECULAR, texturesDir);
         Texture ambientMap = processTexture(aiMaterial, aiTextureType_AMBIENT, AI_MATKEY_COLOR_AMBIENT, texturesDir);
@@ -231,7 +232,7 @@ public class AssimpLoader {
         Texture displacementMap = processTexture(aiMaterial, aiTextureType_DISPLACEMENT, "", texturesDir);
         Texture lightMap = processTexture(aiMaterial, aiTextureType_LIGHTMAP, "", texturesDir);
         Texture reflectionMap = processTexture(aiMaterial, aiTextureType_REFLECTION, AI_MATKEY_COLOR_REFLECTIVE, texturesDir);
-        return new Material(diffuseMap, specularMap, ambientMap, emissiveMap, heightMap, normalsMap, shininessMap, opacityMap, displacementMap, lightMap, reflectionMap);
+        return new Material(texture, diffuseMap, specularMap, ambientMap, emissiveMap, heightMap, normalsMap, shininessMap, opacityMap, displacementMap, lightMap, reflectionMap);
     }
 
     private static Texture processTexture(
@@ -248,8 +249,6 @@ public class AssimpLoader {
         Vector4f color = null;
         if (aiGetMaterialColor(aiMaterial, aiMaterialColor, aiTextureType_NONE, 0, aiColor4D) == 0) {
             color = new Vector4f(aiColor4D.r(), aiColor4D.g(), aiColor4D.b(), aiColor4D.a());
-            // TODO WHY IS THIS HAPPENS? THIS IS BUG (MODELS SHOULD NOT CONTAIN 1,1,1,1 colors
-            color = color.equals(new Vector4f(1, 1, 1, 1), 1f-3) ? new Vector4f(0, 0, 0, 0) : color;
         }
         return new Texture(color, file);
     }

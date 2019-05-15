@@ -42,6 +42,7 @@ public class AnimatedModelRenderer {
         OpenGlUtils.enableDepthTesting(true);
         DISPLAY_MANAGER.getTextureAtlas().bind();
         for (Mesh mesh : entity.getAnimator().getModel().getMeshes()) {
+            shader.getTexture().load(mesh.getMaterial().getTexture());
             shader.getDiffuseMap().load(mesh.getMaterial().getDiffuseMap());
             shader.getSpecularMap().load(mesh.getMaterial().getSpecularMap());
             shader.getAmbientMap().load(mesh.getMaterial().getAmbientMap());

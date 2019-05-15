@@ -1,14 +1,16 @@
 package com.ternsip.glade.universal;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
+import lombok.experimental.Wither;
 
 import java.io.File;
 
+@Wither
 @RequiredArgsConstructor
 @Getter
 public class Material {
 
+    private final Texture texture;
     private final Texture diffuseMap;
     private final Texture specularMap;
     private final Texture ambientMap;
@@ -33,13 +35,15 @@ public class Material {
                 new Texture(),
                 new Texture(),
                 new Texture(),
+                new Texture(),
                 new Texture()
         );
     }
 
-    public Material(File diffuseTexture) {
+    public Material(File texture) {
         this(
-                new Texture(diffuseTexture),
+                new Texture(texture),
+                new Texture(),
                 new Texture(),
                 new Texture(),
                 new Texture(),

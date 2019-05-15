@@ -4,10 +4,7 @@ import com.ternsip.glade.entity.Camera;
 import com.ternsip.glade.entity.Cube;
 import com.ternsip.glade.entity.Sun;
 import com.ternsip.glade.sky.SkyRenderer;
-import com.ternsip.glade.universal.AssimpLoader;
-import com.ternsip.glade.universal.Entity;
-import com.ternsip.glade.universal.Model;
-import com.ternsip.glade.universal.Settings;
+import com.ternsip.glade.universal.*;
 import org.joml.Vector3f;
 
 import java.io.File;
@@ -64,7 +61,16 @@ public class MasterRenderer {
         Model cubeModel = new Model(Cube.generateMesh());
         Entity entityCube = new Entity(cubeModel);
 
-        Model lampModel = AssimpLoader.loadModel(Settings.builder().meshFile(new File("models/lamp/crystal_lamp_ring.fbx")).build());
+        Material[] lampMaterials = new Material[]{
+                new Material()
+                        .withTexture(new Texture(new File("models/lamp/color.png")))
+                        .withDiffuseMap(new Texture(new File("models/lamp/Diffuse.png")))
+                        .withAmbientMap(new Texture(new File("models/lamp/ambient occlusion.png")))
+                        .withEmissiveMap(new Texture(new File("models/lamp/emissive.jpg")))
+                        .withSpecularMap(new Texture(new File("models/lamp/Specular.png")))
+                        .withNormalsMap(new Texture(new File("models/lamp/normal.png")))
+        };
+        Model lampModel = AssimpLoader.loadModel(Settings.builder().meshFile(new File("models/lamp/crystal_lamp_ring.fbx")).manualMeshMaterials(lampMaterials).build());
         Entity entityLamp = new Entity(lampModel);
         entityLamp.setPosition(new Vector3f(-60f, 0, -60));
         entityLamp.setScale(new Vector3f(0.05f, 0.05f, 0.05f));
@@ -88,7 +94,8 @@ public class MasterRenderer {
         entityHagreed.setScale(new Vector3f(0.25f, 0.25f, 0.25f));
         entityHagreed.setRotation(new Vector3f(0, 0, (float) (-Math.PI / 2))); // TODO BUG IF I PUT 180 ROTATION
 
-        Model spiderModel = AssimpLoader.loadModel(Settings.builder().meshFile(new File("models/spider/spider.dae")).manualTexture(new File("models/spider/Spinnen_Bein_tex_2.jpg")).build());
+        Material[] spiderMaterials = new Material[]{new Material().withDiffuseMap(new Texture(new File("models/spider/Spinnen_Bein_tex_2.jpg")))};
+        Model spiderModel = AssimpLoader.loadModel(Settings.builder().meshFile(new File("models/spider/spider.dae")).manualMeshMaterials(spiderMaterials).build());
         Entity entitySpider = new Entity(spiderModel);
         entitySpider.setPosition(new Vector3f(20f, 2, -20));
         entitySpider.setScale(new Vector3f(1, 1, 1));
@@ -100,7 +107,7 @@ public class MasterRenderer {
         entityWarrior.setScale(new Vector3f(10, 10, 10));
         entityWarrior.setRotation(new Vector3f(0, 0, (float) (-Math.PI / 2)));
 
-        Model dude2Model = AssimpLoader.loadModel(Settings.builder().meshFile(new File("models/dude/dude.3ds")).manualTexture(new File("models/dude/dude.png")).build());
+        Model dude2Model = AssimpLoader.loadModel(Settings.builder().meshFile(new File("models/dude/dude.3ds")).manualMeshMaterials((new Material[]{new Material(new File("models/dude/dude.png"))})).build());
         Entity entityDude2 = new Entity(dude2Model);
         entityDude2.setPosition(new Vector3f(-20f, 0, -20));
         entityDude2.setScale(new Vector3f(10f, 10f, 10f));
