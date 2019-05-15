@@ -1,8 +1,7 @@
 package com.ternsip.glade.universe;
 
-import com.ternsip.glade.entity.Camera;
-import com.ternsip.glade.entity.Player;
-import com.ternsip.glade.entity.Sun;
+import com.ternsip.glade.universe.common.Camera;
+import com.ternsip.glade.universe.common.Sun;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.impl.*;
 import lombok.Getter;
@@ -20,13 +19,13 @@ public class Universe {
     private Set<Entity> entities = new HashSet<>();
 
     private Sun sun;
-    private Player player;
+    private EntityPlayer entityPlayer;
     private Camera camera;
 
     public void initialize() {
         sun = new Sun(new Vector2f(0, 0), new Vector2f(20000, 20000), new Vector3f(1, 1, 1));
-        player = new Player();
-        camera = new Camera(player);
+        entityPlayer = new EntityPlayer();
+        camera = new Camera(entityPlayer);
 
         Entity entityCube = new EntityCube();
 
@@ -65,7 +64,7 @@ public class Universe {
         entityDude2.setScale(new Vector3f(10f, 10f, 10f));
         entityDude2.setRotation(new Vector3f(0, 0, (float) (-Math.PI / 2)));
 
-        UNIVERSE.getEntities().add(player);
+        UNIVERSE.getEntities().add(entityPlayer);
         UNIVERSE.getEntities().add(entityCube);
         UNIVERSE.getEntities().add(entityLamp);
         UNIVERSE.getEntities().add(entityDude2);
@@ -88,7 +87,7 @@ public class Universe {
     }
 
     public void update() {
-        player.move();
+        entityPlayer.move();
         camera.move();
         sun.move();
     }

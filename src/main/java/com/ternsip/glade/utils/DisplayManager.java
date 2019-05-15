@@ -1,7 +1,7 @@
 package com.ternsip.glade.utils;
 
-import com.ternsip.glade.universal.ModelRepository;
-import com.ternsip.glade.universal.TextureRepository;
+import com.ternsip.glade.graphics.general.ModelRepository;
+import com.ternsip.glade.graphics.general.TextureRepository;
 import lombok.Getter;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
