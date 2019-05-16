@@ -3,12 +3,7 @@ package com.ternsip.glade.utils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 
-/**
- * Useful class for updating OpenGL state, such as alpha blending, depth testing, etc.
- *
- * @author Karl
- */
-public class OpenGlUtils {
+public class OpenGlSettings {
 
     private static boolean cullingBackFace = false;
     private static boolean inWireframe = false;

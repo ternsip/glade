@@ -15,9 +15,13 @@ import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 @Setter
 public class Animator {
 
+    private static int UPDATE_INTERVAL_MILLISECONDS = 10;
+
     private final Model model;
     private AnimationFrames currentAnimationFrames;
     private float animationTime;
+    private Matrix4f[] boneTransforms = new Matrix4f[0];
+    private long lastUpdateMillis = 0;
 
     public Animator(Model model) {
         this.model = model;
@@ -35,12 +39,21 @@ public class Animator {
             return;
         }
         animationTime += DISPLAY_MANAGER.getDeltaTime();
-        if (animationTime > currentAnimationFrames.getLength()) {
-            this.animationTime %= currentAnimationFrames.getLength();
+        if (animationTime > currentAnimationFrames.getLengthSeconds()) {
+            this.animationTime %= currentAnimationFrames.getLengthSeconds();
         }
+        setBoneTransforms(calcBoneTransforms());
     }
 
     public Matrix4f[] getBoneTransforms() {
+        if (lastUpdateMillis + UPDATE_INTERVAL_MILLISECONDS < System.currentTimeMillis()) {
+            lastUpdateMillis = System.currentTimeMillis();
+            update();
+        }
+        return boneTransforms;
+    }
+
+    private Matrix4f[] calcBoneTransforms() {
         if (currentAnimationFrames == null) {
             return new Matrix4f[0];
         }

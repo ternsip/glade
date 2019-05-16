@@ -10,7 +10,7 @@ import java.util.Set;
 @Getter
 class AnimationFrames {
 
-    private final float length; // In seconds
+    private final float lengthSeconds;
     private final KeyFrame[] keyFrames;
 
     Set<String> findAllDistinctBonesNames() {

@@ -5,10 +5,8 @@ import com.ternsip.glade.graphics.renderer.base.Renderer;
 import com.ternsip.glade.graphics.shader.base.ShaderProgram;
 import com.ternsip.glade.graphics.shader.impl.EntityShader;
 import com.ternsip.glade.universe.entities.base.Entity;
-import com.ternsip.glade.utils.OpenGlUtils;
 import org.joml.Matrix4f;
 
-import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 import static com.ternsip.glade.Glade.UNIVERSE;
 
 @SuppressWarnings("unused")
@@ -33,10 +31,6 @@ public class EntityRenderer implements Renderer {
         shader.getLightDirection().load(UNIVERSE.getSun().getPosition().normalize().negate());
         shader.getBoneTransforms().load(boneTransforms);
         shader.getTransformationMatrix().load(entity.getTransformationMatrix());
-        OpenGlUtils.antialias(true); // TODO move to upper level
-        OpenGlUtils.disableBlending();
-        OpenGlUtils.enableDepthTesting(true);
-        DISPLAY_MANAGER.getTextureRepository().bind();
         for (Mesh mesh : entity.getAnimator().getModel().getMeshes()) {
             shader.getTextureMap().load(mesh.getMaterial().getTextureMap());
             shader.getDiffuseMap().load(mesh.getMaterial().getDiffuseMap());
@@ -53,7 +47,6 @@ public class EntityRenderer implements Renderer {
             mesh.render();
         }
         shader.stop();
-        entity.getAnimator().update();
     }
 
 }
