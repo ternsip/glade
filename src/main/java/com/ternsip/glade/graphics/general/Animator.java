@@ -19,33 +19,28 @@ public class Animator {
 
     private final Model model;
     private AnimationFrames currentAnimationFrames;
-    private float animationTime;
-    private Matrix4f[] boneTransforms = new Matrix4f[0];
-    private long lastUpdateMillis = 0;
+
+    // TODO add MIN VALUE = EPS 1f-6
+    private long animationStartMillis;
+    private Matrix4f[] boneTransforms;
+    private long lastUpdateMillis;
 
     public Animator(Model model) {
         this.model = model;
         this.currentAnimationFrames = model.getAnimation().getNameToAnimation().values().stream().findFirst().orElse(null);
-        this.animationTime = 0;
+        this.animationStartMillis = System.currentTimeMillis();
+        this.boneTransforms = new Matrix4f[0];
     }
 
     public void play(String animationName) {
-        this.animationTime = 0;
+        this.animationStartMillis = 0;
         this.currentAnimationFrames = model.getAnimation().getNameToAnimation().get(animationName);
     }
 
-    public void update() {
-        if (currentAnimationFrames == null) {
-            return;
-        }
-        animationTime += DISPLAY_MANAGER.getDeltaTime();
-        if (animationTime > currentAnimationFrames.getLengthSeconds()) {
-            this.animationTime %= currentAnimationFrames.getLengthSeconds();
-        }
-        setBoneTransforms(calcBoneTransforms());
-    }
-
     public Matrix4f[] getBoneTransforms() {
+        if (currentAnimationFrames == null || currentAnimationFrames.getKeyFrames().length == 0) {
+            return boneTransforms;
+        }
         if (lastUpdateMillis + UPDATE_INTERVAL_MILLISECONDS < System.currentTimeMillis()) {
             lastUpdateMillis = System.currentTimeMillis();
             update();
@@ -53,10 +48,11 @@ public class Animator {
         return boneTransforms;
     }
 
+    private void update() {
+        setBoneTransforms(calcBoneTransforms());
+    }
+
     private Matrix4f[] calcBoneTransforms() {
-        if (currentAnimationFrames == null) {
-            return new Matrix4f[0];
-        }
         Map<String, Matrix4f> currentPose = calculateCurrentAnimationPose();
         Stack<Map.Entry<Bone, Matrix4f>> dfsStack = new Stack<>();
         dfsStack.push(new AbstractMap.SimpleEntry<>(getModel().getAnimation().getRootBone(), new Matrix4f()));
@@ -79,22 +75,19 @@ public class Animator {
     }
 
     private Map<String, Matrix4f> calculateCurrentAnimationPose() {
-        KeyFrame[] allFrames = currentAnimationFrames.getKeyFrames();
-        KeyFrame previousFrame = allFrames[0];
-        KeyFrame nextFrame = allFrames[0];
-        for (int i = 1; i < allFrames.length; i++) {
-            nextFrame = allFrames[i];
-            if (nextFrame.getTimeStamp() > animationTime) {
-                break;
-            }
-            previousFrame = allFrames[i];
-        }
-        float totalTime = nextFrame.getTimeStamp() - previousFrame.getTimeStamp();
-        float currentTime = animationTime - previousFrame.getTimeStamp();
-        float progression = currentTime / totalTime;
+        float animationTimeDeltaSeconds = (System.currentTimeMillis() - animationStartMillis) / 1000f;
+        float animationTime = animationTimeDeltaSeconds % currentAnimationFrames.getLengthSeconds();
+        KeyFrame[] allFrames = getCurrentAnimationFrames().getKeyFrames();
+        float duration = getCurrentAnimationFrames().getLengthSeconds();
+        int frameNumber = allFrames.length;
+        float deltaTime = frameNumber == 1 ?  duration : (duration / (frameNumber - 1));
+        int frameIndex = (int)(animationTime / deltaTime);
+        KeyFrame currentFrame = allFrames[frameIndex];
+        KeyFrame nextFrame = allFrames[(frameIndex + 1) % frameNumber];
+        float progression = (animationTime % deltaTime) / deltaTime;
         Map<String, Matrix4f> currentPose = new HashMap<>();
-        for (String boneName : previousFrame.getBoneKeyFrames().keySet()) {
-            BoneTransform previousTransform = previousFrame.getBoneKeyFrames().get(boneName);
+        for (String boneName : currentFrame.getBoneKeyFrames().keySet()) {
+            BoneTransform previousTransform = currentFrame.getBoneKeyFrames().get(boneName);
             BoneTransform nextTransform = nextFrame.getBoneKeyFrames().get(boneName);
             BoneTransform currentTransform = BoneTransform.interpolate(previousTransform, nextTransform, progression);
             currentPose.put(boneName, currentTransform.getLocalTransform());

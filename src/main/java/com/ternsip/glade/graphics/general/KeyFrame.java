@@ -1,18 +1,14 @@
 package com.ternsip.glade.graphics.general;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
 
+@RequiredArgsConstructor
 @Getter
 class KeyFrame {
 
-    private final float timeStamp;
     private final Map<String, BoneTransform> boneKeyFrames;
-
-    KeyFrame(float timeStamp, Map<String, BoneTransform> boneKeyFrames) {
-        this.timeStamp = timeStamp;
-        this.boneKeyFrames = boneKeyFrames;
-    }
 
 }

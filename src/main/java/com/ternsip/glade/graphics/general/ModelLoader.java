@@ -123,13 +123,12 @@ public class ModelLoader {
             KeyFrame[] keyFrames = new KeyFrame[maxKeyFrameLength];
             float ticksPerSecond = (float) Math.max(aiAnimation.mTicksPerSecond(), 1.0);
             float duration = (float) aiAnimation.mDuration() / ticksPerSecond;
-            float deltaTime = maxKeyFrameLength == 1 ? duration : (duration / (maxKeyFrameLength - 1));
             for (int j = 0; j < keyFrames.length; ++j) {
                 Map<String, BoneTransform> localMap = new HashMap<>();
                 for (Map.Entry<String, List<BoneTransform>> entry : boneNameToTransforms.entrySet()) {
                     localMap.put(entry.getKey(), entry.getValue().get(j % entry.getValue().size()));
                 }
-                keyFrames[j] = new KeyFrame(deltaTime * j, localMap);
+                keyFrames[j] = new KeyFrame(localMap);
             }
 
             AnimationFrames animationFrames = new AnimationFrames(duration, keyFrames);

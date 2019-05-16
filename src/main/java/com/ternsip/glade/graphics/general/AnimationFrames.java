@@ -10,6 +10,7 @@ import java.util.Set;
 @Getter
 class AnimationFrames {
 
+    // TODO ADD RESTRICTION = MIN VALUE 0.1 CAN DEVISION BY ZERO!
     private final float lengthSeconds;
     private final KeyFrame[] keyFrames;
 
