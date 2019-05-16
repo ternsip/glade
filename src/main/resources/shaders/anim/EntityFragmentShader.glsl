@@ -54,6 +54,10 @@ void main(void){
     // Main texture color
     vec4 texColor = getTextureColor(textureMap, true);
 
+    if (texColor.a < 0.1){
+        discard;
+    }
+
     // Diffuse color
     vec4 diffuseTexColor = getTextureColor(diffuseMap, false);
     vec3 diffuseColor = diffuseTexColor.xyz * light_color * light_intensity * surfaceLight;
