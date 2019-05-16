@@ -4,6 +4,7 @@ import com.ternsip.glade.utils.Utils;
 import org.reflections.Reflections;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 public class MasterRenderer {
@@ -12,7 +13,12 @@ public class MasterRenderer {
 
     public void initialize() {
         Reflections reflections = new Reflections();
-        renders = reflections.getSubTypesOf(Renderer.class).stream().map(Utils::createInstanceSilently).collect(Collectors.toList());
+        renders = reflections
+                .getSubTypesOf(Renderer.class)
+                .stream()
+                .map(Utils::createInstanceSilently)
+                .sorted(Comparator.comparing(Renderer::getPriority))
+                .collect(Collectors.toList());
     }
 
     public void render() {

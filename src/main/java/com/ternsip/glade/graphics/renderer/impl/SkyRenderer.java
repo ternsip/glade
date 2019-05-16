@@ -79,4 +79,9 @@ public class SkyRenderer implements Renderer {
         skyBox.finish();
     }
 
+    @Override
+    public int getPriority() {
+        return 0;
+    }
+
 }

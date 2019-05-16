@@ -64,6 +64,11 @@ public class Universe {
         entityDude2.setScale(new Vector3f(10f, 10f, 10f));
         entityDude2.setRotation(new Vector3f(0, 0, (float) (-Math.PI / 2)));
 
+        EntityText entityText = new EntityText();
+        entityText.setScale(new Vector3f(10f, 10, 10));
+        entityText.setRotation(new Vector3f(0, (float) (-Math.PI - 0.01), 0));
+
+        UNIVERSE.getEntities().add(entityText);
         UNIVERSE.getEntities().add(entityPlayer);
         UNIVERSE.getEntities().add(entityCube);
         UNIVERSE.getEntities().add(entityLamp);

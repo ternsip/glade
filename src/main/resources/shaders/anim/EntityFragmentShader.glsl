@@ -12,7 +12,7 @@ struct TextureData {
 in vec2 pass_textureCoords;
 in vec3 pass_normal;
 
-out vec4 out_colour;
+layout(location = 0, index = 0) out vec4 out_colour;
 
 uniform TextureData textureMap;
 uniform TextureData diffuseMap;

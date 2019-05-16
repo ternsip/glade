@@ -22,6 +22,11 @@ public class EntityRenderer implements Renderer {
         shader.finish();
     }
 
+    @Override
+    public int getPriority() {
+        return 1;
+    }
+
     private void render(Entity entity) {
         shader.start();
         Matrix4f[] boneTransforms = entity.getAnimator().getBoneTransforms();

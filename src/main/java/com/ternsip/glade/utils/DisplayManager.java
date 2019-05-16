@@ -13,6 +13,8 @@ import java.util.ArrayList;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL13.GL_MULTISAMPLE;
+import static org.lwjgl.opengl.GL13.GL_SAMPLE_ALPHA_TO_COVERAGE;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 @Getter
@@ -64,9 +66,11 @@ public class DisplayManager {
         OpenGlSettings.enableDepthTesting(true);
         OpenGlSettings.goWireframe(false);
 
+        //glEnable(GL_ALPHA_TEST);
         glEnable(GL_DEPTH_TEST);
+        glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
+        glEnable(GL_MULTISAMPLE);
         glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
         glClearColor(BACKGROUND_COLOR.x(), BACKGROUND_COLOR.y(), BACKGROUND_COLOR.z(), 1);
 
         glViewport(0, 0, getWidth(), getHeight());

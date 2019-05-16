@@ -5,6 +5,7 @@ import com.ternsip.glade.universe.Universe;
 import com.ternsip.glade.utils.DisplayManager;
 
 // TODO TURN ALL Vectors and Matrixes and Quaternions to constant interface (quatenrionfc/matrixfc)]
+// TODO Implement LOD
 public class Glade {
 
     public static final DisplayManager DISPLAY_MANAGER = new DisplayManager();

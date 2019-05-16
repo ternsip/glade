@@ -123,7 +123,7 @@ public class Utils {
     }
 
     @SneakyThrows
-    public static ByteBuffer ioResourceToByteBuffer(File file) {
+    public static ByteBuffer loadResourceToByteBuffer(File file) {
         return arrayToBuffer(loadResourceAsByteArray(file));
     }
 
