@@ -27,7 +27,6 @@ public class Glade {
         DISPLAY_MANAGER.loop(() -> {
             UNIVERSE.update();
             MASTER_RENDERER.render();
-
         });
 
         UNIVERSE.finish();

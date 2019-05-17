@@ -1,6 +1,5 @@
 package com.ternsip.glade.utils;
 
-import com.ternsip.glade.graphics.general.ModelRepository;
 import com.ternsip.glade.graphics.general.TextureRepository;
 import lombok.Getter;
 import org.joml.Vector2i;
@@ -24,7 +23,6 @@ public class DisplayManager {
     private static final int FPS_CAP = 120;
     private ArrayList<Callback> callbacks = new ArrayList<>();
     private TextureRepository textureRepository;
-    private ModelRepository modelRepository;
     private long lastFrameTime;
     private float deltaTime;
     private float fps;
@@ -79,9 +77,6 @@ public class DisplayManager {
         textureRepository = new TextureRepository();
         textureRepository.bind();
 
-        modelRepository = new ModelRepository();
-        modelRepository.loadAllModels();
-
         registerCloser();
 
         lastFrameTime = getCurrentTime();
@@ -105,8 +100,6 @@ public class DisplayManager {
     }
 
     public void finish() {
-
-        modelRepository.finish();
 
         textureRepository.unbind();
         textureRepository.finish();

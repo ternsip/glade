@@ -3,26 +3,25 @@ package com.ternsip.glade.universe;
 import com.ternsip.glade.universe.common.Camera;
 import com.ternsip.glade.universe.common.Sun;
 import com.ternsip.glade.universe.entities.base.Entity;
+import com.ternsip.glade.universe.entities.base.EntityRepository;
 import com.ternsip.glade.universe.entities.impl.*;
 import lombok.Getter;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import static com.ternsip.glade.Glade.UNIVERSE;
+import java.io.File;
 
 @Getter
 public class Universe {
 
-    private Set<Entity> entities = new HashSet<>();
+    private EntityRepository entityRepository = new EntityRepository();
 
     private Sun sun;
     private EntityPlayer entityPlayer;
     private Camera camera;
 
     public void initialize() {
+
         sun = new Sun(new Vector2f(0, 0), new Vector2f(20000, 20000), new Vector3f(1, 1, 1));
         entityPlayer = new EntityPlayer();
         camera = new Camera(entityPlayer);
@@ -64,20 +63,9 @@ public class Universe {
         entityDude2.setScale(new Vector3f(10f, 10f, 10f));
         entityDude2.setRotation(new Vector3f(0, 0, (float) (-Math.PI / 2)));
 
-        EntityText entityText = new EntityText();
+        EntityText entityText = new EntityText(new File("fonts/default.png"));
         entityText.setScale(new Vector3f(10f, 10, 10));
         entityText.setRotation(new Vector3f(0, (float) (-Math.PI - 0.01), 0));
-
-        UNIVERSE.getEntities().add(entityText);
-        UNIVERSE.getEntities().add(entityPlayer);
-        UNIVERSE.getEntities().add(entityCube);
-        UNIVERSE.getEntities().add(entityLamp);
-        UNIVERSE.getEntities().add(entityDude2);
-        UNIVERSE.getEntities().add(entityZebra);
-        UNIVERSE.getEntities().add(entityBottle);
-        UNIVERSE.getEntities().add(entitySpider);
-        UNIVERSE.getEntities().add(entityHagrid);
-        UNIVERSE.getEntities().add(entityWarrior);
 
         for (int i = 0; i < 10; ++i) {
             for (int j = 0; j < 10; ++j) {
@@ -85,7 +73,6 @@ public class Universe {
                 entity.setPosition(new Vector3f(20f + 10 * i, 2, 2 + 10 * j));
                 entity.setScale(new Vector3f(0.25f, 0.25f, 0.25f));
                 entity.setRotation(new Vector3f(0, 0, (float) (-Math.PI / 2)));
-                UNIVERSE.getEntities().add(entity);
             }
         }
 
@@ -98,6 +85,6 @@ public class Universe {
     }
 
     public void finish() {
-
+        entityRepository.finish();
     }
 }

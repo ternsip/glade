@@ -15,7 +15,7 @@ public class EntityRenderer implements Renderer {
     private EntityShader shader = ShaderProgram.createShader(EntityShader.class);
 
     public void render() {
-        UNIVERSE.getEntities().forEach(this::render);
+        UNIVERSE.getEntityRepository().getEntities().forEach(this::render);
     }
 
     public void finish() {
