@@ -18,7 +18,6 @@ import static org.lwjgl.assimp.Assimp.*;
 
 public class ModelLoader {
 
-
     @SneakyThrows
     public static Model loadModel(Settings settings) {
         AIScene aiSceneMesh = loadResourceAsAssimp(settings.getMeshFile(), settings.getAssimpFlags());

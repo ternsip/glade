@@ -6,7 +6,6 @@ import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.general.Texture;
 import com.ternsip.glade.universe.entities.base.Entity;
-import org.joml.Vector4f;
 
 import java.io.File;
 

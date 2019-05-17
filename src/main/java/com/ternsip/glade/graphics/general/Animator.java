@@ -4,12 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.joml.Matrix4f;
 
-import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Stack;
-
-import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 
 @Getter
 @Setter
@@ -19,8 +15,6 @@ public class Animator {
 
     private final Model model;
     private AnimationFrames currentAnimationFrames;
-
-    // TODO add MIN VALUE = EPS 1f-6
     private long animationStartMillis;
     private Matrix4f[] boneTransforms;
     private long lastUpdateMillis;
@@ -54,20 +48,18 @@ public class Animator {
 
     private Matrix4f[] calcBoneTransforms() {
         Map<String, Matrix4f> currentPose = calculateCurrentAnimationPose();
-        Stack<Map.Entry<Bone, Matrix4f>> dfsStack = new Stack<>();
-        dfsStack.push(new AbstractMap.SimpleEntry<>(getModel().getAnimation().getRootBone(), new Matrix4f()));
         Matrix4f[] boneMatrices = new Matrix4f[getModel().getAnimation().getBiggestBoneIndex() + 1];
-        while (!dfsStack.isEmpty()) {
-            Map.Entry<Bone, Matrix4f> topPath = dfsStack.pop();
-            Bone bone = topPath.getKey();
-            Matrix4f parentTransform = topPath.getValue();
+        Animation.BoneIndexData[] boneIndexData = getModel().getAnimation().getBoneIndexDataTopologicallySorted();
+        Matrix4f[] parentTransforms = new Matrix4f[boneIndexData.length];
+        for (int i = 0; i < boneIndexData.length; ++i) {
+            Bone bone = boneIndexData[i].getBone();
+            int parentBoneOrder = boneIndexData[i].getParentBoneOrder();
+            Matrix4f parentTransform = parentBoneOrder < 0 ? new Matrix4f() : parentTransforms[parentBoneOrder];
             Matrix4f currentLocalTransform = currentPose.getOrDefault(bone.getName(), new Matrix4f());
             Matrix4f currentTransform = parentTransform.mul(currentLocalTransform, new Matrix4f());
-            for (Bone childBone : bone.getChildren()) {
-                dfsStack.add(new AbstractMap.SimpleEntry<>(childBone, new Matrix4f(currentTransform)));
-            }
-            currentTransform.mul(bone.getInverseBindTransform(), currentTransform);
+            parentTransforms[i] = new Matrix4f(currentTransform);
             if (bone.getIndex() >= 0) {
+                currentTransform.mul(bone.getInverseBindTransform(), currentTransform);
                 boneMatrices[bone.getIndex()] = currentTransform;
             }
         }
@@ -78,10 +70,10 @@ public class Animator {
         float animationTimeDeltaSeconds = (System.currentTimeMillis() - animationStartMillis) / 1000f;
         float animationTime = animationTimeDeltaSeconds % currentAnimationFrames.getLengthSeconds();
         KeyFrame[] allFrames = getCurrentAnimationFrames().getKeyFrames();
-        float duration = getCurrentAnimationFrames().getLengthSeconds();
+        float duration = Math.max(0.1f, getCurrentAnimationFrames().getLengthSeconds());
         int frameNumber = allFrames.length;
-        float deltaTime = frameNumber == 1 ?  duration : (duration / (frameNumber - 1));
-        int frameIndex = (int)(animationTime / deltaTime);
+        float deltaTime = frameNumber == 1 ? duration : (duration / (frameNumber - 1));
+        int frameIndex = Math.max(0, (int) (animationTime / deltaTime));
         KeyFrame currentFrame = allFrames[frameIndex];
         KeyFrame nextFrame = allFrames[(frameIndex + 1) % frameNumber];
         float progression = (animationTime % deltaTime) / deltaTime;

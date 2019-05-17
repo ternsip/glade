@@ -1,8 +1,6 @@
 package com.ternsip.glade.graphics.shader.impl;
 
 import com.ternsip.glade.graphics.shader.base.ShaderProgram;
-import com.ternsip.glade.graphics.shader.uniforms.UniformMatrix4;
-import com.ternsip.glade.graphics.shader.uniforms.UniformVec3;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

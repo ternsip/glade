@@ -67,6 +67,7 @@ public class DisplayManager {
         OpenGlSettings.goWireframe(false);
 
         //glEnable(GL_ALPHA_TEST);
+        //glAlphaFunc(GL_GREATER, 0.1f)
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
         glEnable(GL_MULTISAMPLE);

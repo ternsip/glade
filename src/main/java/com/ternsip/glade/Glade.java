@@ -1,11 +1,14 @@
 package com.ternsip.glade;
 
+import com.ternsip.glade.graphics.general.AnimationFrames;
 import com.ternsip.glade.graphics.renderer.base.MasterRenderer;
 import com.ternsip.glade.universe.Universe;
 import com.ternsip.glade.utils.DisplayManager;
 
 // TODO TURN ALL Vectors and Matrixes and Quaternions to constant interface (quatenrionfc/matrixfc)]
 // TODO Implement LOD
+// TODO blending
+// TODO render entities only in frustrum, ADD normalize entities size, use entities radius
 public class Glade {
 
     public static final DisplayManager DISPLAY_MANAGER = new DisplayManager();
@@ -13,6 +16,8 @@ public class Glade {
     public static final MasterRenderer MASTER_RENDERER = new MasterRenderer();
 
     public static void main(String[] args) {
+
+        AnimationFrames animationFrames = new AnimationFrames(0, null);
 
         DISPLAY_MANAGER.initialize();
         UNIVERSE.initialize();

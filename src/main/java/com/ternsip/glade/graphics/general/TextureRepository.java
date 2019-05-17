@@ -5,21 +5,14 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.joml.Vector2f;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.stb.STBTTBakedChar;
 
-import java.awt.*;
-import java.awt.font.FontRenderContext;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.ternsip.glade.utils.Utils.arrayToBuffer;
 import static com.ternsip.glade.utils.Utils.loadResourceToByteBuffer;
-import static com.ternsip.glade.utils.Utils.loadResourceAsByteArray;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12C.glTexSubImage3D;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
@@ -28,8 +21,6 @@ import static org.lwjgl.opengl.GL30.GL_TEXTURE_2D_ARRAY;
 import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 import static org.lwjgl.opengl.GL42.glTexStorage3D;
 import static org.lwjgl.stb.STBImage.stbi_load_from_memory;
-import static org.lwjgl.stb.STBImageWrite.stbi_write_png;
-import static org.lwjgl.stb.STBTruetype.stbtt_BakeFontBitmap;
 
 public class TextureRepository {
 
