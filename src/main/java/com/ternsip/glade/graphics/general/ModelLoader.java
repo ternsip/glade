@@ -95,7 +95,7 @@ public class ModelLoader {
             Bone childBone = createBones(aiChildNode, bindTransform, skeleton, allPossibleBoneNames);
             children.add(childBone);
         }
-        return new Bone(boneIndex, boneName, children, localBindTransform, inverseBindTransform);
+        return new Bone(boneIndex, boneName, children, inverseBindTransform);
     }
 
     private static Map<String, AnimationFrames> buildAnimations(AIScene aiScene) {

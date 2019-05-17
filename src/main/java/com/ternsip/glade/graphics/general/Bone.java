@@ -16,14 +16,12 @@ class Bone {
     private final int index;
     private final String name;
     private final List<Bone> children;
-    private final Matrix4f localBindTransform;
     private final Matrix4f inverseBindTransform;
 
     Bone() {
         this.index = -1;
         this.name = "";
         this.children = Collections.emptyList();
-        this.localBindTransform = new Matrix4f();
         this.inverseBindTransform = new Matrix4f();
     }
 
