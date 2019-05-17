@@ -11,8 +11,6 @@ import java.util.Map;
 @Setter
 public class Animator {
 
-    private static int UPDATE_INTERVAL_MILLISECONDS = 10;
-
     private final Model model;
     private AnimationFrames currentAnimationFrames;
     private long animationStartMillis;
@@ -31,19 +29,14 @@ public class Animator {
         this.currentAnimationFrames = model.getAnimation().getNameToAnimation().get(animationName);
     }
 
-    public Matrix4f[] getBoneTransforms() {
+    public void update(long updateIntervalMilliseconds) {
         if (currentAnimationFrames == null || currentAnimationFrames.getKeyFrames().length == 0) {
-            return boneTransforms;
+            return;
         }
-        if (lastUpdateMillis + UPDATE_INTERVAL_MILLISECONDS < System.currentTimeMillis()) {
+        if (lastUpdateMillis + updateIntervalMilliseconds < System.currentTimeMillis()) {
             lastUpdateMillis = System.currentTimeMillis();
-            update();
+            setBoneTransforms(calcBoneTransforms());
         }
-        return boneTransforms;
-    }
-
-    private void update() {
-        setBoneTransforms(calcBoneTransforms());
     }
 
     private Matrix4f[] calcBoneTransforms() {

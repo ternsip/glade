@@ -5,7 +5,10 @@ import com.ternsip.glade.graphics.renderer.base.Renderer;
 import com.ternsip.glade.graphics.shader.base.ShaderProgram;
 import com.ternsip.glade.graphics.shader.impl.EntityShader;
 import com.ternsip.glade.universe.entities.base.Entity;
+import com.ternsip.glade.utils.Maths;
 import org.joml.Matrix4f;
+import org.joml.Vector4f;
+import org.joml.Vector4fc;
 
 import static com.ternsip.glade.Glade.UNIVERSE;
 
@@ -28,7 +31,11 @@ public class EntityRenderer implements Renderer {
     }
 
     private void render(Entity entity) {
+        if (!isEntityInsideFrustum(entity)) {
+            return;
+        }
         shader.start();
+        entity.getAnimator().update(getUpdateIntervalMilliseconds(entity));
         Matrix4f[] boneTransforms = entity.getAnimator().getBoneTransforms();
         shader.getAnimated().load(boneTransforms.length > 0);
         shader.getProjectionMatrix().load(UNIVERSE.getCamera().getProjectionMatrix());
@@ -52,6 +59,23 @@ public class EntityRenderer implements Renderer {
             mesh.render();
         }
         shader.stop();
+    }
+
+    private boolean isEntityInsideFrustum(Entity entity) {
+        Vector4fc pClip = Maths.mul(UNIVERSE.getCamera().getProjectionViewMatrix(), new Vector4f(entity.getPosition(), 1));
+        return Math.abs(pClip.x()) < pClip.w() && Math.abs(pClip.y()) < pClip.w() && 0 < pClip.z() && pClip.z() < pClip.w();
+    }
+
+    private long getUpdateIntervalMilliseconds(Entity entity) {
+        float maxScale = Math.max(Math.max(entity.getScale().x(), entity.getScale().y()), entity.getScale().z());
+        double criterion = UNIVERSE.getCamera().getPosition().distance(entity.getPosition()) / maxScale;
+        if (criterion < 1000) {
+            return 1;
+        }
+        if (criterion > 20000) {
+            return 10000000L;
+        }
+        return (long) (criterion / 100);
     }
 
 }

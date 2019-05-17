@@ -44,9 +44,7 @@ public class DisplayManager {
         }
 
         registerFrameBufferSizeCallback(((window, width, height) -> {
-            windowSize = new Vector2i(width, height);
-            ratio = (float) windowSize.x() / windowSize.y();
-            glViewport(0, 0, getWidth(), getHeight());
+            handeResize(width, height);
         }));
         glfwSetWindowPos(window, (int) (mainDisplaySize.x() * 0.1), (int) (mainDisplaySize.y() * 0.1));
 
@@ -72,7 +70,7 @@ public class DisplayManager {
         glEnable(GL_CULL_FACE);
         glClearColor(BACKGROUND_COLOR.x(), BACKGROUND_COLOR.y(), BACKGROUND_COLOR.z(), 1);
 
-        glViewport(0, 0, getWidth(), getHeight());
+        handeResize(getWidth(), getHeight());
 
         textureRepository = new TextureRepository();
         textureRepository.bind();
@@ -80,6 +78,12 @@ public class DisplayManager {
         registerCloser();
 
         lastFrameTime = getCurrentTime();
+    }
+
+    private void handeResize(int width, int height) {
+        windowSize = new Vector2i(width, height);
+        ratio = (float) windowSize.x() / windowSize.y();
+        glViewport(0, 0, getWidth(), getHeight());
     }
 
     public void loop(Runnable runnable) {

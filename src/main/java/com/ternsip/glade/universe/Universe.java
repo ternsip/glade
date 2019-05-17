@@ -67,8 +67,8 @@ public class Universe {
         entityText.setScale(new Vector3f(10f, 10, 10));
         entityText.setRotation(new Vector3f(0, (float) (-Math.PI - 0.01), 0));
 
-        for (int i = 0; i < 10; ++i) {
-            for (int j = 0; j < 10; ++j) {
+        for (int i = 0; i < 100; ++i) {
+            for (int j = 0; j < 100; ++j) {
                 Entity entity = new EntityHagrid();
                 entity.setPosition(new Vector3f(20f + 10 * i, 2, 2 + 10 * j));
                 entity.setScale(new Vector3f(0.25f, 0.25f, 0.25f));

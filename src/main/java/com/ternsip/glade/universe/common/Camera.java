@@ -1,5 +1,6 @@
 package com.ternsip.glade.universe.common;
 
+import com.ternsip.glade.graphics.renderer.impl.SkyRenderer;
 import com.ternsip.glade.universe.entities.impl.EntityPlayer;
 import lombok.Getter;
 import org.joml.Matrix4f;
@@ -12,9 +13,9 @@ import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1;
 @Getter
 public class Camera {
 
-    private static final float FOV = 100;
+    private static final float FOV = 120;
     private static final float NEAR_PLANE = 0.1f;
-    private static final float FAR_PLANE = 1000;
+    private static final float FAR_PLANE = 6000;
 
     private Matrix4f projectionMatrix;
 
@@ -56,7 +57,8 @@ public class Camera {
     }
 
     public static Matrix4f createProjectionMatrix() {
-        float aspectRatio = (float) DISPLAY_MANAGER.getWidth() / (float) DISPLAY_MANAGER.getHeight();
+        //new Matrix4f().perspective(FOV, DISPLAY_MANAGER.getRatio(), NEAR_PLANE, FAR_PLANE).rotate((float) Math.PI, 0, 0, 1);
+        float aspectRatio = DISPLAY_MANAGER.getRatio();
         float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))) * aspectRatio);
         float x_scale = y_scale / aspectRatio;
         float frustum_length = FAR_PLANE - NEAR_PLANE;
@@ -67,6 +69,26 @@ public class Camera {
         matrix.m22(-((FAR_PLANE + NEAR_PLANE) / frustum_length));
         matrix.m23(-1);
         matrix.m32(-((2 * NEAR_PLANE * FAR_PLANE) / frustum_length));
+        matrix.m33(0);
+
+        return matrix;
+    }
+
+    // TODO deal with that dupe
+    public static Matrix4f createProjectionMatrixForSky() {
+        //new Matrix4f().perspective(FOV, DISPLAY_MANAGER.getRatio(), NEAR_PLANE, FAR_PLANE).rotate((float) Math.PI, 0, 0, 1);
+        float farPlane = SkyRenderer.SIZE * 2;
+        float aspectRatio = DISPLAY_MANAGER.getRatio();
+        float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))) * aspectRatio);
+        float x_scale = y_scale / aspectRatio;
+        float frustum_length = farPlane - NEAR_PLANE;
+
+        Matrix4f matrix = new Matrix4f();
+        matrix.m00(x_scale);
+        matrix.m11(y_scale);
+        matrix.m22(-((farPlane + NEAR_PLANE) / frustum_length));
+        matrix.m23(-1);
+        matrix.m32(-((2 * NEAR_PLANE * farPlane) / frustum_length));
         matrix.m33(0);
 
         return matrix;

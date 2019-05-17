@@ -1,9 +1,8 @@
 package com.ternsip.glade.utils;
 
-import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-import org.joml.Quaternionfc;
-import org.joml.Vector3f;
+import org.joml.*;
+
+import java.lang.Math;
 
 public class Maths {
 
@@ -93,6 +92,15 @@ public class Maths {
                 blendI * a.z() + blend * b.z(),
                 blendI * a.w() + blend * b.w()
         ).normalize();
+    }
+
+    public static Vector4fc mul(Matrix4fc mat, Vector4fc vec) {
+        return new Vector4f(
+                vec.x() * mat.m00() + vec.y() * mat.m10() + vec.z() * mat.m20() + vec.w() * mat.m30(),
+                vec.x() * mat.m01() + vec.y() * mat.m11() + vec.z() * mat.m21() + vec.w() * mat.m31(),
+                vec.x() * mat.m02() + vec.y() * mat.m12() + vec.z() * mat.m22() + vec.w() * mat.m32(),
+                vec.x() * mat.m03() + vec.y() * mat.m13() + vec.z() * mat.m23() + vec.w() * mat.m33()
+        );
     }
 
 }
