@@ -15,8 +15,6 @@ public class Glade {
 
     public static void main(String[] args) {
 
-        AnimationFrames animationFrames = new AnimationFrames(0, null);
-
         DISPLAY_MANAGER.initialize();
         UNIVERSE.initialize();
         MASTER_RENDERER.initialize();
