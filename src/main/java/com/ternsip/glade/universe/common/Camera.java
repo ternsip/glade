@@ -15,9 +15,10 @@ public class Camera {
 
     private static final float FOV = 120;
     private static final float NEAR_PLANE = 0.1f;
-    private static final float FAR_PLANE = 6000;
+    private static final float FAR_PLANE = 1000;
 
-    private Matrix4f projectionMatrix;
+    private Matrix4f entityProjectionMatrix = createProjectionMatrix(FAR_PLANE);
+    private Matrix4f skyProjectionMatrix = createProjectionMatrix(SkyRenderer.SIZE * 2);
 
     private float distanceFromRover = 60;
     private float angleAroundRover = 0;
@@ -30,10 +31,15 @@ public class Camera {
     private EntityPlayer entityPlayer;
 
     public Camera(EntityPlayer entityPlayer) {
-        this.projectionMatrix = createProjectionMatrix();
         this.entityPlayer = entityPlayer;
         DISPLAY_MANAGER.registerScrollCallback(((window, xoffset, yoffset) -> {
             recalculateZoom((float) yoffset);
+        }));
+
+        DISPLAY_MANAGER.registerFrameBufferSizeCallback(((window, width, height) -> {
+            // TODO BUG
+            entityProjectionMatrix = createProjectionMatrix(FAR_PLANE);
+            skyProjectionMatrix = createProjectionMatrix(SkyRenderer.SIZE * 2);
         }));
 
         DISPLAY_MANAGER.registerCursorPosCallback((new GLFWCursorPosCallbackI() {
@@ -56,31 +62,12 @@ public class Camera {
 
     }
 
-    public static Matrix4f createProjectionMatrix() {
+    public static Matrix4f createProjectionMatrix(float viewDistance) {
         //new Matrix4f().perspective(FOV, DISPLAY_MANAGER.getRatio(), NEAR_PLANE, FAR_PLANE).rotate((float) Math.PI, 0, 0, 1);
         float aspectRatio = DISPLAY_MANAGER.getRatio();
         float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))) * aspectRatio);
         float x_scale = y_scale / aspectRatio;
-        float frustum_length = FAR_PLANE - NEAR_PLANE;
-
-        Matrix4f matrix = new Matrix4f();
-        matrix.m00(x_scale);
-        matrix.m11(y_scale);
-        matrix.m22(-((FAR_PLANE + NEAR_PLANE) / frustum_length));
-        matrix.m23(-1);
-        matrix.m32(-((2 * NEAR_PLANE * FAR_PLANE) / frustum_length));
-        matrix.m33(0);
-
-        return matrix;
-    }
-
-    // TODO deal with that dupe
-    public static Matrix4f createProjectionMatrixForSky() {
-        //new Matrix4f().perspective(FOV, DISPLAY_MANAGER.getRatio(), NEAR_PLANE, FAR_PLANE).rotate((float) Math.PI, 0, 0, 1);
-        float farPlane = SkyRenderer.SIZE * 2;
-        float aspectRatio = DISPLAY_MANAGER.getRatio();
-        float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))) * aspectRatio);
-        float x_scale = y_scale / aspectRatio;
+        float farPlane = viewDistance;
         float frustum_length = farPlane - NEAR_PLANE;
 
         Matrix4f matrix = new Matrix4f();
@@ -187,7 +174,7 @@ public class Camera {
     }
 
     public Matrix4f getProjectionViewMatrix() {
-        return projectionMatrix.mul(createViewMatrix(), new Matrix4f());
+        return entityProjectionMatrix.mul(createViewMatrix(), new Matrix4f());
     }
 
 }

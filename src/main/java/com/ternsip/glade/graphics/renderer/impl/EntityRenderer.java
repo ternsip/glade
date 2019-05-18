@@ -44,9 +44,9 @@ public class EntityRenderer implements Renderer {
         entity.getAnimator().update(getUpdateIntervalMilliseconds(entity));
         Matrix4f[] boneTransforms = entity.getAnimator().getBoneTransforms();
         shader.getAnimated().load(boneTransforms.length > 0);
-        shader.getProjectionMatrix().load(UNIVERSE.getCamera().getProjectionMatrix());
+        shader.getProjectionMatrix().load(UNIVERSE.getCamera().getEntityProjectionMatrix());
         shader.getViewMatrix().load(UNIVERSE.getCamera().createViewMatrix());
-        shader.getLightDirection().load(UNIVERSE.getSun().getPosition().normalize().negate());
+        shader.getLightDirection().load(UNIVERSE.getSun().getPosition().normalize());
         shader.getBoneTransforms().load(boneTransforms);
         shader.getTransformationMatrix().load(entity.getTransformationMatrix());
         for (Mesh mesh : entity.getAnimator().getModel().getMeshes()) {

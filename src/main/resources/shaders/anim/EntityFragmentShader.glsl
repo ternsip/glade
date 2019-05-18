@@ -27,6 +27,7 @@ uniform TextureData displacementMap;
 uniform TextureData lightMap;
 uniform TextureData reflectionMap;
 
+// In fact it's light position normalized
 uniform vec3 lightDirection;
 
 vec4 getTextureColor(TextureData textureData, bool mainTexture) {

@@ -63,7 +63,7 @@ public class SkyRenderer implements Renderer {
 
     public SkyRenderer() {
         skyboxShader.start();
-        skyboxShader.getProjectionMatrix().load(Camera.createProjectionMatrixForSky());
+        skyboxShader.getProjectionMatrix().load(UNIVERSE.getCamera().getSkyProjectionMatrix());
         skyboxShader.stop();
     }
 

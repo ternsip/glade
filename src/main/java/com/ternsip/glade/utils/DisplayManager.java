@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_MULTISAMPLE;
-import static org.lwjgl.opengl.GL13.GL_SAMPLE_ALPHA_TO_COVERAGE;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 @Getter
@@ -44,6 +43,7 @@ public class DisplayManager {
         }
 
         registerFrameBufferSizeCallback(((window, width, height) -> {
+            // TODO SUPER CRITICAL (REGISTRATING IN ONLY ONE PLACE) !!! DO MULTI REG POSSIBLE
             handeResize(width, height);
         }));
         glfwSetWindowPos(window, (int) (mainDisplaySize.x() * 0.1), (int) (mainDisplaySize.y() * 0.1));
@@ -62,10 +62,8 @@ public class DisplayManager {
         OpenGlSettings.enableDepthTesting(true);
         OpenGlSettings.goWireframe(false);
 
-        //glEnable(GL_ALPHA_TEST);
-        //glAlphaFunc(GL_GREATER, 0.1f)
         glEnable(GL_DEPTH_TEST);
-        glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
+        //glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
         glEnable(GL_MULTISAMPLE);
         glEnable(GL_CULL_FACE);
         glClearColor(BACKGROUND_COLOR.x(), BACKGROUND_COLOR.y(), BACKGROUND_COLOR.z(), 1);
@@ -97,6 +95,7 @@ public class DisplayManager {
             deltaTime = (currentFrameTime - lastFrameTime) / 1000f;
             fps = 1 / deltaTime;
             lastFrameTime = currentFrameTime;
+            //System.out.println(deltaTime);
 
             glfwSwapBuffers(window);
             glfwPollEvents();
