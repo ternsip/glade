@@ -7,7 +7,7 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class EntityPlayer extends EntityBoy {
 
-    private static final float RUN_SPEED = 400;
+    private static final float RUN_SPEED = 90;
     private static final float TURN_SPEED = 2.0f;
     private static final float GRAVITY = -20;
 

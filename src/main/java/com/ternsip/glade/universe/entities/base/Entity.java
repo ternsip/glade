@@ -24,7 +24,7 @@ public abstract class Entity {
     }
 
     public Matrix4f getTransformationMatrix() {
-        Vector3fc totalScale = getScale().div(getAnimator().getModel().getInternalSize(), new Vector3f());
+        Vector3fc totalScale = getAdjustedScale().div(getAnimator().getModel().getInternalSize(), new Vector3f());
         return Maths.createTransformationMatrix(getPosition(), Maths.getRotationQuaternion(getRotation()), totalScale);
     }
 
@@ -52,6 +52,10 @@ public abstract class Entity {
 
     protected boolean isModelUnique() {
         return false;
+    }
+
+    public Vector3fc getAdjustedScale() {
+        return getScale();
     }
 
 }

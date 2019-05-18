@@ -64,12 +64,16 @@ public class Universe {
         entityDude2.setScale(new Vector3f(10f, 10f, 10f));
         entityDude2.setRotation(new Vector3f(0, 0, (float) (-Math.PI / 2)));
 
-        EntityText entityText = new EntityText(new File("fonts/default.png"));
-        entityText.setScale(new Vector3f(10f, 10, 10));
+        String s = "";
+        for (char c = 0; c < 256; ++c) {
+            s += c;
+        }
+        EntityText entityText = new EntityText(new File("fonts/default.png"), s);
+        entityText.setScale(new Vector3f(1, 1, 1));
         entityText.setRotation(new Vector3f(0, (float) (-Math.PI - 0.01), 0));
 
-        for (int i = 0; i < 100; ++i) {
-            for (int j = 0; j < 100; ++j) {
+        for (int i = 0; i < 10; ++i) {
+            for (int j = 0; j < 10; ++j) {
                 Entity entity = new EntityHagrid();
                 entity.setPosition(new Vector3f(20f + 10 * i, 2, 2 + 10 * j));
                 entity.setScale(new Vector3f(15, 15, 15));

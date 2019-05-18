@@ -7,6 +7,7 @@ import com.ternsip.glade.utils.DisplayManager;
 
 // TODO TURN ALL Vectors and Matrixes and Quaternions to constant interface (quatenrionfc/matrixfc)]
 // TODO blending
+// TODO FONTS
 public class Glade {
 
     public static final DisplayManager DISPLAY_MANAGER = new DisplayManager();
