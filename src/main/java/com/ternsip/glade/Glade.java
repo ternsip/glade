@@ -1,6 +1,5 @@
 package com.ternsip.glade;
 
-import com.ternsip.glade.graphics.general.AnimationFrames;
 import com.ternsip.glade.graphics.renderer.base.MasterRenderer;
 import com.ternsip.glade.universe.Universe;
 import com.ternsip.glade.utils.DisplayManager;

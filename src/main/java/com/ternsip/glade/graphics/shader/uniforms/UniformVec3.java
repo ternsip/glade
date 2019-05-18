@@ -1,7 +1,6 @@
 package com.ternsip.glade.graphics.shader.uniforms;
 
 import com.ternsip.glade.graphics.shader.base.Uniform;
-import org.joml.Vector2fc;
 import org.joml.Vector3fc;
 
 import static org.lwjgl.opengl.GL20.glUniform3f;

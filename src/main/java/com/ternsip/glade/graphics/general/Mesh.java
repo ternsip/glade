@@ -3,6 +3,8 @@ package com.ternsip.glade.graphics.general;
 import com.ternsip.glade.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
+import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 import static com.ternsip.glade.utils.Utils.arrayToBuffer;
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
@@ -51,6 +53,7 @@ public class Mesh {
     private final int vboWeights;
     private final int vboBones;
     private final float internalSize;
+    private final Vector3fc lowestPoint;
 
     public Mesh(
             float[] vertices,
@@ -69,17 +72,30 @@ public class Mesh {
         }
 
         Utils.assertThat(vertices.length > 0);
+        Utils.assertThat(vertices.length % 3 == 0);
         Utils.assertThat(normals.length == 0 || vertices.length == normals.length);
         Utils.assertThat(colors.length == 0 || (4 * vertices.length / 3) == colors.length);
         Utils.assertThat(textures.length == 0 || (2 * vertices.length) / 3 == textures.length);
         Utils.assertThat(weights.length == 0 || vertices.length == weights.length);
         Utils.assertThat(bones.length == 0 || vertices.length == bones.length);
 
-        float maxSize = MIN_INTERNAL_SIZE;
-        for (float vertex : vertices) {
-            maxSize = Math.max(maxSize, Math.abs(vertex));
+        Vector3f lowestPoint = new Vector3f(Float.MAX_VALUE / 4);
+        Vector3f highestPoint = new Vector3f(-Float.MAX_VALUE / 4);
+        for (int i = 0; i < vertices.length / 3; ++i) {
+            lowestPoint.set(
+                    Math.min(lowestPoint.x(), vertices[i * 3]),
+                    Math.min(lowestPoint.y(), vertices[i * 3 + 1]),
+                    Math.min(lowestPoint.z(), vertices[i * 3 + 2])
+            );
+            highestPoint.set(
+                    Math.max(highestPoint.x(), vertices[i * 3]),
+                    Math.max(highestPoint.y(), vertices[i * 3 + 1]),
+                    Math.max(highestPoint.z(), vertices[i * 3 + 2])
+            );
         }
-        internalSize = maxSize;
+        Vector3f bounds = highestPoint.sub(lowestPoint, new Vector3f()).max(new Vector3f(MIN_INTERNAL_SIZE));
+        this.lowestPoint = lowestPoint;
+        this.internalSize = Math.max(bounds.x(), Math.max(bounds.y(), bounds.z()));
 
         this.material = material;
         vao = glGenVertexArrays();

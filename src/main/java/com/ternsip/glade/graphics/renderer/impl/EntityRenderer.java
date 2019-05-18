@@ -5,10 +5,10 @@ import com.ternsip.glade.graphics.renderer.base.Renderer;
 import com.ternsip.glade.graphics.shader.base.ShaderProgram;
 import com.ternsip.glade.graphics.shader.impl.EntityShader;
 import com.ternsip.glade.universe.entities.base.Entity;
-import com.ternsip.glade.utils.Maths;
-import org.joml.*;
-
-import java.lang.Math;
+import org.joml.FrustumIntersection;
+import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
+import org.joml.Vector3fc;
 
 import static com.ternsip.glade.Glade.UNIVERSE;
 
@@ -20,11 +20,12 @@ public class EntityRenderer implements Renderer {
     public void render() {
         Vector3fc camPos = UNIVERSE.getCamera().getPosition();
         Matrix4fc projectionViewMatrix = UNIVERSE.getCamera().getProjectionViewMatrix();
+        FrustumIntersection frustumIntersection = new FrustumIntersection(projectionViewMatrix);
         shader.start();
         UNIVERSE.getEntityRepository()
                 .getEntities()
                 .stream()
-                .filter(e -> isEntityInsideFrustum(projectionViewMatrix, e))
+                .filter(e -> isEntityInsideFrustum(frustumIntersection, e))
                 .sorted((o1, o2) -> Float.compare(o2.getPosition().distanceSquared(camPos), o1.getPosition().distanceSquared(camPos)))
                 .forEach(this::render);
         shader.stop();
@@ -65,14 +66,10 @@ public class EntityRenderer implements Renderer {
         }
     }
 
-    private boolean isEntityInsideFrustum(Matrix4fc projectionViewMatrix, Entity entity) {
+    private boolean isEntityInsideFrustum(FrustumIntersection frustumIntersection, Entity entity) {
         Vector3fc scale = entity.getAdjustedScale();
         float delta = Math.max(Math.max(scale.x(), scale.y()), scale.z());
-        Vector4fc pClip = Maths.mul(projectionViewMatrix, new Vector4f(entity.getPosition(), 1));
-        return Math.abs(pClip.x()) < (pClip.w() + delta) &&
-                Math.abs(pClip.y()) < (pClip.w() + delta) &&
-                -delta < pClip.z() &&
-                pClip.z() < (pClip.w() + delta);
+        return frustumIntersection.testSphere(entity.getPosition(), delta);
     }
 
     private long getUpdateIntervalMilliseconds(Entity entity) {

@@ -2,6 +2,8 @@ package com.ternsip.glade.graphics.general;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 import java.util.Map;
 
@@ -16,6 +18,9 @@ public class Model {
 
     @Getter(lazy = true)
     private final float internalSize = calcBiggestInternalSize(meshes);
+
+    @Getter(lazy = true)
+    private final Vector3fc lowestPoint = calcLowestPoint(meshes);
 
     public Model(Mesh[] meshes) {
         this.meshes = meshes;
@@ -44,6 +49,14 @@ public class Model {
             biggestInternalSize = Math.max(biggestInternalSize, mesh.getInternalSize());
         }
         return biggestInternalSize;
+    }
+
+    private Vector3fc calcLowestPoint(Mesh[] meshes) {
+        Vector3f lowestPoint = new Vector3f(Float.MAX_VALUE / 4);
+        for (Mesh mesh : meshes) {
+            lowestPoint = lowestPoint.min(mesh.getLowestPoint());
+        }
+        return lowestPoint;
     }
 
 }

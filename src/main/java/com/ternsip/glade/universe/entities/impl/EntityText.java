@@ -9,6 +9,7 @@ import com.ternsip.glade.universe.entities.base.Entity;
 import lombok.RequiredArgsConstructor;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
+import org.joml.Vector4f;
 
 import java.io.File;
 
@@ -50,14 +51,12 @@ public class EntityText extends Entity {
                 textures[2 * quad * i + j * 2] = u + TEXCOORDS[j * 2] * scale;
                 textures[2 * quad * i + j * 2 + 1] = v + TEXCOORDS[j * 2 + 1] * scale;
             }
-            for (int j = 0; j < 3 * quad; ++j) {
-                normals[3 * quad * i + j] = NORMALS[j];
-            }
+            System.arraycopy(NORMALS, 0, normals, 3 * quad * i, 3 * quad);
             for (int j = 0; j < 6; ++j) {
                 indices[6 * i + j] = INDICES[j] + quad * i;
             }
         }
-        Mesh mesh = new Mesh(vertices, normals, new float[0], textures, indices, new float[0], new int[0], new Material(new Texture(font)));
+        Mesh mesh = new Mesh(vertices, normals, new float[0], textures, indices, new float[0], new int[0], new Material(new Texture(new Vector4f(0, 0, 1, 1), font)));
         return new Model(mesh);
     }
 
