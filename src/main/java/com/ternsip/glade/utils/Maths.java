@@ -6,7 +6,7 @@ import java.lang.Math;
 
 public class Maths {
 
-    public static Matrix4f createTransformationMatrix(Vector3f translation, Quaternionfc rotation, Vector3f scale) {
+    public static Matrix4f createTransformationMatrix(Vector3fc translation, Quaternionfc rotation, Vector3fc scale) {
         Matrix4f matrix = new Matrix4f();
         matrix.identity();
         matrix.translate(translation, matrix);

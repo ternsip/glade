@@ -24,33 +24,34 @@ public class Universe {
 
         sun = new Sun(new Vector2f(0, 0), new Vector2f(20000, 20000), new Vector3f(1, 1, 1));
         entityPlayer = new EntityPlayer();
+        entityPlayer.setScale(new Vector3f(5, 5, 5));
         camera = new Camera(entityPlayer);
 
         Entity entityCube = new EntityCube();
 
         Entity entityLamp = new EntityLamp();
         entityLamp.setPosition(new Vector3f(-60f, 0, -60));
-        entityLamp.setScale(new Vector3f(0.05f, 0.05f, 0.05f));
+        entityLamp.setScale(new Vector3f(40, 40, 40));
         entityLamp.setRotation(new Vector3f(0, 0, 0));
 
         Entity entityBottle = new EntityBottle();
         entityBottle.setPosition(new Vector3f(-30f, 0, -20));
-        entityBottle.setScale(new Vector3f(1f, 1f, 1f));
+        entityBottle.setScale(new Vector3f(5, 5, 5));
         entityBottle.setRotation(new Vector3f(0, 0, 0));
 
         Entity entityZebra = new EntityZebra();
         entityZebra.setPosition(new Vector3f(-20f, 0, -20));
-        entityZebra.setScale(new Vector3f(0.25f, 0.25f, 0.25f));
+        entityZebra.setScale(new Vector3f(30, 30, 30));
         entityZebra.setRotation(new Vector3f(0, 0, 0));
 
         Entity entityHagrid = new EntityHagrid();
         entityHagrid.setPosition(new Vector3f(20f, 2, 2));
-        entityHagrid.setScale(new Vector3f(0.25f, 0.25f, 0.25f));
+        entityHagrid.setScale(new Vector3f(15, 15, 15));
         entityHagrid.setRotation(new Vector3f(0, 0, (float) (-Math.PI / 2))); // TODO BUG IF I PUT 180 ROTATION
 
         Entity entitySpider = new EntitySpider();
         entitySpider.setPosition(new Vector3f(20f, 2, -20));
-        entitySpider.setScale(new Vector3f(1, 1, 1));
+        entitySpider.setScale(new Vector3f(5, 5, 5));
         entitySpider.setRotation(new Vector3f(0, 0, (float) (-Math.PI / 2)));
 
         Entity entityWarrior = new EntityWarrior();
@@ -71,7 +72,7 @@ public class Universe {
             for (int j = 0; j < 100; ++j) {
                 Entity entity = new EntityHagrid();
                 entity.setPosition(new Vector3f(20f + 10 * i, 2, 2 + 10 * j));
-                entity.setScale(new Vector3f(0.25f, 0.25f, 0.25f));
+                entity.setScale(new Vector3f(15, 15, 15));
                 entity.setRotation(new Vector3f(0, 0, (float) (-Math.PI / 2)));
             }
         }

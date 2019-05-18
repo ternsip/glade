@@ -66,18 +66,18 @@ public class EntityRenderer implements Renderer {
     }
 
     private boolean isEntityInsideFrustum(Matrix4fc projectionViewMatrix, Entity entity) {
-        float d = 20.25f; // TODO make it dependent on entity size
+        float delta = Math.max(Math.max(entity.getScale().x(), entity.getScale().y()), entity.getScale().z());
         Vector4fc pClip = Maths.mul(projectionViewMatrix, new Vector4f(entity.getPosition(), 1));
-        return Math.abs(pClip.x()) < (pClip.w() + d) &&
-                Math.abs(pClip.y()) < (pClip.w() + d) &&
-                -d < pClip.z() &&
-                pClip.z() < (pClip.w() + d);
+        return Math.abs(pClip.x()) < (pClip.w() + delta) &&
+                Math.abs(pClip.y()) < (pClip.w() + delta) &&
+                -delta < pClip.z() &&
+                pClip.z() < (pClip.w() + delta);
     }
 
     private long getUpdateIntervalMilliseconds(Entity entity) {
         float maxScale = Math.max(Math.max(entity.getScale().x(), entity.getScale().y()), entity.getScale().z());
-        double criterion = (UNIVERSE.getCamera().getPosition().distance(entity.getPosition()) / maxScale) / 150;
-        return (long) (criterion * criterion);
+        double criterion = (UNIVERSE.getCamera().getPosition().distance(entity.getPosition()) / maxScale) / 10;
+        return (long) (criterion * criterion * criterion);
     }
 
 }

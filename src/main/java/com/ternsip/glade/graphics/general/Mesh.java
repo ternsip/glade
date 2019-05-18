@@ -27,6 +27,7 @@ import static org.lwjgl.opengl.GL30.*;
 @Setter
 public class Mesh {
 
+    public static final float MIN_INTERNAL_SIZE = 0.01f;
     public static final int MAX_WEIGHTS = 3;
     public static final int MAX_BONES = 180;
 
@@ -49,6 +50,7 @@ public class Mesh {
     private final int vboTextures;
     private final int vboWeights;
     private final int vboBones;
+    private final float internalSize;
 
     public Mesh(
             float[] vertices,
@@ -73,6 +75,11 @@ public class Mesh {
         Utils.assertThat(weights.length == 0 || vertices.length == weights.length);
         Utils.assertThat(bones.length == 0 || vertices.length == bones.length);
 
+        float maxSize = MIN_INTERNAL_SIZE;
+        for (float vertex : vertices) {
+            maxSize = Math.max(maxSize, Math.abs(vertex));
+        }
+        internalSize = maxSize;
 
         this.material = material;
         vao = glGenVertexArrays();

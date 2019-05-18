@@ -6,6 +6,7 @@ import com.ternsip.glade.utils.Maths;
 import lombok.Getter;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 import static com.ternsip.glade.Glade.UNIVERSE;
 
@@ -23,7 +24,8 @@ public abstract class Entity {
     }
 
     public Matrix4f getTransformationMatrix() {
-        return Maths.createTransformationMatrix(getPosition(), Maths.getRotationQuaternion(getRotation()), getScale());
+        Vector3fc totalScale = getScale().div(getAnimator().getModel().getInternalSize(), new Vector3f());
+        return Maths.createTransformationMatrix(getPosition(), Maths.getRotationQuaternion(getRotation()), totalScale);
     }
 
     public void setPosition(Vector3f position) {
