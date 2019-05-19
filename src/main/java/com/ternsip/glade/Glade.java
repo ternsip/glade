@@ -7,7 +7,6 @@ import com.ternsip.glade.graphics.display.DisplayManager;
 // TODO TURN ALL Vectors and Matrixes and Quaternions to constant interface (quatenrionfc/matrixfc)]
 // TODO blending
 // TODO FONTS
-// TODO SUPER CRITICAL (REGISTRATING IN ONLY ONE PLACE) !!! DO MULTI REG POSSIBLE
 // TODO SHADOWING ?
 // TODO PHYSICAL COLLISIONS
 public class Glade {

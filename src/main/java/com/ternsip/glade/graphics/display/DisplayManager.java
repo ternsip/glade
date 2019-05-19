@@ -19,7 +19,9 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 public class DisplayManager {
 
     public static final Vector3f BACKGROUND_COLOR = new Vector3f(1f, 0f, 0f);
+
     private static final int FPS_CAP = 120;
+
     private ArrayList<Callback> callbacks = new ArrayList<>();
     private TextureRepository textureRepository;
     private DisplayEvents displayEvents = new DisplayEvents();
@@ -28,7 +30,6 @@ public class DisplayManager {
     private float fps;
     private long window;
     private Vector2i windowSize;
-    private float ratio;
 
     public void initialize() {
         displayEvents.getErrorCallbacks().add((e, d) -> GLFWErrorCallback.createPrint(System.err).invoke(e, d));
@@ -86,7 +87,6 @@ public class DisplayManager {
 
     private void handleResize(int width, int height) {
         windowSize = new Vector2i(width, height);
-        ratio = (float) windowSize.x() / windowSize.y();
         glViewport(0, 0, getWidth(), getHeight());
     }
 
