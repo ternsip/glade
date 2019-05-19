@@ -10,7 +10,11 @@ import java.io.File;
 public class EntityWolf extends Entity {
 
     protected Model loadModel() {
-        return ModelLoader.loadModel(Settings.builder().meshFile(new File("models/wolf/wolf.dae")).build());
+        return ModelLoader.loadModel(Settings.builder()
+                .meshFile(new File("models/wolf/wolf.dae"))
+                .preserveInvalidBoneLocalTransform(true)
+                .build()
+        );
     }
 
 }

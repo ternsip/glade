@@ -47,7 +47,7 @@ public class Universe {
         Entity entityWolf = new EntityWolf();
         entityWolf.setPosition(new Vector3f(-140f, 0, -40));
         entityWolf.setScale(new Vector3f(30, 30, 30));
-        entityWolf.setRotation(new Vector3f(0, 0, (float) (-Math.PI *0.99)));
+        entityWolf.setRotation(new Vector3f(0, 0, (float) (-Math.PI * 0.99)));
 
         Entity entityHagrid = new EntityHagrid();
         entityHagrid.setPosition(new Vector3f(20f, 2, 2));

@@ -34,7 +34,7 @@ public class ModelLoader {
                 .map(AnimationFrames::findAllDistinctBonesNames)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
-        Bone rootBone = createBones(aiSceneMesh.mRootNode(), new Matrix4f(), skeleton, allPossibleBoneNames);
+        Bone rootBone = createBones(aiSceneMesh.mRootNode(), new Matrix4f(), skeleton, allPossibleBoneNames, settings);
         assertThat(MAX_BONES > skeleton.numberOfUniqueBones());
         return new Model(meshes, rootBone, animationsFrames);
     }
@@ -80,19 +80,22 @@ public class ModelLoader {
             AINode aiNode,
             Matrix4fc parentTransform,
             Skeleton skeleton,
-            Set<String> allPossibleBoneNames
+            Set<String> allPossibleBoneNames,
+            Settings settings
     ) {
         String boneName = aiNode.mName().dataString();
         int boneIndex = skeleton.getSkeletonBoneNameToIndex().getOrDefault(boneName, -1);
         Matrix4f localBindTransform = toMatrix(aiNode.mTransformation());
         boolean marginal = !allPossibleBoneNames.contains(boneName);
-        Matrix4f bindTransform = (marginal ? new Matrix4f() : parentTransform).mul(localBindTransform, new Matrix4f());
+        Matrix4f bindTransform = settings.isPreserveInvalidBoneLocalTransform()
+                ? (marginal ? new Matrix4f() : parentTransform).mul(localBindTransform, new Matrix4f())
+                : (marginal ? new Matrix4f() : parentTransform.mul(localBindTransform, new Matrix4f()));
         Matrix4f inverseBindTransform = bindTransform.invert(new Matrix4f());
         List<Bone> children = new ArrayList<>();
         PointerBuffer aiChildren = aiNode.mChildren();
         for (int i = 0; i < aiNode.mNumChildren(); i++) {
             AINode aiChildNode = AINode.create(aiChildren.get(i));
-            Bone childBone = createBones(aiChildNode, bindTransform, skeleton, allPossibleBoneNames);
+            Bone childBone = createBones(aiChildNode, bindTransform, skeleton, allPossibleBoneNames, settings);
             children.add(childBone);
         }
         return new Bone(boneIndex, boneName, children, inverseBindTransform);
@@ -218,7 +221,6 @@ public class ModelLoader {
 
     @SneakyThrows
     private static Material processMaterial(AIMaterial aiMaterial, File texturesDir) {
-        Texture texture = processTexture(aiMaterial, aiTextureType_DIFFUSE, AI_MATKEY_COLOR_DIFFUSE, texturesDir);
         Texture diffuseMap = processTexture(aiMaterial, aiTextureType_DIFFUSE, AI_MATKEY_COLOR_DIFFUSE, texturesDir);
         Texture specularMap = processTexture(aiMaterial, aiTextureType_SPECULAR, AI_MATKEY_COLOR_SPECULAR, texturesDir);
         Texture ambientMap = processTexture(aiMaterial, aiTextureType_AMBIENT, AI_MATKEY_COLOR_AMBIENT, texturesDir);
@@ -230,7 +232,7 @@ public class ModelLoader {
         Texture displacementMap = processTexture(aiMaterial, aiTextureType_DISPLACEMENT, "", texturesDir);
         Texture lightMap = processTexture(aiMaterial, aiTextureType_LIGHTMAP, "", texturesDir);
         Texture reflectionMap = processTexture(aiMaterial, aiTextureType_REFLECTION, AI_MATKEY_COLOR_REFLECTIVE, texturesDir);
-        return new Material(texture, diffuseMap, specularMap, ambientMap, emissiveMap, heightMap, normalsMap, shininessMap, opacityMap, displacementMap, lightMap, reflectionMap);
+        return new Material(diffuseMap, specularMap, ambientMap, emissiveMap, heightMap, normalsMap, shininessMap, opacityMap, displacementMap, lightMap, reflectionMap);
     }
 
     private static Texture processTexture(

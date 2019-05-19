@@ -10,7 +10,6 @@ public class EntityLamp extends Entity {
     protected Model loadModel() {
         Material[] lampMaterials = new Material[]{
                 new Material()
-                        .withTextureMap(new Texture(new File("models/lamp/color.png")))
                         .withDiffuseMap(new Texture(new File("models/lamp/Diffuse.png")))
                         .withAmbientMap(new Texture(new File("models/lamp/ambient occlusion.png")))
                         .withEmissiveMap(new Texture(new File("models/lamp/emissive.jpg")))

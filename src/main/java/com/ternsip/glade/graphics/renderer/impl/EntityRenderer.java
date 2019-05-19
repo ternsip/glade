@@ -50,7 +50,6 @@ public class EntityRenderer implements Renderer {
         shader.getBoneTransforms().load(boneTransforms);
         shader.getTransformationMatrix().load(entity.getTransformationMatrix());
         for (Mesh mesh : entity.getAnimator().getModel().getMeshes()) {
-            shader.getTextureMap().load(mesh.getMaterial().getTextureMap());
             shader.getDiffuseMap().load(mesh.getMaterial().getDiffuseMap());
             shader.getSpecularMap().load(mesh.getMaterial().getSpecularMap());
             shader.getAmbientMap().load(mesh.getMaterial().getAmbientMap());

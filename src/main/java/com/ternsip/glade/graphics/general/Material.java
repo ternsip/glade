@@ -9,8 +9,9 @@ import lombok.experimental.Wither;
 @Getter
 public class Material {
 
-    private final Texture textureMap;
+    // Diffuse texture a.k.a Main texture of the object
     private final Texture diffuseMap;
+
     private final Texture specularMap;
     private final Texture ambientMap;
     private final Texture emissiveMap;
@@ -34,7 +35,6 @@ public class Material {
                 new Texture(),
                 new Texture(),
                 new Texture(),
-                new Texture(),
                 new Texture()
         );
     }
@@ -42,7 +42,6 @@ public class Material {
     public Material(Texture textureMap) {
         this(
                 textureMap,
-                new Texture(),
                 new Texture(),
                 new Texture(),
                 new Texture(),

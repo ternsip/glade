@@ -5,7 +5,6 @@ import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.renderer.base.Renderer;
 import com.ternsip.glade.graphics.shader.base.ShaderProgram;
 import com.ternsip.glade.graphics.shader.impl.SkyboxShader;
-import com.ternsip.glade.universe.common.Camera;
 
 import static com.ternsip.glade.Glade.UNIVERSE;
 

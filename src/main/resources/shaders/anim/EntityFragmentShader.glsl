@@ -14,7 +14,6 @@ in vec3 pass_normal;
 
 out vec4 out_colour;
 
-uniform TextureData textureMap;
 uniform TextureData diffuseMap;
 uniform TextureData specularMap;
 uniform TextureData ambientMap;
@@ -52,16 +51,13 @@ void main(void){
     vec3 unitNormal = normalize(pass_normal);
     float surfaceLight = max(dot(lightDirection, unitNormal), 0.0);
 
-    // Main texture color
-    vec4 texColor = getTextureColor(textureMap, true);
+    // Diffuse color
+    vec4 texColor = getTextureColor(diffuseMap, true);
+    vec3 diffuseColor = texColor.xyz * light_color * light_intensity * surfaceLight;
 
     if (texColor.a < 0.1){
         discard;
     }
-
-    // Diffuse color
-    vec4 diffuseTexColor = getTextureColor(diffuseMap, false);
-    vec3 diffuseColor = diffuseTexColor.xyz * light_color * light_intensity * surfaceLight;
 
     // Ambient color
     vec4 ambientTexColor = getTextureColor(ambientMap, false);
