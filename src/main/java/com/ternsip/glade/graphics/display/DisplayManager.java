@@ -1,4 +1,4 @@
-package com.ternsip.glade.utils;
+package com.ternsip.glade.graphics.display;
 
 import com.ternsip.glade.graphics.general.TextureRepository;
 import lombok.Getter;
@@ -22,6 +22,7 @@ public class DisplayManager {
     private static final int FPS_CAP = 120;
     private ArrayList<Callback> callbacks = new ArrayList<>();
     private TextureRepository textureRepository;
+    private DisplayEvents displayEvents = new DisplayEvents();
     private long lastFrameTime;
     private float deltaTime;
     private float fps;
@@ -30,7 +31,15 @@ public class DisplayManager {
     private float ratio;
 
     public void initialize() {
-        registerErrorCallback(GLFWErrorCallback.createPrint(System.err));
+        displayEvents.getErrorCallbacks().add((e, d) -> GLFWErrorCallback.createPrint(System.err).invoke(e, d));
+        displayEvents.getResizeCallbacks().add(this::handleResize);
+        // TODO MOVE IN HOTKEY CLASS
+        displayEvents.getKeyCallbacks().add((key, scanCode, action, mods) -> {
+            if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+                close();
+            }
+        });
+        registerErrorCallback();
         if (!glfwInit()) {
             throw new IllegalStateException("Unable to initialize GLFW");
         }
@@ -41,11 +50,10 @@ public class DisplayManager {
             glfwTerminate();
             throw new RuntimeException("Failed to create the GLFW window");
         }
-
-        registerFrameBufferSizeCallback(((window, width, height) -> {
-            // TODO SUPER CRITICAL (REGISTRATING IN ONLY ONE PLACE) !!! DO MULTI REG POSSIBLE
-            handeResize(width, height);
-        }));
+        registerScrollCallback();
+        registerCursorPosCallback();
+        registerKeyCallback();
+        registerFrameBufferSizeCallback();
         glfwSetWindowPos(window, (int) (mainDisplaySize.x() * 0.1), (int) (mainDisplaySize.y() * 0.1));
 
         // Create OpenGL context
@@ -68,17 +76,15 @@ public class DisplayManager {
         glEnable(GL_CULL_FACE);
         glClearColor(BACKGROUND_COLOR.x(), BACKGROUND_COLOR.y(), BACKGROUND_COLOR.z(), 1);
 
-        handeResize(getWidth(), getHeight());
+        handleResize(getWidth(), getHeight());
 
         textureRepository = new TextureRepository();
         textureRepository.bind();
 
-        registerCloser();
-
         lastFrameTime = getCurrentTime();
     }
 
-    private void handeResize(int width, int height) {
+    private void handleResize(int width, int height) {
         windowSize = new Vector2i(width, height);
         ratio = (float) windowSize.x() / windowSize.y();
         glViewport(0, 0, getWidth(), getHeight());
@@ -135,32 +141,54 @@ public class DisplayManager {
         return glfwGetMouseButton(window, key) == GLFW_PRESS;
     }
 
-    public void registerScrollCallback(GLFWScrollCallbackI callback) {
-        GLFWScrollCallback scrollCallback = GLFWScrollCallback.create(callback);
+    private void registerScrollCallback() {
+        GLFWScrollCallback scrollCallback = GLFWScrollCallback.create(
+                (window, xOffset, yOffset) -> getDisplayEvents().getScrollCallbacks().forEach(e -> e.apply(xOffset, yOffset))
+        );
         callbacks.add(scrollCallback);
         glfwSetScrollCallback(window, scrollCallback);
     }
 
-    public void registerCursorPosCallback(GLFWCursorPosCallbackI callback) {
-        GLFWCursorPosCallback posCallback = GLFWCursorPosCallback.create(callback);
+    private void registerCursorPosCallback() {
+        GLFWCursorPosCallback posCallback = GLFWCursorPosCallback.create((new GLFWCursorPosCallbackI() {
+            private float dx;
+            private float dy;
+            private float prevX;
+            private float prevY;
+
+            @Override
+            public void invoke(long window, double xPos, double yPos) {
+                dx = (float) (xPos - prevX);
+                dy = (float) (yPos - prevY);
+                prevX = (float) xPos;
+                prevY = (float) yPos;
+                getDisplayEvents().getCursorPosCallbacks().forEach(e -> e.apply(xPos, yPos, dx, dy));
+            }
+        }));
         callbacks.add(posCallback);
         glfwSetCursorPosCallback(window, posCallback);
     }
 
-    public void registerKeyCallback(GLFWKeyCallbackI callback) {
-        GLFWKeyCallback keyCallback = GLFWKeyCallback.create(callback);
+    private void registerKeyCallback() {
+        GLFWKeyCallback keyCallback = GLFWKeyCallback.create(
+                (window, key, scanCode, action, mods) -> getDisplayEvents().getKeyCallbacks().forEach(e -> e.apply(key, scanCode, action, mods))
+        );
         callbacks.add(keyCallback);
         glfwSetKeyCallback(window, keyCallback);
     }
 
-    public void registerErrorCallback(GLFWErrorCallbackI callback) {
-        GLFWErrorCallback errorCallback = GLFWErrorCallback.create(callback);
+    private void registerErrorCallback() {
+        GLFWErrorCallback errorCallback = GLFWErrorCallback.create(
+                (error, description) -> getDisplayEvents().getErrorCallbacks().forEach(e -> e.apply(error, description))
+        );
         callbacks.add(errorCallback);
         glfwSetErrorCallback(errorCallback);
     }
 
-    public void registerFrameBufferSizeCallback(GLFWFramebufferSizeCallbackI callback) {
-        GLFWFramebufferSizeCallback framebufferSizeCallback = GLFWFramebufferSizeCallback.create(callback);
+    private void registerFrameBufferSizeCallback() {
+        GLFWFramebufferSizeCallback framebufferSizeCallback = GLFWFramebufferSizeCallback.create(
+                (window, width, height) -> getDisplayEvents().getResizeCallbacks().forEach(e -> e.apply(width, height))
+        );
         callbacks.add(framebufferSizeCallback);
         glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
     }
@@ -172,15 +200,6 @@ public class DisplayManager {
     public Vector2i getMainDisplaySize() {
         GLFWVidMode vidMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
         return new Vector2i(vidMode.width(), vidMode.height());
-    }
-
-    // TODO MOVE TO HOTKEYS CLASS
-    private void registerCloser() {
-        registerKeyCallback(((window, key, scancode, action, mods) -> {
-            if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
-                close();
-            }
-        }));
     }
 
     private long getCurrentTime() {

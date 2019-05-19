@@ -2,7 +2,7 @@ package com.ternsip.glade;
 
 import com.ternsip.glade.graphics.renderer.base.MasterRenderer;
 import com.ternsip.glade.universe.Universe;
-import com.ternsip.glade.utils.DisplayManager;
+import com.ternsip.glade.graphics.display.DisplayManager;
 
 // TODO TURN ALL Vectors and Matrixes and Quaternions to constant interface (quatenrionfc/matrixfc)]
 // TODO blending

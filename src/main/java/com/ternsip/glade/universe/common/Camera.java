@@ -5,7 +5,6 @@ import com.ternsip.glade.universe.entities.impl.EntityPlayer;
 import lombok.Getter;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.lwjgl.glfw.GLFWCursorPosCallbackI;
 
 import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1;
@@ -17,8 +16,8 @@ public class Camera {
     private static final float NEAR_PLANE = 0.1f;
     private static final float FAR_PLANE = 1000;
 
-    private Matrix4f entityProjectionMatrix = createProjectionMatrix(FAR_PLANE);
-    private Matrix4f skyProjectionMatrix = createProjectionMatrix(SkyRenderer.SIZE * 2);
+    private Matrix4f entityProjectionMatrix;
+    private Matrix4f skyProjectionMatrix;
 
     private float distanceFromRover = 60;
     private float angleAroundRover = 0;
@@ -32,39 +31,25 @@ public class Camera {
 
     public Camera(EntityPlayer entityPlayer) {
         this.entityPlayer = entityPlayer;
-        DISPLAY_MANAGER.registerScrollCallback(((window, xoffset, yoffset) -> {
-            recalculateZoom((float) yoffset);
-        }));
-
-        DISPLAY_MANAGER.registerFrameBufferSizeCallback(((window, width, height) -> {
-            // TODO BUG
-            entityProjectionMatrix = createProjectionMatrix(FAR_PLANE);
-            skyProjectionMatrix = createProjectionMatrix(SkyRenderer.SIZE * 2);
-        }));
-
-        DISPLAY_MANAGER.registerCursorPosCallback((new GLFWCursorPosCallbackI() {
-
-            private float dx;
-            private float dy;
-            private float prevX;
-            private float prevY;
-
-            @Override
-            public void invoke(long window, double xpos, double ypos) {
-                dx = (float) (xpos - prevX);
-                dy = (float) (ypos - prevY);
-                prevX = (float) xpos;
-                prevY = (float) ypos;
-                Camera.this.recalculatePitch(dy);
-                Camera.this.recalculateAngleAroundRover(dx);
-            }
-        }));
-
+        DISPLAY_MANAGER.getDisplayEvents().getScrollCallbacks().add(this::recalculateZoom);
+        DISPLAY_MANAGER.getDisplayEvents().getResizeCallbacks().add(this::recalculateProjectionMatrices);
+        DISPLAY_MANAGER.getDisplayEvents().getCursorPosCallbacks().add(this::recalculateRotation);
+        recalculateProjectionMatrices(DISPLAY_MANAGER.getWidth(), DISPLAY_MANAGER.getHeight());
     }
 
-    public static Matrix4f createProjectionMatrix(float viewDistance) {
+    private void recalculateRotation(double xPos, double yPos, double dx, double dy) {
+        recalculatePitch((float) dy);
+        recalculateAngleAroundPlayer((float) dx);
+    }
+
+    private void recalculateProjectionMatrices(float width, int height) {
+        float ratio = width / height;
+        entityProjectionMatrix = createProjectionMatrix(FAR_PLANE, ratio);
+        skyProjectionMatrix = createProjectionMatrix(SkyRenderer.SIZE * 2, ratio);
+    }
+
+    public static Matrix4f createProjectionMatrix(float viewDistance, float aspectRatio) {
         //new Matrix4f().perspective(FOV, DISPLAY_MANAGER.getRatio(), NEAR_PLANE, FAR_PLANE).rotate((float) Math.PI, 0, 0, 1);
-        float aspectRatio = DISPLAY_MANAGER.getRatio();
         float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))) * aspectRatio);
         float x_scale = y_scale / aspectRatio;
         float farPlane = viewDistance;
@@ -123,8 +108,8 @@ public class Camera {
     }
 
 
-    private void recalculateZoom(float mouseWheelVelocity) {
-        float zoomLevel = distanceFromRover - mouseWheelVelocity * 5f;
+    private void recalculateZoom(double scrollX, double scrollY) {
+        float zoomLevel = (float) (distanceFromRover - scrollY * 5f);
         if (zoomLevel <= 10) {
             distanceFromRover = 10;
         } else if (zoomLevel >= 200) {
@@ -147,7 +132,7 @@ public class Camera {
         }
     }
 
-    private void recalculateAngleAroundRover(float mouseDx) {
+    private void recalculateAngleAroundPlayer(float mouseDx) {
         if (DISPLAY_MANAGER.isMouseDown(GLFW_MOUSE_BUTTON_1)) {
             float angleChange = mouseDx * 0.1f;
             angleAroundRover -= angleChange;

@@ -1,4 +1,4 @@
-package com.ternsip.glade.utils;
+package com.ternsip.glade.graphics.display;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
