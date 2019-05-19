@@ -67,8 +67,8 @@ public class ModelLoader {
                     colors,
                     textures,
                     indices,
-                    skeleton.getBonesWeights(meshIndex, numVertices, Mesh.MAX_WEIGHTS),
-                    skeleton.getBoneNameToBone(meshIndex, numVertices, Mesh.MAX_WEIGHTS),
+                    skeleton.getBonesWeights(meshIndex, numVertices),
+                    skeleton.getBoneNameToBone(meshIndex, numVertices),
                     material
             );
             meshes[meshIndex] = mesh;
@@ -86,7 +86,7 @@ public class ModelLoader {
         int boneIndex = skeleton.getSkeletonBoneNameToIndex().getOrDefault(boneName, -1);
         Matrix4f localBindTransform = toMatrix(aiNode.mTransformation());
         boolean marginal = !allPossibleBoneNames.contains(boneName);
-        Matrix4f bindTransform = marginal ? new Matrix4f() : parentTransform.mul(localBindTransform, new Matrix4f());
+        Matrix4f bindTransform = (marginal ? new Matrix4f() : parentTransform).mul(localBindTransform, new Matrix4f());
         Matrix4f inverseBindTransform = bindTransform.invert(new Matrix4f());
         List<Bone> children = new ArrayList<>();
         PointerBuffer aiChildren = aiNode.mChildren();

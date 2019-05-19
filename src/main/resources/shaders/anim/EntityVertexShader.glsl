@@ -1,13 +1,13 @@
 #version 400 core
 
 const int MAX_BONES = 180; // Maximal number of bones allowed in a skeleton
-const int MAX_WEIGHTS = 3; // Maximal number of bones that can affect a vertex
+const int MAX_WEIGHTS = 4; // Maximal number of bones that can affect a vertex
 
 in vec3 position;
 in vec2 textureCoordinates;
 in vec3 normal;
-in ivec3 boneIndices;
-in vec3 weights;
+in ivec4 boneIndices;
+in vec4 weights;
 
 out vec2 pass_textureCoords;
 out vec3 pass_normal;

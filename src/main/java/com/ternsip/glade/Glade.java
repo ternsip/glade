@@ -8,6 +8,9 @@ import com.ternsip.glade.utils.DisplayManager;
 // TODO blending
 // TODO FONTS
 // TODO SUPER CRITICAL (REGISTRATING IN ONLY ONE PLACE) !!! DO MULTI REG POSSIBLE
+// TODO DIFFUSE = MAIN TEXTURE
+// TODO SHADOWING ?
+// TODO PHYSICAL COLLISIONS
 public class Glade {
 
     public static final DisplayManager DISPLAY_MANAGER = new DisplayManager();

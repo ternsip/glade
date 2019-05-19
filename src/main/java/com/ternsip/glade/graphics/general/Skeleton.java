@@ -28,7 +28,8 @@ class Skeleton {
                 .collect(Collectors.toMap(i -> allBones.get(i).getBoneName(), i -> i, (o, n) -> o));
     }
 
-    float[] getBonesWeights(int meshIndex, int numVertices, int weightLimit) {
+    float[] getBonesWeights(int meshIndex, int numVertices) {
+        int weightLimit = Mesh.MAX_WEIGHTS;
         float[] weights = new float[numVertices * weightLimit];
         Map<Integer, List<BoneWeight>> combinedBoneWeights = combineBoneWeights(meshIndex);
         for (int i = 0; i < numVertices; i++) {
@@ -40,7 +41,8 @@ class Skeleton {
         return weights;
     }
 
-    int[] getBoneNameToBone(int meshIndex, int numVertices, int weightLimit) {
+    int[] getBoneNameToBone(int meshIndex, int numVertices) {
+        int weightLimit = Mesh.MAX_WEIGHTS;
         int[] indices = new int[numVertices * weightLimit];
         Map<Integer, List<BoneWeight>> combinedBoneWeights = combineBoneWeights(meshIndex);
         for (int i = 0; i < numVertices; i++) {

@@ -44,6 +44,11 @@ public class Universe {
         entityZebra.setScale(new Vector3f(30, 30, 30));
         entityZebra.setRotation(new Vector3f(0, 0, 0));
 
+        Entity entityWolf = new EntityWolf();
+        entityWolf.setPosition(new Vector3f(-140f, 0, -40));
+        entityWolf.setScale(new Vector3f(30, 30, 30));
+        entityWolf.setRotation(new Vector3f(0, 0, (float) (-Math.PI *0.99)));
+
         Entity entityHagrid = new EntityHagrid();
         entityHagrid.setPosition(new Vector3f(20f, 2, 2));
         entityHagrid.setScale(new Vector3f(15, 15, 15));
@@ -64,11 +69,7 @@ public class Universe {
         entityDude2.setScale(new Vector3f(10f, 10f, 10f));
         entityDude2.setRotation(new Vector3f(0, 0, (float) (-Math.PI / 2)));
 
-        String s = "";
-        for (char c = 0; c < 256; ++c) {
-            s += c;
-        }
-        EntityText entityText = new EntityText(new File("fonts/default.png"), s);
+        EntityText entityText = new EntityText(new File("fonts/default.png"), "Hello world!");
         entityText.setScale(new Vector3f(1, 1, 1));
         entityText.setRotation(new Vector3f(0, (float) (-Math.PI - 0.01), 0));
 

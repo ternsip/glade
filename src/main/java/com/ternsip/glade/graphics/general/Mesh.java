@@ -30,7 +30,7 @@ import static org.lwjgl.opengl.GL30.*;
 public class Mesh {
 
     public static final float MIN_INTERNAL_SIZE = 0.01f;
-    public static final int MAX_WEIGHTS = 3;
+    public static final int MAX_WEIGHTS = 4;
     public static final int MAX_BONES = 180;
 
     public static int VERTICES_ATTRIBUTE_POINTER_INDEX = 0;
@@ -68,7 +68,7 @@ public class Mesh {
         indicesCount = indices.length == 0 ? vertices.length / 3 : indices.length;
 
         if (textures.length == 0) {
-            textures = new float[vertices.length];
+            textures = new float[(2 * vertices.length) / 3];
         }
 
         Utils.assertThat(vertices.length > 0);
@@ -76,8 +76,8 @@ public class Mesh {
         Utils.assertThat(normals.length == 0 || vertices.length == normals.length);
         Utils.assertThat(colors.length == 0 || (4 * vertices.length / 3) == colors.length);
         Utils.assertThat(textures.length == 0 || (2 * vertices.length) / 3 == textures.length);
-        Utils.assertThat(weights.length == 0 || vertices.length == weights.length);
-        Utils.assertThat(bones.length == 0 || vertices.length == bones.length);
+        Utils.assertThat(weights.length == 0 || (MAX_WEIGHTS * vertices.length) / 3 == weights.length);
+        Utils.assertThat(bones.length == 0 || (MAX_WEIGHTS * vertices.length) / 3 == bones.length);
 
         Vector3f lowestPoint = new Vector3f(Float.MAX_VALUE / 4);
         Vector3f highestPoint = new Vector3f(-Float.MAX_VALUE / 4);
