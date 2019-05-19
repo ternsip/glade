@@ -53,7 +53,9 @@ public class Mesh {
     private final int vboWeights;
     private final int vboBones;
     private final float internalSize;
+    private final Vector3fc boundSize;
     private final Vector3fc lowestPoint;
+    private final Vector3fc highestPoint;
 
     public Mesh(
             float[] vertices,
@@ -94,7 +96,9 @@ public class Mesh {
             );
         }
         Vector3f bounds = highestPoint.sub(lowestPoint, new Vector3f()).max(new Vector3f(MIN_INTERNAL_SIZE));
+        this.boundSize = bounds;
         this.lowestPoint = lowestPoint;
+        this.highestPoint = highestPoint;
         this.internalSize = Math.max(bounds.x(), Math.max(bounds.y(), bounds.z()));
 
         this.material = material;

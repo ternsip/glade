@@ -74,7 +74,7 @@ public class DisplayManager {
         glEnable(GL_DEPTH_TEST);
         //glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
         glEnable(GL_MULTISAMPLE);
-        glEnable(GL_CULL_FACE);
+        //glEnable(GL_CULL_FACE);
         glClearColor(BACKGROUND_COLOR.x(), BACKGROUND_COLOR.y(), BACKGROUND_COLOR.z(), 1);
 
         handleResize(getWidth(), getHeight());
@@ -101,7 +101,7 @@ public class DisplayManager {
             deltaTime = (currentFrameTime - lastFrameTime) / 1000f;
             fps = 1 / deltaTime;
             lastFrameTime = currentFrameTime;
-            //System.out.println(deltaTime);
+            //sSystem.out.println(deltaTime);
 
             glfwSwapBuffers(window);
             glfwPollEvents();

@@ -32,59 +32,51 @@ public class Universe {
         Entity entityLamp = new EntityLamp();
         entityLamp.setPosition(new Vector3f(-60f, 0, -60));
         entityLamp.setScale(new Vector3f(40, 40, 40));
-        entityLamp.setRotation(new Vector3f(0, 0, 0));
 
         Entity entityBottle = new EntityBottle();
         entityBottle.setPosition(new Vector3f(-30f, 0, -20));
         entityBottle.setScale(new Vector3f(5, 5, 5));
-        entityBottle.setRotation(new Vector3f(0, 0, 0));
 
         Entity entityZebra = new EntityZebra();
         entityZebra.setPosition(new Vector3f(-20f, 0, -20));
         entityZebra.setScale(new Vector3f(30, 30, 30));
-        entityZebra.setRotation(new Vector3f(0, 0, 0));
 
         Entity entityWolf = new EntityWolf();
         entityWolf.setPosition(new Vector3f(-140f, 0, -40));
         entityWolf.setScale(new Vector3f(30, 30, 30));
-        entityWolf.setRotation(new Vector3f(0, 0, (float) (-Math.PI * 0.99)));
 
         Entity entityHagrid = new EntityHagrid();
         entityHagrid.setPosition(new Vector3f(20f, 2, 2));
         entityHagrid.setScale(new Vector3f(15, 15, 15));
-        entityHagrid.setRotation(new Vector3f(0, 0, (float) (-Math.PI / 2))); // TODO BUG IF I PUT 180 ROTATION
 
         Entity entitySpider = new EntitySpider();
         entitySpider.setPosition(new Vector3f(20f, 2, -20));
         entitySpider.setScale(new Vector3f(5, 5, 5));
-        entitySpider.setRotation(new Vector3f(0, 0, (float) (-Math.PI / 2)));
 
         Entity entityWarrior = new EntityWarrior();
         entityWarrior.setPosition(new Vector3f(-20f, 2, 2));
         entityWarrior.setScale(new Vector3f(10, 10, 10));
-        entityWarrior.setRotation(new Vector3f(0, 0, (float) (-Math.PI / 2)));
 
         Entity entityDude2 = new EntityDude();
         entityDude2.setPosition(new Vector3f(-20f, 0, -20));
         entityDude2.setScale(new Vector3f(10f, 10f, 10f));
-        entityDude2.setRotation(new Vector3f(0, 0, (float) (-Math.PI / 2)));
 
-        EntityText entityText = new EntityText(new File("fonts/default.png"), "Hello world!");
+        EntityText entityText = new EntityText(new File("fonts/default.png"), "Hello world!", new Vector3f(0, 0.1f, 0));
         entityText.setScale(new Vector3f(1, 1, 1));
         entityText.setRotation(new Vector3f(0, (float) (-Math.PI - 0.01), 0));
 
-        for (int i = 0; i < 100; ++i) {
-            for (int j = 0; j < 100; ++j) {
+        for (int i = 0; i < 10; ++i) {
+            for (int j = 0; j < 10; ++j) {
                 Entity entity = new EntityHagrid();
                 entity.setPosition(new Vector3f(20f + 10 * i, 2, 2 + 10 * j));
                 entity.setScale(new Vector3f(15, 15, 15));
-                entity.setRotation(new Vector3f(0, 0, (float) (-Math.PI / 2)));
             }
         }
 
     }
 
     public void update() {
+        getEntityRepository().update();
         entityPlayer.move();
         camera.move();
         sun.move();

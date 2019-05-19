@@ -10,10 +10,10 @@ import java.io.File;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class FontShader extends ShaderProgram {
+public final class SpriteShader extends ShaderProgram {
 
-    public static final File VERTEX_SHADER = new File("shaders/font/FontVertexShader.glsl");
-    public static final File FRAGMENT_SHADER = new File("shaders/font/FontFragmentShader.glsl");
+    public static final File VERTEX_SHADER = new File("shaders/font/SpriteVertexShader.glsl");
+    public static final File FRAGMENT_SHADER = new File("shaders/font/SpriteFragmentShader.glsl");
 
 
 }

@@ -10,7 +10,11 @@ import java.io.File;
 public class EntityBoy extends Entity {
 
     protected Model loadModel() {
-        return ModelLoader.loadModel(Settings.builder().meshFile(new File("models/boy/boy.dae")).build());
+        return ModelLoader.loadModel(Settings
+                .builder()
+                .meshFile(new File("models/boy/boy.dae"))
+                .build()
+        );
     }
 
 }

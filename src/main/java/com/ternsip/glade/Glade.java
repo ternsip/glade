@@ -1,14 +1,14 @@
 package com.ternsip.glade;
 
+import com.ternsip.glade.graphics.display.DisplayManager;
 import com.ternsip.glade.graphics.renderer.base.MasterRenderer;
 import com.ternsip.glade.universe.Universe;
-import com.ternsip.glade.graphics.display.DisplayManager;
 
 // TODO TURN ALL Vectors and Matrixes and Quaternions to constant interface (quatenrionfc/matrixfc)]
-// TODO blending
 // TODO FONTS
 // TODO SHADOWING ?
 // TODO PHYSICAL COLLISIONS
+// TODO read about MemoryStack for optimising buffer allocation
 public class Glade {
 
     public static final DisplayManager DISPLAY_MANAGER = new DisplayManager();

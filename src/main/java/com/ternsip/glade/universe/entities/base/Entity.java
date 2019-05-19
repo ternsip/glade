@@ -5,7 +5,7 @@ import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.utils.Maths;
 import lombok.Getter;
 import org.joml.Matrix4f;
-import org.joml.Quaternionfc;
+import org.joml.Matrix4fc;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
@@ -25,11 +25,9 @@ public abstract class Entity {
     }
 
     public Matrix4f getTransformationMatrix() {
-        Vector3fc totalScale = getAdjustedScale().div(getAnimator().getModel().getInternalSize(), new Vector3f());
-        Vector3fc lowestPointRelative = getAnimator().getModel().getLowestPoint().mul(totalScale, new Vector3f());
-        Vector3fc totalPosition = getPosition().sub(lowestPointRelative, new Vector3f());
-        Quaternionfc totalRotation = Maths.getRotationQuaternion(getRotation());
-        return Maths.createTransformationMatrix(totalPosition, totalRotation, totalScale);
+        Vector3fc totalScale = getAdjustedScale().div(getAnimator().getModel().getInternalSize());
+        Matrix4fc rotMatrix = Maths.getRotationQuaternion(getAdjustedRotation()).get(new Matrix4f());
+        return new Matrix4f().translate(getAdjustedPosition()).mul(rotMatrix).scale(totalScale);
     }
 
     public void setPosition(Vector3f position) {
@@ -52,14 +50,25 @@ public abstract class Entity {
         rotation.add(delta);
     }
 
+    public Vector3f getAdjustedScale() {
+        return new Vector3f(getScale()).mul(getAnimator().getModel().getBaseScale());
+    }
+
+    public Vector3f getAdjustedPosition() {
+        return new Vector3f(getPosition()).add(getAnimator().getModel().getBaseOffset());
+    }
+
+    public Vector3f getAdjustedRotation() {
+        return new Vector3f(getRotation()).add(getAnimator().getModel().getBaseRotation());
+    }
+
+    public void update() {
+    }
+
     protected abstract Model loadModel();
 
     protected boolean isModelUnique() {
         return false;
-    }
-
-    public Vector3fc getAdjustedScale() {
-        return getScale();
     }
 
 }

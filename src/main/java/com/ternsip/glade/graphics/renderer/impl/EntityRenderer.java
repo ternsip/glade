@@ -37,7 +37,7 @@ public class EntityRenderer implements Renderer {
 
     @Override
     public int getPriority() {
-        return 1;
+        return 2;
     }
 
     private void render(Entity entity) {

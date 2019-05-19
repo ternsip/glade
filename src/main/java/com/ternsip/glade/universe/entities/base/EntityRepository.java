@@ -31,6 +31,10 @@ public class EntityRepository {
         entities.remove(entity);
     }
 
+    public void update() {
+        entities.forEach(Entity::update);
+    }
+
     public void finish() {
         methodToModel.values().forEach(Model::finish);
         entityToUniqueModel.values().forEach(Model::finish);

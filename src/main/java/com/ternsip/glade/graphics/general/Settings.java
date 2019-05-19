@@ -2,6 +2,7 @@ package com.ternsip.glade.graphics.general;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.joml.Vector3f;
 
 import java.io.File;
 
@@ -15,6 +16,18 @@ public class Settings {
     private File animationFile;
     private File texturesDir;
     private Material[] manualMeshMaterials;
+
+    @SuppressWarnings("UnusedAssignment")
+    @Builder.Default
+    private Vector3f baseRotation = new Vector3f(0);
+
+    @SuppressWarnings("UnusedAssignment")
+    @Builder.Default
+    private Vector3f baseScale = new Vector3f(1);
+
+    @SuppressWarnings("UnusedAssignment")
+    @Builder.Default
+    private Vector3f baseOffset = new Vector3f(0);
 
     @SuppressWarnings("UnusedAssignment")
     @Builder.Default

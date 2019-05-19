@@ -36,7 +36,13 @@ public class ModelLoader {
                 .collect(Collectors.toSet());
         Bone rootBone = createBones(aiSceneMesh.mRootNode(), new Matrix4f(), skeleton, allPossibleBoneNames, settings);
         assertThat(MAX_BONES > skeleton.numberOfUniqueBones());
-        return new Model(meshes, rootBone, animationsFrames);
+        return new Model(
+                meshes,
+                new Animation(rootBone, animationsFrames),
+                settings.getBaseOffset(),
+                settings.getBaseRotation(),
+                settings.getBaseScale()
+        );
     }
 
     private static Mesh[] processMeshes(

@@ -37,17 +37,6 @@ public class Camera {
         recalculateProjectionMatrices(DISPLAY_MANAGER.getWidth(), DISPLAY_MANAGER.getHeight());
     }
 
-    private void recalculateRotation(double xPos, double yPos, double dx, double dy) {
-        recalculatePitch((float) dy);
-        recalculateAngleAroundPlayer((float) dx);
-    }
-
-    private void recalculateProjectionMatrices(float width, int height) {
-        float ratio = width / height;
-        entityProjectionMatrix = createProjectionMatrix(FAR_PLANE, ratio);
-        skyProjectionMatrix = createProjectionMatrix(SkyRenderer.SIZE * 2, ratio);
-    }
-
     public static Matrix4f createProjectionMatrix(float viewDistance, float aspectRatio) {
         //new Matrix4f().perspective(FOV, DISPLAY_MANAGER.getRatio(), NEAR_PLANE, FAR_PLANE).rotate((float) Math.PI, 0, 0, 1);
         float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))) * aspectRatio);
@@ -64,6 +53,17 @@ public class Camera {
         matrix.m33(0);
 
         return matrix;
+    }
+
+    private void recalculateRotation(double xPos, double yPos, double dx, double dy) {
+        recalculatePitch((float) dy);
+        recalculateAngleAroundPlayer((float) dx);
+    }
+
+    private void recalculateProjectionMatrices(float width, int height) {
+        float ratio = width / height;
+        entityProjectionMatrix = createProjectionMatrix(FAR_PLANE, ratio);
+        skyProjectionMatrix = createProjectionMatrix(SkyRenderer.SIZE * 2, ratio);
     }
 
     public void move() {

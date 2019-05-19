@@ -12,13 +12,14 @@ import java.util.stream.Collectors;
 
 @Getter
 @Setter
+public
 class Animation {
 
     private final Map<String, AnimationFrames> nameToAnimation;
     private final int biggestBoneIndex;
     private final BoneIndexData[] boneIndexDataTopologicallySorted;
 
-    Animation() {
+    public Animation() {
         this(new Bone(), Collections.emptyMap());
     }
 
