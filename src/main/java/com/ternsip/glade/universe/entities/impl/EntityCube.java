@@ -6,11 +6,14 @@ import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.general.Texture;
 import com.ternsip.glade.universe.entities.base.Entity;
+import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.io.File;
 
 public class EntityCube extends Entity {
+
+    public static float SIZE = 1f;
 
     // unit cube
     // A cube has 6 sides and each side has 4 vertices, therefore, the total number
@@ -25,12 +28,12 @@ public class EntityCube extends Entity {
     //  v2------v3
 
     public static float VERTICES[] = {
-            .5f, .5f, .5f, -.5f, .5f, .5f, -.5f, -.5f, .5f, .5f, -.5f, .5f, // v0,v1,v2,v3 (front)
-            .5f, .5f, .5f, .5f, -.5f, .5f, .5f, -.5f, -.5f, .5f, .5f, -.5f, // v0,v3,v4,v5 (right)
-            .5f, .5f, .5f, .5f, .5f, -.5f, -.5f, .5f, -.5f, -.5f, .5f, .5f, // v0,v5,v6,v1 (top)
-            -.5f, .5f, .5f, -.5f, .5f, -.5f, -.5f, -.5f, -.5f, -.5f, -.5f, .5f, // v1,v6,v7,v2 (left)
-            -.5f, -.5f, -.5f, .5f, -.5f, -.5f, .5f, -.5f, .5f, -.5f, -.5f, .5f, // v7,v4,v3,v2 (bottom)
-            .5f, -.5f, -.5f, -.5f, -.5f, -.5f, -.5f, .5f, -.5f, .5f, .5f, -.5f  // v4,v7,v6,v5 (back)
+            SIZE, SIZE, SIZE, -SIZE, SIZE, SIZE, -SIZE, -SIZE, SIZE, SIZE, -SIZE, SIZE, // v0,v1,v2,v3 (front)
+            SIZE, SIZE, SIZE, SIZE, -SIZE, SIZE, SIZE, -SIZE, -SIZE, SIZE, SIZE, -SIZE, // v0,v3,v4,v5 (right)
+            SIZE, SIZE, SIZE, SIZE, SIZE, -SIZE, -SIZE, SIZE, -SIZE, -SIZE, SIZE, SIZE, // v0,v5,v6,v1 (top)
+            -SIZE, SIZE, SIZE, -SIZE, SIZE, -SIZE, -SIZE, -SIZE, -SIZE, -SIZE, -SIZE, SIZE, // v1,v6,v7,v2 (left)
+            -SIZE, -SIZE, -SIZE, SIZE, -SIZE, -SIZE, SIZE, -SIZE, SIZE, -SIZE, -SIZE, SIZE, // v7,v4,v3,v2 (bottom)
+            SIZE, -SIZE, -SIZE, -SIZE, -SIZE, -SIZE, -SIZE, SIZE, -SIZE, SIZE, SIZE, -SIZE  // v4,v7,v6,v5 (back)
     };
 
     // texture coord array
@@ -53,17 +56,6 @@ public class EntityCube extends Entity {
             0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1   // v4,v7,v6,v5 (back)
     };
 
-    // colour array
-    public static float COLORS[] = {
-            1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1,  // v0,v1,v2,v3 (front)
-            1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1,  // v0,v3,v4,v5 (right)
-            1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1,  // v0,v5,v6,v1 (top)
-            1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1,  // v1,v6,v7,v2 (left)
-            0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1,  // v7,v4,v3,v2 (bottom)
-            0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1  // v4,v7,v6,v5 (back)
-    };
-
-    // index array for glDrawElements()
     // A cube requires 36 indices = 6 sides * 2 tris * 3 verts
     public static int INDICES[] = {
             0, 1, 2, 2, 3, 0,    // v0-v1-v2, v2-v3-v0 (front)
@@ -75,8 +67,18 @@ public class EntityCube extends Entity {
     };
 
     protected Model loadModel() {
-        Mesh mesh = new Mesh(VERTICES, NORMALS, COLORS, TEXCOORDS, INDICES, new float[0], new int[0], new Material(new Texture(new Vector4f(1.0f, 1.0f, 1.0f, 0.5f), new File("models/others/stall.png"))));
-        return new Model(mesh);
+        Material material = new Material(new Texture(new Vector4f(1.0f, 1.0f, 1.0f, 0.4f), new File("models/others/stall.png")));
+        return new Model(createAABBMesh(new Vector3f(1), material));
+    }
+
+    public static Mesh createAABBMesh(Vector3f scale, Material material) {
+        float[] vertices = new float[VERTICES.length];
+        for (int i = 0; i < vertices.length / 3; ++i) {
+            vertices[i * 3] = VERTICES[i * 3] * scale.x();
+            vertices[i * 3 + 1] = VERTICES[i * 3 + 1] * scale.y();
+            vertices[i * 3 + 2] = VERTICES[i * 3 + 2] * scale.z();
+        }
+        return new Mesh(vertices, NORMALS, new float[0], TEXCOORDS, INDICES, new float[0], new int[0], material);
     }
 
 }

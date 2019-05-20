@@ -18,16 +18,7 @@ public class Model {
     private final Vector3fc baseScale;
 
     @Getter(lazy = true)
-    private final float internalSize = calcBiggestInternalSize(meshes);
-
-    @Getter(lazy = true)
-    private final Vector3fc boundSize = calcBoundSize(meshes);
-
-    @Getter(lazy = true)
-    private final Vector3fc lowestPoint = calcLowestPoint(meshes);
-
-    @Getter(lazy = true)
-    private final Vector3fc highestPoint = calcHighestPoint(meshes);
+    private final float normalizingScale = calcNormalizedScale(meshes);
 
     public Model(Mesh[] meshes) {
         this(meshes, new Animation());
@@ -62,36 +53,12 @@ public class Model {
         }
     }
 
-    private float calcBiggestInternalSize(Mesh[] meshes) {
-        float biggestInternalSize = MIN_INTERNAL_SIZE;
+    private float calcNormalizedScale(Mesh[] meshes) {
+        float smallestScale = Float.MAX_VALUE / 4;
         for (Mesh mesh : meshes) {
-            biggestInternalSize = Math.max(biggestInternalSize, mesh.getInternalSize());
+            smallestScale = Math.min(smallestScale, mesh.getNormalizingScale());
         }
-        return biggestInternalSize;
-    }
-
-    private Vector3fc calcLowestPoint(Mesh[] meshes) {
-        Vector3f lowestPoint = new Vector3f(Float.MAX_VALUE / 4);
-        for (Mesh mesh : meshes) {
-            lowestPoint = lowestPoint.min(mesh.getLowestPoint());
-        }
-        return lowestPoint;
-    }
-
-    private Vector3fc calcHighestPoint(Mesh[] meshes) {
-        Vector3f highestPoint = new Vector3f(-Float.MAX_VALUE / 4);
-        for (Mesh mesh : meshes) {
-            highestPoint = highestPoint.max(mesh.getHighestPoint());
-        }
-        return highestPoint;
-    }
-
-    private Vector3fc calcBoundSize(Mesh[] meshes) {
-        Vector3f boundSize = new Vector3f(-Float.MAX_VALUE / 4);
-        for (Mesh mesh : meshes) {
-            boundSize = boundSize.max(mesh.getBoundSize());
-        }
-        return boundSize;
+        return smallestScale;
     }
 
 }

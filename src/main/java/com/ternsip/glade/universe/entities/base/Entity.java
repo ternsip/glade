@@ -21,11 +21,12 @@ public abstract class Entity {
     private final Vector3f rotation = new Vector3f(0, 0, 0);
 
     public Entity() {
+        /// XXX Automatically saving entity upon it's creation
         UNIVERSE.getEntityRepository().addEntity(this);
     }
 
     public Matrix4f getTransformationMatrix() {
-        Vector3fc totalScale = getAdjustedScale().div(getAnimator().getModel().getInternalSize());
+        Vector3fc totalScale = getAdjustedScale().mul(getAnimator().getModel().getNormalizingScale());
         Matrix4fc rotMatrix = Maths.getRotationQuaternion(getAdjustedRotation()).get(new Matrix4f());
         return new Matrix4f().translate(getAdjustedPosition()).mul(rotMatrix).scale(totalScale);
     }
@@ -68,6 +69,10 @@ public abstract class Entity {
     protected abstract Model loadModel();
 
     protected boolean isModelUnique() {
+        return false;
+    }
+
+    public boolean isSprite() {
         return false;
     }
 

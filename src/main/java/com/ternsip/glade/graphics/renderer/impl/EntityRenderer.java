@@ -5,21 +5,25 @@ import com.ternsip.glade.graphics.renderer.base.Renderer;
 import com.ternsip.glade.graphics.shader.base.ShaderProgram;
 import com.ternsip.glade.graphics.shader.impl.EntityShader;
 import com.ternsip.glade.universe.entities.base.Entity;
-import org.joml.FrustumIntersection;
-import org.joml.Matrix4f;
-import org.joml.Matrix4fc;
-import org.joml.Vector3fc;
+import org.joml.*;
+
+import java.lang.Math;
 
 import static com.ternsip.glade.Glade.UNIVERSE;
 
 @SuppressWarnings("unused")
+// TODO The speed can potentially be increased by allocating shader to each unique model (less number of re-writes)
+// TODO DRAW OPAQUE first prior
 public class EntityRenderer implements Renderer {
 
     private EntityShader shader = ShaderProgram.createShader(EntityShader.class);
 
     public void render() {
         Vector3fc camPos = UNIVERSE.getCamera().getPosition();
-        Matrix4fc projectionViewMatrix = UNIVERSE.getCamera().getProjectionViewMatrix();
+        Matrix4fc projection = UNIVERSE.getCamera().getEntityProjectionMatrix();
+        Matrix4fc view = UNIVERSE.getCamera().createViewMatrix();
+        Matrix4fc projectionViewMatrix = projection.mul(view, new Matrix4f());
+        Vector3f sunDirection = UNIVERSE.getSun().getPosition().normalize();
         FrustumIntersection frustumIntersection = new FrustumIntersection(projectionViewMatrix);
         shader.start();
         UNIVERSE.getEntityRepository()
@@ -37,7 +41,7 @@ public class EntityRenderer implements Renderer {
 
     @Override
     public int getPriority() {
-        return 2;
+        return 1;
     }
 
     private void render(Entity entity) {

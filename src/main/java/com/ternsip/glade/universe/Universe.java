@@ -62,13 +62,12 @@ public class Universe {
         entityDude2.setScale(new Vector3f(10f, 10f, 10f));
 
         EntityText entityText = new EntityText(new File("fonts/default.png"), "Hello world!", new Vector3f(0, 0.1f, 0));
-        entityText.setScale(new Vector3f(1, 1, 1));
-        entityText.setRotation(new Vector3f(0, (float) (-Math.PI - 0.01), 0));
+        EntityAxis entityAxis = new EntityAxis();
 
         for (int i = 0; i < 10; ++i) {
             for (int j = 0; j < 10; ++j) {
                 Entity entity = new EntityHagrid();
-                entity.setPosition(new Vector3f(20f + 10 * i, 2, 2 + 10 * j));
+                entity.setPosition(new Vector3f(20f + 15 * i, 2, 2 + 15 * j));
                 entity.setScale(new Vector3f(15, 15, 15));
             }
         }

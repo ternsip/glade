@@ -4,6 +4,7 @@ import com.ternsip.glade.graphics.renderer.impl.SkyRenderer;
 import com.ternsip.glade.universe.entities.impl.EntityPlayer;
 import lombok.Getter;
 import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 import org.joml.Vector3f;
 
 import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
@@ -141,13 +142,20 @@ public class Camera {
 
     public Matrix4f createViewMatrix() {
         Matrix4f viewMatrix = new Matrix4f();
-        viewMatrix.identity();
         viewMatrix.rotate((float) Math.toRadians(getPitch()), new Vector3f(1, 0, 0), viewMatrix);
         viewMatrix.rotate((float) Math.toRadians(getYaw()), new Vector3f(0, 1, 0), viewMatrix);
-        Vector3f cameraPos = getPosition();
-        Vector3f negativeCameraPos = new Vector3f(-cameraPos.x, -cameraPos.y, -cameraPos.z);
-        viewMatrix.translate(negativeCameraPos, viewMatrix);
+        viewMatrix.translate(getPosition().negate(new Vector3f()), viewMatrix);
         return viewMatrix;
+    }
+
+    public Matrix4f createRotationViewMatrix() {
+        return new Matrix4f()
+                .rotate((float) Math.toRadians(getPitch()), new Vector3f(1, 0, 0))
+                .rotate((float) Math.toRadians(getYaw()), new Vector3f(0, 1, 0));
+    }
+
+    public Matrix4f createPositionViewMatrix() {
+        return new Matrix4f().translate(getPosition().negate(new Vector3f()));
     }
 
     public Matrix4f createSkyViewMatrix() {
@@ -156,10 +164,6 @@ public class Camera {
         matrix.m31(0);
         matrix.m32(0);
         return matrix;
-    }
-
-    public Matrix4f getProjectionViewMatrix() {
-        return entityProjectionMatrix.mul(createViewMatrix(), new Matrix4f());
     }
 
 }

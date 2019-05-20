@@ -4,7 +4,6 @@ import com.ternsip.glade.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.Vector3f;
-import org.joml.Vector3fc;
 
 import static com.ternsip.glade.utils.Utils.arrayToBuffer;
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
@@ -52,10 +51,7 @@ public class Mesh {
     private final int vboTextures;
     private final int vboWeights;
     private final int vboBones;
-    private final float internalSize;
-    private final Vector3fc boundSize;
-    private final Vector3fc lowestPoint;
-    private final Vector3fc highestPoint;
+    private final float normalizingScale;
 
     public Mesh(
             float[] vertices,
@@ -81,6 +77,22 @@ public class Mesh {
         Utils.assertThat(weights.length == 0 || (MAX_WEIGHTS * vertices.length) / 3 == weights.length);
         Utils.assertThat(bones.length == 0 || (MAX_WEIGHTS * vertices.length) / 3 == bones.length);
 
+        this.normalizingScale = calculateNormalizingScale(vertices);
+        this.material = material;
+        vao = glGenVertexArrays();
+        glBindVertexArray(vao);
+        vboIndices = bindElementArrayVBO(indices);
+        vboVertices = bindArrayVBO(VERTICES_ATTRIBUTE_POINTER_INDEX, 3, vertices);
+        vboNormals = bindArrayVBO(NORMALS_ATTRIBUTE_POINTER_INDEX, 3, normals);
+        vboColors = bindArrayVBO(COLORS_ATTRIBUTE_POINTER_INDEX, 4, colors);
+        vboTextures = bindArrayVBO(TEXTURES_ATTRIBUTE_POINTER_INDEX, 2, textures);
+        vboWeights = bindArrayVBO(WEIGHTS_ATTRIBUTE_POINTER_INDEX, MAX_WEIGHTS, weights);
+        vboBones = bindArrayVBO(BONES_ATTRIBUTE_POINTER_INDEX, MAX_WEIGHTS, bones);
+        glBindVertexArray(0);
+
+    }
+
+    private static float calculateNormalizingScale(float[] vertices) {
         Vector3f lowestPoint = new Vector3f(Float.MAX_VALUE / 4);
         Vector3f highestPoint = new Vector3f(-Float.MAX_VALUE / 4);
         for (int i = 0; i < vertices.length / 3; ++i) {
@@ -96,23 +108,7 @@ public class Mesh {
             );
         }
         Vector3f bounds = highestPoint.sub(lowestPoint, new Vector3f()).max(new Vector3f(MIN_INTERNAL_SIZE));
-        this.boundSize = bounds;
-        this.lowestPoint = lowestPoint;
-        this.highestPoint = highestPoint;
-        this.internalSize = Math.max(bounds.x(), Math.max(bounds.y(), bounds.z()));
-
-        this.material = material;
-        vao = glGenVertexArrays();
-        glBindVertexArray(vao);
-        vboIndices = bindElementArrayVBO(indices);
-        vboVertices = bindArrayVBO(VERTICES_ATTRIBUTE_POINTER_INDEX, 3, vertices);
-        vboNormals = bindArrayVBO(NORMALS_ATTRIBUTE_POINTER_INDEX, 3, normals);
-        vboColors = bindArrayVBO(COLORS_ATTRIBUTE_POINTER_INDEX, 4, colors);
-        vboTextures = bindArrayVBO(TEXTURES_ATTRIBUTE_POINTER_INDEX, 2, textures);
-        vboWeights = bindArrayVBO(WEIGHTS_ATTRIBUTE_POINTER_INDEX, MAX_WEIGHTS, weights);
-        vboBones = bindArrayVBO(BONES_ATTRIBUTE_POINTER_INDEX, MAX_WEIGHTS, bones);
-        glBindVertexArray(0);
-
+        return 2 / Math.max(bounds.x(), Math.max(bounds.y(), bounds.z()));
     }
 
     private static int bindArrayVBO(int index, int nPerVertex, float[] array) {
@@ -181,7 +177,6 @@ public class Mesh {
         glDeleteVertexArrays(vao);
         if (vboVertices != NO_VBO) glDeleteBuffers(vboVertices);
         if (vboNormals != NO_VBO) glDeleteBuffers(vboNormals);
-        if (vboColors != NO_VBO) glDeleteBuffers(vboColors);
         if (vboTextures != NO_VBO) glDeleteBuffers(vboTextures);
         if (vboWeights != NO_VBO) glDeleteBuffers(vboWeights);
         if (vboBones != NO_VBO) glDeleteBuffers(vboBones);

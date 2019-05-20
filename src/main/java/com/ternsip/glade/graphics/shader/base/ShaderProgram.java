@@ -74,6 +74,7 @@ public abstract class ShaderProgram {
     private static void bindAttributes(int programID) {
         glBindAttribLocation(programID, VERTICES_ATTRIBUTE_POINTER_INDEX, "position");
         glBindAttribLocation(programID, TEXTURES_ATTRIBUTE_POINTER_INDEX, "textureCoordinates");
+        glBindAttribLocation(programID, COLORS_ATTRIBUTE_POINTER_INDEX, "colors");
         glBindAttribLocation(programID, NORMALS_ATTRIBUTE_POINTER_INDEX, "normal");
         glBindAttribLocation(programID, BONES_ATTRIBUTE_POINTER_INDEX, "boneIndices");
         glBindAttribLocation(programID, WEIGHTS_ATTRIBUTE_POINTER_INDEX, "weights");
