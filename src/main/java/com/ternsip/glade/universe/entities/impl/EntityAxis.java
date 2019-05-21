@@ -3,7 +3,10 @@ package com.ternsip.glade.universe.entities.impl;
 import com.ternsip.glade.graphics.general.*;
 import com.ternsip.glade.universe.entities.base.Entity;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 import org.joml.Vector4f;
+
+import static com.ternsip.glade.Glade.UNIVERSE;
 
 public class EntityAxis extends Entity {
 
@@ -20,8 +23,9 @@ public class EntityAxis extends Entity {
     }
 
     @Override
-    public boolean isSprite() {
-        return true;
+    public Vector3f getPosition() {
+        Vector3f pos = new Vector3f(UNIVERSE.getCamera().getPosition());
+        Vector3f look = new Vector3f(UNIVERSE.getCamera().getDirection());
+        return pos.add(look.mul(10));
     }
-
 }

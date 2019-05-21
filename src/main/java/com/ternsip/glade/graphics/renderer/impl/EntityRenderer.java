@@ -4,6 +4,7 @@ import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.renderer.base.Renderer;
 import com.ternsip.glade.graphics.shader.base.ShaderProgram;
 import com.ternsip.glade.graphics.shader.impl.EntityShader;
+import com.ternsip.glade.universe.common.Camera;
 import com.ternsip.glade.universe.entities.base.Entity;
 import org.joml.*;
 
@@ -21,7 +22,7 @@ public class EntityRenderer implements Renderer {
     public void render() {
         Vector3fc camPos = UNIVERSE.getCamera().getPosition();
         Matrix4fc projection = UNIVERSE.getCamera().getEntityProjectionMatrix();
-        Matrix4fc view = UNIVERSE.getCamera().createViewMatrix();
+        Matrix4fc view = UNIVERSE.getCamera().getFullViewMatrix();
         Matrix4fc projectionViewMatrix = projection.mul(view, new Matrix4f());
         Vector3f sunDirection = UNIVERSE.getSun().getPosition().normalize();
         FrustumIntersection frustumIntersection = new FrustumIntersection(projectionViewMatrix);
@@ -47,9 +48,12 @@ public class EntityRenderer implements Renderer {
     private void render(Entity entity) {
         entity.getAnimator().update(getUpdateIntervalMilliseconds(entity));
         Matrix4f[] boneTransforms = entity.getAnimator().getBoneTransforms();
+        Camera camera = UNIVERSE.getCamera();
+        Matrix4fc projection = entity.isSprite() ? camera.getSpriteProjectionMatrix() : camera.getEntityProjectionMatrix();
+        Matrix4fc view = entity.isSprite() ? new Matrix4f() : camera.getFullViewMatrix();
         shader.getAnimated().load(boneTransforms.length > 0);
-        shader.getProjectionMatrix().load(UNIVERSE.getCamera().getEntityProjectionMatrix());
-        shader.getViewMatrix().load(UNIVERSE.getCamera().createViewMatrix());
+        shader.getProjectionMatrix().load(projection);
+        shader.getViewMatrix().load(view);
         shader.getLightDirection().load(UNIVERSE.getSun().getPosition().normalize());
         shader.getBoneTransforms().load(boneTransforms);
         shader.getTransformationMatrix().load(entity.getTransformationMatrix());

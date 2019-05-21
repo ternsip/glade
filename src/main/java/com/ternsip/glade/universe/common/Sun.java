@@ -19,7 +19,7 @@ public class Sun implements Light {
         this.colour = colour;
     }
 
-    public void move() {
+    public void update() {
         phase += delta;
     }
 

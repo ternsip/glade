@@ -76,9 +76,8 @@ public class Universe {
 
     public void update() {
         getEntityRepository().update();
-        entityPlayer.move();
-        camera.move();
-        sun.move();
+        camera.update();
+        sun.update();
     }
 
     public void finish() {

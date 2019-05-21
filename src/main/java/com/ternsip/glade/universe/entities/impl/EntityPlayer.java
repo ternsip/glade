@@ -19,7 +19,8 @@ public class EntityPlayer extends EntityBoy {
         increaseRotation(new Vector3f(0, 0, (float) (-Math.PI / 2.0f)));
     }
 
-    public void move() {
+    @Override
+    public void update() {
         checkInputs();
         super.increaseRotation(new Vector3f(0, currentTurnSpeed * DISPLAY_MANAGER.getDeltaTime(), 0));
         float distance = currentSpeed * DISPLAY_MANAGER.getDeltaTime();
