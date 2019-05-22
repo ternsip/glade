@@ -9,6 +9,10 @@ import com.ternsip.glade.universe.entities.base.Entity;
 import org.joml.*;
 
 import java.lang.Math;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.ternsip.glade.Glade.UNIVERSE;
 
@@ -27,12 +31,19 @@ public class EntityRenderer implements Renderer {
         Vector3f sunDirection = UNIVERSE.getSun().getPosition().normalize();
         FrustumIntersection frustumIntersection = new FrustumIntersection(projectionViewMatrix);
         shader.start();
-        UNIVERSE.getEntityRepository()
+        HashMap<Entity, Float> distanceToEntity = UNIVERSE.getEntityRepository()
                 .getEntities()
                 .stream()
                 .filter(e -> isEntityInsideFrustum(frustumIntersection, e))
-                .sorted((o1, o2) -> Float.compare(o2.getAdjustedPosition().distanceSquared(camPos), o1.getAdjustedPosition().distanceSquared(camPos)))
-                .forEach(this::render);
+                .collect(
+                        Collectors.toMap(
+                                e -> e,
+                                e -> e.isFrontal() ? -1 : e.getAdjustedPosition().distanceSquared(camPos),
+                                (a, b) -> a,
+                                HashMap::new
+                        )
+                );
+        distanceToEntity.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).forEach(k -> render(k.getKey()));
         shader.stop();
     }
 
@@ -74,6 +85,9 @@ public class EntityRenderer implements Renderer {
     }
 
     private boolean isEntityInsideFrustum(FrustumIntersection frustumIntersection, Entity entity) {
+        if (entity.isFrontal()) {
+            return true;
+        }
         Vector3fc scale = entity.getAdjustedScale();
         float delta = Math.max(Math.max(scale.x(), scale.y()), scale.z()) * 1.5f;
         return frustumIntersection.testSphere(entity.getAdjustedPosition(), delta);
@@ -82,7 +96,7 @@ public class EntityRenderer implements Renderer {
     private long getUpdateIntervalMilliseconds(Entity entity) {
         Vector3fc scale = entity.getAdjustedScale();
         float maxScale = Math.max(Math.max(scale.x(), scale.y()), scale.z());
-        double criterion = (UNIVERSE.getCamera().getPosition().distance(entity.getPosition()) / maxScale) / 10;
+        double criterion = (UNIVERSE.getCamera().getPosition().distance(entity.getAdjustedPosition()) / maxScale) / 10;
         return (long) (criterion * criterion * criterion);
     }
 

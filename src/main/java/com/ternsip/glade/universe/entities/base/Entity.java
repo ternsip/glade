@@ -72,6 +72,10 @@ public abstract class Entity {
         return false;
     }
 
+    public boolean isFrontal() {
+        return false;
+    }
+
     public boolean isSprite() {
         return false;
     }

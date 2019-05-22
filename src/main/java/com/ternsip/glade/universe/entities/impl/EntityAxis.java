@@ -34,9 +34,8 @@ public class EntityAxis extends Entity {
     }
 
     @Override
-    public Vector3f getAdjustedPosition() {
-        Vector3f pos = new Vector3f(UNIVERSE.getCamera().getPosition());
-        Vector3f look = new Vector3f(UNIVERSE.getCamera().getFrontDirection());
-        return pos.add(look);
+    public boolean isFrontal() {
+        return true;
     }
+
 }

@@ -26,7 +26,7 @@ public class Camera {
     private static final float NEAR_PLANE = 0.1f;
     private static final float FAR_PLANE = 1000;
     private static final float MIN_DISTANCE_FROM_TARGET = 0.1f;
-    private static final float MAX_DISTANCE_FROM_TARGET = 120;
+    private static final float MAX_DISTANCE_FROM_TARGET = 320;
     private static final float ROTATION_OVERLAP_EPSILON = 0.001f;
     private static final float MAX_ROTATION_DELTA_X = (float) (Math.PI * 2);
     private static final float MAX_ROTATION_DELTA_Y = (float) (Math.PI / 2 - 0.01f);
