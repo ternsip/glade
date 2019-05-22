@@ -66,11 +66,6 @@ public class EntityCube extends Entity {
             20, 21, 22, 22, 23, 20     // v4-v7-v6, v6-v5-v4 (back)
     };
 
-    protected Model loadModel() {
-        Material material = new Material(new Texture(new Vector4f(1.0f, 1.0f, 1.0f, 0.4f), new File("models/others/stall.png")));
-        return new Model(createAABBMesh(new Vector3f(1), material));
-    }
-
     public static Mesh createAABBMesh(Vector3f scale, Material material) {
         float[] vertices = new float[VERTICES.length];
         for (int i = 0; i < vertices.length / 3; ++i) {
@@ -79,6 +74,11 @@ public class EntityCube extends Entity {
             vertices[i * 3 + 2] = VERTICES[i * 3 + 2] * scale.z();
         }
         return new Mesh(vertices, NORMALS, new float[0], TEXCOORDS, INDICES, new float[0], new int[0], material);
+    }
+
+    protected Model loadModel() {
+        Material material = new Material(new Texture(new Vector4f(1.0f, 1.0f, 1.0f, 0.4f), new File("models/others/stall.png")));
+        return new Model(createAABBMesh(new Vector3f(1), material));
     }
 
 }

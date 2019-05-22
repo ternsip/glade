@@ -76,4 +76,8 @@ public abstract class Entity {
         return false;
     }
 
+    public void finish() {
+        UNIVERSE.getEntityRepository().removeEntity(this);
+    }
+
 }

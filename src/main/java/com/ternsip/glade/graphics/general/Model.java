@@ -5,8 +5,6 @@ import lombok.Setter;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
-import static com.ternsip.glade.graphics.general.Mesh.MIN_INTERNAL_SIZE;
-
 @Getter
 @Setter
 public class Model {

@@ -24,11 +24,6 @@ public class EntityText extends Entity {
     private final String text;
     private final Vector3f rotationSpeed;
 
-    protected Model loadModel() {
-        Mesh mesh = createTextMesh(text, new Material(new Texture(new Vector4f(0, 0, 1, 1), font)));
-        return new Model(new Mesh[]{mesh}, new Animation(), new Vector3f(0), new Vector3f(0), new Vector3f(text.length(), 1, 1));
-    }
-
     public static Mesh createTextMesh(String text, Material material) {
         int quad = 4;
         int power4 = 16;
@@ -61,6 +56,11 @@ public class EntityText extends Entity {
             }
         }
         return new Mesh(vertices, normals, new float[0], textures, indices, new float[0], new int[0], material);
+    }
+
+    protected Model loadModel() {
+        Mesh mesh = createTextMesh(text, new Material(new Texture(new Vector4f(0, 0, 1, 1), font)));
+        return new Model(new Mesh[]{mesh}, new Animation(), new Vector3f(0), new Vector3f(0), new Vector3f(text.length(), 1, 1));
     }
 
     @Override
