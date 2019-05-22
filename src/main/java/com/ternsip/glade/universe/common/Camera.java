@@ -116,6 +116,7 @@ public class Camera {
     }
 
     public void recalculateViewMatrices() {
+        // TODO deal with the situation when UP_DIR collinear to camera view
         Matrix4fc view = new Matrix4f().lookAt(getPosition(), getTarget().getAdjustedPosition(), UP_DIRECTION);
         setFullViewMatrix(view);
         setSpriteViewMatrix(new Matrix4f().translate(getPosition()));

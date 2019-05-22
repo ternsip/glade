@@ -75,7 +75,7 @@ public class EntityRenderer implements Renderer {
 
     private boolean isEntityInsideFrustum(FrustumIntersection frustumIntersection, Entity entity) {
         Vector3fc scale = entity.getAdjustedScale();
-        float delta = Math.max(Math.max(scale.x(), scale.y()), scale.z());
+        float delta = Math.max(Math.max(scale.x(), scale.y()), scale.z()) * 1.5f;
         return frustumIntersection.testSphere(entity.getAdjustedPosition(), delta);
     }
 
