@@ -2,7 +2,6 @@ package com.ternsip.glade.universe.entities.impl;
 
 import com.ternsip.glade.graphics.general.*;
 import com.ternsip.glade.universe.entities.base.Entity;
-import com.ternsip.glade.utils.Maths;
 import org.joml.*;
 
 import static com.ternsip.glade.Glade.UNIVERSE;
@@ -28,7 +27,8 @@ public class EntityAxis extends Entity {
         Quaternionfc rotQuaternion = view.getNormalizedRotation(new Quaternionf());
         return view
                 .invert(new Matrix4f())
-                .translate(-1.5f, 0.8f, -1f)
+                // TODO make it automatic
+                .translate(-1f, 0.7f, -1f)
                 .rotate(rotQuaternion)
                 .scale(totalScale);
     }

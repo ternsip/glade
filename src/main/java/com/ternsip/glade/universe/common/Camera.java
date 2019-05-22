@@ -22,7 +22,7 @@ public class Camera {
     private static final Vector3fc FRONT_DIRECTION = new Vector3f(0, 0, -1);
     private static final Vector3fc LEFT_DIRECTION = new Vector3f(-1, 0, 0);
     private static final Vector3fc RIGHT_DIRECTION = new Vector3f(1, 0, 0);
-    private static final float FOV = 120;
+    private static final float FOV = (float) Math.toRadians(80);
     private static final float NEAR_PLANE = 0.1f;
     private static final float FAR_PLANE = 1000;
     private static final float MIN_DISTANCE_FROM_TARGET = 0.1f;
@@ -54,21 +54,7 @@ public class Camera {
     }
 
     public static Matrix4f createProjectionMatrix(float viewDistance, float aspectRatio) {
-        //new Matrix4f().perspective(FOV, DISPLAY_MANAGER.getRatio(), NEAR_PLANE, FAR_PLANE).rotate((float) Math.PI, 0, 0, 1);
-        float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))) * aspectRatio);
-        float x_scale = y_scale / aspectRatio;
-        float farPlane = viewDistance;
-        float frustum_length = farPlane - NEAR_PLANE;
-
-        Matrix4f matrix = new Matrix4f();
-        matrix.m00(x_scale);
-        matrix.m11(y_scale);
-        matrix.m22(-((farPlane + NEAR_PLANE) / frustum_length));
-        matrix.m23(-1);
-        matrix.m32(-((2 * NEAR_PLANE * farPlane) / frustum_length));
-        matrix.m33(0);
-
-        return matrix;
+        return new Matrix4f().perspective(FOV, aspectRatio, NEAR_PLANE, viewDistance);
     }
 
     public static Matrix4fc createOrthoProjectionMatrix(float viewDistance, float width, float height) {
