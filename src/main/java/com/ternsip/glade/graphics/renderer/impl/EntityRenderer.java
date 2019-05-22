@@ -35,14 +35,7 @@ public class EntityRenderer implements Renderer {
                 .getEntities()
                 .stream()
                 .filter(e -> isEntityInsideFrustum(frustumIntersection, e))
-                .collect(
-                        Collectors.toMap(
-                                e -> e,
-                                e -> e.isFrontal() ? -1 : e.getAdjustedPosition().distanceSquared(camPos),
-                                (a, b) -> a,
-                                HashMap::new
-                        )
-                );
+                .collect(Collectors.toMap(e -> e, e -> e.isFrontal() ? -1 : e.getAdjustedPosition().distanceSquared(camPos), (a, b) -> a, HashMap::new));
         distanceToEntity.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).forEach(k -> render(k.getKey()));
         shader.stop();
     }
