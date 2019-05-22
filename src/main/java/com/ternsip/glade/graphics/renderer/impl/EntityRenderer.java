@@ -31,7 +31,7 @@ public class EntityRenderer implements Renderer {
                 .getEntities()
                 .stream()
                 .filter(e -> isEntityInsideFrustum(frustumIntersection, e))
-                .sorted((o1, o2) -> Float.compare(o2.getPosition().distanceSquared(camPos), o1.getPosition().distanceSquared(camPos)))
+                .sorted((o1, o2) -> Float.compare(o2.getAdjustedPosition().distanceSquared(camPos), o1.getAdjustedPosition().distanceSquared(camPos)))
                 .forEach(this::render);
         shader.stop();
     }
@@ -76,7 +76,7 @@ public class EntityRenderer implements Renderer {
     private boolean isEntityInsideFrustum(FrustumIntersection frustumIntersection, Entity entity) {
         Vector3fc scale = entity.getAdjustedScale();
         float delta = Math.max(Math.max(scale.x(), scale.y()), scale.z());
-        return frustumIntersection.testSphere(entity.getPosition(), delta);
+        return frustumIntersection.testSphere(entity.getAdjustedPosition(), delta);
     }
 
     private long getUpdateIntervalMilliseconds(Entity entity) {

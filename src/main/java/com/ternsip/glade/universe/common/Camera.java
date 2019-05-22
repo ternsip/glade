@@ -102,7 +102,10 @@ public class Camera {
     }
 
     public Vector3fc getPosition() {
-        return getDirection().mul(getDistanceFromTarget(), new Vector3f()).add(getTarget().getAdjustedPosition());
+        return getFrontDirection()
+                .mul(getDistanceFromTarget(), new Vector3f())
+                .negate()
+                .add(getTarget().getAdjustedPosition());
     }
 
     private void recalculateZoom(double scrollX, double scrollY) {
@@ -119,7 +122,7 @@ public class Camera {
         setSkyViewMatrix(new Matrix4f(view).m30(0).m31(0).m32(0));
     }
 
-    public Vector3fc getDirection() {
-        return FRONT_DIRECTION.rotateX(getRotation().y(), new Vector3f()).rotateY(-getRotation().x());
+    public Vector3fc getFrontDirection() {
+        return BACK_DIRECTION.rotateX(getRotation().y(), new Vector3f()).rotateY(-getRotation().x());
     }
 }
