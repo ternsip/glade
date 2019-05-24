@@ -10,10 +10,15 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Getter
 @NonNull
-public class AnimationFrames {
+class FrameTrack {
 
     private final float lengthSeconds;
     private final KeyFrame[] keyFrames;
+
+    FrameTrack() {
+        this.lengthSeconds = 0;
+        this.keyFrames = new KeyFrame[]{};
+    }
 
     Set<String> findAllDistinctBonesNames() {
         Set<String> boneNames = new HashSet<>();

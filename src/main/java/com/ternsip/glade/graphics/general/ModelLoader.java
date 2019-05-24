@@ -28,20 +28,21 @@ public class ModelLoader {
         Skeleton skeleton = processSkeleton(aiSceneMesh);
         PointerBuffer aiMeshes = aiSceneMesh.mMeshes();
         Mesh[] meshes = processMeshes(aiSceneMesh, materials, skeleton, aiMeshes, settings);
-        Map<String, AnimationFrames> animationsFrames = buildAnimations(aiSceneAnimation);
+        Map<String, FrameTrack> animationsFrames = buildAnimations(aiSceneAnimation);
         Set<String> allPossibleBoneNames = animationsFrames.values()
                 .stream()
-                .map(AnimationFrames::findAllDistinctBonesNames)
+                .map(FrameTrack::findAllDistinctBonesNames)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
         Bone rootBone = createBones(aiSceneMesh.mRootNode(), new Matrix4f(), skeleton, allPossibleBoneNames, settings);
         assertThat(MAX_BONES > skeleton.numberOfUniqueBones());
         return new Model(
                 meshes,
-                new Animation(rootBone, animationsFrames),
                 settings.getBaseOffset(),
                 settings.getBaseRotation(),
-                settings.getBaseScale()
+                settings.getBaseScale(),
+                rootBone,
+                animationsFrames
         );
     }
 
@@ -107,8 +108,8 @@ public class ModelLoader {
         return new Bone(boneIndex, boneName, children, inverseBindTransform);
     }
 
-    private static Map<String, AnimationFrames> buildAnimations(AIScene aiScene) {
-        Map<String, AnimationFrames> animations = new HashMap<>();
+    private static Map<String, FrameTrack> buildAnimations(AIScene aiScene) {
+        Map<String, FrameTrack> animations = new HashMap<>();
 
         // Process all animations
         PointerBuffer aiAnimations = aiScene.mAnimations();
@@ -139,8 +140,8 @@ public class ModelLoader {
                 keyFrames[j] = new KeyFrame(localMap);
             }
 
-            AnimationFrames animationFrames = new AnimationFrames(duration, keyFrames);
-            animations.put(aiAnimation.mName().dataString(), animationFrames);
+            FrameTrack frameTrack = new FrameTrack(duration, keyFrames);
+            animations.put(aiAnimation.mName().dataString(), frameTrack);
         }
         return animations;
     }

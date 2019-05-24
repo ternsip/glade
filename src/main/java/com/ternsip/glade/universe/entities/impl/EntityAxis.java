@@ -1,6 +1,9 @@
 package com.ternsip.glade.universe.entities.impl;
 
-import com.ternsip.glade.graphics.general.*;
+import com.ternsip.glade.graphics.general.Material;
+import com.ternsip.glade.graphics.general.Mesh;
+import com.ternsip.glade.graphics.general.Model;
+import com.ternsip.glade.graphics.general.Texture;
 import com.ternsip.glade.universe.entities.base.Entity;
 import org.joml.*;
 
@@ -17,12 +20,12 @@ public class EntityAxis extends Entity {
         Mesh meshX = EntityCube.createAABBMesh(new Vector3f(1, proportion, proportion), red);
         Mesh meshY = EntityCube.createAABBMesh(new Vector3f(proportion, 1, proportion), greed);
         Mesh meshZ = EntityCube.createAABBMesh(new Vector3f(proportion, proportion, 1), blue);
-        return new Model(new Mesh[]{meshX, meshY, meshZ}, new Animation(), new Vector3f(0), new Vector3f(0), new Vector3f(0.075f));
+        return new Model(new Mesh[]{meshX, meshY, meshZ}, new Vector3f(0), new Vector3f(0), new Vector3f(0.075f));
     }
 
     @Override
     public Matrix4f getTransformationMatrix() {
-        Vector3fc totalScale = getAdjustedScale().mul(getAnimator().getModel().getNormalizingScale());
+        Vector3fc totalScale = getAdjustedScale().mul(getAnimation().getModel().getNormalizingScale());
         Matrix4fc view = UNIVERSE.getCamera().getFullViewMatrix();
         Quaternionfc rotQuaternion = view.getNormalizedRotation(new Quaternionf());
         return view

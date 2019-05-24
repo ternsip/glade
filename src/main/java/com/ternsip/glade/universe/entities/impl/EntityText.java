@@ -1,42 +1,35 @@
 package com.ternsip.glade.universe.entities.impl;
 
 
-import com.ternsip.glade.graphics.general.*;
 import com.ternsip.glade.universe.entities.base.Entity;
+import com.ternsip.glade.universe.entities.base.MultiEntity;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.io.File;
 
-@RequiredArgsConstructor
 @Getter
-public class EntityText extends Entity {
+public class EntityText extends MultiEntity {
 
-    private static final float DEFAULT_SCALE = 1 / 75f;
-    private final File font;
-    private final String text;
-
-    protected Model loadModel() {
-        Mesh mesh = Entity3DText.createTextMesh(text, new Material(new Texture(new Vector4f(0, 0, 1, 1), font)));
-        Vector3f scale = new Vector3f(text.length() * DEFAULT_SCALE, 1 * DEFAULT_SCALE, 1);
-        return new Model(new Mesh[]{mesh}, new Animation(), new Vector3f(0), new Vector3f(0), scale);
+    public EntityText(File font, String text, Vector3f position, Vector3f scale, Vector4f color) {
+        super(generateEntities(font, text, position, scale, color));
     }
 
-    @Override
-    protected boolean isModelUnique() {
-        return true;
-    }
-
-    @Override
-    public boolean isSprite() {
-        return true;
-    }
-
-    @Override
-    public boolean isFrontal() {
-        return true;
+    private static Entity[] generateEntities(
+            File font,
+            String text,
+            Vector3f position,
+            Vector3f scale,
+            Vector4f color
+    ) {
+        Entity[] entities = new Entity[text.length()];
+        for (int i = 0; i < text.length(); ++i) {
+            entities[i] = new EntityGlyph(font, text.charAt(i), color);
+            entities[i].setPosition(new Vector3f(i * EntityGlyph.DEFAULT_SCALE * scale.x(), 0, 0).add(position));
+            entities[i].setScale(scale);
+        }
+        return entities;
     }
 
 }

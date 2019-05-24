@@ -19,6 +19,7 @@ public class Universe {
     private Sun sun;
     private EntityPlayer entityPlayer;
     private Camera camera;
+    private EntityFps entityFps;
 
     public void initialize() {
 
@@ -64,7 +65,9 @@ public class Universe {
         Entity3DText entity3DText = new Entity3DText(new File("fonts/default.png"), "Hello world!", new Vector3f(0, 0.1f, 0));
         EntityAxis entityAxis = new EntityAxis();
 
-        EntityText entityText = new EntityText(new File("fonts/default.png"), "1234567890.1234567890");
+        //EntityText entityText = new EntityText(new File("fonts/default.png"), "1234567890.1234567890");
+
+        entityFps = new EntityFps(100);
 
         for (int i = 0; i < 100; ++i) {
             for (int j = 0; j < 100; ++j) {
@@ -77,12 +80,13 @@ public class Universe {
     }
 
     public void update() {
+        getEntityFps().update();
         getEntityRepository().update();
-        camera.update();
-        sun.update();
+        getCamera().update();
+        getSun().update();
     }
 
     public void finish() {
-        entityRepository.finish();
+        getEntityRepository().finish();
     }
 }

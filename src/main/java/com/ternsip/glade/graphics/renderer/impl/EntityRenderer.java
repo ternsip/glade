@@ -31,7 +31,8 @@ public class EntityRenderer implements Renderer {
         Vector3f sunDirection = UNIVERSE.getSun().getPosition().normalize();
         FrustumIntersection frustumIntersection = new FrustumIntersection(projectionViewMatrix);
         shader.start();
-        HashMap<Entity, Float> distanceToEntity = UNIVERSE.getEntityRepository()
+        HashMap<Entity, Float> distanceToEntity = UNIVERSE
+                .getEntityRepository()
                 .getEntities()
                 .stream()
                 .filter(e -> isEntityInsideFrustum(frustumIntersection, e))
@@ -50,8 +51,8 @@ public class EntityRenderer implements Renderer {
     }
 
     private void render(Entity entity) {
-        entity.getAnimator().update(getUpdateIntervalMilliseconds(entity));
-        Matrix4f[] boneTransforms = entity.getAnimator().getBoneTransforms();
+        entity.getAnimation().update(getUpdateIntervalMilliseconds(entity));
+        Matrix4f[] boneTransforms = entity.getAnimation().getBoneTransforms();
         Camera camera = UNIVERSE.getCamera();
         Matrix4fc projection = entity.isSprite() ? camera.getSpriteProjectionMatrix() : camera.getEntityProjectionMatrix();
         Matrix4fc view = entity.isSprite() ? new Matrix4f() : camera.getFullViewMatrix();
@@ -61,7 +62,7 @@ public class EntityRenderer implements Renderer {
         shader.getLightDirection().load(UNIVERSE.getSun().getPosition().normalize());
         shader.getBoneTransforms().load(boneTransforms);
         shader.getTransformationMatrix().load(entity.getTransformationMatrix());
-        for (Mesh mesh : entity.getAnimator().getModel().getMeshes()) {
+        for (Mesh mesh : entity.getAnimation().getModel().getMeshes()) {
             shader.getDiffuseMap().load(mesh.getMaterial().getDiffuseMap());
             shader.getSpecularMap().load(mesh.getMaterial().getSpecularMap());
             shader.getAmbientMap().load(mesh.getMaterial().getAmbientMap());

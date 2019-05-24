@@ -145,10 +145,12 @@ public class Utils {
                 .collect(Collectors.toList());
     }
 
+    // TODO USE CYCLE INSTEAD OF RECURSION USING FOR (;;)
+    @SneakyThrows
     public static Method findDeclaredMethodInHierarchy(
             Class<?> objectClass,
             String methodName
-    ) throws NoSuchMethodException {
+    ) {
         try {
             return objectClass.getDeclaredMethod(methodName);
         } catch (NoSuchMethodException e) {

@@ -1,7 +1,10 @@
 package com.ternsip.glade.universe.entities.impl;
 
 
-import com.ternsip.glade.graphics.general.*;
+import com.ternsip.glade.graphics.general.Material;
+import com.ternsip.glade.graphics.general.Mesh;
+import com.ternsip.glade.graphics.general.Model;
+import com.ternsip.glade.graphics.general.Texture;
 import com.ternsip.glade.universe.entities.base.Entity;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -60,7 +63,7 @@ public class Entity3DText extends Entity {
 
     protected Model loadModel() {
         Mesh mesh = createTextMesh(text, new Material(new Texture(new Vector4f(0, 0, 1, 1), font)));
-        return new Model(new Mesh[]{mesh}, new Animation(), new Vector3f(0), new Vector3f(0), new Vector3f(text.length(), 1, 1));
+        return new Model(new Mesh[]{mesh}, new Vector3f(0), new Vector3f(0), new Vector3f(text.length(), 1, 1));
     }
 
     @Override
@@ -69,7 +72,7 @@ public class Entity3DText extends Entity {
     }
 
     @Override
-    protected boolean isModelUnique() {
-        return true;
+    public Object getModelKey() {
+        return this;
     }
 }
