@@ -4,9 +4,13 @@ import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.renderer.base.Renderer;
 import com.ternsip.glade.graphics.shader.base.ShaderProgram;
 import com.ternsip.glade.graphics.shader.impl.EntityShader;
+import com.ternsip.glade.universe.Universe;
 import com.ternsip.glade.universe.common.Camera;
 import com.ternsip.glade.universe.entities.base.Entity;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.joml.*;
+import org.springframework.stereotype.Component;
 
 import java.lang.Math;
 import java.util.Comparator;
@@ -14,24 +18,27 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.ternsip.glade.Glade.UNIVERSE;
 
 @SuppressWarnings("unused")
 // TODO The speed can potentially be increased by allocating shader to each unique model (less number of re-writes)
 // TODO DRAW OPAQUE first prior
+@Getter
+@Component
+@RequiredArgsConstructor
 public class EntityRenderer implements Renderer {
 
-    private EntityShader shader = ShaderProgram.createShader(EntityShader.class);
+    private final EntityShader shader = ShaderProgram.createShader(EntityShader.class);
+    private final Universe universe;
 
     public void render() {
-        Vector3fc camPos = UNIVERSE.getCamera().getPosition();
-        Matrix4fc projection = UNIVERSE.getCamera().getEntityProjectionMatrix();
-        Matrix4fc view = UNIVERSE.getCamera().getFullViewMatrix();
+        Vector3fc camPos = getUniverse().getCamera().getPosition();
+        Matrix4fc projection = getUniverse().getCamera().getEntityProjectionMatrix();
+        Matrix4fc view = getUniverse().getCamera().getFullViewMatrix();
         Matrix4fc projectionViewMatrix = projection.mul(view, new Matrix4f());
-        Vector3f sunDirection = UNIVERSE.getSun().getPosition().normalize();
+        Vector3f sunDirection = getUniverse().getSun().getPosition().normalize();
         FrustumIntersection frustumIntersection = new FrustumIntersection(projectionViewMatrix);
         shader.start();
-        HashMap<Entity, Float> distanceToEntity = UNIVERSE
+        HashMap<Entity, Float> distanceToEntity = getUniverse()
                 .getEntityRepository()
                 .getEntities()
                 .stream()
@@ -53,13 +60,13 @@ public class EntityRenderer implements Renderer {
     private void render(Entity entity) {
         entity.getAnimation().update(getUpdateIntervalMilliseconds(entity));
         Matrix4f[] boneTransforms = entity.getAnimation().getBoneTransforms();
-        Camera camera = UNIVERSE.getCamera();
+        Camera camera = getUniverse().getCamera();
         Matrix4fc projection = entity.isSprite() ? camera.getSpriteProjectionMatrix() : camera.getEntityProjectionMatrix();
         Matrix4fc view = entity.isSprite() ? new Matrix4f() : camera.getFullViewMatrix();
         shader.getAnimated().load(boneTransforms.length > 0);
         shader.getProjectionMatrix().load(projection);
         shader.getViewMatrix().load(view);
-        shader.getLightDirection().load(UNIVERSE.getSun().getPosition().normalize());
+        shader.getLightDirection().load(getUniverse().getSun().getPosition().normalize());
         shader.getBoneTransforms().load(boneTransforms);
         shader.getTransformationMatrix().load(entity.getTransformationMatrix());
         for (Mesh mesh : entity.getAnimation().getModel().getMeshes()) {
@@ -90,7 +97,7 @@ public class EntityRenderer implements Renderer {
     private long getUpdateIntervalMilliseconds(Entity entity) {
         Vector3fc scale = entity.getAdjustedScale();
         float maxScale = Math.max(Math.max(scale.x(), scale.y()), scale.z());
-        double criterion = (UNIVERSE.getCamera().getPosition().distance(entity.getAdjustedPosition()) / maxScale) / 10;
+        double criterion = (getUniverse().getCamera().getPosition().distance(entity.getAdjustedPosition()) / maxScale) / 10;
         return (long) (criterion * criterion * criterion);
     }
 

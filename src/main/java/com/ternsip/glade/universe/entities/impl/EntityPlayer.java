@@ -1,10 +1,11 @@
 package com.ternsip.glade.universe.entities.impl;
 
+import lombok.Getter;
 import org.joml.Vector3f;
 
-import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 import static org.lwjgl.glfw.GLFW.*;
 
+@Getter
 public class EntityPlayer extends EntityBoy {
 
     private static final float RUN_SPEED = 90;
@@ -16,19 +17,20 @@ public class EntityPlayer extends EntityBoy {
     private float upwardsSpeed = 0;
 
     public EntityPlayer() {
+        // TODO -> why?? remove
         increaseRotation(new Vector3f(0, 0, (float) (-Math.PI / 2.0f)));
     }
 
     @Override
     public void update() {
         checkInputs();
-        super.increaseRotation(new Vector3f(0, currentTurnSpeed * DISPLAY_MANAGER.getDeltaTime(), 0));
-        float distance = currentSpeed * DISPLAY_MANAGER.getDeltaTime();
+        super.increaseRotation(new Vector3f(0, currentTurnSpeed * getDisplayManager().getDeltaTime(), 0));
+        float distance = currentSpeed * getDisplayManager().getDeltaTime();
         float dx = (float) (distance * Math.sin(super.getRotation().y()));
         float dz = (float) (distance * Math.cos(super.getRotation().y()));
         super.increasePosition(new Vector3f(dx, 0, dz));
-        upwardsSpeed += GRAVITY * DISPLAY_MANAGER.getDeltaTime();
-        super.increasePosition(new Vector3f(0, upwardsSpeed * DISPLAY_MANAGER.getDeltaTime(), 0));
+        upwardsSpeed += GRAVITY * getDisplayManager().getDeltaTime();
+        super.increasePosition(new Vector3f(0, upwardsSpeed * getDisplayManager().getDeltaTime(), 0));
         float terrainHeight = -5;
         if (super.getPosition().y < terrainHeight) {
             upwardsSpeed = 0;
@@ -38,17 +40,17 @@ public class EntityPlayer extends EntityBoy {
 
     private void checkInputs() {
 
-        if (DISPLAY_MANAGER.isKeyDown(GLFW_KEY_W)) {
+        if (getDisplayManager().isKeyDown(GLFW_KEY_W)) {
             this.currentSpeed = +RUN_SPEED;
-        } else if (DISPLAY_MANAGER.isKeyDown(GLFW_KEY_S)) {
+        } else if (getDisplayManager().isKeyDown(GLFW_KEY_S)) {
             this.currentSpeed = -RUN_SPEED;
         } else {
             this.currentSpeed = 0;
         }
 
-        if (DISPLAY_MANAGER.isKeyDown(GLFW_KEY_D)) {
+        if (getDisplayManager().isKeyDown(GLFW_KEY_D)) {
             this.currentTurnSpeed = -TURN_SPEED;
-        } else if (DISPLAY_MANAGER.isKeyDown(GLFW_KEY_A)) {
+        } else if (getDisplayManager().isKeyDown(GLFW_KEY_A)) {
             this.currentTurnSpeed = TURN_SPEED;
         } else {
             this.currentTurnSpeed = 0;
@@ -58,27 +60,27 @@ public class EntityPlayer extends EntityBoy {
         float rotY = 0.60f;
         float rotZ = 0.60f;
 
-        if (DISPLAY_MANAGER.isKeyDown(GLFW_KEY_B)) {
+        if (getDisplayManager().isKeyDown(GLFW_KEY_B)) {
             super.increaseRotation(new Vector3f(rotX, 0, 0));
         }
-        if (DISPLAY_MANAGER.isKeyDown(GLFW_KEY_N)) {
+        if (getDisplayManager().isKeyDown(GLFW_KEY_N)) {
             super.increaseRotation(new Vector3f(0, rotY, 0));
         }
-        if (DISPLAY_MANAGER.isKeyDown(GLFW_KEY_M)) {
+        if (getDisplayManager().isKeyDown(GLFW_KEY_M)) {
             super.increaseRotation(new Vector3f(0, 0, rotZ));
         }
 
-        if (DISPLAY_MANAGER.isKeyDown(GLFW_KEY_H)) {
+        if (getDisplayManager().isKeyDown(GLFW_KEY_H)) {
             super.increaseRotation(new Vector3f(-rotX, 0, 0));
         }
-        if (DISPLAY_MANAGER.isKeyDown(GLFW_KEY_J)) {
+        if (getDisplayManager().isKeyDown(GLFW_KEY_J)) {
             super.increaseRotation(new Vector3f(0, -rotY, 0));
         }
-        if (DISPLAY_MANAGER.isKeyDown(GLFW_KEY_K)) {
+        if (getDisplayManager().isKeyDown(GLFW_KEY_K)) {
             super.increaseRotation(new Vector3f(0, 0, -rotZ));
         }
 
-        if (DISPLAY_MANAGER.isKeyDown(GLFW_KEY_R)) {
+        if (getDisplayManager().isKeyDown(GLFW_KEY_R)) {
             setRotation(new Vector3f(0, 0, 0));
             this.setPosition(new Vector3f(600, 30, 550));
         }

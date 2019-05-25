@@ -5,28 +5,38 @@ import com.ternsip.glade.universe.common.Sun;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.base.EntityRepository;
 import com.ternsip.glade.universe.entities.impl.*;
+import com.ternsip.glade.utils.Timer;
 import lombok.Getter;
+import lombok.Setter;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 
 @Getter
+@Setter
+@Component
 public class Universe {
 
-    private EntityRepository entityRepository = new EntityRepository();
+    public static Universe INSTANCE;
 
-    private Sun sun;
-    private EntityPlayer entityPlayer;
-    private Camera camera;
-    private EntityFps entityFps;
+    private final EntityRepository entityRepository;
+    private final Sun sun;
+    private final EntityPlayer entityPlayer;
+    private final Camera camera;
+    private final EntityFps entityFps;
+    private final Timer tickTimer;
 
-    public void initialize() {
-
-        sun = new Sun(new Vector2f(0, 0), new Vector2f(20000, 20000), new Vector3f(1, 1, 1));
-        entityPlayer = new EntityPlayer();
-        entityPlayer.setScale(new Vector3f(5, 5, 5));
-        camera = new Camera(entityPlayer);
+    public Universe() {
+        INSTANCE = this;
+        this.entityRepository = new EntityRepository();
+        this.sun = new Sun(new Vector2f(0, 0), new Vector2f(20000, 20000), new Vector3f(1, 1, 1));
+        this.entityPlayer = new EntityPlayer();
+        this.entityPlayer.setScale(new Vector3f(5, 5, 5));
+        this.camera = new Camera(entityPlayer);
+        this.entityFps = new EntityFps(100);
+        this.tickTimer = new Timer(1000 / 128);
 
         Entity entityCube = new EntityCube();
 
@@ -67,8 +77,6 @@ public class Universe {
 
         //EntityText entityText = new EntityText(new File("fonts/default.png"), "1234567890.1234567890");
 
-        entityFps = new EntityFps(100);
-
         for (int i = 0; i < 100; ++i) {
             for (int j = 0; j < 100; ++j) {
                 Entity entity = new EntityHagrid();
@@ -80,6 +88,10 @@ public class Universe {
     }
 
     public void update() {
+        if (!tickTimer.isOver()) {
+            return;
+        }
+        tickTimer.drop();
         getEntityFps().update();
         getEntityRepository().update();
         getCamera().update();

@@ -7,6 +7,7 @@ import org.joml.Vector3f;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.Callback;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 
@@ -15,13 +16,13 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_MULTISAMPLE;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
+@Component
 @Getter
 public class DisplayManager {
 
     public static final Vector3f BACKGROUND_COLOR = new Vector3f(1f, 0f, 0f);
-
     private static final int FPS_CAP = 120;
-
+    public static DisplayManager INSTANCE;
     private ArrayList<Callback> callbacks = new ArrayList<>();
     private TextureRepository textureRepository;
     private DisplayEvents displayEvents = new DisplayEvents();
@@ -31,7 +32,8 @@ public class DisplayManager {
     private long window;
     private Vector2i windowSize;
 
-    public void initialize() {
+    public DisplayManager() {
+        INSTANCE = this;
         displayEvents.getErrorCallbacks().add((e, d) -> GLFWErrorCallback.createPrint(System.err).invoke(e, d));
         displayEvents.getResizeCallbacks().add(this::handleResize);
         // TODO MOVE IN HOTKEY CLASS
@@ -61,8 +63,8 @@ public class DisplayManager {
         glfwMakeContextCurrent(window);
         GL.createCapabilities();
 
-        // Enable vertical synchronization
-        glfwSwapInterval(1);
+        // Disable vertical synchronization
+        glfwSwapInterval(0);
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -92,7 +94,7 @@ public class DisplayManager {
 
     public void loop(Runnable runnable) {
         /* Loop until window gets closed */
-        while (!glfwWindowShouldClose(window)) {
+        while (isWindowActive()) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             runnable.run();
 
@@ -106,6 +108,10 @@ public class DisplayManager {
             glfwSwapBuffers(window);
             glfwPollEvents();
         }
+    }
+
+    public boolean isWindowActive() {
+        return !glfwWindowShouldClose(window);
     }
 
     public void finish() {

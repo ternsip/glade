@@ -1,7 +1,9 @@
 package com.ternsip.glade.universe.entities.base;
 
+import com.ternsip.glade.graphics.display.DisplayManager;
 import com.ternsip.glade.graphics.general.Animation;
 import com.ternsip.glade.graphics.general.Model;
+import com.ternsip.glade.universe.Universe;
 import com.ternsip.glade.utils.Maths;
 import com.ternsip.glade.utils.Utils;
 import lombok.Getter;
@@ -10,20 +12,18 @@ import org.joml.Matrix4fc;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
-import static com.ternsip.glade.Glade.UNIVERSE;
-
 @Getter
 public abstract class Entity {
 
     @Getter(lazy = true)
-    private final Animation animation = new Animation(UNIVERSE.getEntityRepository().getEntityModel(this));
+    private final Animation animation = new Animation(getUniverse().getEntityRepository().getEntityModel(this));
     private final Vector3f position = new Vector3f(0, 0, 0);
     private final Vector3f scale = new Vector3f(1, 1, 1);
     private final Vector3f rotation = new Vector3f(0, 0, 0);
 
     public Entity() {
         /// XXX Automatically saving entity upon it's creation
-        UNIVERSE.getEntityRepository().addEntity(this);
+        getUniverse().getEntityRepository().addEntity(this);
     }
 
     public Matrix4f getTransformationMatrix() {
@@ -78,11 +78,19 @@ public abstract class Entity {
     }
 
     public void finish() {
-        UNIVERSE.getEntityRepository().removeEntity(this);
+        getUniverse().getEntityRepository().removeEntity(this);
     }
 
     public Object getModelKey() {
         return Utils.findDeclaredMethodInHierarchy(getClass(), "loadModel");
     }
 
+
+    protected DisplayManager getDisplayManager() {
+        return DisplayManager.INSTANCE;
+    }
+
+    protected Universe getUniverse() {
+        return Universe.INSTANCE;
+    }
 }

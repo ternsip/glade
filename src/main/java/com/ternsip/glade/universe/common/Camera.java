@@ -1,5 +1,6 @@
 package com.ternsip.glade.universe.common;
 
+import com.ternsip.glade.graphics.display.DisplayManager;
 import com.ternsip.glade.graphics.renderer.impl.SkyRenderer;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.impl.EntityPlayer;
@@ -9,7 +10,6 @@ import org.joml.*;
 
 import java.lang.Math;
 
-import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1;
 
 @Getter
@@ -47,10 +47,10 @@ public class Camera {
 
     public Camera(EntityPlayer entityPlayer) {
         this.target = entityPlayer;
-        DISPLAY_MANAGER.getDisplayEvents().getScrollCallbacks().add(this::recalculateZoom);
-        DISPLAY_MANAGER.getDisplayEvents().getResizeCallbacks().add(this::recalculateProjectionMatrices);
-        DISPLAY_MANAGER.getDisplayEvents().getCursorPosCallbacks().add(this::recalculateRotation);
-        recalculateProjectionMatrices(DISPLAY_MANAGER.getWidth(), DISPLAY_MANAGER.getHeight());
+        DisplayManager.INSTANCE.getDisplayEvents().getScrollCallbacks().add(this::recalculateZoom);
+        DisplayManager.INSTANCE.getDisplayEvents().getResizeCallbacks().add(this::recalculateProjectionMatrices);
+        DisplayManager.INSTANCE.getDisplayEvents().getCursorPosCallbacks().add(this::recalculateRotation);
+        recalculateProjectionMatrices(DisplayManager.INSTANCE.getWidth(), DisplayManager.INSTANCE.getHeight());
     }
 
     public static Matrix4f createProjectionMatrix(float viewDistance, float aspectRatio) {
@@ -62,7 +62,7 @@ public class Camera {
     }
 
     private void recalculateRotation(double xPos, double yPos, double dx, double dy) {
-        if (DISPLAY_MANAGER.isMouseDown(GLFW_MOUSE_BUTTON_1)) {
+        if (DisplayManager.INSTANCE.isMouseDown(GLFW_MOUSE_BUTTON_1)) {
             float nx = limitAngle(getRotation().x() + (float) (dx * ROTATION_MULTIPLIER_X), MAX_ROTATION_DELTA_X);
             float ny = limitAngle(getRotation().y() + (float) (dy * ROTATION_MULTIPLIER_Y), MAX_ROTATION_DELTA_Y);
             setRotation(new Vector2f(nx, ny));

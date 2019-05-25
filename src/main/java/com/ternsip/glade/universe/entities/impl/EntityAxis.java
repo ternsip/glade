@@ -7,8 +7,6 @@ import com.ternsip.glade.graphics.general.Texture;
 import com.ternsip.glade.universe.entities.base.Entity;
 import org.joml.*;
 
-import static com.ternsip.glade.Glade.UNIVERSE;
-
 public class EntityAxis extends Entity {
 
     @Override
@@ -26,7 +24,7 @@ public class EntityAxis extends Entity {
     @Override
     public Matrix4f getTransformationMatrix() {
         Vector3fc totalScale = getAdjustedScale().mul(getAnimation().getModel().getNormalizingScale());
-        Matrix4fc view = UNIVERSE.getCamera().getFullViewMatrix();
+        Matrix4fc view = getUniverse().getCamera().getFullViewMatrix();
         Quaternionfc rotQuaternion = view.getNormalizedRotation(new Quaternionf());
         return view
                 .invert(new Matrix4f())

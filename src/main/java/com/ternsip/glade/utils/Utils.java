@@ -161,9 +161,4 @@ public class Utils {
         }
     }
 
-    @SneakyThrows
-    public static <T> T createInstanceSilently(Class<? extends T> clazz) {
-        return clazz.newInstance();
-    }
-
 }

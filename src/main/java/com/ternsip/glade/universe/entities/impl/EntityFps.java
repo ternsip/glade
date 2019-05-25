@@ -1,15 +1,17 @@
 package com.ternsip.glade.universe.entities.impl;
 
+import com.ternsip.glade.graphics.display.DisplayManager;
 import com.ternsip.glade.universe.entities.base.AbstractEntity;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.io.File;
 
-import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 
 @RequiredArgsConstructor
+@Getter
 public class EntityFps extends AbstractEntity {
 
     private final long refreshIntervalMilliseconds;
@@ -22,7 +24,7 @@ public class EntityFps extends AbstractEntity {
     private int fpsCount = 0;
 
     public void update() {
-        fpsSum += DISPLAY_MANAGER.getFps();
+        fpsSum += DisplayManager.INSTANCE.getFps();
         fpsCount++;
         if (System.currentTimeMillis() <= lastTimeStamp + refreshIntervalMilliseconds) {
             return;

@@ -1,22 +1,28 @@
 package com.ternsip.glade.graphics.renderer.base;
 
-import com.ternsip.glade.utils.Utils;
-import org.reflections.Reflections;
+import com.ternsip.glade.universe.Universe;
+import lombok.Getter;
+import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+@Component
+@Getter
 public class MasterRenderer {
 
-    private Collection<Renderer> renders;
+    public static MasterRenderer INSTANCE;
 
-    public void initialize() {
-        Reflections reflections = new Reflections();
-        renders = reflections
-                .getSubTypesOf(Renderer.class)
+    private final Universe universe;
+    private final Collection<Renderer> renders;
+
+    public MasterRenderer(Universe universe, Set<Renderer> renders) {
+        INSTANCE = this;
+        this.universe = universe;
+        this.renders = renders
                 .stream()
-                .map(Utils::createInstanceSilently)
                 .sorted(Comparator.comparing(Renderer::getPriority))
                 .collect(Collectors.toList());
     }
