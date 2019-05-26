@@ -1,0 +1,113 @@
+package com.ternsip.glade.graphics.entities.base;
+
+import com.ternsip.glade.graphics.display.DisplayManager;
+import com.ternsip.glade.graphics.display.DisplaySnapReceiver;
+import com.ternsip.glade.graphics.general.Animation;
+import com.ternsip.glade.graphics.general.Model;
+import com.ternsip.glade.graphics.renderer.base.Renderer;
+import com.ternsip.glade.graphics.renderer.impl.BaseRenderer;
+import com.ternsip.glade.universe.Universe;
+import com.ternsip.glade.utils.Maths;
+import com.ternsip.glade.utils.Utils;
+import lombok.Getter;
+import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
+import org.joml.Vector3f;
+import org.joml.Vector3fc;
+
+@Getter
+public abstract class BaseFigure implements Figure {
+
+    @Getter(lazy = true)
+    private final Animation animation = createAnimation();
+    private final Vector3f position = new Vector3f(0, 0, 0);
+    private final Vector3f scale = new Vector3f(1, 1, 1);
+    private final Vector3f rotation = new Vector3f(0, 0, 0);
+
+    public BaseFigure() {
+        /// XXX Automatically saving entity upon it's creation
+        getUniverse().getFigureRepository().addFigure(this);
+    }
+
+    public Matrix4f getTransformationMatrix() {
+        Vector3fc totalScale = getAdjustedScale().mul(getAnimation().getModel().getNormalizingScale());
+        Matrix4fc rotMatrix = Maths.getRotationQuaternion(getAdjustedRotation()).get(new Matrix4f());
+        return new Matrix4f().translate(getAdjustedPosition()).mul(rotMatrix).scale(totalScale);
+    }
+
+    public void setPosition(Vector3f position) {
+        this.position.set(position);
+    }
+
+    public void setScale(Vector3f scale) {
+        this.scale.set(scale);
+    }
+
+    public void setRotation(Vector3f rotation) {
+        this.rotation.set(rotation);
+    }
+
+    public void increasePosition(Vector3f delta) {
+        position.add(delta);
+    }
+
+    public void increaseRotation(Vector3f delta) {
+        rotation.add(delta);
+    }
+
+    public Vector3f getAdjustedScale() {
+        return new Vector3f(getScale()).mul(getAnimation().getModel().getBaseScale());
+    }
+
+    public Vector3f getAdjustedPosition() {
+        return new Vector3f(getPosition()).add(getAnimation().getModel().getBaseOffset());
+    }
+
+    public Vector3f getAdjustedRotation() {
+        return new Vector3f(getRotation()).add(getAnimation().getModel().getBaseRotation());
+    }
+
+    public void update() {
+    }
+
+    protected abstract Model loadModel();
+
+    public boolean isFrontal() {
+        return false;
+    }
+
+    public boolean isSprite() {
+        return false;
+    }
+
+    public void finish() {
+        getUniverse().getFigureRepository().removeFigure(this);
+    }
+
+    public Object getModelKey() {
+        return Utils.findDeclaredMethodInHierarchy(getClass(), "loadModel");
+    }
+
+
+    protected DisplaySnapReceiver getDisplaySnapReceiver() {
+        return getUniverse().getDisplaySnapReceiver();
+    }
+
+    protected Universe getUniverse() {
+        return Universe.INSTANCE;
+    }
+
+    // TODO mark this with annotation indicating that it calling in another thread
+    private Animation createAnimation() {
+        // TODO make receiver from Graphical side and lock thread here until model will be loaded
+        Model model = DisplayManager.INSTANCE
+                .getModelRepository()
+                .getEntityModelOrCompute(getModelKey(), e -> loadModel());
+        return new Animation(model);
+    }
+
+    @Override
+    public Class<? extends Renderer> getRenderer() {
+        return BaseRenderer.class;
+    }
+}

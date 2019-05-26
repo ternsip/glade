@@ -145,6 +145,11 @@ public class Utils {
                 .collect(Collectors.toList());
     }
 
+    @SneakyThrows
+    public static <T> T createInstanceSilently(Class<? extends T> clazz) {
+        return clazz.newInstance();
+    }
+
     // TODO USE CYCLE INSTEAD OF RECURSION USING FOR (;;)
     @SneakyThrows
     public static Method findDeclaredMethodInHierarchy(
