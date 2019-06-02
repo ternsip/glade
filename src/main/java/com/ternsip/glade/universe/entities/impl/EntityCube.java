@@ -5,13 +5,13 @@ import com.ternsip.glade.graphics.general.Material;
 import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.general.Texture;
-import com.ternsip.glade.universe.entities.base.Entity;
+import com.ternsip.glade.universe.entities.base.EntityDefault;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.io.File;
 
-public class EntityCube extends Entity {
+public class EntityCube extends EntityDefault {
 
     public static float SIZE = 1f;
 

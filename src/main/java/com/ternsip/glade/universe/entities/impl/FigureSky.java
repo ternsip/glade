@@ -1,15 +1,16 @@
-package com.ternsip.glade.graphics.renderer.impl;
+package com.ternsip.glade.universe.entities.impl;
 
 import com.ternsip.glade.graphics.general.Material;
 import com.ternsip.glade.graphics.general.Mesh;
-import com.ternsip.glade.graphics.renderer.base.Renderer;
-import com.ternsip.glade.graphics.shader.base.ShaderProgram;
+import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.shader.impl.SkyboxShader;
+import com.ternsip.glade.universe.entities.base.Entity;
+import org.joml.Matrix4fc;
+import org.joml.Vector3f;
 
 import static com.ternsip.glade.Glade.UNIVERSE;
 
-@SuppressWarnings("unused")
-public class SkyRenderer implements Renderer {
+public class FigureSky extends Entity<SkyboxShader> {
 
     public static final float SIZE = 10000f;
 
@@ -57,31 +58,50 @@ public class SkyRenderer implements Renderer {
             SIZE, -SIZE, SIZE
     };
 
-    private Mesh skyBox = new Mesh(VERTICES, new float[0], new float[0], new float[0], new int[0], new float[0], new int[0], new Material());
-    private SkyboxShader skyboxShader = ShaderProgram.createShader(SkyboxShader.class);
-
-    public SkyRenderer() {
-        skyboxShader.start();
-        skyboxShader.getProjectionMatrix().load(UNIVERSE.getCamera().getSkyProjectionMatrix());
-        skyboxShader.stop();
+    @Override
+    protected void render() {
+        getShader().start();
+        getShader().getProjectionMatrix().load(getProjectionMatrix());
+        getShader().getSunVector().load(UNIVERSE.getSun().getPosition());
+        getShader().getViewMatrix().load(getViewMatrix());
+        getAnimation().getModel().getMeshes()[0].render();
+        getShader().stop();
     }
 
-    public void render() {
-        skyboxShader.start();
-        skyboxShader.getSunVector().load(UNIVERSE.getSun().getPosition());
-        skyboxShader.getViewMatrix().load(UNIVERSE.getCamera().getSkyViewMatrix());
-        skyBox.render();
-        skyboxShader.stop();
+    @Override
+    protected Class<SkyboxShader> getShaderClass() {
+        return SkyboxShader.class;
     }
 
-    public void finish() {
-        skyboxShader.finish();
-        skyBox.finish();
+    @Override
+    protected Model loadModel() {
+        return new Model(
+                new Mesh[]{new Mesh(VERTICES, new Material())},
+                new Vector3f(0),
+                new Vector3f(0),
+                new Vector3f(2 * SIZE)
+        );
     }
 
     @Override
     public int getPriority() {
-        return 0;
+        return -1;
     }
+
+    @Override
+    protected boolean isEntityInsideFrustum() {
+        return true;
+    }
+
+    @Override
+    protected Matrix4fc getViewMatrix() {
+        return UNIVERSE.getCamera().getSkyViewMatrix();
+    }
+
+    @Override
+    protected Matrix4fc getProjectionMatrix() {
+        return UNIVERSE.getCamera().getSkyProjectionMatrix();
+    }
+
 
 }

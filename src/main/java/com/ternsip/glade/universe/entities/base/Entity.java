@@ -2,28 +2,30 @@ package com.ternsip.glade.universe.entities.base;
 
 import com.ternsip.glade.graphics.general.Animation;
 import com.ternsip.glade.graphics.general.Model;
+import com.ternsip.glade.graphics.shader.base.ShaderProgram;
 import com.ternsip.glade.utils.Maths;
 import com.ternsip.glade.utils.Utils;
 import lombok.Getter;
-import org.joml.Matrix4f;
-import org.joml.Matrix4fc;
-import org.joml.Vector3f;
-import org.joml.Vector3fc;
+import org.joml.*;
 
+import java.lang.Math;
+
+import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 import static com.ternsip.glade.Glade.UNIVERSE;
 
 @Getter
-public abstract class Entity {
+public abstract class Entity<SHADER extends ShaderProgram> {
 
     @Getter(lazy = true)
-    private final Animation animation = new Animation(UNIVERSE.getModelRepository().getEntityModel(this));
+    private final Animation animation = new Animation(DISPLAY_MANAGER.getModelRepository().getEntityModel(this));
+    private final SHADER shader = DISPLAY_MANAGER.getShaderRepository().getEntityShader(this);
     private final Vector3f position = new Vector3f(0, 0, 0);
     private final Vector3f scale = new Vector3f(1, 1, 1);
     private final Vector3f rotation = new Vector3f(0, 0, 0);
 
     public Entity() {
         /// XXX Automatically saving entity upon it's creation
-        UNIVERSE.getEntityRepository().addEntity(this);
+        DISPLAY_MANAGER.getEntityRepository().addEntity(this);
     }
 
     public Matrix4f getTransformationMatrix() {
@@ -67,18 +69,44 @@ public abstract class Entity {
     public void update() {
     }
 
+    protected abstract void render();
+
+    protected abstract Class<SHADER> getShaderClass();
+
     protected abstract Model loadModel();
 
-    public boolean isFrontal() {
-        return false;
+    public int getPriority() {
+        return 0;
     }
 
     public boolean isSprite() {
         return false;
     }
 
+    protected boolean isEntityInsideFrustum() {
+        Matrix4fc projection = UNIVERSE.getCamera().getEntityProjectionMatrix();
+        Matrix4fc view = UNIVERSE.getCamera().getFullViewMatrix();
+        Matrix4fc projectionViewMatrix = projection.mul(view, new Matrix4f());
+        FrustumIntersection frustumIntersection = new FrustumIntersection(projectionViewMatrix);
+        Vector3fc scale = getAdjustedScale();
+        float delta = Math.max(Math.max(scale.x(), scale.y()), scale.z()) * 1.5f;
+        return frustumIntersection.testSphere(getAdjustedPosition(), delta);
+    }
+
+    protected Matrix4fc getViewMatrix() {
+        return UNIVERSE.getCamera().getFullViewMatrix();
+    }
+
+    protected Matrix4fc getProjectionMatrix() {
+        return UNIVERSE.getCamera().getEntityProjectionMatrix();
+    }
+
+    protected float getSquaredDistanceToCamera() {
+        return getAdjustedPosition().distanceSquared(UNIVERSE.getCamera().getPosition());
+    }
+
     public void finish() {
-        UNIVERSE.getEntityRepository().removeEntity(this);
+        DISPLAY_MANAGER.getEntityRepository().removeEntity(this);
     }
 
     public Object getModelKey() {

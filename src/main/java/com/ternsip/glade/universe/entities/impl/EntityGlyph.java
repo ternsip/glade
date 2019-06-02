@@ -5,19 +5,24 @@ import com.ternsip.glade.graphics.general.Material;
 import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.general.Texture;
-import com.ternsip.glade.universe.entities.base.Entity;
+import com.ternsip.glade.universe.entities.base.EntityDefault;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.io.File;
 
+import static com.ternsip.glade.Glade.UNIVERSE;
+
 @RequiredArgsConstructor
 @Getter
-public class EntityGlyph extends Entity {
+public class EntityGlyph extends EntityDefault {
 
+    private final Matrix4fc viewMatrix = new Matrix4f();
     private final File font;
     private final char symbol;
     private final Vector4f color;
@@ -28,12 +33,22 @@ public class EntityGlyph extends Entity {
     }
 
     @Override
-    public boolean isSprite() {
-        return true;
+    protected Matrix4fc getViewMatrix() {
+        return viewMatrix;
     }
 
     @Override
-    public boolean isFrontal() {
+    protected Matrix4fc getProjectionMatrix() {
+        return UNIVERSE.getCamera().getSpriteProjectionMatrix();
+    }
+
+    @Override
+    public int getPriority() {
+        return 1000;
+    }
+
+    @Override
+    protected boolean isEntityInsideFrustum() {
         return true;
     }
 

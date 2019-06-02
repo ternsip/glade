@@ -1,8 +1,8 @@
 package com.ternsip.glade.universe.common;
 
-import com.ternsip.glade.graphics.renderer.impl.SkyRenderer;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.impl.EntityPlayer;
+import com.ternsip.glade.universe.entities.impl.FigureSky;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.*;
@@ -79,7 +79,8 @@ public class Camera {
     private void recalculateProjectionMatrices(float width, int height) {
         float ratio = width / height;
         entityProjectionMatrix = createProjectionMatrix(FAR_PLANE, ratio);
-        skyProjectionMatrix = createProjectionMatrix(SkyRenderer.SIZE * 2, ratio);
+        // TODO think about that static constant
+        skyProjectionMatrix = createProjectionMatrix(FigureSky.SIZE * 2, ratio);
         spriteProjectionMatrix = createOrthoProjectionMatrix(FAR_PLANE, width, height);
     }
 

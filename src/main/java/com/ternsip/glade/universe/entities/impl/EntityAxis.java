@@ -4,12 +4,12 @@ import com.ternsip.glade.graphics.general.Material;
 import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.general.Texture;
-import com.ternsip.glade.universe.entities.base.Entity;
+import com.ternsip.glade.universe.entities.base.EntityDefault;
 import org.joml.*;
 
 import static com.ternsip.glade.Glade.UNIVERSE;
 
-public class EntityAxis extends Entity {
+public class EntityAxis extends EntityDefault {
 
     @Override
     protected Model loadModel() {
@@ -37,7 +37,12 @@ public class EntityAxis extends Entity {
     }
 
     @Override
-    public boolean isFrontal() {
+    public int getPriority() {
+        return 100;
+    }
+
+    @Override
+    protected boolean isEntityInsideFrustum() {
         return true;
     }
 

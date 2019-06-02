@@ -1,12 +1,12 @@
 package com.ternsip.glade.universe.entities.impl;
 
 import com.ternsip.glade.graphics.general.*;
-import com.ternsip.glade.universe.entities.base.Entity;
+import com.ternsip.glade.universe.entities.base.EntityDefault;
 import org.joml.Vector3f;
 
 import java.io.File;
 
-public class EntitySpider extends Entity {
+public class EntitySpider extends EntityDefault {
 
     protected Model loadModel() {
         Material[] spiderMaterials = new Material[]{new Material().withDiffuseMap(new Texture(new File("models/spider/Spinnen_Bein_tex_2.jpg")))};

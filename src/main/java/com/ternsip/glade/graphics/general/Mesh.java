@@ -53,6 +53,10 @@ public class Mesh {
     private final int vboBones;
     private final float normalizingScale;
 
+    public Mesh(float[] vertices, Material material) {
+        this(vertices, new float[0], new float[0], new float[0], new int[0], new float[0], new int[0], material);
+    }
+
     public Mesh(
             float[] vertices,
             float[] normals,
