@@ -18,15 +18,13 @@ import java.io.File;
 @Getter
 public class EntityGlyph extends Entity {
 
-    public static final float DEFAULT_SCALE = 1 / 75f;
     private final File font;
     private final char symbol;
     private final Vector4f color;
 
     protected Model loadModel() {
         Mesh mesh = Entity3DText.createTextMesh(String.valueOf(symbol), new Material(new Texture(color, font)));
-        Vector3f scale = new Vector3f(DEFAULT_SCALE, DEFAULT_SCALE, 1);
-        return new Model(new Mesh[]{mesh}, new Vector3f(0), new Vector3f(0), scale);
+        return new Model(new Mesh[]{mesh}, new Vector3f(0), new Vector3f(0), new Vector3f(1));
     }
 
     @Override

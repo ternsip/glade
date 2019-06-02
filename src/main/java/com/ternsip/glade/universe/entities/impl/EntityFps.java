@@ -2,7 +2,7 @@ package com.ternsip.glade.universe.entities.impl;
 
 import com.ternsip.glade.universe.entities.base.AbstractEntity;
 import lombok.RequiredArgsConstructor;
-import org.joml.Vector3f;
+import org.joml.Vector2i;
 import org.joml.Vector4f;
 
 import java.io.File;
@@ -34,8 +34,8 @@ public class EntityFps extends AbstractEntity {
         fpsText = new EntityText(
                 new File("fonts/default.png"),
                 String.valueOf(fpsSum / fpsCount),
-                new Vector3f(0, 0, 0),
-                new Vector3f(2),
+                new Vector2i(0, 0),
+                new Vector2i(75, 75),
                 new Vector4f(0, 1, 1, 1)
         );
         fpsSum = 0;
