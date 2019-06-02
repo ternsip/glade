@@ -13,6 +13,8 @@ import java.io.File;
 @Getter
 public class EntityText extends MultiEntity {
 
+    private static final float TEXT_COMPRESSION = 0.75f;
+
     public EntityText(File font, String text, Vector3f position, Vector3f scale, Vector4f color) {
         super(generateEntities(font, text, position, scale, color));
     }
@@ -47,7 +49,7 @@ public class EntityText extends MultiEntity {
         Entity[] entities = new Entity[text.length()];
         for (int i = 0; i < text.length(); ++i) {
             entities[i] = new EntityGlyph(font, text.charAt(i), color);
-            entities[i].setPosition(new Vector3f(i * scale.x() * 0.75f, 0, 0).add(position));
+            entities[i].setPosition(new Vector3f(i * scale.x() * TEXT_COMPRESSION, 0, 0).add(position));
             entities[i].setScale(scale);
         }
         return entities;
