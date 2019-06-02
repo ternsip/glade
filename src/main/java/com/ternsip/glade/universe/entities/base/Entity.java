@@ -16,7 +16,7 @@ import static com.ternsip.glade.Glade.UNIVERSE;
 public abstract class Entity {
 
     @Getter(lazy = true)
-    private final Animation animation = new Animation(UNIVERSE.getEntityRepository().getEntityModel(this));
+    private final Animation animation = new Animation(UNIVERSE.getModelRepository().getEntityModel(this));
     private final Vector3f position = new Vector3f(0, 0, 0);
     private final Vector3f scale = new Vector3f(1, 1, 1);
     private final Vector3f rotation = new Vector3f(0, 0, 0);

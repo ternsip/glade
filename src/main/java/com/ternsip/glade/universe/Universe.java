@@ -4,6 +4,7 @@ import com.ternsip.glade.universe.common.Camera;
 import com.ternsip.glade.universe.common.Sun;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.base.EntityRepository;
+import com.ternsip.glade.universe.entities.base.ModelRepository;
 import com.ternsip.glade.universe.entities.impl.*;
 import lombok.Getter;
 import org.joml.Vector2f;
@@ -15,6 +16,7 @@ import java.io.File;
 public class Universe {
 
     private EntityRepository entityRepository = new EntityRepository();
+    private ModelRepository modelRepository = new ModelRepository();
 
     private Sun sun;
     private EntityPlayer entityPlayer;
@@ -87,6 +89,6 @@ public class Universe {
     }
 
     public void finish() {
-        getEntityRepository().finish();
+        getModelRepository().finish();
     }
 }
