@@ -10,6 +10,7 @@ import com.ternsip.glade.universe.Universe;
 // TODO LookAt bug (collinear)
 // TODO Animated Textures
 // TODO Author rights
+// TODO Multithreading (1 logic, 1 network, 1 graphical (including input))
 public class Glade {
 
     public static final DisplayManager DISPLAY_MANAGER = new DisplayManager();
