@@ -20,6 +20,8 @@ import static org.lwjgl.opengl.GL20C.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class ShaderProgram {
 
+    private static int LAST_PROGRAM_ID = -100;
+
     @SuppressWarnings("unused")
     private int programID;
 
@@ -92,11 +94,16 @@ public abstract class ShaderProgram {
     }
 
     public void start() {
-        glUseProgram(programID);
+        // XXX Use caching for optimisation purposes
+        if (LAST_PROGRAM_ID != programID) {
+            glUseProgram(programID);
+            LAST_PROGRAM_ID = programID;
+        }
     }
 
     public void stop() {
-        glUseProgram(0);
+        // XXX Just simply do not unbind the shader program for optimisation purposes
+        //glUseProgram(0);
     }
 
     public void finish() {
