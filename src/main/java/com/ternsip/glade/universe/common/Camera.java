@@ -91,7 +91,7 @@ public class Camera {
         return getFrontDirection()
                 .mul(getDistanceFromTarget(), new Vector3f())
                 .negate()
-                .add(getTarget().getAdjustedPosition());
+                .add(getTarget().getPosition());
     }
 
     private void recalculateZoom(double scrollX, double scrollY) {
@@ -103,7 +103,7 @@ public class Camera {
 
     public void recalculateViewMatrices() {
         // TODO deal with the situation when UP_DIR collinear to camera view
-        Matrix4fc view = new Matrix4f().lookAt(getPosition(), getTarget().getAdjustedPosition(), UP_DIRECTION);
+        Matrix4fc view = new Matrix4f().lookAt(getPosition(), getTarget().getPosition(), UP_DIRECTION);
         setFullViewMatrix(view);
         setSpriteViewMatrix(new Matrix4f().translate(getPosition()));
         setSkyViewMatrix(new Matrix4f(view).m30(0).m31(0).m32(0));

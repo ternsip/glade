@@ -61,8 +61,8 @@ public class DisplayManager {
         glfwMakeContextCurrent(window);
         GL.createCapabilities();
 
-        // Enable vertical synchronization
-        glfwSwapInterval(1);
+        // Disable vertical synchronization
+        glfwSwapInterval(0);
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
