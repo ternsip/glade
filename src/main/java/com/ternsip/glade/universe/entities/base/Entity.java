@@ -109,6 +109,10 @@ public abstract class Entity<SHADER extends ShaderProgram> {
         DISPLAY_MANAGER.getEntityRepository().removeEntity(this);
     }
 
+    public Object getShaderKey() {
+        return getShaderClass();
+    }
+
     public Object getModelKey() {
         return Utils.findDeclaredMethodInHierarchy(getClass(), "loadModel");
     }

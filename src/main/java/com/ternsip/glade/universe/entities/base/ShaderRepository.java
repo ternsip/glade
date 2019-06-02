@@ -16,7 +16,7 @@ public class ShaderRepository {
     @SuppressWarnings("unchecked")
     public <T> T getEntityShader(Entity entity) {
         return (T) keyToShader.computeIfAbsent(
-                entity.getShaderClass(),
+                entity.getShaderKey(),
                 e -> ShaderProgram.createShader(entity.getShaderClass())
         );
     }
