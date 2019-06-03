@@ -4,13 +4,13 @@ import com.ternsip.glade.graphics.general.Material;
 import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.shader.impl.SkyboxShader;
-import com.ternsip.glade.universe.entities.base.Entity;
+import com.ternsip.glade.universe.entities.base.Graphical;
 import org.joml.Matrix4fc;
 import org.joml.Vector3f;
 
 import static com.ternsip.glade.Glade.UNIVERSE;
 
-public class FigureSky extends Entity<SkyboxShader> {
+public class GraphicalSky extends Graphical<SkyboxShader> {
 
     public static final float SIZE = 10000f;
 
@@ -89,7 +89,7 @@ public class FigureSky extends Entity<SkyboxShader> {
     }
 
     @Override
-    protected boolean isEntityInsideFrustum() {
+    protected boolean isGraphicalInsideFrustum() {
         return true;
     }
 

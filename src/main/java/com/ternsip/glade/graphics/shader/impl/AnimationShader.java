@@ -12,10 +12,10 @@ import static com.ternsip.glade.graphics.general.Mesh.MAX_BONES;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class EntityShader extends ShaderProgram {
+public final class AnimationShader extends ShaderProgram {
 
-    public static final File VERTEX_SHADER = new File("shaders/anim/EntityVertexShader.glsl");
-    public static final File FRAGMENT_SHADER = new File("shaders/anim/EntityFragmentShader.glsl");
+    public static final File VERTEX_SHADER = new File("shaders/anim/AnimationVertexShader.glsl");
+    public static final File FRAGMENT_SHADER = new File("shaders/anim/AnimationFragmentShader.glsl");
 
     private UniformBoolean animated = new UniformBoolean();
     private UniformMatrix4 projectionMatrix = new UniformMatrix4();

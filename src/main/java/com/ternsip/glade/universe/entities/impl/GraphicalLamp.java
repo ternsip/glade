@@ -1,11 +1,11 @@
 package com.ternsip.glade.universe.entities.impl;
 
 import com.ternsip.glade.graphics.general.*;
-import com.ternsip.glade.universe.entities.base.EntityDefault;
+import com.ternsip.glade.universe.entities.base.GraphicalDefault;
 
 import java.io.File;
 
-public class EntityLamp extends EntityDefault {
+public class GraphicalLamp extends GraphicalDefault {
 
     protected Model loadModel() {
         Material[] lampMaterials = new Material[]{

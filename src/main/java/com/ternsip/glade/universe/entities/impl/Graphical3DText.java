@@ -5,7 +5,7 @@ import com.ternsip.glade.graphics.general.Material;
 import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.general.Texture;
-import com.ternsip.glade.universe.entities.base.EntityDefault;
+import com.ternsip.glade.universe.entities.base.GraphicalDefault;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.joml.Vector3f;
@@ -15,7 +15,7 @@ import java.io.File;
 
 @RequiredArgsConstructor
 @Getter
-public class Entity3DText extends EntityDefault {
+public class Graphical3DText extends GraphicalDefault {
 
     public static final float SIZE = 1f;
     public static float VERTICES[] = {SIZE, SIZE, 0, -SIZE, SIZE, 0, -SIZE, -SIZE, 0, SIZE, -SIZE, 0};

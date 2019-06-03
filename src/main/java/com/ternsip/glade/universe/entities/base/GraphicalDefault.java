@@ -1,7 +1,7 @@
 package com.ternsip.glade.universe.entities.base;
 
 import com.ternsip.glade.graphics.general.Mesh;
-import com.ternsip.glade.graphics.shader.impl.EntityShader;
+import com.ternsip.glade.graphics.shader.impl.AnimationShader;
 import lombok.Getter;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
@@ -10,7 +10,7 @@ import org.joml.Vector3fc;
 import static com.ternsip.glade.Glade.UNIVERSE;
 
 @Getter
-public abstract class EntityDefault extends Entity<EntityShader> {
+public abstract class GraphicalDefault extends Graphical<AnimationShader> {
 
     @Override
     protected void render() {
@@ -43,8 +43,8 @@ public abstract class EntityDefault extends Entity<EntityShader> {
     }
 
     @Override
-    protected Class<EntityShader> getShaderClass() {
-        return EntityShader.class;
+    protected Class<AnimationShader> getShaderClass() {
+        return AnimationShader.class;
     }
 
     private long getUpdateIntervalMilliseconds() {

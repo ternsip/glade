@@ -1,8 +1,8 @@
 package com.ternsip.glade.universe.entities.impl;
 
 
-import com.ternsip.glade.universe.entities.base.Entity;
-import com.ternsip.glade.universe.entities.base.MultiEntity;
+import com.ternsip.glade.universe.entities.base.Graphical;
+import com.ternsip.glade.universe.entities.base.MultiGraphical;
 import lombok.Getter;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
@@ -11,19 +11,19 @@ import org.joml.Vector4f;
 import java.io.File;
 
 @Getter
-public class EntityText extends MultiEntity {
+public class GraphicalText extends MultiGraphical {
 
     private static final float TEXT_COMPRESSION = 0.75f;
 
-    public EntityText(File font, String text, Vector3f position, Vector3f scale, Vector4f color) {
+    public GraphicalText(File font, String text, Vector3f position, Vector3f scale, Vector4f color) {
         super(generateEntities(font, text, position, scale, color));
     }
 
-    public EntityText(File font, String text, Vector2i position, Vector2i maxChars, Vector4f color) {
+    public GraphicalText(File font, String text, Vector2i position, Vector2i maxChars, Vector4f color) {
         super(generateEntities(font, text, position, maxChars, color));
     }
 
-    private static Entity[] generateEntities(
+    private static Graphical[] generateEntities(
             File font,
             String text,
             Vector2i position,
@@ -39,16 +39,16 @@ public class EntityText extends MultiEntity {
         return generateEntities(font, text, pos3, scale3, color);
     }
 
-    private static Entity[] generateEntities(
+    private static Graphical[] generateEntities(
             File font,
             String text,
             Vector3f position,
             Vector3f scale,
             Vector4f color
     ) {
-        Entity[] entities = new Entity[text.length()];
+        Graphical[] entities = new Graphical[text.length()];
         for (int i = 0; i < text.length(); ++i) {
-            entities[i] = new EntityGlyph(font, text.charAt(i), color);
+            entities[i] = new GraphicalGlyph(font, text.charAt(i), color);
             entities[i].setPosition(new Vector3f(i * scale.x() * TEXT_COMPRESSION, 0, 0).add(position));
             entities[i].setScale(scale);
         }

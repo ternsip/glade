@@ -13,8 +13,8 @@ public class ModelRepository {
         modelKeyToModel.values().forEach(Model::finish);
     }
 
-    public Model getEntityModel(Entity entity) {
-        return modelKeyToModel.computeIfAbsent(entity.getModelKey(), e -> entity.loadModel());
+    public Model getGraphicalModel(Graphical graphical) {
+        return modelKeyToModel.computeIfAbsent(graphical.getModelKey(), e -> graphical.loadModel());
     }
 
 }

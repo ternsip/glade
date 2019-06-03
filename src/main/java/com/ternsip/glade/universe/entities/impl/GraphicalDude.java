@@ -1,12 +1,12 @@
 package com.ternsip.glade.universe.entities.impl;
 
 import com.ternsip.glade.graphics.general.*;
-import com.ternsip.glade.universe.entities.base.EntityDefault;
+import com.ternsip.glade.universe.entities.base.GraphicalDefault;
 import org.joml.Vector3f;
 
 import java.io.File;
 
-public class EntityDude extends EntityDefault {
+public class GraphicalDude extends GraphicalDefault {
 
     protected Model loadModel() {
         return ModelLoader.loadModel(Settings

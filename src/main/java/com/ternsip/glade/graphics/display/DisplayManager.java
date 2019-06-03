@@ -1,7 +1,7 @@
 package com.ternsip.glade.graphics.display;
 
 import com.ternsip.glade.graphics.general.TextureRepository;
-import com.ternsip.glade.universe.entities.base.EntityRepository;
+import com.ternsip.glade.universe.entities.base.GraphicalRepository;
 import com.ternsip.glade.universe.entities.base.ModelRepository;
 import com.ternsip.glade.universe.entities.base.ShaderRepository;
 import lombok.Getter;
@@ -27,7 +27,7 @@ public class DisplayManager {
 
     private ArrayList<Callback> callbacks = new ArrayList<>();
     private TextureRepository textureRepository;
-    private EntityRepository entityRepository = new EntityRepository();
+    private GraphicalRepository graphicalRepository = new GraphicalRepository();
     private ModelRepository modelRepository = new ModelRepository();
     private ShaderRepository shaderRepository = new ShaderRepository();
     private DisplayEvents displayEvents = new DisplayEvents();
@@ -102,8 +102,8 @@ public class DisplayManager {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             runnable.run();
 
-            getEntityRepository().update();
-            getEntityRepository().render();
+            getGraphicalRepository().update();
+            getGraphicalRepository().render();
 
             // Calc fps
             long currentFrameTime = getCurrentTime();

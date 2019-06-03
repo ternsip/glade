@@ -14,18 +14,18 @@ import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 import static com.ternsip.glade.Glade.UNIVERSE;
 
 @Getter
-public abstract class Entity<SHADER extends ShaderProgram> {
+public abstract class Graphical<SHADER extends ShaderProgram> {
 
     @Getter(lazy = true)
-    private final Animation animation = new Animation(DISPLAY_MANAGER.getModelRepository().getEntityModel(this));
-    private final SHADER shader = DISPLAY_MANAGER.getShaderRepository().getEntityShader(this);
+    private final Animation animation = new Animation(DISPLAY_MANAGER.getModelRepository().getGraphicalModel(this));
+    private final SHADER shader = DISPLAY_MANAGER.getShaderRepository().getGraphicalShader(this);
     private final Vector3f position = new Vector3f(0, 0, 0);
     private final Vector3f scale = new Vector3f(1, 1, 1);
     private final Vector3f rotation = new Vector3f(0, 0, 0);
 
-    public Entity() {
-        /// XXX Automatically saving entity upon it's creation
-        DISPLAY_MANAGER.getEntityRepository().addEntity(this);
+    public Graphical() {
+        /// XXX Automatically saving graphical upon it's creation
+        DISPLAY_MANAGER.getGraphicalRepository().addGraphical(this);
     }
 
     public Matrix4f getTransformationMatrix() {
@@ -79,12 +79,8 @@ public abstract class Entity<SHADER extends ShaderProgram> {
         return 0;
     }
 
-    public boolean isSprite() {
-        return false;
-    }
-
-    protected boolean isEntityInsideFrustum() {
-        Matrix4fc projection = UNIVERSE.getCamera().getEntityProjectionMatrix();
+    protected boolean isGraphicalInsideFrustum() {
+        Matrix4fc projection = UNIVERSE.getCamera().getGraphicalProjectionMatrix();
         Matrix4fc view = UNIVERSE.getCamera().getFullViewMatrix();
         Matrix4fc projectionViewMatrix = projection.mul(view, new Matrix4f());
         FrustumIntersection frustumIntersection = new FrustumIntersection(projectionViewMatrix);
@@ -98,7 +94,7 @@ public abstract class Entity<SHADER extends ShaderProgram> {
     }
 
     protected Matrix4fc getProjectionMatrix() {
-        return UNIVERSE.getCamera().getEntityProjectionMatrix();
+        return UNIVERSE.getCamera().getGraphicalProjectionMatrix();
     }
 
     protected float getSquaredDistanceToCamera() {
@@ -106,7 +102,7 @@ public abstract class Entity<SHADER extends ShaderProgram> {
     }
 
     public void finish() {
-        DISPLAY_MANAGER.getEntityRepository().removeEntity(this);
+        DISPLAY_MANAGER.getGraphicalRepository().removeGraphical(this);
     }
 
     public Object getShaderKey() {

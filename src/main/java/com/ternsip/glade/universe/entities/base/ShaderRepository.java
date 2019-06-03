@@ -14,10 +14,10 @@ public class ShaderRepository {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T getEntityShader(Entity entity) {
+    public <T> T getGraphicalShader(Graphical graphical) {
         return (T) keyToShader.computeIfAbsent(
-                entity.getShaderKey(),
-                e -> ShaderProgram.createShader(entity.getShaderClass())
+                graphical.getShaderKey(),
+                e -> ShaderProgram.createShader(graphical.getShaderClass())
         );
     }
 

@@ -1,6 +1,6 @@
 package com.ternsip.glade.universe.entities.impl;
 
-import com.ternsip.glade.universe.entities.base.AbstractEntity;
+import com.ternsip.glade.universe.entities.base.AbstractGraphical;
 import lombok.RequiredArgsConstructor;
 import org.joml.Vector2i;
 import org.joml.Vector4f;
@@ -10,11 +10,11 @@ import java.io.File;
 import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 
 @RequiredArgsConstructor
-public class EntityFps extends AbstractEntity {
+public class GraphicalFps extends AbstractGraphical {
 
     private final long refreshIntervalMilliseconds;
 
-    private EntityText fpsText;
+    private GraphicalText fpsText;
     private long lastTimeStamp = 0;
 
     // TODO move this calculations to dispaly manager
@@ -31,7 +31,7 @@ public class EntityFps extends AbstractEntity {
         if (fpsText != null) {
             fpsText.finish();
         }
-        fpsText = new EntityText(
+        fpsText = new GraphicalText(
                 new File("fonts/default.png"),
                 String.valueOf(fpsSum / fpsCount),
                 new Vector2i(0, 0),

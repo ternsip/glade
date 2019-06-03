@@ -1,8 +1,8 @@
 package com.ternsip.glade.universe.common;
 
-import com.ternsip.glade.universe.entities.base.Entity;
-import com.ternsip.glade.universe.entities.impl.EntityPlayer;
-import com.ternsip.glade.universe.entities.impl.FigureSky;
+import com.ternsip.glade.universe.entities.base.Graphical;
+import com.ternsip.glade.universe.entities.impl.GraphicalPlayer;
+import com.ternsip.glade.universe.entities.impl.GraphicalSky;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.*;
@@ -34,19 +34,19 @@ public class Camera {
     private static final float ROTATION_MULTIPLIER_Y = 0.005f;
     private static final float SCROLL_MULTIPLIER = 5f;
 
-    private Matrix4fc entityProjectionMatrix;
+    private Matrix4fc graphicalProjectionMatrix;
     private Matrix4fc skyProjectionMatrix;
     private Matrix4fc spriteProjectionMatrix;
 
     private float distanceFromTarget = (MAX_DISTANCE_FROM_TARGET + MIN_DISTANCE_FROM_TARGET) * 0.5f;
     private Vector2fc rotation = new Vector2f();
-    private Entity target;
+    private Graphical target;
     private Matrix4fc fullViewMatrix = new Matrix4f();
     private Matrix4fc spriteViewMatrix = new Matrix4f();
     private Matrix4fc skyViewMatrix = new Matrix4f();
 
-    public Camera(EntityPlayer entityPlayer) {
-        this.target = entityPlayer;
+    public Camera(GraphicalPlayer graphicalPlayer) {
+        this.target = graphicalPlayer;
         DISPLAY_MANAGER.getDisplayEvents().getScrollCallbacks().add(this::recalculateZoom);
         DISPLAY_MANAGER.getDisplayEvents().getResizeCallbacks().add(this::recalculateProjectionMatrices);
         DISPLAY_MANAGER.getDisplayEvents().getCursorPosCallbacks().add(this::recalculateRotation);
@@ -78,9 +78,9 @@ public class Camera {
 
     private void recalculateProjectionMatrices(float width, int height) {
         float ratio = width / height;
-        entityProjectionMatrix = createProjectionMatrix(FAR_PLANE, ratio);
+        graphicalProjectionMatrix = createProjectionMatrix(FAR_PLANE, ratio);
         // TODO think about that static constant
-        skyProjectionMatrix = createProjectionMatrix(FigureSky.SIZE * 2, ratio);
+        skyProjectionMatrix = createProjectionMatrix(GraphicalSky.SIZE * 2, ratio);
         spriteProjectionMatrix = createOrthoProjectionMatrix(FAR_PLANE, width, height);
     }
 

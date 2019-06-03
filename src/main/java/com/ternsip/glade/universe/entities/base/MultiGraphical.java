@@ -5,13 +5,13 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public abstract class MultiEntity {
+public abstract class MultiGraphical {
 
-    private final Entity[] entities;
+    private final Graphical[] graphicals;
 
     public void finish() {
-        for (Entity entity : getEntities()) {
-            entity.finish();
+        for (Graphical graphical : getGraphicals()) {
+            graphical.finish();
         }
     }
 

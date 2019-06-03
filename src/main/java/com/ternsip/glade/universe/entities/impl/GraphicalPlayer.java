@@ -5,7 +5,7 @@ import org.joml.Vector3f;
 import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 import static org.lwjgl.glfw.GLFW.*;
 
-public class EntityPlayer extends EntityBoy {
+public class GraphicalPlayer extends GraphicalBoy {
 
     private static final float RUN_SPEED = 90;
     private static final float TURN_SPEED = 2.0f;
@@ -15,7 +15,7 @@ public class EntityPlayer extends EntityBoy {
     private float currentTurnSpeed = 0;
     private float upwardsSpeed = 0;
 
-    public EntityPlayer() {
+    public GraphicalPlayer() {
         increaseRotation(new Vector3f(0, 0, (float) (-Math.PI / 2.0f)));
     }
 
