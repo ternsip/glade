@@ -1,14 +1,14 @@
-package com.ternsip.glade.universe.entities.impl;
+package com.ternsip.glade.universe.graphicals.impl;
 
 import com.ternsip.glade.graphics.general.*;
-import com.ternsip.glade.universe.entities.base.GraphicalDefault;
+import com.ternsip.glade.universe.graphicals.base.GraphicalDefault;
 import org.joml.Vector3f;
 
 import java.io.File;
 
 public class GraphicalDude extends GraphicalDefault {
 
-    protected Model loadModel() {
+    public Model loadModel() {
         return ModelLoader.loadModel(Settings
                 .builder()
                 .meshFile(new File("models/dude/dude.3ds"))

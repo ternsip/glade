@@ -1,11 +1,11 @@
-package com.ternsip.glade.universe.entities.impl;
+package com.ternsip.glade.universe.graphicals.impl;
 
 
 import com.ternsip.glade.graphics.general.Material;
 import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.general.Texture;
-import com.ternsip.glade.universe.entities.base.GraphicalDefault;
+import com.ternsip.glade.universe.graphicals.base.GraphicalDefault;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.joml.Vector3f;
@@ -61,7 +61,7 @@ public class Graphical3DText extends GraphicalDefault {
         return new Mesh(vertices, normals, new float[0], textures, indices, new float[0], new int[0], material);
     }
 
-    protected Model loadModel() {
+    public Model loadModel() {
         Mesh mesh = createTextMesh(text, new Material(new Texture(new Vector4f(0, 0, 1, 1), font)));
         return new Model(new Mesh[]{mesh}, new Vector3f(0), new Vector3f(0), new Vector3f(text.length(), 1, 1));
     }

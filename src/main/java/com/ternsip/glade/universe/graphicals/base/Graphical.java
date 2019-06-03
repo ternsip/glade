@@ -1,4 +1,4 @@
-package com.ternsip.glade.universe.entities.base;
+package com.ternsip.glade.universe.graphicals.base;
 
 import com.ternsip.glade.graphics.general.Animation;
 import com.ternsip.glade.graphics.general.Model;
@@ -14,7 +14,7 @@ import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 import static com.ternsip.glade.Glade.UNIVERSE;
 
 @Getter
-public abstract class Graphical<SHADER extends ShaderProgram> {
+public abstract class Graphical<SHADER extends ShaderProgram> implements Visual {
 
     @Getter(lazy = true)
     private final Animation animation = new Animation(DISPLAY_MANAGER.getModelRepository().getGraphicalModel(this));
@@ -66,20 +66,21 @@ public abstract class Graphical<SHADER extends ShaderProgram> {
         return new Vector3f(getRotation()).add(getAnimation().getModel().getBaseRotation());
     }
 
+    @Override
     public void update() {
     }
 
-    protected abstract void render();
+    public abstract void render();
 
-    protected abstract Class<SHADER> getShaderClass();
+    public abstract Class<SHADER> getShaderClass();
 
-    protected abstract Model loadModel();
+    public abstract Model loadModel();
 
     public int getPriority() {
         return 0;
     }
 
-    protected boolean isGraphicalInsideFrustum() {
+    public boolean isGraphicalInsideFrustum() {
         Matrix4fc projection = UNIVERSE.getCamera().getGraphicalProjectionMatrix();
         Matrix4fc view = UNIVERSE.getCamera().getFullViewMatrix();
         Matrix4fc projectionViewMatrix = projection.mul(view, new Matrix4f());
@@ -97,7 +98,7 @@ public abstract class Graphical<SHADER extends ShaderProgram> {
         return UNIVERSE.getCamera().getGraphicalProjectionMatrix();
     }
 
-    protected float getSquaredDistanceToCamera() {
+    public float getSquaredDistanceToCamera() {
         return getAdjustedPosition().distanceSquared(UNIVERSE.getCamera().getPosition());
     }
 

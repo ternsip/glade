@@ -1,9 +1,9 @@
 package com.ternsip.glade.graphics.display;
 
 import com.ternsip.glade.graphics.general.TextureRepository;
-import com.ternsip.glade.universe.entities.base.GraphicalRepository;
-import com.ternsip.glade.universe.entities.base.ModelRepository;
-import com.ternsip.glade.universe.entities.base.ShaderRepository;
+import com.ternsip.glade.universe.graphicals.repository.GraphicalRepository;
+import com.ternsip.glade.universe.graphicals.repository.ModelRepository;
+import com.ternsip.glade.universe.graphicals.repository.ShaderRepository;
 import lombok.Getter;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
@@ -102,7 +102,6 @@ public class DisplayManager {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             runnable.run();
 
-            getGraphicalRepository().update();
             getGraphicalRepository().render();
 
             // Calc fps

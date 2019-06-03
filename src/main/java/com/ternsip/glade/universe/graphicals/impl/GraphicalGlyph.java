@@ -1,11 +1,11 @@
-package com.ternsip.glade.universe.entities.impl;
+package com.ternsip.glade.universe.graphicals.impl;
 
 
 import com.ternsip.glade.graphics.general.Material;
 import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.general.Texture;
-import com.ternsip.glade.universe.entities.base.GraphicalDefault;
+import com.ternsip.glade.universe.graphicals.base.GraphicalDefault;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class GraphicalGlyph extends GraphicalDefault {
     private final char symbol;
     private final Vector4f color;
 
-    protected Model loadModel() {
+    public Model loadModel() {
         Mesh mesh = Graphical3DText.createTextMesh(String.valueOf(symbol), new Material(new Texture(color, font)));
         return new Model(new Mesh[]{mesh}, new Vector3f(0), new Vector3f(0), new Vector3f(1));
     }
@@ -48,7 +48,7 @@ public class GraphicalGlyph extends GraphicalDefault {
     }
 
     @Override
-    protected boolean isGraphicalInsideFrustum() {
+    public boolean isGraphicalInsideFrustum() {
         return true;
     }
 

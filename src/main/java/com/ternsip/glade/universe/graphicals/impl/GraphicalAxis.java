@@ -1,10 +1,10 @@
-package com.ternsip.glade.universe.entities.impl;
+package com.ternsip.glade.universe.graphicals.impl;
 
 import com.ternsip.glade.graphics.general.Material;
 import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.general.Texture;
-import com.ternsip.glade.universe.entities.base.GraphicalDefault;
+import com.ternsip.glade.universe.graphicals.base.GraphicalDefault;
 import org.joml.*;
 
 import static com.ternsip.glade.Glade.UNIVERSE;
@@ -12,7 +12,7 @@ import static com.ternsip.glade.Glade.UNIVERSE;
 public class GraphicalAxis extends GraphicalDefault {
 
     @Override
-    protected Model loadModel() {
+    public Model loadModel() {
         Material red = new Material(new Texture(new Vector4f(1, 0, 0, 0.5f)));
         Material greed = new Material(new Texture(new Vector4f(0, 1, 0, 0.5f)));
         Material blue = new Material(new Texture(new Vector4f(0, 0, 1, 0.5f)));
@@ -42,7 +42,7 @@ public class GraphicalAxis extends GraphicalDefault {
     }
 
     @Override
-    protected boolean isGraphicalInsideFrustum() {
+    public boolean isGraphicalInsideFrustum() {
         return true;
     }
 

@@ -1,10 +1,10 @@
-package com.ternsip.glade.universe.entities.impl;
+package com.ternsip.glade.universe.graphicals.impl;
 
 import com.ternsip.glade.graphics.general.Material;
 import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.shader.impl.SkyboxShader;
-import com.ternsip.glade.universe.entities.base.Graphical;
+import com.ternsip.glade.universe.graphicals.base.Graphical;
 import org.joml.Matrix4fc;
 import org.joml.Vector3f;
 
@@ -59,7 +59,7 @@ public class GraphicalSky extends Graphical<SkyboxShader> {
     };
 
     @Override
-    protected void render() {
+    public void render() {
         getShader().start();
         getShader().getProjectionMatrix().load(getProjectionMatrix());
         getShader().getSunVector().load(UNIVERSE.getSun().getPosition());
@@ -69,12 +69,12 @@ public class GraphicalSky extends Graphical<SkyboxShader> {
     }
 
     @Override
-    protected Class<SkyboxShader> getShaderClass() {
+    public Class<SkyboxShader> getShaderClass() {
         return SkyboxShader.class;
     }
 
     @Override
-    protected Model loadModel() {
+    public Model loadModel() {
         return new Model(
                 new Mesh[]{new Mesh(VERTICES, new Material())},
                 new Vector3f(0),
@@ -89,7 +89,7 @@ public class GraphicalSky extends Graphical<SkyboxShader> {
     }
 
     @Override
-    protected boolean isGraphicalInsideFrustum() {
+    public boolean isGraphicalInsideFrustum() {
         return true;
     }
 

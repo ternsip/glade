@@ -1,13 +1,13 @@
-package com.ternsip.glade.universe.entities.impl;
+package com.ternsip.glade.universe.graphicals.impl;
 
 import com.ternsip.glade.graphics.general.*;
-import com.ternsip.glade.universe.entities.base.GraphicalDefault;
+import com.ternsip.glade.universe.graphicals.base.GraphicalDefault;
 
 import java.io.File;
 
 public class GraphicalLamp extends GraphicalDefault {
 
-    protected Model loadModel() {
+    public Model loadModel() {
         Material[] lampMaterials = new Material[]{
                 new Material()
                         .withDiffuseMap(new Texture(new File("models/lamp/Diffuse.png")))

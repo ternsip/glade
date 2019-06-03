@@ -1,11 +1,11 @@
-package com.ternsip.glade.universe.entities.impl;
+package com.ternsip.glade.universe.graphicals.impl;
 
 
 import com.ternsip.glade.graphics.general.Material;
 import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.general.Texture;
-import com.ternsip.glade.universe.entities.base.GraphicalDefault;
+import com.ternsip.glade.universe.graphicals.base.GraphicalDefault;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
@@ -76,7 +76,7 @@ public class GraphicalCube extends GraphicalDefault {
         return new Mesh(vertices, NORMALS, new float[0], TEXCOORDS, INDICES, new float[0], new int[0], material);
     }
 
-    protected Model loadModel() {
+    public Model loadModel() {
         Material material = new Material(new Texture(new Vector4f(1.0f, 1.0f, 1.0f, 0.4f), new File("models/others/stall.png")));
         return new Model(createAABBMesh(new Vector3f(1), material));
     }

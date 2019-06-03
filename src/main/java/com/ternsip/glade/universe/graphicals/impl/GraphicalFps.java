@@ -1,6 +1,6 @@
-package com.ternsip.glade.universe.entities.impl;
+package com.ternsip.glade.universe.graphicals.impl;
 
-import com.ternsip.glade.universe.entities.base.AbstractGraphical;
+import com.ternsip.glade.universe.graphicals.base.Visual;
 import lombok.RequiredArgsConstructor;
 import org.joml.Vector2i;
 import org.joml.Vector4f;
@@ -10,7 +10,7 @@ import java.io.File;
 import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 
 @RequiredArgsConstructor
-public class GraphicalFps extends AbstractGraphical {
+public class GraphicalFps implements Visual {
 
     private final long refreshIntervalMilliseconds;
 
@@ -41,4 +41,12 @@ public class GraphicalFps extends AbstractGraphical {
         fpsSum = 0;
         fpsCount = 0;
     }
+
+    @Override
+    public void finish() {
+        if (fpsText != null) {
+            fpsText.finish();
+        }
+    }
+
 }

@@ -1,4 +1,4 @@
-package com.ternsip.glade.universe.entities.base;
+package com.ternsip.glade.universe.graphicals.base;
 
 import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.shader.impl.AnimationShader;
@@ -13,7 +13,7 @@ import static com.ternsip.glade.Glade.UNIVERSE;
 public abstract class GraphicalDefault extends Graphical<AnimationShader> {
 
     @Override
-    protected void render() {
+    public void render() {
         getShader().start();
         getAnimation().update(getUpdateIntervalMilliseconds());
         Matrix4f[] boneTransforms = getAnimation().getBoneTransforms();
@@ -43,7 +43,7 @@ public abstract class GraphicalDefault extends Graphical<AnimationShader> {
     }
 
     @Override
-    protected Class<AnimationShader> getShaderClass() {
+    public Class<AnimationShader> getShaderClass() {
         return AnimationShader.class;
     }
 

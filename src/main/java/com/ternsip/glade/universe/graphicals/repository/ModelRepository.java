@@ -1,6 +1,7 @@
-package com.ternsip.glade.universe.entities.base;
+package com.ternsip.glade.universe.graphicals.repository;
 
 import com.ternsip.glade.graphics.general.Model;
+import com.ternsip.glade.universe.graphicals.base.Graphical;
 
 import java.util.HashMap;
 import java.util.Map;

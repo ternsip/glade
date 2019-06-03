@@ -1,4 +1,4 @@
-package com.ternsip.glade.universe.entities.impl;
+package com.ternsip.glade.universe.graphicals.impl;
 
 import org.joml.Vector3f;
 

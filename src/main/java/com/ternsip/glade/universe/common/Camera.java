@@ -1,8 +1,8 @@
 package com.ternsip.glade.universe.common;
 
-import com.ternsip.glade.universe.entities.base.Graphical;
-import com.ternsip.glade.universe.entities.impl.GraphicalPlayer;
-import com.ternsip.glade.universe.entities.impl.GraphicalSky;
+import com.ternsip.glade.universe.graphicals.base.Graphical;
+import com.ternsip.glade.universe.graphicals.impl.GraphicalPlayer;
+import com.ternsip.glade.universe.graphicals.impl.GraphicalSky;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.*;

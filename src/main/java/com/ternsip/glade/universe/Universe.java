@@ -2,8 +2,10 @@ package com.ternsip.glade.universe;
 
 import com.ternsip.glade.universe.common.Camera;
 import com.ternsip.glade.universe.common.Sun;
-import com.ternsip.glade.universe.entities.base.Graphical;
-import com.ternsip.glade.universe.entities.impl.*;
+import com.ternsip.glade.universe.entities.impl.EntityFps;
+import com.ternsip.glade.universe.entities.repository.EntityRepository;
+import com.ternsip.glade.universe.graphicals.base.Graphical;
+import com.ternsip.glade.universe.graphicals.impl.*;
 import lombok.Getter;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -16,7 +18,7 @@ public class Universe {
     private Sun sun;
     private GraphicalPlayer graphicalPlayer;
     private Camera camera;
-    private GraphicalFps graphicalFps;
+    private EntityRepository entityRepository = new EntityRepository();
 
     public void initialize() {
 
@@ -66,7 +68,7 @@ public class Universe {
 
         //GraphicalText graphicalText = new GraphicalText(new File("fonts/default.png"), "1234567890.1234567890");
 
-        graphicalFps = new GraphicalFps(100);
+        new EntityFps();
 
         for (int i = 0; i < 100; ++i) {
             for (int j = 0; j < 100; ++j) {
@@ -79,7 +81,6 @@ public class Universe {
     }
 
     public void update() {
-        getGraphicalFps().update();
         getCamera().update();
         getSun().update();
     }
