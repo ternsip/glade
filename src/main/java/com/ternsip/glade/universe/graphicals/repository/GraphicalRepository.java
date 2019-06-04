@@ -26,10 +26,15 @@ public class GraphicalRepository {
     }
 
     public void render() {
-        UNIVERSE.getEntityRepository().getEntities().forEach(e -> {
-            entityToVisual.computeIfAbsent(e, Entity::getVisual);
+        Set<Entity> entities = UNIVERSE.getEntityRepository().getEntities();
+        entities.forEach(e -> entityToVisual.computeIfAbsent(e, Entity::getVisual));
+        entityToVisual.keySet().removeIf(e -> {
+            boolean toRemove = !entities.contains(e);
+            if (toRemove) {
+                e.finish();
+            }
+            return toRemove;
         });
-        entityToVisual.keySet().retainAll(UNIVERSE.getEntityRepository().getEntities());
         entityToVisual.values().forEach(Visual::update);
         graphicals.forEach(Graphical::update); // TODO TEMP solution, it should only depend on entities
         graphicals
