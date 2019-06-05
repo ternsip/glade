@@ -1,13 +1,16 @@
 package com.ternsip.glade.universe.entities.base;
 
 import com.ternsip.glade.universe.graphicals.base.Visual;
+import lombok.Getter;
 
 import static com.ternsip.glade.Glade.UNIVERSE;
 
 /**
  * Class should be thread safe
  */
-public abstract class Entity {
+@Getter
+public abstract class Entity<T extends Visual> {
+
 
     public Entity() {
         UNIVERSE.getEntityRepository().getEntities().add(this);
@@ -17,6 +20,8 @@ public abstract class Entity {
         UNIVERSE.getEntityRepository().getEntities().remove(this);
     }
 
-    public abstract Visual getVisual();
+    public abstract T getVisual();
+
+    public abstract void update(T visual);
 
 }

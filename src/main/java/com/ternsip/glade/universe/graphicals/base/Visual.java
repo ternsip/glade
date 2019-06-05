@@ -4,6 +4,4 @@ public interface Visual {
 
     void finish();
 
-    void update();
-
 }

@@ -25,7 +25,6 @@ public class Graphical3DText extends GraphicalDefault {
 
     private final File font;
     private final String text;
-    private final Vector3f rotationSpeed;
 
     public static Mesh createTextMesh(String text, Material material) {
         int quad = 4;
@@ -64,11 +63,6 @@ public class Graphical3DText extends GraphicalDefault {
     public Model loadModel() {
         Mesh mesh = createTextMesh(text, new Material(new Texture(new Vector4f(0, 0, 1, 1), font)));
         return new Model(new Mesh[]{mesh}, new Vector3f(0), new Vector3f(0), new Vector3f(text.length(), 1, 1));
-    }
-
-    @Override
-    public void update() {
-        this.increaseRotation(getRotationSpeed());
     }
 
     @Override

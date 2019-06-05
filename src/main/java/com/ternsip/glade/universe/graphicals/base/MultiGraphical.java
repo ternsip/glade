@@ -9,10 +9,6 @@ public abstract class MultiGraphical implements Visual {
 
     private final Graphical[] graphicals;
 
-    @Override
-    public void update() {
-    }
-
     public void finish() {
         for (Graphical graphical : getGraphicals()) {
             graphical.finish();

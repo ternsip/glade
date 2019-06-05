@@ -18,12 +18,6 @@ public class GraphicalHagrid extends GraphicalDefault {
                 .baseRotation(new Vector3f(0, 0, (float) (-Math.PI / 2)))
                 .build()
         );
-
-    }
-
-    @Override
-    public void update() {
-        this.increaseRotation(new Vector3f(0, 0.01f, 0.00f));
     }
 
 }

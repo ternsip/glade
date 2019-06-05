@@ -1,7 +1,6 @@
 package com.ternsip.glade.universe.common;
 
-import com.ternsip.glade.universe.graphicals.base.Graphical;
-import com.ternsip.glade.universe.graphicals.impl.GraphicalPlayer;
+import com.ternsip.glade.universe.entities.impl.EntityPlayer;
 import com.ternsip.glade.universe.graphicals.impl.GraphicalSky;
 import lombok.Getter;
 import lombok.Setter;
@@ -40,13 +39,13 @@ public class Camera {
 
     private float distanceFromTarget = (MAX_DISTANCE_FROM_TARGET + MIN_DISTANCE_FROM_TARGET) * 0.5f;
     private Vector2fc rotation = new Vector2f();
-    private Graphical target;
+    private EntityPlayer target;
     private Matrix4fc fullViewMatrix = new Matrix4f();
     private Matrix4fc spriteViewMatrix = new Matrix4f();
     private Matrix4fc skyViewMatrix = new Matrix4f();
 
-    public Camera(GraphicalPlayer graphicalPlayer) {
-        this.target = graphicalPlayer;
+    public Camera(EntityPlayer entityPlayer) {
+        this.target = entityPlayer;
         DISPLAY_MANAGER.getDisplayEvents().getScrollCallbacks().add(this::recalculateZoom);
         DISPLAY_MANAGER.getDisplayEvents().getResizeCallbacks().add(this::recalculateProjectionMatrices);
         DISPLAY_MANAGER.getDisplayEvents().getCursorPosCallbacks().add(this::recalculateRotation);

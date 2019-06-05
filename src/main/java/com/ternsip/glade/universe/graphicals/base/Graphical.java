@@ -66,10 +66,6 @@ public abstract class Graphical<SHADER extends ShaderProgram> implements Visual 
         return new Vector3f(getRotation()).add(getAnimation().getModel().getBaseRotation());
     }
 
-    @Override
-    public void update() {
-    }
-
     public abstract void render();
 
     public abstract Class<SHADER> getShaderClass();

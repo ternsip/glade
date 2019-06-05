@@ -35,8 +35,7 @@ public class GraphicalRepository {
             }
             return toRemove;
         });
-        entityToVisual.values().forEach(Visual::update);
-        graphicals.forEach(Graphical::update); // TODO TEMP solution, it should only depend on entities
+        entityToVisual.forEach(Entity::update);
         graphicals
                 .stream()
                 .filter(Graphical::isGraphicalInsideFrustum)
