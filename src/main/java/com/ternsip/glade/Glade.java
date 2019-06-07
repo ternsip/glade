@@ -19,9 +19,9 @@ public class Glade {
     public static void main(String[] args) {
 
         DISPLAY_MANAGER.initialize();
-        UNIVERSE.initialize();
 
         new Thread(() -> {
+            UNIVERSE.initialize();
             while (DISPLAY_MANAGER.isActive()) {
                 UNIVERSE.update();
             }

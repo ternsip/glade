@@ -16,7 +16,9 @@ public abstract class Graphical<SHADER extends ShaderProgram> implements Visual 
 
     @Getter(lazy = true)
     private final Model model = DISPLAY_MANAGER.getModelRepository().getGraphicalModel(this);
+
     private final SHADER shader = DISPLAY_MANAGER.getShaderRepository().getGraphicalShader(this);
+
     private final Vector3f position = new Vector3f(0, 0, 0);
     private final Vector3f scale = new Vector3f(1, 1, 1);
     private final Vector3f rotation = new Vector3f(0, 0, 0);

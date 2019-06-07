@@ -4,16 +4,20 @@ import com.ternsip.glade.universe.entities.base.EntityGraphical;
 import com.ternsip.glade.universe.graphicals.base.Graphical;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+
+import java.util.function.Function;
 
 @RequiredArgsConstructor
 @Getter
 public class EntityGeneric extends EntityGraphical<Graphical> {
 
-    private final Graphical graphical;
+    private final Function<Void, Graphical> loadVisual;
 
     @Override
+    @SneakyThrows
     public Graphical getVisual() {
-        return graphical;
+        return loadVisual.apply(null);
     }
 
     @Override
