@@ -16,7 +16,7 @@ import org.joml.Vector4f;
 
 import java.io.File;
 
-import static com.ternsip.glade.Glade.UNIVERSE;
+import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 
 @RequiredArgsConstructor
 @Getter
@@ -39,7 +39,7 @@ public class GraphicalGlyph extends GraphicalAnimated {
 
     @Override
     protected Matrix4fc getProjectionMatrix() {
-        return UNIVERSE.getCamera().getSpriteProjectionMatrix();
+        return DISPLAY_MANAGER.getCamera().getSpriteProjectionMatrix();
     }
 
     @Override

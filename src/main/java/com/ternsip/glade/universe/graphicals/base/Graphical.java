@@ -10,7 +10,6 @@ import org.joml.*;
 import java.lang.Math;
 
 import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
-import static com.ternsip.glade.Glade.UNIVERSE;
 
 @Getter
 public abstract class Graphical<SHADER extends ShaderProgram> implements Visual {
@@ -76,8 +75,8 @@ public abstract class Graphical<SHADER extends ShaderProgram> implements Visual 
     }
 
     public boolean isGraphicalInsideFrustum() {
-        Matrix4fc projection = UNIVERSE.getCamera().getGraphicalProjectionMatrix();
-        Matrix4fc view = UNIVERSE.getCamera().getFullViewMatrix();
+        Matrix4fc projection = DISPLAY_MANAGER.getCamera().getGraphicalProjectionMatrix();
+        Matrix4fc view = DISPLAY_MANAGER.getCamera().getFullViewMatrix();
         Matrix4fc projectionViewMatrix = projection.mul(view, new Matrix4f());
         FrustumIntersection frustumIntersection = new FrustumIntersection(projectionViewMatrix);
         Vector3fc scale = getAdjustedScale();
@@ -86,15 +85,15 @@ public abstract class Graphical<SHADER extends ShaderProgram> implements Visual 
     }
 
     protected Matrix4fc getViewMatrix() {
-        return UNIVERSE.getCamera().getFullViewMatrix();
+        return DISPLAY_MANAGER.getCamera().getFullViewMatrix();
     }
 
     protected Matrix4fc getProjectionMatrix() {
-        return UNIVERSE.getCamera().getGraphicalProjectionMatrix();
+        return DISPLAY_MANAGER.getCamera().getGraphicalProjectionMatrix();
     }
 
     public float getSquaredDistanceToCamera() {
-        return getAdjustedPosition().distanceSquared(UNIVERSE.getCamera().getPosition());
+        return getAdjustedPosition().distanceSquared(DISPLAY_MANAGER.getCamera().getPosition());
     }
 
     public void finish() {

@@ -1,4 +1,4 @@
-package com.ternsip.glade.universe.common;
+package com.ternsip.glade.universe.graphicals.base;
 
 import com.ternsip.glade.universe.entities.impl.EntityPlayer;
 import com.ternsip.glade.universe.graphicals.impl.GraphicalSky;
@@ -44,8 +44,7 @@ public class Camera {
     private Matrix4fc spriteViewMatrix = new Matrix4f();
     private Matrix4fc skyViewMatrix = new Matrix4f();
 
-    public Camera(EntityPlayer entityPlayer) {
-        this.target = entityPlayer;
+    public Camera() {
         DISPLAY_MANAGER.getDisplayEvents().getScrollCallbacks().add(this::recalculateZoom);
         DISPLAY_MANAGER.getDisplayEvents().getResizeCallbacks().add(this::recalculateProjectionMatrices);
         DISPLAY_MANAGER.getDisplayEvents().getCursorPosCallbacks().add(this::recalculateRotation);
@@ -91,7 +90,11 @@ public class Camera {
         return getFrontDirection()
                 .mul(getDistanceFromTarget(), new Vector3f())
                 .negate()
-                .add(getTarget().getPosition());
+                .add(getTargetPosition());
+    }
+
+    public Vector3fc getTargetPosition() {
+        return getTarget() == null ? new Vector3f(0) : getTarget().getPosition();
     }
 
     private void recalculateZoom(double scrollX, double scrollY) {
@@ -103,7 +106,7 @@ public class Camera {
 
     public void recalculateViewMatrices() {
         // TODO deal with the situation when UP_DIR collinear to camera view
-        Matrix4fc view = new Matrix4f().lookAt(getPosition(), getTarget().getPosition(), UP_DIRECTION);
+        Matrix4fc view = new Matrix4f().lookAt(getPosition(), getTargetPosition(), UP_DIRECTION);
         setFullViewMatrix(view);
         setSpriteViewMatrix(new Matrix4f().translate(getPosition()));
         setSkyViewMatrix(new Matrix4f(view).m30(0).m31(0).m32(0));

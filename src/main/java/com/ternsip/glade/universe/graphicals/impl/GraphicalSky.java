@@ -8,6 +8,7 @@ import com.ternsip.glade.universe.graphicals.base.Graphical;
 import org.joml.Matrix4fc;
 import org.joml.Vector3f;
 
+import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 import static com.ternsip.glade.Glade.UNIVERSE;
 
 public class GraphicalSky extends Graphical<SkyboxShader> {
@@ -95,12 +96,12 @@ public class GraphicalSky extends Graphical<SkyboxShader> {
 
     @Override
     protected Matrix4fc getViewMatrix() {
-        return UNIVERSE.getCamera().getSkyViewMatrix();
+        return DISPLAY_MANAGER.getCamera().getSkyViewMatrix();
     }
 
     @Override
     protected Matrix4fc getProjectionMatrix() {
-        return UNIVERSE.getCamera().getSkyProjectionMatrix();
+        return DISPLAY_MANAGER.getCamera().getSkyProjectionMatrix();
     }
 
 

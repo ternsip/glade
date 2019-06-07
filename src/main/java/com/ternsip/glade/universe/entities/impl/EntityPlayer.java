@@ -28,12 +28,10 @@ public class EntityPlayer extends EntityGraphical<GraphicalBoy> {
     public void update() {
         checkInputs();
         increaseRotation(new Vector3f(0, currentTurnSpeed, 0));
-        float distance = currentSpeed;
-        float dx = (float) (distance * Math.sin(getRotation().y()));
-        float dz = (float) (distance * Math.cos(getRotation().y()));
-        increasePosition(new Vector3f(dx, 0, dz));
+        float dx = (float) (currentSpeed * Math.sin(getRotation().y()));
+        float dz = (float) (currentSpeed * Math.cos(getRotation().y()));
         upwardsSpeed += GRAVITY;
-        increasePosition(new Vector3f(0, upwardsSpeed, 0));
+        increasePosition(new Vector3f(dx, upwardsSpeed, dz));
         float terrainHeight = -5;
         if (getPosition().y < terrainHeight) {
             upwardsSpeed = 0;
@@ -57,30 +55,6 @@ public class EntityPlayer extends EntityGraphical<GraphicalBoy> {
             this.currentTurnSpeed = TURN_SPEED;
         } else {
             this.currentTurnSpeed = 0;
-        }
-
-        float rotX = 0.60f;
-        float rotY = 0.60f;
-        float rotZ = 0.60f;
-
-        if (DISPLAY_MANAGER.isKeyDown(GLFW_KEY_B)) {
-            increaseRotation(new Vector3f(rotX, 0, 0));
-        }
-        if (DISPLAY_MANAGER.isKeyDown(GLFW_KEY_N)) {
-            increaseRotation(new Vector3f(0, rotY, 0));
-        }
-        if (DISPLAY_MANAGER.isKeyDown(GLFW_KEY_M)) {
-            increaseRotation(new Vector3f(0, 0, rotZ));
-        }
-
-        if (DISPLAY_MANAGER.isKeyDown(GLFW_KEY_H)) {
-            increaseRotation(new Vector3f(-rotX, 0, 0));
-        }
-        if (DISPLAY_MANAGER.isKeyDown(GLFW_KEY_J)) {
-            increaseRotation(new Vector3f(0, -rotY, 0));
-        }
-        if (DISPLAY_MANAGER.isKeyDown(GLFW_KEY_K)) {
-            increaseRotation(new Vector3f(0, 0, -rotZ));
         }
 
         if (DISPLAY_MANAGER.isKeyDown(GLFW_KEY_R)) {

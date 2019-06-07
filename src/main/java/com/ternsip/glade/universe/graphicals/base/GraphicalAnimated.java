@@ -8,6 +8,7 @@ import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.joml.Vector3fc;
 
+import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 import static com.ternsip.glade.Glade.UNIVERSE;
 
 @Getter
@@ -54,7 +55,7 @@ public abstract class GraphicalAnimated extends Graphical<AnimationShader> {
     private long getUpdateIntervalMilliseconds() {
         Vector3fc scale = getAdjustedScale();
         float maxScale = Math.max(Math.max(scale.x(), scale.y()), scale.z());
-        double criterion = (UNIVERSE.getCamera().getPosition().distance(getAdjustedPosition()) / maxScale) / 10;
+        double criterion = (DISPLAY_MANAGER.getCamera().getPosition().distance(getAdjustedPosition()) / maxScale) / 10;
         return (long) (criterion * criterion * criterion);
     }
 

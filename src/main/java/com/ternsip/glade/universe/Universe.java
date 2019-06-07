@@ -1,6 +1,5 @@
 package com.ternsip.glade.universe;
 
-import com.ternsip.glade.universe.common.Camera;
 import com.ternsip.glade.universe.common.Sun;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.base.EntityGraphical;
@@ -17,12 +16,13 @@ import org.joml.Vector3f;
 
 import java.io.File;
 
+import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
+
 @Getter
 public class Universe {
 
     private Sun sun;
     private EntityPlayer entityPlayer;
-    private Camera camera;
     private EntityRepository entityRepository = new EntityRepository();
     private int ticksPerSecond = 128;
 
@@ -31,7 +31,7 @@ public class Universe {
         sun = new Sun(new Vector2f(0, 0), new Vector2f(20000, 20000), new Vector3f(1, 1, 1));
         entityPlayer = new EntityPlayer();
         entityPlayer.setScale(new Vector3f(5, 5, 5));
-        camera = new Camera(entityPlayer);
+        DISPLAY_MANAGER.getCamera().setTarget(entityPlayer);
 
         EntityGeneric cube = new EntityGeneric(new GraphicalCube());
 
@@ -86,7 +86,6 @@ public class Universe {
     @SneakyThrows
     public void update() {
         long startTime = System.currentTimeMillis();
-        getCamera().update();
         getSun().update();
         getEntityRepository().getEntities().forEach(Entity::update);
         long pastTime = System.currentTimeMillis() - startTime;

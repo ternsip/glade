@@ -7,7 +7,7 @@ import com.ternsip.glade.graphics.general.Texture;
 import com.ternsip.glade.universe.graphicals.base.GraphicalAnimated;
 import org.joml.*;
 
-import static com.ternsip.glade.Glade.UNIVERSE;
+import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 
 public class GraphicalAxis extends GraphicalAnimated {
 
@@ -26,7 +26,7 @@ public class GraphicalAxis extends GraphicalAnimated {
     @Override
     public Matrix4f getTransformationMatrix() {
         Vector3fc totalScale = getAdjustedScale().mul(getAnimation().getModel().getNormalizingScale());
-        Matrix4fc view = UNIVERSE.getCamera().getFullViewMatrix();
+        Matrix4fc view = DISPLAY_MANAGER.getCamera().getFullViewMatrix();
         Quaternionfc rotQuaternion = view.getNormalizedRotation(new Quaternionf());
         return view
                 .invert(new Matrix4f())

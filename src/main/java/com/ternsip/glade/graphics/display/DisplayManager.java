@@ -1,6 +1,7 @@
 package com.ternsip.glade.graphics.display;
 
 import com.ternsip.glade.graphics.general.TextureRepository;
+import com.ternsip.glade.universe.graphicals.base.Camera;
 import com.ternsip.glade.universe.graphicals.repository.GraphicalRepository;
 import com.ternsip.glade.universe.graphicals.repository.ModelRepository;
 import com.ternsip.glade.universe.graphicals.repository.ShaderRepository;
@@ -25,6 +26,7 @@ public class DisplayManager {
 
     private static final int FPS_CAP = 120;
 
+    private Camera camera;
     private ArrayList<Callback> callbacks = new ArrayList<>();
     private TextureRepository textureRepository;
     private GraphicalRepository graphicalRepository = new GraphicalRepository();
@@ -88,6 +90,8 @@ public class DisplayManager {
         textureRepository = new TextureRepository();
         textureRepository.bind();
 
+        camera = new Camera();
+
         lastFrameTime = getCurrentTime();
     }
 
@@ -101,6 +105,7 @@ public class DisplayManager {
         while (isActive()) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+            getCamera().update();
             getGraphicalRepository().render();
 
             // Calc fps
