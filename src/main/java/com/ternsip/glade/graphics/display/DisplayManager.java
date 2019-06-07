@@ -96,11 +96,10 @@ public class DisplayManager {
         glViewport(0, 0, getWidth(), getHeight());
     }
 
-    public void loop(Runnable runnable) {
+    public void loop() {
         /* Loop until window gets closed */
-        while (!glfwWindowShouldClose(window)) {
+        while (isActive()) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            runnable.run();
 
             getGraphicalRepository().render();
 
@@ -114,6 +113,10 @@ public class DisplayManager {
             glfwSwapBuffers(window);
             glfwPollEvents();
         }
+    }
+
+    public boolean isActive() {
+        return !glfwWindowShouldClose(window);
     }
 
     public void finish() {

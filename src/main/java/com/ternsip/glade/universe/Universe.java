@@ -10,6 +10,7 @@ import com.ternsip.glade.universe.entities.impl.EntityPlayer;
 import com.ternsip.glade.universe.entities.repository.EntityRepository;
 import com.ternsip.glade.universe.graphicals.impl.*;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -22,6 +23,7 @@ public class Universe {
     private EntityPlayer entityPlayer;
     private Camera camera;
     private EntityRepository entityRepository = new EntityRepository();
+    private int ticksPerSecond = 128;
 
     public void initialize() {
 
@@ -80,9 +82,16 @@ public class Universe {
 
     }
 
+    @SneakyThrows
     public void update() {
+        long startTime = System.currentTimeMillis();
         getCamera().update();
         getSun().update();
+        long pastTime = System.currentTimeMillis() - startTime;
+        long needToSleep = (long) Math.max(1000.0f / ticksPerSecond - pastTime, 0);
+        if (needToSleep > 0) {
+            Thread.sleep(needToSleep);
+        }
     }
 
 }

@@ -21,6 +21,7 @@ public class Sun implements Light {
 
     public void update() {
         phase += delta;
+        phase %= 1;
     }
 
     public Vector3f getPosition() {
