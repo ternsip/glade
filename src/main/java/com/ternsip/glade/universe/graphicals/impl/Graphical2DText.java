@@ -11,15 +11,15 @@ import org.joml.Vector4f;
 import java.io.File;
 
 @Getter
-public class GraphicalText extends MultiGraphical {
+public class Graphical2DText extends MultiGraphical {
 
     private static final float TEXT_COMPRESSION = 0.75f;
 
-    public GraphicalText(File font, String text, Vector3f position, Vector3f scale, Vector4f color) {
+    public Graphical2DText(File font, String text, Vector3f position, Vector3f scale, Vector4f color) {
         super(generateEntities(font, text, position, scale, color));
     }
 
-    public GraphicalText(File font, String text, Vector2i position, Vector2i maxChars, Vector4f color) {
+    public Graphical2DText(File font, String text, Vector2i position, Vector2i maxChars, Vector4f color) {
         super(generateEntities(font, text, position, maxChars, color));
     }
 

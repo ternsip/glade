@@ -16,4 +16,9 @@ public class EntityGeneric extends EntityGraphical<Graphical> {
         return graphical;
     }
 
+    @Override
+    public void update() {
+
+    }
+
 }

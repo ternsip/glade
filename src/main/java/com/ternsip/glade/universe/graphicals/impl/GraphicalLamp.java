@@ -1,11 +1,11 @@
 package com.ternsip.glade.universe.graphicals.impl;
 
 import com.ternsip.glade.graphics.general.*;
-import com.ternsip.glade.universe.graphicals.base.GraphicalDefault;
+import com.ternsip.glade.universe.graphicals.base.GraphicalAnimated;
 
 import java.io.File;
 
-public class GraphicalLamp extends GraphicalDefault {
+public class GraphicalLamp extends GraphicalAnimated {
 
     public Model loadModel() {
         Material[] lampMaterials = new Material[]{

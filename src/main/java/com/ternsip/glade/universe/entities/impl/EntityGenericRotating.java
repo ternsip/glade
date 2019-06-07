@@ -19,8 +19,7 @@ public class EntityGenericRotating extends EntityGraphical<Graphical> {
     }
 
     @Override
-    public void update(Graphical visual) {
+    public void update() {
         increaseRotation(getRotationSpeed());
-        super.update(visual);
     }
 }

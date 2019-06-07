@@ -5,7 +5,7 @@ import com.ternsip.glade.graphics.general.Material;
 import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.general.Texture;
-import com.ternsip.glade.universe.graphicals.base.GraphicalDefault;
+import com.ternsip.glade.universe.graphicals.base.GraphicalAnimated;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ import static com.ternsip.glade.Glade.UNIVERSE;
 
 @RequiredArgsConstructor
 @Getter
-public class GraphicalGlyph extends GraphicalDefault {
+public class GraphicalGlyph extends GraphicalAnimated {
 
     private final Matrix4fc viewMatrix = new Matrix4f();
     private final File font;

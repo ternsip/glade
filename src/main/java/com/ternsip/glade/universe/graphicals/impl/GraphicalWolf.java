@@ -3,12 +3,12 @@ package com.ternsip.glade.universe.graphicals.impl;
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.general.ModelLoader;
 import com.ternsip.glade.graphics.general.Settings;
-import com.ternsip.glade.universe.graphicals.base.GraphicalDefault;
+import com.ternsip.glade.universe.graphicals.base.GraphicalAnimated;
 import org.joml.Vector3f;
 
 import java.io.File;
 
-public class GraphicalWolf extends GraphicalDefault {
+public class GraphicalWolf extends GraphicalAnimated {
 
     public Model loadModel() {
         return ModelLoader.loadModel(Settings.builder()

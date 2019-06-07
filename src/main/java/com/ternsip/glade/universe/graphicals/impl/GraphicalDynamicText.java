@@ -12,7 +12,7 @@ public class GraphicalDynamicText implements Visual {
 
     private final File font;
 
-    private GraphicalText fpsText;
+    private Graphical2DText fpsText;
     private String lastText;
 
     public void changeText(String text) {
@@ -22,7 +22,7 @@ public class GraphicalDynamicText implements Visual {
         if (text.equals(lastText)) {
             return;
         }
-        fpsText = new GraphicalText(
+        fpsText = new Graphical2DText(
                 font,
                 text,
                 new Vector2i(0, 0),

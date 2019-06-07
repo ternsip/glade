@@ -1,5 +1,6 @@
 package com.ternsip.glade.universe.graphicals.base;
 
+import com.ternsip.glade.graphics.general.Animation;
 import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.shader.impl.AnimationShader;
 import lombok.Getter;
@@ -10,7 +11,10 @@ import org.joml.Vector3fc;
 import static com.ternsip.glade.Glade.UNIVERSE;
 
 @Getter
-public abstract class GraphicalDefault extends Graphical<AnimationShader> {
+public abstract class GraphicalAnimated extends Graphical<AnimationShader> {
+
+    @Getter(lazy = true)
+    private final Animation animation = new Animation(getModel());
 
     @Override
     public void render() {

@@ -4,12 +4,12 @@ import com.ternsip.glade.graphics.general.Material;
 import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.general.Texture;
-import com.ternsip.glade.universe.graphicals.base.GraphicalDefault;
+import com.ternsip.glade.universe.graphicals.base.GraphicalAnimated;
 import org.joml.*;
 
 import static com.ternsip.glade.Glade.UNIVERSE;
 
-public class GraphicalAxis extends GraphicalDefault {
+public class GraphicalAxis extends GraphicalAnimated {
 
     @Override
     public Model loadModel() {

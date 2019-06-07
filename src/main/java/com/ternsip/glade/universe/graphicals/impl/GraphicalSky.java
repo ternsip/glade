@@ -64,7 +64,7 @@ public class GraphicalSky extends Graphical<SkyboxShader> {
         getShader().getProjectionMatrix().load(getProjectionMatrix());
         getShader().getSunVector().load(UNIVERSE.getSun().getPosition());
         getShader().getViewMatrix().load(getViewMatrix());
-        getAnimation().getModel().getMeshes()[0].render();
+        getModel().getMeshes()[0].render();
         getShader().stop();
     }
 

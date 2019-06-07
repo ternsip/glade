@@ -11,9 +11,9 @@ import static org.lwjgl.glfw.GLFW.*;
 @Getter
 public class EntityPlayer extends EntityGraphical<GraphicalBoy> {
 
-    private static final float RUN_SPEED = 90;
-    private static final float TURN_SPEED = 2.0f;
-    private static final float GRAVITY = -20;
+    private static final float RUN_SPEED = 1;
+    private static final float TURN_SPEED = 0.02f;
+    private static final float GRAVITY = -0.2f;
 
     private float currentSpeed = 0;
     private float currentTurnSpeed = 0;
@@ -25,21 +25,20 @@ public class EntityPlayer extends EntityGraphical<GraphicalBoy> {
     }
 
     @Override
-    public void update(GraphicalBoy visual) {
+    public void update() {
         checkInputs();
-        increaseRotation(new Vector3f(0, currentTurnSpeed * DISPLAY_MANAGER.getDeltaTime(), 0));
-        float distance = currentSpeed * DISPLAY_MANAGER.getDeltaTime();
+        increaseRotation(new Vector3f(0, currentTurnSpeed, 0));
+        float distance = currentSpeed;
         float dx = (float) (distance * Math.sin(getRotation().y()));
         float dz = (float) (distance * Math.cos(getRotation().y()));
         increasePosition(new Vector3f(dx, 0, dz));
-        upwardsSpeed += GRAVITY * DISPLAY_MANAGER.getDeltaTime();
-        increasePosition(new Vector3f(0, upwardsSpeed * DISPLAY_MANAGER.getDeltaTime(), 0));
+        upwardsSpeed += GRAVITY;
+        increasePosition(new Vector3f(0, upwardsSpeed, 0));
         float terrainHeight = -5;
         if (getPosition().y < terrainHeight) {
             upwardsSpeed = 0;
             getPosition().y = terrainHeight;
         }
-        super.update(visual);
     }
 
     private void checkInputs() {

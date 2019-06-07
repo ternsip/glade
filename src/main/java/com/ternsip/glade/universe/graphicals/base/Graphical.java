@@ -1,6 +1,5 @@
 package com.ternsip.glade.universe.graphicals.base;
 
-import com.ternsip.glade.graphics.general.Animation;
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.shader.base.ShaderProgram;
 import com.ternsip.glade.utils.Maths;
@@ -17,7 +16,7 @@ import static com.ternsip.glade.Glade.UNIVERSE;
 public abstract class Graphical<SHADER extends ShaderProgram> implements Visual {
 
     @Getter(lazy = true)
-    private final Animation animation = new Animation(DISPLAY_MANAGER.getModelRepository().getGraphicalModel(this));
+    private final Model model = DISPLAY_MANAGER.getModelRepository().getGraphicalModel(this);
     private final SHADER shader = DISPLAY_MANAGER.getShaderRepository().getGraphicalShader(this);
     private final Vector3f position = new Vector3f(0, 0, 0);
     private final Vector3f scale = new Vector3f(1, 1, 1);
@@ -29,7 +28,7 @@ public abstract class Graphical<SHADER extends ShaderProgram> implements Visual 
     }
 
     public Matrix4f getTransformationMatrix() {
-        Vector3fc totalScale = getAdjustedScale().mul(getAnimation().getModel().getNormalizingScale());
+        Vector3fc totalScale = getAdjustedScale().mul(getModel().getNormalizingScale());
         Matrix4fc rotMatrix = Maths.getRotationQuaternion(getAdjustedRotation()).get(new Matrix4f());
         return new Matrix4f().translate(getAdjustedPosition()).mul(rotMatrix).scale(totalScale);
     }
@@ -55,15 +54,15 @@ public abstract class Graphical<SHADER extends ShaderProgram> implements Visual 
     }
 
     public Vector3f getAdjustedScale() {
-        return new Vector3f(getScale()).mul(getAnimation().getModel().getBaseScale());
+        return new Vector3f(getScale()).mul(getModel().getBaseScale());
     }
 
     public Vector3f getAdjustedPosition() {
-        return new Vector3f(getPosition()).add(getAnimation().getModel().getBaseOffset());
+        return new Vector3f(getPosition()).add(getModel().getBaseOffset());
     }
 
     public Vector3f getAdjustedRotation() {
-        return new Vector3f(getRotation()).add(getAnimation().getModel().getBaseRotation());
+        return new Vector3f(getRotation()).add(getModel().getBaseRotation());
     }
 
     public abstract void render();

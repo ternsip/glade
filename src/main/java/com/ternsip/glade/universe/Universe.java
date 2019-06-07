@@ -2,6 +2,7 @@ package com.ternsip.glade.universe;
 
 import com.ternsip.glade.universe.common.Camera;
 import com.ternsip.glade.universe.common.Sun;
+import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.base.EntityGraphical;
 import com.ternsip.glade.universe.entities.impl.EntityFps;
 import com.ternsip.glade.universe.entities.impl.EntityGeneric;
@@ -87,6 +88,7 @@ public class Universe {
         long startTime = System.currentTimeMillis();
         getCamera().update();
         getSun().update();
+        getEntityRepository().getEntities().forEach(Entity::update);
         long pastTime = System.currentTimeMillis() - startTime;
         long needToSleep = (long) Math.max(1000.0f / ticksPerSecond - pastTime, 0);
         if (needToSleep > 0) {

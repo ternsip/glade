@@ -24,4 +24,6 @@ public abstract class Entity<T extends Visual> {
 
     public abstract void update(T visual);
 
+    public abstract void update();
+
 }

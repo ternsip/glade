@@ -15,7 +15,7 @@ public class EntityFps extends Entity<GraphicalDynamicText> {
 
     private long lastTimeStamp = 0;
 
-    // TODO move this calculations to dispaly manager
+    // TODO move this calculations to display manager
     private float fpsSum = 0;
     private int fpsCount = 0;
 
@@ -34,6 +34,11 @@ public class EntityFps extends Entity<GraphicalDynamicText> {
             fpsCount = 0;
             lastTimeStamp = System.currentTimeMillis();
         }
+    }
+
+    @Override
+    public void update() {
+
     }
 
 }

@@ -5,13 +5,13 @@ import com.ternsip.glade.graphics.general.Material;
 import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.general.Texture;
-import com.ternsip.glade.universe.graphicals.base.GraphicalDefault;
+import com.ternsip.glade.universe.graphicals.base.GraphicalAnimated;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.io.File;
 
-public class GraphicalCube extends GraphicalDefault {
+public class GraphicalCube extends GraphicalAnimated {
 
     public static float SIZE = 1f;
 
