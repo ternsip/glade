@@ -11,7 +11,7 @@ import static org.lwjgl.glfw.GLFW.*;
 @Getter
 public class EntityPlayer extends EntityGraphical<GraphicalBoy> {
 
-    private static final float RUN_SPEED = 1;
+    private static final float RUN_SPEED = 5;
     private static final float TURN_SPEED = 0.02f;
     private static final float GRAVITY = -0.2f;
 
@@ -42,7 +42,7 @@ public class EntityPlayer extends EntityGraphical<GraphicalBoy> {
     private void checkInputs() {
 
         if (UNIVERSE.getDisplaySnapReceiver().isKeyDown(GLFW_KEY_W)) {
-            this.currentSpeed = +RUN_SPEED;
+            this.currentSpeed = RUN_SPEED;
         } else if (UNIVERSE.getDisplaySnapReceiver().isKeyDown(GLFW_KEY_S)) {
             this.currentSpeed = -RUN_SPEED;
         } else {

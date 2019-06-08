@@ -14,6 +14,7 @@ import org.lwjgl.system.Callback;
 
 import java.util.ArrayList;
 
+import static com.ternsip.glade.Glade.UNIVERSE;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_MULTISAMPLE;
@@ -111,15 +112,21 @@ public class DisplayManager {
         while (isActive()) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            getCamera().update();
-            getGraphicalRepository().render();
+            try {
+                UNIVERSE.getLock().lock();
+                getCamera().update();
+                getGraphicalRepository().render();
+            } finally {
+                UNIVERSE.getLock().unlock();
+            }
+
+
 
             // Calc fps
             long currentFrameTime = getCurrentTime();
             deltaTime = (currentFrameTime - lastFrameTime) / 1000f;
             fps = 1 / deltaTime;
             lastFrameTime = currentFrameTime;
-            //sSystem.out.println(deltaTime);
 
             glfwSwapBuffers(window);
             glfwPollEvents();

@@ -16,6 +16,7 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import java.io.File;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 
@@ -27,13 +28,14 @@ public class Universe {
     private EntityPlayer entityPlayer;
     private EntityRepository entityRepository = new EntityRepository();
     private int ticksPerSecond = 128;
+    private final ReentrantLock lock = new ReentrantLock();
 
     public void initialize() {
 
         sun = new Sun(new Vector2f(0, 0), new Vector2f(20000, 20000), new Vector3f(1, 1, 1));
         entityPlayer = new EntityPlayer();
         entityPlayer.setScale(new Vector3f(5, 5, 5));
-        DISPLAY_MANAGER.getCamera().setTarget(entityPlayer);
+        DISPLAY_MANAGER.getCamera().setTarget(() -> entityPlayer.getPosition());
 
         spawnTestEntities();
 
@@ -53,9 +55,14 @@ public class Universe {
     }
 
     private void update() {
-        getDisplaySnapReceiver().update();
-        getSun().update();
-        getEntityRepository().getEntities().forEach(Entity::update);
+        try {
+            getLock().lock();
+            getDisplaySnapReceiver().update();
+            getSun().update();
+            getEntityRepository().getEntities().forEach(Entity::update);
+        } finally {
+            getLock().unlock();
+        }
     }
 
     private void spawnTestEntities() {
