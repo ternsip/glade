@@ -47,6 +47,7 @@ public class DisplayManager {
         displayCallbacks.getKeyCallbacks().add((key, scanCode, action, mods) -> {
             if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
                 close();
+                displaySnapCollector.getApplicationActive().set(false);
             }
         });
         registerErrorCallback();
