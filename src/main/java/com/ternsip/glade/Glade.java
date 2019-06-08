@@ -22,9 +22,7 @@ public class Glade {
 
         new Thread(() -> {
             UNIVERSE.initialize();
-            while (DISPLAY_MANAGER.isActive()) {
-                UNIVERSE.update();
-            }
+            UNIVERSE.loop();
         }).start();
 
         DISPLAY_MANAGER.loop();

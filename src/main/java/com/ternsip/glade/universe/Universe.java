@@ -86,16 +86,22 @@ public class Universe {
     }
 
     @SneakyThrows
-    public void update() {
-        long startTime = System.currentTimeMillis();
+    public void loop() {
+        while (getDisplaySnapReceiver().isApplicationActive()) {
+            long startTime = System.currentTimeMillis();
+            update();
+            long pastTime = System.currentTimeMillis() - startTime;
+            long needToSleep = (long) Math.max(1000.0f / ticksPerSecond - pastTime, 0);
+            if (needToSleep > 0) {
+                Thread.sleep(needToSleep);
+            }
+        }
+    }
+
+    private void update() {
         getDisplaySnapReceiver().update();
         getSun().update();
         getEntityRepository().getEntities().forEach(Entity::update);
-        long pastTime = System.currentTimeMillis() - startTime;
-        long needToSleep = (long) Math.max(1000.0f / ticksPerSecond - pastTime, 0);
-        if (needToSleep > 0) {
-            Thread.sleep(needToSleep);
-        }
     }
 
 }
