@@ -1,5 +1,6 @@
 package com.ternsip.glade.universe;
 
+import com.ternsip.glade.graphics.display.DisplaySnapReceiver;
 import com.ternsip.glade.universe.common.Sun;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.base.EntityGraphical;
@@ -21,7 +22,8 @@ import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 @Getter
 public class Universe {
 
-    private Sun sun;
+    private final DisplaySnapReceiver displaySnapReceiver = new DisplaySnapReceiver();
+    private Sun sun; // TODO SUN SHOULD BE THREAD SAFE (AFTER LIGHT)
     private EntityPlayer entityPlayer;
     private EntityRepository entityRepository = new EntityRepository();
     private int ticksPerSecond = 128;
@@ -86,6 +88,7 @@ public class Universe {
     @SneakyThrows
     public void update() {
         long startTime = System.currentTimeMillis();
+        getDisplaySnapReceiver().update();
         getSun().update();
         getEntityRepository().getEntities().forEach(Entity::update);
         long pastTime = System.currentTimeMillis() - startTime;

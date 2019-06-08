@@ -27,10 +27,7 @@ public class Glade {
             }
         }).start();
 
-
-        // TODO Check performance with runnable and without it
         DISPLAY_MANAGER.loop();
-
         DISPLAY_MANAGER.finish();
 
     }

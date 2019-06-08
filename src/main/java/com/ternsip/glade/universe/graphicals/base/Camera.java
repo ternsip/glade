@@ -45,9 +45,9 @@ public class Camera {
     private Matrix4fc skyViewMatrix = new Matrix4f();
 
     public Camera() {
-        DISPLAY_MANAGER.getDisplayEvents().getScrollCallbacks().add(this::recalculateZoom);
-        DISPLAY_MANAGER.getDisplayEvents().getResizeCallbacks().add(this::recalculateProjectionMatrices);
-        DISPLAY_MANAGER.getDisplayEvents().getCursorPosCallbacks().add(this::recalculateRotation);
+        DISPLAY_MANAGER.getDisplayCallbacks().getScrollCallbacks().add(this::recalculateZoom);
+        DISPLAY_MANAGER.getDisplayCallbacks().getResizeCallbacks().add(this::recalculateProjectionMatrices);
+        DISPLAY_MANAGER.getDisplayCallbacks().getCursorPosCallbacks().add(this::recalculateRotation);
         recalculateProjectionMatrices(DISPLAY_MANAGER.getWidth(), DISPLAY_MANAGER.getHeight());
     }
 

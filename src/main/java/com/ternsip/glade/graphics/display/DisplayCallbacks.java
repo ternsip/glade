@@ -6,13 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class DisplayEvents {
+public class DisplayCallbacks {
 
-    private List<ResizeCallback> resizeCallbacks = new ArrayList<>();
-    private List<KeyCallback> keyCallbacks = new ArrayList<>();
-    private List<ErrorCallback> errorCallbacks = new ArrayList<>();
-    private List<CursorPosCallback> cursorPosCallbacks = new ArrayList<>();
-    private List<ScrollCallback> scrollCallbacks = new ArrayList<>();
+    private final List<ResizeCallback> resizeCallbacks = new ArrayList<>();
+    private final List<KeyCallback> keyCallbacks = new ArrayList<>();
+    private final List<MouseButtonCallback> mouseButtonCallbacks = new ArrayList<>();
+    private final List<ErrorCallback> errorCallbacks = new ArrayList<>();
+    private final List<CursorPosCallback> cursorPosCallbacks = new ArrayList<>();
+    private final List<ScrollCallback> scrollCallbacks = new ArrayList<>();
 
     @FunctionalInterface
     public interface ResizeCallback {
@@ -22,6 +23,11 @@ public class DisplayEvents {
     @FunctionalInterface
     public interface KeyCallback {
         void apply(int key, int scanCode, int action, int mods);
+    }
+
+    @FunctionalInterface
+    public interface MouseButtonCallback {
+        void apply(int button, int action, int mods);
     }
 
     @FunctionalInterface

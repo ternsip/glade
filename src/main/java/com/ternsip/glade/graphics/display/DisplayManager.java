@@ -32,7 +32,8 @@ public class DisplayManager {
     private GraphicalRepository graphicalRepository = new GraphicalRepository();
     private ModelRepository modelRepository = new ModelRepository();
     private ShaderRepository shaderRepository = new ShaderRepository();
-    private DisplayEvents displayEvents = new DisplayEvents();
+    private DisplayCallbacks displayCallbacks = new DisplayCallbacks();
+    private DisplaySnapCollector displaySnapCollector = new DisplaySnapCollector();
     private long lastFrameTime;
     private float deltaTime;
     private float fps;
@@ -40,10 +41,10 @@ public class DisplayManager {
     private Vector2i windowSize;
 
     public void initialize() {
-        displayEvents.getErrorCallbacks().add((e, d) -> GLFWErrorCallback.createPrint(System.err).invoke(e, d));
-        displayEvents.getResizeCallbacks().add(this::handleResize);
+        displayCallbacks.getErrorCallbacks().add((e, d) -> GLFWErrorCallback.createPrint(System.err).invoke(e, d));
+        displayCallbacks.getResizeCallbacks().add(this::handleResize);
         // TODO MOVE IN HOTKEY CLASS
-        displayEvents.getKeyCallbacks().add((key, scanCode, action, mods) -> {
+        displayCallbacks.getKeyCallbacks().add((key, scanCode, action, mods) -> {
             if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
                 close();
             }
@@ -63,6 +64,10 @@ public class DisplayManager {
         registerCursorPosCallback();
         registerKeyCallback();
         registerFrameBufferSizeCallback();
+        registerMouseButtonCallback();
+
+        registerDisplaySnapCollectorEvents();
+
         glfwSetWindowPos(window, (int) (mainDisplaySize.x() * 0.1), (int) (mainDisplaySize.y() * 0.1));
 
         // Create OpenGL context
@@ -160,9 +165,24 @@ public class DisplayManager {
         return glfwGetMouseButton(window, key) == GLFW_PRESS;
     }
 
+    private void registerDisplaySnapCollectorEvents() {
+        displayCallbacks.getCursorPosCallbacks().add((x, y, dx, dy) ->
+                displaySnapCollector.getCursorPosEvents().add(new DisplaySnapCollector.CursorPosEvent(x, y, dx, dy))
+        );
+        displayCallbacks.getResizeCallbacks().add((w, h) ->
+                displaySnapCollector.getResizeEvents().add(new DisplaySnapCollector.ResizeEvent(w, h))
+        );
+        displayCallbacks.getScrollCallbacks().add((dx, dy) ->
+                displaySnapCollector.getScrollEvents().add(new DisplaySnapCollector.ScrollEvent(dx, dy))
+        );
+        displayCallbacks.getKeyCallbacks().add((k, c, a, m) ->
+                displaySnapCollector.getKeyEvents().add(new DisplaySnapCollector.KeyEvent(k, c, a, m))
+        );
+    }
+
     private void registerScrollCallback() {
         GLFWScrollCallback scrollCallback = GLFWScrollCallback.create(
-                (window, xOffset, yOffset) -> getDisplayEvents().getScrollCallbacks().forEach(e -> e.apply(xOffset, yOffset))
+                (window, xOffset, yOffset) -> getDisplayCallbacks().getScrollCallbacks().forEach(e -> e.apply(xOffset, yOffset))
         );
         callbacks.add(scrollCallback);
         glfwSetScrollCallback(window, scrollCallback);
@@ -181,7 +201,7 @@ public class DisplayManager {
                 dy = (float) (yPos - prevY);
                 prevX = (float) xPos;
                 prevY = (float) yPos;
-                getDisplayEvents().getCursorPosCallbacks().forEach(e -> e.apply(xPos, yPos, dx, dy));
+                getDisplayCallbacks().getCursorPosCallbacks().forEach(e -> e.apply(xPos, yPos, dx, dy));
             }
         }));
         callbacks.add(posCallback);
@@ -190,15 +210,23 @@ public class DisplayManager {
 
     private void registerKeyCallback() {
         GLFWKeyCallback keyCallback = GLFWKeyCallback.create(
-                (window, key, scanCode, action, mods) -> getDisplayEvents().getKeyCallbacks().forEach(e -> e.apply(key, scanCode, action, mods))
+                (window, key, scanCode, action, mods) -> getDisplayCallbacks().getKeyCallbacks().forEach(e -> e.apply(key, scanCode, action, mods))
         );
         callbacks.add(keyCallback);
         glfwSetKeyCallback(window, keyCallback);
     }
 
+    private void registerMouseButtonCallback() {
+        GLFWMouseButtonCallback mouseButtonCallback = GLFWMouseButtonCallback.create(
+                (window, button, action, mods) -> getDisplayCallbacks().getMouseButtonCallbacks().forEach(e -> e.apply(button, action, mods))
+        );
+        callbacks.add(mouseButtonCallback);
+        glfwSetMouseButtonCallback(window, mouseButtonCallback);
+    }
+
     private void registerErrorCallback() {
         GLFWErrorCallback errorCallback = GLFWErrorCallback.create(
-                (error, description) -> getDisplayEvents().getErrorCallbacks().forEach(e -> e.apply(error, description))
+                (error, description) -> getDisplayCallbacks().getErrorCallbacks().forEach(e -> e.apply(error, description))
         );
         callbacks.add(errorCallback);
         glfwSetErrorCallback(errorCallback);
@@ -206,7 +234,7 @@ public class DisplayManager {
 
     private void registerFrameBufferSizeCallback() {
         GLFWFramebufferSizeCallback framebufferSizeCallback = GLFWFramebufferSizeCallback.create(
-                (window, width, height) -> getDisplayEvents().getResizeCallbacks().forEach(e -> e.apply(width, height))
+                (window, width, height) -> getDisplayCallbacks().getResizeCallbacks().forEach(e -> e.apply(width, height))
         );
         callbacks.add(framebufferSizeCallback);
         glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
