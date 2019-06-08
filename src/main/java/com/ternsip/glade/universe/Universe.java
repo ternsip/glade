@@ -35,6 +35,30 @@ public class Universe {
         entityPlayer.setScale(new Vector3f(5, 5, 5));
         DISPLAY_MANAGER.getCamera().setTarget(entityPlayer);
 
+        spawnTestEntities();
+
+    }
+
+    @SneakyThrows
+    public void loop() {
+        while (getDisplaySnapReceiver().isApplicationActive()) {
+            long startTime = System.currentTimeMillis();
+            update();
+            long pastTime = System.currentTimeMillis() - startTime;
+            long needToSleep = (long) Math.max(1000.0f / ticksPerSecond - pastTime, 0);
+            if (needToSleep > 0) {
+                Thread.sleep(needToSleep);
+            }
+        }
+    }
+
+    private void update() {
+        getDisplaySnapReceiver().update();
+        getSun().update();
+        getEntityRepository().getEntities().forEach(Entity::update);
+    }
+
+    private void spawnTestEntities() {
         EntityGeneric cube = new EntityGeneric(e -> new GraphicalCube());
 
         EntityGeneric lamp = new EntityGeneric(e -> new GraphicalLamp());
@@ -82,26 +106,6 @@ public class Universe {
                 hagrid1.setScale(new Vector3f(15, 15, 15));
             }
         }
-
-    }
-
-    @SneakyThrows
-    public void loop() {
-        while (getDisplaySnapReceiver().isApplicationActive()) {
-            long startTime = System.currentTimeMillis();
-            update();
-            long pastTime = System.currentTimeMillis() - startTime;
-            long needToSleep = (long) Math.max(1000.0f / ticksPerSecond - pastTime, 0);
-            if (needToSleep > 0) {
-                Thread.sleep(needToSleep);
-            }
-        }
-    }
-
-    private void update() {
-        getDisplaySnapReceiver().update();
-        getSun().update();
-        getEntityRepository().getEntities().forEach(Entity::update);
     }
 
 }
