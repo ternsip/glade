@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import java.io.File;
 
 import static com.ternsip.glade.graphics.general.Mesh.MAX_BONES;
+import static com.ternsip.glade.graphics.shader.uniforms.UniformLightArray.MAX_LIGHTS;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -21,7 +22,7 @@ public final class AnimationShader extends ShaderProgram {
     private UniformMatrix4 projectionMatrix = new UniformMatrix4();
     private UniformMatrix4 viewMatrix = new UniformMatrix4();
     private UniformMatrix4 transformationMatrix = new UniformMatrix4();
-    private UniformVec3 lightDirection = new UniformVec3();
+    private UniformLightArray lights = new UniformLightArray(MAX_LIGHTS);
     private UniformMatrix4Array boneTransforms = new UniformMatrix4Array(MAX_BONES);
 
     private UniformTextureAddress diffuseMap = new UniformTextureAddress();

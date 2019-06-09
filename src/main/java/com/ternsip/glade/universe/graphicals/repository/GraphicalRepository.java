@@ -1,5 +1,6 @@
 package com.ternsip.glade.universe.graphicals.repository;
 
+import com.ternsip.glade.universe.common.Light;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.graphicals.base.Graphical;
 import com.ternsip.glade.universe.graphicals.base.Visual;
@@ -10,6 +11,7 @@ import java.util.stream.Collectors;
 import static com.ternsip.glade.Glade.UNIVERSE;
 
 public class GraphicalRepository {
+
 
     private static final Comparator<Map.Entry<Graphical, Float>> COMPARE_BY_PRIORITY = Comparator.comparing(e -> e.getKey().getPriority());
     private static final Comparator<Map.Entry<Graphical, Float>> COMPARE_BY_DISTANCE_TO_CAMERA = Comparator.comparing(Map.Entry::getValue, Comparator.reverseOrder());
@@ -36,6 +38,7 @@ public class GraphicalRepository {
             return toRemove;
         });
         entityToVisual.forEach(Entity::update);
+        Set<Light> lights = UNIVERSE.getEntityRepository().getLights();
         graphicals
                 .stream()
                 .filter(Graphical::isGraphicalInsideFrustum)
@@ -43,7 +46,7 @@ public class GraphicalRepository {
                 .entrySet()
                 .stream()
                 .sorted(COMPARE_BY_PRIORITY.thenComparing(COMPARE_BY_DISTANCE_TO_CAMERA))
-                .forEach(k -> k.getKey().render());
+                .forEach(k -> k.getKey().render(lights));
     }
 
 }

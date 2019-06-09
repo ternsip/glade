@@ -11,13 +11,12 @@ import static com.ternsip.glade.Glade.UNIVERSE;
 @Getter
 public abstract class Entity<T extends Visual> {
 
-
     public Entity() {
-        UNIVERSE.getEntityRepository().getEntities().add(this);
+        UNIVERSE.getEntityRepository().register(this);
     }
 
     public void finish() {
-        UNIVERSE.getEntityRepository().getEntities().remove(this);
+        UNIVERSE.getEntityRepository().unregister(this);
     }
 
     public abstract T getVisual();

@@ -121,7 +121,6 @@ public class DisplayManager {
             }
 
 
-
             // Calc fps
             long currentFrameTime = getCurrentTime();
             deltaTime = (currentFrameTime - lastFrameTime) / 1000f;

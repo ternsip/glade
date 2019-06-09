@@ -1,13 +1,9 @@
 package com.ternsip.glade.universe;
 
 import com.ternsip.glade.graphics.display.DisplaySnapReceiver;
-import com.ternsip.glade.universe.common.Sun;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.base.EntityGraphical;
-import com.ternsip.glade.universe.entities.impl.EntityFps;
-import com.ternsip.glade.universe.entities.impl.EntityGeneric;
-import com.ternsip.glade.universe.entities.impl.EntityGenericRotating;
-import com.ternsip.glade.universe.entities.impl.EntityPlayer;
+import com.ternsip.glade.universe.entities.impl.*;
 import com.ternsip.glade.universe.entities.repository.EntityRepository;
 import com.ternsip.glade.universe.graphicals.impl.*;
 import lombok.Getter;
@@ -24,15 +20,14 @@ import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 public class Universe {
 
     private final DisplaySnapReceiver displaySnapReceiver = new DisplaySnapReceiver();
-    private Sun sun; // TODO SUN SHOULD BE THREAD SAFE (AFTER LIGHT)
+    private final ReentrantLock lock = new ReentrantLock();
     private EntityPlayer entityPlayer;
     private EntityRepository entityRepository = new EntityRepository();
     private int ticksPerSecond = 128;
-    private final ReentrantLock lock = new ReentrantLock();
 
     public void initialize() {
 
-        sun = new Sun(new Vector2f(0, 0), new Vector2f(20000, 20000), new Vector3f(1, 1, 1));
+        new EntitySun(new Vector2f(0, 0), new Vector2f(20000, 20000), new Vector3f(1, 1, 1));
         entityPlayer = new EntityPlayer();
         entityPlayer.setScale(new Vector3f(5, 5, 5));
         DISPLAY_MANAGER.getCamera().setTarget(() -> entityPlayer.getPosition());
@@ -58,7 +53,6 @@ public class Universe {
         try {
             getLock().lock();
             getDisplaySnapReceiver().update();
-            getSun().update();
             getEntityRepository().getEntities().forEach(Entity::update);
         } finally {
             getLock().unlock();
@@ -102,12 +96,11 @@ public class Universe {
 
         new EntityGenericRotating(e -> new Graphical3DText(new File("fonts/default.png"), "Hello world!"), new Vector3f(0, 0.1f, 0));
         new EntityGeneric(e -> new GraphicalAxis());
-        new EntityGeneric(e -> new GraphicalSky());
 
         new EntityFps(100);
 
-        for (int i = 0; i < 100; ++i) {
-            for (int j = 0; j < 100; ++j) {
+        for (int i = 0; i < 10; ++i) {
+            for (int j = 0; j < 10; ++j) {
                 EntityGraphical hagrid1 = new EntityGenericRotating(e -> new GraphicalHagrid(), new Vector3f(0, 0.01f, 0));
                 hagrid1.setPosition(new Vector3f(20f + 15 * i, 2, 2 + 15 * j));
                 hagrid1.setScale(new Vector3f(15, 15, 15));

@@ -6,6 +6,8 @@ public interface Light {
 
     Vector3f getPosition();
 
-    Vector3f getColour();
+    float getIntensity();
+
+    Vector3f getColor();
 
 }

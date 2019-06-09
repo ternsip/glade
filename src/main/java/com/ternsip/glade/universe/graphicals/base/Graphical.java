@@ -2,12 +2,14 @@ package com.ternsip.glade.universe.graphicals.base;
 
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.shader.base.ShaderProgram;
+import com.ternsip.glade.universe.common.Light;
 import com.ternsip.glade.utils.Maths;
 import com.ternsip.glade.utils.Utils;
 import lombok.Getter;
 import org.joml.*;
 
 import java.lang.Math;
+import java.util.Set;
 
 import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 
@@ -66,7 +68,7 @@ public abstract class Graphical<SHADER extends ShaderProgram> implements Visual 
         return new Vector3f(getRotation()).add(getModel().getBaseRotation());
     }
 
-    public abstract void render();
+    public abstract void render(Set<Light> lights);
 
     public abstract Class<SHADER> getShaderClass();
 

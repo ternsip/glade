@@ -1,5 +1,7 @@
 #version 400 core
 
+const int MAX_LIGHTS = 16;
+
 struct TextureData {
     bool isTexturePresent;
     bool isColorPresent;
@@ -7,6 +9,12 @@ struct TextureData {
     sampler2DArray atlasNumber;
     int layer;
     vec2 maxUV;
+};
+
+struct Light {
+    vec3 pos;
+    float intensity;
+    vec3 color;
 };
 
 in vec2 pass_textureCoords;
@@ -26,8 +34,7 @@ uniform TextureData displacementMap;
 uniform TextureData lightMap;
 uniform TextureData reflectionMap;
 
-// In fact it's light position normalized
-uniform vec3 lightDirection;
+uniform Light lights[MAX_LIGHTS];
 
 vec4 getTextureColor(TextureData textureData, bool mainTexture) {
     bool force = !textureData.isColorPresent && !textureData.isTexturePresent && mainTexture;
@@ -42,18 +49,19 @@ vec4 getTextureColor(TextureData textureData, bool mainTexture) {
 //https://github.com/lwjglgamedev/lwjglbook/blob/master/chapter28/src/main/resources/shaders/point_light_fragment.fs
 void main(void){
 
-    vec3 light_color = vec3(1, 1, 1);
     vec3 base_ambient = vec3(0.5, 0.5, 0.5);
     float ambient_multiplier = 0.5;
-    float light_intensity = 1.0;
     float diffuseFactor = 0.6;
 
     vec3 unitNormal = normalize(pass_normal);
-    float surfaceLight = max(dot(lightDirection, unitNormal), 0.0);
 
     // Diffuse color
     vec4 texColor = getTextureColor(diffuseMap, true);
-    vec3 diffuseColor = texColor.xyz * light_color * light_intensity * surfaceLight;
+    vec3 diffuseColor = vec3(0, 0, 0);
+    for (int i = 0; i < MAX_LIGHTS; i++){
+        float surfaceLight = max(dot(normalize(lights[i].pos), unitNormal), 0.0);
+        diffuseColor += texColor.xyz * lights[i].color * lights[i].intensity * surfaceLight;
+    }
 
     if (texColor.a < 0.1){
         discard;
