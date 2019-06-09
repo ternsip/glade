@@ -14,8 +14,8 @@ import java.io.File;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SkyboxShader extends ShaderProgram {
 
-    public static final File VERTEX_SHADER = new File("shaders/sky/skyboxVertexShader.txt");
-    public static final File FRAGMENT_SHADER = new File("shaders/sky/skyboxFragmentShader.txt");
+    public static final File VERTEX_SHADER = new File("shaders/sky/skyboxVertexShader.glsl");
+    public static final File FRAGMENT_SHADER = new File("shaders/sky/skyboxFragmentShader.glsl");
 
     private final UniformMatrix4 projectionMatrix = new UniformMatrix4();
     private final UniformMatrix4 viewMatrix = new UniformMatrix4();

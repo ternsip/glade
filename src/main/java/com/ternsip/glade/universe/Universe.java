@@ -97,7 +97,7 @@ public class Universe {
         new EntityGenericRotating(e -> new Graphical3DText(new File("fonts/default.png"), "Hello world!"), new Vector3f(0, 0.1f, 0));
         new EntityGeneric(e -> new GraphicalAxis());
 
-        new EntityFps(100);
+        new EntityFps();
 
         for (int i = 0; i < 10; ++i) {
             for (int j = 0; j < 10; ++j) {

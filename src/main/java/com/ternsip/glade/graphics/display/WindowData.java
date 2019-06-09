@@ -8,7 +8,7 @@ import org.joml.Vector2i;
 @Setter
 public class WindowData {
 
-    private static final long FPS_MEASURE_TIME_MILLISECONDS = 500;
+    private static final long FPS_MEASURE_TIME_MILLISECONDS = 100;
 
     private long lastFrameTime;
     private long lastFpsTime;

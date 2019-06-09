@@ -11,10 +11,6 @@ import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 @RequiredArgsConstructor
 public class EntityFps extends Entity<GraphicalDynamicText> {
 
-    private final long refreshIntervalMilliseconds;
-
-    private long lastTimeStamp = 0;
-
     @Override
     public GraphicalDynamicText getVisual() {
         return new GraphicalDynamicText(new File("fonts/default.png"));
@@ -22,10 +18,7 @@ public class EntityFps extends Entity<GraphicalDynamicText> {
 
     @Override
     public void update(GraphicalDynamicText visual) {
-        if (System.currentTimeMillis() > lastTimeStamp + refreshIntervalMilliseconds) {
-            visual.changeText(String.valueOf(DISPLAY_MANAGER.getWindowData().getFps()));
-            lastTimeStamp = System.currentTimeMillis();
-        }
+        visual.changeText(String.valueOf(DISPLAY_MANAGER.getWindowData().getFps()));
     }
 
     @Override

@@ -47,7 +47,7 @@ public class EntitySun extends Entity<GraphicalSky> implements Light {
         return new Vector3f(
                 origin.x() + (float) Math.sin(phase * 2f * Math.PI) * size.x(),
                 origin.y() + (float) Math.cos(phase * 2f * Math.PI) * size.y(),
-                2000
+                0
         );
     }
 
