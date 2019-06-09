@@ -35,11 +35,7 @@ public class DisplayManager {
     private ShaderRepository shaderRepository = new ShaderRepository();
     private DisplayCallbacks displayCallbacks = new DisplayCallbacks();
     private DisplaySnapCollector displaySnapCollector = new DisplaySnapCollector();
-    private long lastFrameTime;
-    private float deltaTime;
-    private float fps;
-    private long window;
-    private Vector2i windowSize;
+    private WindowData windowData;
 
     public void initialize() {
         displayCallbacks.getErrorCallbacks().add((e, d) -> GLFWErrorCallback.createPrint(System.err).invoke(e, d));
@@ -56,12 +52,13 @@ public class DisplayManager {
             throw new IllegalStateException("Unable to initialize GLFW");
         }
         Vector2i mainDisplaySize = getMainDisplaySize();
-        windowSize = new Vector2i((int) (mainDisplaySize.x() * 0.8), (int) (mainDisplaySize.y() * 0.8));
-        window = glfwCreateWindow(windowSize.x(), windowSize.y(), "Glade", NULL, NULL);
+        Vector2i windowSize = new Vector2i((int) (mainDisplaySize.x() * 0.8), (int) (mainDisplaySize.y() * 0.8));
+        long window = glfwCreateWindow(windowSize.x(), windowSize.y(), "Glade", NULL, NULL);
         if (window == NULL) {
             glfwTerminate();
             throw new RuntimeException("Failed to create the GLFW window");
         }
+        windowData = new WindowData(window, windowSize);
         registerScrollCallback();
         registerCursorPosCallback();
         registerKeyCallback();
@@ -98,12 +95,10 @@ public class DisplayManager {
         textureRepository.bind();
 
         camera = new Camera();
-
-        lastFrameTime = getCurrentTime();
     }
 
     private void handleResize(int width, int height) {
-        windowSize = new Vector2i(width, height);
+        getWindowData().setWindowSize(new Vector2i(width, height));
         glViewport(0, 0, getWidth(), getHeight());
     }
 
@@ -120,20 +115,15 @@ public class DisplayManager {
                 UNIVERSE.getLock().unlock();
             }
 
+            getWindowData().update();
 
-            // Calc fps
-            long currentFrameTime = getCurrentTime();
-            deltaTime = (currentFrameTime - lastFrameTime) / 1000f;
-            fps = 1 / deltaTime;
-            lastFrameTime = currentFrameTime;
-
-            glfwSwapBuffers(window);
+            glfwSwapBuffers(getWindowData().getWindow());
             glfwPollEvents();
         }
     }
 
     public boolean isActive() {
-        return !glfwWindowShouldClose(window);
+        return !glfwWindowShouldClose(getWindowData().getWindow());
     }
 
     public void finish() {
@@ -145,7 +135,7 @@ public class DisplayManager {
         textureRepository.finish();
 
         // Release window
-        glfwDestroyWindow(window);
+        glfwDestroyWindow(getWindowData().getWindow());
 
         // Release all callbacks
         for (Callback callback : callbacks) {
@@ -157,19 +147,19 @@ public class DisplayManager {
     }
 
     public int getWidth() {
-        return windowSize.x();
+        return getWindowData().getWindowSize().x();
     }
 
     public int getHeight() {
-        return windowSize.y();
+        return getWindowData().getWindowSize().y();
     }
 
     public boolean isKeyDown(int key) {
-        return glfwGetKey(window, key) == GLFW_PRESS;
+        return glfwGetKey(getWindowData().getWindow(), key) == GLFW_PRESS;
     }
 
     public boolean isMouseDown(int key) {
-        return glfwGetMouseButton(window, key) == GLFW_PRESS;
+        return glfwGetMouseButton(getWindowData().getWindow(), key) == GLFW_PRESS;
     }
 
     private void registerDisplaySnapCollectorEvents() {
@@ -192,7 +182,7 @@ public class DisplayManager {
                 (window, xOffset, yOffset) -> getDisplayCallbacks().getScrollCallbacks().forEach(e -> e.apply(xOffset, yOffset))
         );
         callbacks.add(scrollCallback);
-        glfwSetScrollCallback(window, scrollCallback);
+        glfwSetScrollCallback(getWindowData().getWindow(), scrollCallback);
     }
 
     private void registerCursorPosCallback() {
@@ -212,7 +202,7 @@ public class DisplayManager {
             }
         }));
         callbacks.add(posCallback);
-        glfwSetCursorPosCallback(window, posCallback);
+        glfwSetCursorPosCallback(getWindowData().getWindow(), posCallback);
     }
 
     private void registerKeyCallback() {
@@ -220,7 +210,7 @@ public class DisplayManager {
                 (window, key, scanCode, action, mods) -> getDisplayCallbacks().getKeyCallbacks().forEach(e -> e.apply(key, scanCode, action, mods))
         );
         callbacks.add(keyCallback);
-        glfwSetKeyCallback(window, keyCallback);
+        glfwSetKeyCallback(getWindowData().getWindow(), keyCallback);
     }
 
     private void registerMouseButtonCallback() {
@@ -228,7 +218,7 @@ public class DisplayManager {
                 (window, button, action, mods) -> getDisplayCallbacks().getMouseButtonCallbacks().forEach(e -> e.apply(button, action, mods))
         );
         callbacks.add(mouseButtonCallback);
-        glfwSetMouseButtonCallback(window, mouseButtonCallback);
+        glfwSetMouseButtonCallback(getWindowData().getWindow(), mouseButtonCallback);
     }
 
     private void registerErrorCallback() {
@@ -244,20 +234,16 @@ public class DisplayManager {
                 (window, width, height) -> getDisplayCallbacks().getResizeCallbacks().forEach(e -> e.apply(width, height))
         );
         callbacks.add(framebufferSizeCallback);
-        glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+        glfwSetFramebufferSizeCallback(getWindowData().getWindow(), framebufferSizeCallback);
     }
 
     public void close() {
-        glfwSetWindowShouldClose(window, true);
+        glfwSetWindowShouldClose(getWindowData().getWindow(), true);
     }
 
     public Vector2i getMainDisplaySize() {
         GLFWVidMode vidMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
         return new Vector2i(vidMode.width(), vidMode.height());
-    }
-
-    private long getCurrentTime() {
-        return System.currentTimeMillis();
     }
 
 }

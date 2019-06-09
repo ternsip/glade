@@ -15,10 +15,6 @@ public class EntityFps extends Entity<GraphicalDynamicText> {
 
     private long lastTimeStamp = 0;
 
-    // TODO move this calculations to display manager
-    private float fpsSum = 0;
-    private int fpsCount = 0;
-
     @Override
     public GraphicalDynamicText getVisual() {
         return new GraphicalDynamicText(new File("fonts/default.png"));
@@ -26,12 +22,8 @@ public class EntityFps extends Entity<GraphicalDynamicText> {
 
     @Override
     public void update(GraphicalDynamicText visual) {
-        fpsSum += DISPLAY_MANAGER.getFps();
-        fpsCount++;
         if (System.currentTimeMillis() > lastTimeStamp + refreshIntervalMilliseconds) {
-            visual.changeText(String.valueOf(fpsSum / fpsCount));
-            fpsSum = 0;
-            fpsCount = 0;
+            visual.changeText(String.valueOf(DISPLAY_MANAGER.getWindowData().getFps()));
             lastTimeStamp = System.currentTimeMillis();
         }
     }

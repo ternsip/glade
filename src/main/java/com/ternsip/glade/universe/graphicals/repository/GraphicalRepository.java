@@ -12,7 +12,6 @@ import static com.ternsip.glade.Glade.UNIVERSE;
 
 public class GraphicalRepository {
 
-
     private static final Comparator<Map.Entry<Graphical, Float>> COMPARE_BY_PRIORITY = Comparator.comparing(e -> e.getKey().getPriority());
     private static final Comparator<Map.Entry<Graphical, Float>> COMPARE_BY_DISTANCE_TO_CAMERA = Comparator.comparing(Map.Entry::getValue, Comparator.reverseOrder());
 
@@ -37,6 +36,7 @@ public class GraphicalRepository {
             }
             return toRemove;
         });
+        //noinspection unchecked
         entityToVisual.forEach(Entity::update);
         Set<Light> lights = UNIVERSE.getEntityRepository().getLights();
         graphicals

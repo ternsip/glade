@@ -16,11 +16,11 @@ public class GraphicalDynamicText implements Visual {
     private String lastText;
 
     public void changeText(String text) {
-        if (fpsText != null) {
-            fpsText.finish();
-        }
         if (text.equals(lastText)) {
             return;
+        }
+        if (fpsText != null) {
+            fpsText.finish();
         }
         fpsText = new Graphical2DText(
                 font,
