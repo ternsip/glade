@@ -99,8 +99,8 @@ public class Universe {
 
         new EntityFps();
 
-        for (int i = 0; i < 10; ++i) {
-            for (int j = 0; j < 10; ++j) {
+        for (int i = 0; i < 100; ++i) {
+            for (int j = 0; j < 100; ++j) {
                 EntityGraphical hagrid1 = new EntityGenericRotating(e -> new GraphicalHagrid(), new Vector3f(0, 0.01f, 0));
                 hagrid1.setPosition(new Vector3f(20f + 15 * i, 2, 2 + 15 * j));
                 hagrid1.setScale(new Vector3f(15, 15, 15));

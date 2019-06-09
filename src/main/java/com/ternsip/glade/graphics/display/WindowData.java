@@ -8,7 +8,7 @@ import org.joml.Vector2i;
 @Setter
 public class WindowData {
 
-    private static final long FPS_MEASURE_TIME_MILLISECONDS = 100;
+    private static final long FPS_MEASURE_TIME_MILLISECONDS = 250;
 
     private long lastFrameTime;
     private long lastFpsTime;
@@ -34,8 +34,8 @@ public class WindowData {
         deltaTime = (currentFrameTime - lastFrameTime) / 1000f;
         lastFrameTime = currentFrameTime;
         if (currentFrameTime - lastFpsTime > FPS_MEASURE_TIME_MILLISECONDS) {
+            setFps(((1000f * frameCount) / (currentFrameTime - lastFpsTime)));
             lastFpsTime = currentFrameTime;
-            setFps((1000f * frameCount) / FPS_MEASURE_TIME_MILLISECONDS);
             frameCount = 0;
         }
     }
