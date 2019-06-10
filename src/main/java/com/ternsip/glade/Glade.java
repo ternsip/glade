@@ -11,7 +11,6 @@ import com.ternsip.glade.universe.Universe;
 // TODO Animated Textures
 // TODO Author rights
 // TODO Multithreading (1 logic, 1 network, 1 graphical (including input))
-// TODO number of entities in the field of view
 public class Glade {
 
     public static void main(String[] args) {

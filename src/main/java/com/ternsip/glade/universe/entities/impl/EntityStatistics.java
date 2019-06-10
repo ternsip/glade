@@ -3,11 +3,13 @@ package com.ternsip.glade.universe.entities.impl;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.graphicals.impl.GraphicalDynamicText;
 import lombok.RequiredArgsConstructor;
+import org.joml.Vector2i;
+import org.joml.Vector4f;
 
 import java.io.File;
 
 @RequiredArgsConstructor
-public class EntityFps extends Entity<GraphicalDynamicText> {
+public class EntityStatistics extends Entity<GraphicalDynamicText> {
 
     @Override
     public GraphicalDynamicText getVisual() {
@@ -16,7 +18,10 @@ public class EntityFps extends Entity<GraphicalDynamicText> {
 
     @Override
     public void update(GraphicalDynamicText visual) {
-        visual.changeText(String.valueOf(visual.getDisplayManager().getWindowData().getFps()));
+        StringBuilder sb = new StringBuilder();
+        sb.append("FPS : ").append(visual.getDisplayManager().getWindowData().getFps()).append(System.lineSeparator());
+        sb.append("Entities : ").append(visual.getDisplayManager().getGraphicalRepository().getLastSeenNumberOfEntitiesInFrustum());
+        visual.changeText(sb.toString(), new Vector2i(0, 0), new Vector2i(75, 75), new Vector4f(1, 1, 0, 1));
     }
 
     @Override

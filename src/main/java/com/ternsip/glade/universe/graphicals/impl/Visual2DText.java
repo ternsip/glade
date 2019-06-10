@@ -2,7 +2,7 @@ package com.ternsip.glade.universe.graphicals.impl;
 
 
 import com.ternsip.glade.universe.graphicals.base.Graphical;
-import com.ternsip.glade.universe.graphicals.base.MultiGraphical;
+import com.ternsip.glade.universe.graphicals.base.MultiVisual;
 import lombok.Getter;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
@@ -11,15 +11,15 @@ import org.joml.Vector4f;
 import java.io.File;
 
 @Getter
-public class Graphical2DText extends MultiGraphical {
+public class Visual2DText extends MultiVisual {
 
-    private static final float TEXT_COMPRESSION = 0.75f;
+    private static final float TEXT_COMPRESSION = 0.8f;
 
-    public Graphical2DText(File font, String text, Vector3f position, Vector3f scale, Vector4f color) {
+    public Visual2DText(File font, String text, Vector3f position, Vector3f scale, Vector4f color) {
         super(generateEntities(font, text, position, scale, color));
     }
 
-    public Graphical2DText(File font, String text, Vector2i position, Vector2i maxChars, Vector4f color) {
+    public Visual2DText(File font, String text, Vector2i position, Vector2i maxChars, Vector4f color) {
         super(generateEntities(font, text, position, maxChars, color));
     }
 

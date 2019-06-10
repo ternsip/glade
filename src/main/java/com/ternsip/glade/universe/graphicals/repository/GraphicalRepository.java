@@ -28,6 +28,8 @@ public class GraphicalRepository implements Universal {
     private final Set<Graphical> graphicals = new HashSet<>();
     private final Map<Entity, Visual> entityToVisual = new HashMap<>();
 
+    private long lastSeenNumberOfEntitiesInFrustum = 0;
+
     public void addGraphical(Graphical graphical) {
         graphicals.add(graphical);
     }
@@ -39,11 +41,12 @@ public class GraphicalRepository implements Universal {
     public void render() {
         updateEntities();
         Set<Light> lights = getUniverse().getEntityRepository().getLights();
-        getGraphicals()
+        HashMap<Graphical, Float> graphicalToDistance = getGraphicals()
                 .stream()
                 .filter(Graphical::isGraphicalInsideFrustum)
-                .collect(Collectors.toMap(e -> e, Graphical::getSquaredDistanceToCamera, (a, b) -> a, HashMap::new))
-                .entrySet()
+                .collect(Collectors.toMap(e -> e, Graphical::getSquaredDistanceToCamera, (a, b) -> a, HashMap::new));
+        lastSeenNumberOfEntitiesInFrustum = graphicalToDistance.size();
+        graphicalToDistance.entrySet()
                 .stream()
                 .sorted(COMPARE_BY_PRIORITY.thenComparing(COMPARE_BY_DISTANCE_TO_CAMERA))
                 .forEach(k -> k.getKey().render(lights));

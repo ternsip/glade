@@ -5,13 +5,13 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public abstract class MultiGraphical implements Visual {
+public abstract class MultiVisual implements Visual {
 
-    private final Graphical[] graphicals;
+    private final Visual[] visuals;
 
     public void finish() {
-        for (Graphical graphical : getGraphicals()) {
-            graphical.finish();
+        for (Visual visual : getVisuals()) {
+            visual.finish();
         }
     }
 
