@@ -5,6 +5,7 @@ import com.ternsip.glade.universe.graphicals.impl.GraphicalBoy;
 import lombok.Getter;
 import org.joml.Vector3f;
 
+import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 import static com.ternsip.glade.Glade.UNIVERSE;
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -37,6 +38,12 @@ public class EntityPlayer extends EntityGraphical<GraphicalBoy> {
             upwardsSpeed = 0;
             getPosition().y = terrainHeight;
         }
+    }
+
+    @Override
+    public void update(GraphicalBoy visual) {
+        super.update(visual);
+        DISPLAY_MANAGER.getCamera().update();
     }
 
     private void checkInputs() {

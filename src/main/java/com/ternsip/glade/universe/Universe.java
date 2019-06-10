@@ -12,13 +12,11 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import java.io.File;
-import java.util.concurrent.locks.ReentrantLock;
 
 @Getter
 public class Universe {
 
     private final DisplaySnapReceiver displaySnapReceiver = new DisplaySnapReceiver();
-    private final ReentrantLock lock = new ReentrantLock();
     private EntityPlayer entityPlayer;
     private EntityRepository entityRepository = new EntityRepository();
     private int ticksPerSecond = 128;
@@ -47,13 +45,8 @@ public class Universe {
     }
 
     private void update() {
-        try {
-            getLock().lock();
-            getDisplaySnapReceiver().update();
-            getEntityRepository().getEntities().forEach(Entity::update);
-        } finally {
-            getLock().unlock();
-        }
+        getDisplaySnapReceiver().update();
+        getEntityRepository().getEntities().forEach(Entity::update);
     }
 
     private void spawnTestEntities() {

@@ -12,6 +12,7 @@ import java.util.function.Function;
 @Getter
 public class EntityGeneric extends EntityGraphical<Graphical> {
 
+    // TODO supplier, not function
     private final Function<Void, Graphical> loadVisual;
 
     @Override
