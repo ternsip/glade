@@ -18,7 +18,7 @@ import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
  * @author Ternsip
  */
 @Getter
-public class DisplaySnapReceiver implements Displayable  {
+public class DisplaySnapReceiver implements Displayable {
 
     private final boolean[] keyPressed = new boolean[512];
     private final boolean[] mouseButtonPressed = new boolean[8];

@@ -1,6 +1,6 @@
 package com.ternsip.glade.universe.entities.impl;
 
-import com.ternsip.glade.universe.entities.base.EntityGraphical;
+import com.ternsip.glade.universe.entities.base.EntityTransformable;
 import com.ternsip.glade.universe.graphicals.base.Graphical;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +10,7 @@ import java.util.function.Function;
 
 @RequiredArgsConstructor
 @Getter
-public class EntityGenericRotating extends EntityGraphical<Graphical> {
+public class EntityGenericRotating extends EntityTransformable<Graphical> {
 
     private final Function<Void, Graphical> loadVisual;
     private final Vector3f rotationSpeed;

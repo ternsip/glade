@@ -1,6 +1,7 @@
 package com.ternsip.glade.universe.entities.base;
 
-import com.ternsip.glade.universe.graphicals.base.Graphical;
+import com.ternsip.glade.universe.graphicals.base.Transformable;
+import com.ternsip.glade.universe.graphicals.base.Visual;
 import lombok.Getter;
 import org.joml.Vector3f;
 
@@ -8,7 +9,7 @@ import org.joml.Vector3f;
  * Class should be thread safe
  */
 @Getter
-public abstract class EntityGraphical<T extends Graphical> extends Entity<T> {
+public abstract class EntityTransformable<T extends Visual & Transformable> extends Entity<T> implements Transformable {
 
     private final Vector3f position = new Vector3f(0, 0, 0);
     private final Vector3f scale = new Vector3f(1, 1, 1);

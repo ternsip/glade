@@ -1,7 +1,6 @@
 package com.ternsip.glade.universe.entities.impl;
 
-import com.ternsip.glade.universe.entities.base.EntityGraphical;
-import com.ternsip.glade.universe.graphicals.base.Camera;
+import com.ternsip.glade.universe.entities.base.EntityTransformable;
 import com.ternsip.glade.universe.graphicals.impl.GraphicalBoy;
 import lombok.Getter;
 import org.joml.Vector3f;
@@ -9,7 +8,7 @@ import org.joml.Vector3f;
 import static org.lwjgl.glfw.GLFW.*;
 
 @Getter
-public class EntityPlayer extends EntityGraphical<GraphicalBoy> {
+public class EntityPlayer extends EntityTransformable<GraphicalBoy> {
 
     private static final float RUN_SPEED = 5;
     private static final float TURN_SPEED = 0.02f;
@@ -42,9 +41,11 @@ public class EntityPlayer extends EntityGraphical<GraphicalBoy> {
     @Override
     public void update(GraphicalBoy visual) {
         super.update(visual);
-        Camera camera = visual.getDisplayManager().getGraphicalRepository().getCamera();
-        camera.setTarget(getPosition());
-        camera.update();
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
     }
 
     private void checkInputs() {

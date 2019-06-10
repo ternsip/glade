@@ -20,7 +20,7 @@ import java.io.File;
 @Getter
 public class GraphicalGlyph extends GraphicalAnimated {
 
-    private final Matrix4fc viewMatrix = new Matrix4f();
+    private static final Matrix4fc EMPTY_MATRIX = new Matrix4f();
     private final File font;
     private final char symbol;
     private final Vector4f color;
@@ -32,12 +32,12 @@ public class GraphicalGlyph extends GraphicalAnimated {
 
     @Override
     protected Matrix4fc getViewMatrix() {
-        return viewMatrix;
+        return EMPTY_MATRIX;
     }
 
     @Override
     protected Matrix4fc getProjectionMatrix() {
-        return getDisplayManager().getGraphicalRepository().getCamera().getSpriteProjectionMatrix();
+        return getDisplayManager().getGraphicalRepository().getCamera().getOrthoProjectionMatrix();
     }
 
     @Override

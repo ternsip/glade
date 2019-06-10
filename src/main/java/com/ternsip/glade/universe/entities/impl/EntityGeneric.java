@@ -1,6 +1,6 @@
 package com.ternsip.glade.universe.entities.impl;
 
-import com.ternsip.glade.universe.entities.base.EntityGraphical;
+import com.ternsip.glade.universe.entities.base.EntityTransformable;
 import com.ternsip.glade.universe.graphicals.base.Graphical;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +9,7 @@ import java.util.function.Function;
 
 @RequiredArgsConstructor
 @Getter
-public class EntityGeneric extends EntityGraphical<Graphical> {
+public class EntityGeneric extends EntityTransformable<Graphical> {
 
     // TODO supplier, not function
     private final Function<Void, Graphical> loadVisual;

@@ -12,7 +12,7 @@ import java.lang.Math;
 import java.util.Set;
 
 @Getter
-public abstract class Graphical<SHADER extends ShaderProgram> implements Visual {
+public abstract class Graphical<SHADER extends ShaderProgram> implements Visual, Transformable {
 
     @Getter(lazy = true)
     private final Model model = getDisplayManager().getGraphicalRepository().getModelRepository().getGraphicalModel(this);
@@ -77,8 +77,8 @@ public abstract class Graphical<SHADER extends ShaderProgram> implements Visual 
     }
 
     public boolean isGraphicalInsideFrustum() {
-        Matrix4fc projection = getDisplayManager().getGraphicalRepository().getCamera().getGraphicalProjectionMatrix();
-        Matrix4fc view = getDisplayManager().getGraphicalRepository().getCamera().getFullViewMatrix();
+        Matrix4fc projection = getDisplayManager().getGraphicalRepository().getCamera().getNormalProjectionMatrix();
+        Matrix4fc view = getDisplayManager().getGraphicalRepository().getCamera().getViewMatrix();
         Matrix4fc projectionViewMatrix = projection.mul(view, new Matrix4f());
         FrustumIntersection frustumIntersection = new FrustumIntersection(projectionViewMatrix);
         Vector3fc scale = getAdjustedScale();
@@ -91,16 +91,17 @@ public abstract class Graphical<SHADER extends ShaderProgram> implements Visual 
     }
 
     protected Matrix4fc getViewMatrix() {
-        return getDisplayManager().getGraphicalRepository().getCamera().getFullViewMatrix();
+        return getDisplayManager().getGraphicalRepository().getCamera().getViewMatrix();
     }
 
     protected Matrix4fc getProjectionMatrix() {
-        return getDisplayManager().getGraphicalRepository().getCamera().getGraphicalProjectionMatrix();
+        return getDisplayManager().getGraphicalRepository().getCamera().getNormalProjectionMatrix();
     }
 
     public float getSquaredDistanceToCamera() {
         return getAdjustedPosition().distanceSquared(getDisplayManager().getGraphicalRepository().getCamera().getPosition());
     }
+
     public Object getShaderKey() {
         return getShaderClass();
     }

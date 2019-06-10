@@ -24,7 +24,7 @@ public class GraphicalAxis extends GraphicalAnimated {
     @Override
     public Matrix4f getTransformationMatrix() {
         Vector3fc totalScale = getAdjustedScale().mul(getAnimation().getModel().getNormalizingScale());
-        Matrix4fc view = getDisplayManager().getGraphicalRepository().getCamera().getFullViewMatrix();
+        Matrix4fc view = getDisplayManager().getGraphicalRepository().getCamera().getViewMatrix();
         Quaternionfc rotQuaternion = view.getNormalizedRotation(new Quaternionf());
         return view
                 .invert(new Matrix4f())

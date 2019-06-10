@@ -2,7 +2,7 @@ package com.ternsip.glade.universe;
 
 import com.ternsip.glade.graphics.display.DisplaySnapReceiver;
 import com.ternsip.glade.universe.entities.base.Entity;
-import com.ternsip.glade.universe.entities.base.EntityGraphical;
+import com.ternsip.glade.universe.entities.base.EntityTransformable;
 import com.ternsip.glade.universe.entities.impl.*;
 import com.ternsip.glade.universe.entities.repository.EntityRepository;
 import com.ternsip.glade.universe.graphicals.impl.*;
@@ -20,11 +20,12 @@ public class Universe {
 
     private final DisplaySnapReceiver displaySnapReceiver = new DisplaySnapReceiver();
     private final EntityRepository entityRepository = new EntityRepository();
-    private final int ticksPerSecond = 128;
+    private int ticksPerSecond = 128;
 
     public void initialize() {
         EntityPlayer entityPlayer = new EntityPlayer();
         entityPlayer.setScale(new Vector3f(5, 5, 5));
+        getEntityRepository().setCameraTarget(entityPlayer);
         spawnTestEntities();
     }
 
@@ -70,7 +71,7 @@ public class Universe {
         wolf.setPosition(new Vector3f(-140f, 0, -40));
         wolf.setScale(new Vector3f(30, 30, 30));
 
-        EntityGraphical hagrid = new EntityGenericRotating(e -> new GraphicalHagrid(), new Vector3f(0, 0.01f, 0));
+        EntityTransformable hagrid = new EntityGenericRotating(e -> new GraphicalHagrid(), new Vector3f(0, 0.01f, 0));
         hagrid.setPosition(new Vector3f(20f, 2, 2));
         hagrid.setScale(new Vector3f(15, 15, 15));
 
@@ -93,7 +94,7 @@ public class Universe {
 
         for (int i = 0; i < 100; ++i) {
             for (int j = 0; j < 100; ++j) {
-                EntityGraphical hagrid1 = new EntityGenericRotating(e -> new GraphicalHagrid(), new Vector3f(0, 0.01f, 0));
+                EntityTransformable hagrid1 = new EntityGenericRotating(e -> new GraphicalHagrid(), new Vector3f(0, 0.01f, 0));
                 hagrid1.setPosition(new Vector3f(20f + 15 * i, 2, 2 + 15 * j));
                 hagrid1.setScale(new Vector3f(15, 15, 15));
             }

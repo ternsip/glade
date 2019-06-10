@@ -141,6 +141,9 @@ public class DisplayManager {
         displayCallbacks.getKeyCallbacks().add((k, c, a, m) ->
                 displaySnapCollector.getKeyEvents().add(new DisplaySnapCollector.KeyEvent(k, c, a, m))
         );
+        displayCallbacks.getMouseButtonCallbacks().add((b, a, m) ->
+                displaySnapCollector.getMouseButtonEvents().add(new DisplaySnapCollector.MouseButtonEvent(b, a, m))
+        );
     }
 
     private void registerScrollCallback() {

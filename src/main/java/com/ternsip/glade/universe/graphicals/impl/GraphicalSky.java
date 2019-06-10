@@ -8,6 +8,7 @@ import com.ternsip.glade.universe.common.Light;
 import com.ternsip.glade.universe.graphicals.base.Graphical;
 import lombok.Getter;
 import lombok.Setter;
+import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
@@ -103,13 +104,13 @@ public class GraphicalSky extends Graphical<SkyboxShader> {
 
     @Override
     protected Matrix4fc getViewMatrix() {
-        return getDisplayManager().getGraphicalRepository().getCamera().getSkyViewMatrix();
+        Matrix4fc viewMatrix = getDisplayManager().getGraphicalRepository().getCamera().getViewMatrix();
+        return new Matrix4f(viewMatrix).m30(0).m31(0).m32(0);
     }
 
     @Override
     protected Matrix4fc getProjectionMatrix() {
-        return getDisplayManager().getGraphicalRepository().getCamera().getSkyProjectionMatrix();
+        return getDisplayManager().getGraphicalRepository().getCamera().getFarProjectionMatrix();
     }
-
 
 }

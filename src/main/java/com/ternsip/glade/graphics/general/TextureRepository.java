@@ -88,6 +88,7 @@ public class TextureRepository {
             }
         });
 
+        bind();
     }
 
     public Texture getTexture(File file) {
@@ -98,25 +99,27 @@ public class TextureRepository {
         return fileToTexture.get(file);
     }
 
-    public void bind() {
+    public void finish() {
+        unbind();
+        for (int atlasNumber = 0; atlasNumber < ATLAS_RESOLUTIONS.length; ++atlasNumber) {
+            glDeleteTextures(atlases[atlasNumber]);
+        }
+    }
+
+    private void bind() {
         for (int atlasNumber = 0; atlasNumber < ATLAS_RESOLUTIONS.length; ++atlasNumber) {
             glActiveTexture(GL_TEXTURE0 + atlasNumber);
             glBindTexture(GL_TEXTURE_2D_ARRAY, atlases[atlasNumber]);
         }
     }
 
-    public void unbind() {
+    private void unbind() {
         for (int atlasNumber = 0; atlasNumber < ATLAS_RESOLUTIONS.length; ++atlasNumber) {
             glActiveTexture(GL_TEXTURE0 + atlasNumber);
             glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
         }
     }
 
-    public void finish() {
-        for (int atlasNumber = 0; atlasNumber < ATLAS_RESOLUTIONS.length; ++atlasNumber) {
-            glDeleteTextures(atlases[atlasNumber]);
-        }
-    }
 
     @Getter
     public static class Image {
