@@ -16,7 +16,8 @@ public class WindowData {
     private float fps;
     private long window;
     private Vector2i windowSize;
-    private long frameCount = 0;
+    private long frameCount;
+    private boolean active;
 
     public WindowData(long window, Vector2i windowSize) {
         this.lastFrameTime = System.currentTimeMillis();
@@ -25,6 +26,8 @@ public class WindowData {
         this.fps = 0;
         this.window = window;
         this.windowSize = windowSize;
+        this.frameCount = 0;
+        this.active = true;
     }
 
 

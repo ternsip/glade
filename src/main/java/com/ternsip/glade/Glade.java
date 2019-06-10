@@ -18,13 +18,12 @@ public class Glade {
 
     public static void main(String[] args) {
 
-        DISPLAY_MANAGER.initialize();
-
         new Thread(() -> {
             UNIVERSE.initialize();
             UNIVERSE.loop();
         }).start();
 
+        DISPLAY_MANAGER.initialize();
         DISPLAY_MANAGER.loop();
         DISPLAY_MANAGER.finish();
 

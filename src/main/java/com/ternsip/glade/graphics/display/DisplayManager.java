@@ -44,7 +44,6 @@ public class DisplayManager {
         displayCallbacks.getKeyCallbacks().add((key, scanCode, action, mods) -> {
             if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
                 close();
-                displaySnapCollector.getApplicationActive().set(false);
             }
         });
         registerErrorCallback();
@@ -95,6 +94,7 @@ public class DisplayManager {
         textureRepository.bind();
 
         camera = new Camera();
+        camera.setTarget(() -> UNIVERSE.getEntityPlayer().getPosition());
     }
 
     private void handleResize(int width, int height) {
@@ -103,7 +103,6 @@ public class DisplayManager {
     }
 
     public void loop() {
-        /* Loop until window gets closed */
         while (isActive()) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -127,6 +126,9 @@ public class DisplayManager {
     }
 
     public void finish() {
+
+        getWindowData().setActive(false);
+        displaySnapCollector.getApplicationActive().set(false);
 
         getModelRepository().finish();
         getShaderRepository().finish();
