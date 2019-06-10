@@ -1,12 +1,11 @@
 package com.ternsip.glade.universe.entities.impl;
 
 import com.ternsip.glade.universe.entities.base.EntityGraphical;
+import com.ternsip.glade.universe.graphicals.base.Camera;
 import com.ternsip.glade.universe.graphicals.impl.GraphicalBoy;
 import lombok.Getter;
 import org.joml.Vector3f;
 
-import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
-import static com.ternsip.glade.Glade.UNIVERSE;
 import static org.lwjgl.glfw.GLFW.*;
 
 @Getter
@@ -43,28 +42,30 @@ public class EntityPlayer extends EntityGraphical<GraphicalBoy> {
     @Override
     public void update(GraphicalBoy visual) {
         super.update(visual);
-        DISPLAY_MANAGER.getCamera().update();
+        Camera camera = visual.getDisplayManager().getGraphicalRepository().getCamera();
+        camera.setTarget(getPosition());
+        camera.update();
     }
 
     private void checkInputs() {
 
-        if (UNIVERSE.getDisplaySnapReceiver().isKeyDown(GLFW_KEY_W)) {
+        if (getUniverse().getDisplaySnapReceiver().isKeyDown(GLFW_KEY_W)) {
             this.currentSpeed = RUN_SPEED;
-        } else if (UNIVERSE.getDisplaySnapReceiver().isKeyDown(GLFW_KEY_S)) {
+        } else if (getUniverse().getDisplaySnapReceiver().isKeyDown(GLFW_KEY_S)) {
             this.currentSpeed = -RUN_SPEED;
         } else {
             this.currentSpeed = 0;
         }
 
-        if (UNIVERSE.getDisplaySnapReceiver().isKeyDown(GLFW_KEY_D)) {
+        if (getUniverse().getDisplaySnapReceiver().isKeyDown(GLFW_KEY_D)) {
             this.currentTurnSpeed = -TURN_SPEED;
-        } else if (UNIVERSE.getDisplaySnapReceiver().isKeyDown(GLFW_KEY_A)) {
+        } else if (getUniverse().getDisplaySnapReceiver().isKeyDown(GLFW_KEY_A)) {
             this.currentTurnSpeed = TURN_SPEED;
         } else {
             this.currentTurnSpeed = 0;
         }
 
-        if (UNIVERSE.getDisplaySnapReceiver().isKeyDown(GLFW_KEY_R)) {
+        if (getUniverse().getDisplaySnapReceiver().isKeyDown(GLFW_KEY_R)) {
             setRotation(new Vector3f(0, 0, 0));
             setPosition(new Vector3f(600, 30, 550));
         }

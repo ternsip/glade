@@ -1,6 +1,8 @@
 package com.ternsip.glade.universe.graphicals.base;
 
-public interface Visual {
+import com.ternsip.glade.graphics.display.Displayable;
+
+public interface Visual extends Displayable {
 
     void finish();
 

@@ -13,19 +13,19 @@ import com.ternsip.glade.universe.Universe;
 // TODO Multithreading (1 logic, 1 network, 1 graphical (including input))
 public class Glade {
 
-    public static final DisplayManager DISPLAY_MANAGER = new DisplayManager();
-    public static final Universe UNIVERSE = new Universe();
-
     public static void main(String[] args) {
 
         new Thread(() -> {
-            UNIVERSE.initialize();
-            UNIVERSE.loop();
+            Universe universe = Universe.INSTANCE;
+            universe.initialize();
+            universe.loop();
+            universe.finish();
         }).start();
 
-        DISPLAY_MANAGER.initialize();
-        DISPLAY_MANAGER.loop();
-        DISPLAY_MANAGER.finish();
+        DisplayManager displayManager = DisplayManager.INSTANCE;
+        displayManager.initialize();
+        displayManager.loop();
+        displayManager.finish();
 
     }
 }

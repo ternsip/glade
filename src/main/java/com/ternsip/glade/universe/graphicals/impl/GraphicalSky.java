@@ -14,8 +14,6 @@ import org.joml.Vector3fc;
 
 import java.util.Set;
 
-import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
-
 @Getter
 @Setter
 public class GraphicalSky extends Graphical<SkyboxShader> {
@@ -105,12 +103,12 @@ public class GraphicalSky extends Graphical<SkyboxShader> {
 
     @Override
     protected Matrix4fc getViewMatrix() {
-        return DISPLAY_MANAGER.getCamera().getSkyViewMatrix();
+        return getDisplayManager().getGraphicalRepository().getCamera().getSkyViewMatrix();
     }
 
     @Override
     protected Matrix4fc getProjectionMatrix() {
-        return DISPLAY_MANAGER.getCamera().getSkyProjectionMatrix();
+        return getDisplayManager().getGraphicalRepository().getCamera().getSkyProjectionMatrix();
     }
 
 

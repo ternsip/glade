@@ -17,7 +17,6 @@ public class WindowData {
     private long window;
     private Vector2i windowSize;
     private long frameCount;
-    private boolean active;
 
     public WindowData(long window, Vector2i windowSize) {
         this.lastFrameTime = System.currentTimeMillis();
@@ -27,7 +26,6 @@ public class WindowData {
         this.window = window;
         this.windowSize = windowSize;
         this.frameCount = 0;
-        this.active = true;
     }
 
 
@@ -42,4 +40,13 @@ public class WindowData {
             frameCount = 0;
         }
     }
+
+    public int getWidth() {
+        return getWindowSize().x();
+    }
+
+    public int getHeight() {
+        return getWindowSize().y();
+    }
+
 }

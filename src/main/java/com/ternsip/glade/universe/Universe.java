@@ -16,19 +16,16 @@ import java.io.File;
 @Getter
 public class Universe {
 
+    public static final Universe INSTANCE = new Universe();
+
     private final DisplaySnapReceiver displaySnapReceiver = new DisplaySnapReceiver();
-    private EntityPlayer entityPlayer;
-    private EntityRepository entityRepository = new EntityRepository();
-    private int ticksPerSecond = 128;
+    private final EntityRepository entityRepository = new EntityRepository();
+    private final int ticksPerSecond = 128;
 
     public void initialize() {
-
-        new EntitySun(new Vector2f(0, 0), new Vector2f(20000, 20000), new Vector3f(1, 1, 1));
-        entityPlayer = new EntityPlayer();
+        EntityPlayer entityPlayer = new EntityPlayer();
         entityPlayer.setScale(new Vector3f(5, 5, 5));
-
         spawnTestEntities();
-
     }
 
     @SneakyThrows
@@ -44,12 +41,17 @@ public class Universe {
         }
     }
 
+    public void finish() {
+    }
+
     private void update() {
         getDisplaySnapReceiver().update();
         getEntityRepository().getEntities().forEach(Entity::update);
     }
 
     private void spawnTestEntities() {
+        new EntitySun(new Vector2f(0, 0), new Vector2f(20000, 20000), new Vector3f(1, 1, 1));
+
         EntityGeneric cube = new EntityGeneric(e -> new GraphicalCube());
 
         EntityGeneric lamp = new EntityGeneric(e -> new GraphicalLamp());

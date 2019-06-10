@@ -1,16 +1,16 @@
 package com.ternsip.glade.graphics.general;
 
 import com.sun.istack.internal.Nullable;
+import com.ternsip.glade.graphics.display.Displayable;
 import lombok.Getter;
 import org.joml.Vector4f;
 
 import java.io.File;
 
-import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 import static com.ternsip.glade.graphics.general.TextureRepository.MISSING_TEXTURE;
 
 @Getter
-public class Texture {
+public class Texture implements Displayable {
 
     public static final Vector4f DEFAULT_COLOR = new Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
 
@@ -35,7 +35,7 @@ public class Texture {
         this.texturePresent = file != null;
         this.colorPresent = color != null;
         this.color = colorPresent ? color : DEFAULT_COLOR;
-        this.atlasTexture = DISPLAY_MANAGER.getTextureRepository().getTexture(this.texturePresent ? file : MISSING_TEXTURE);
+        this.atlasTexture = getDisplayManager().getGraphicalRepository().getTextureRepository().getTexture(this.texturePresent ? file : MISSING_TEXTURE);
     }
 
 }

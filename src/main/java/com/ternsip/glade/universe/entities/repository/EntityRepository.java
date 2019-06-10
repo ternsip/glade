@@ -23,7 +23,9 @@ public class EntityRepository {
 
     public void unregister(Entity entity) {
         entities.remove(entity);
-        lights.remove(entity);
+        if (entity instanceof Light) {
+            lights.remove(entity);
+        }
     }
 
 }

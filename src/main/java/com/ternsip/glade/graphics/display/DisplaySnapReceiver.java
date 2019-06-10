@@ -5,7 +5,6 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 
 /**
@@ -19,7 +18,7 @@ import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
  * @author Ternsip
  */
 @Getter
-public class DisplaySnapReceiver {
+public class DisplaySnapReceiver implements Displayable  {
 
     private final boolean[] keyPressed = new boolean[512];
     private final boolean[] mouseButtonPressed = new boolean[8];
@@ -35,7 +34,7 @@ public class DisplaySnapReceiver {
     private boolean applicationActive = true;
 
     public void update() {
-        DisplaySnapCollector collector = DISPLAY_MANAGER.getDisplaySnapCollector();
+        DisplaySnapCollector collector = getDisplayManager().getDisplaySnapCollector();
 
         if (!keyEvents.isEmpty() || !collector.getKeyEvents().isEmpty()) {
             keyEvents.clear();

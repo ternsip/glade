@@ -6,8 +6,6 @@ import lombok.RequiredArgsConstructor;
 
 import java.io.File;
 
-import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
-
 @RequiredArgsConstructor
 public class EntityFps extends Entity<GraphicalDynamicText> {
 
@@ -18,7 +16,7 @@ public class EntityFps extends Entity<GraphicalDynamicText> {
 
     @Override
     public void update(GraphicalDynamicText visual) {
-        visual.changeText(String.valueOf(DISPLAY_MANAGER.getWindowData().getFps()));
+        visual.changeText(String.valueOf(visual.getDisplayManager().getWindowData().getFps()));
     }
 
     @Override

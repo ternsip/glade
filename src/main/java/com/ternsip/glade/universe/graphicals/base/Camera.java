@@ -1,19 +1,18 @@
 package com.ternsip.glade.universe.graphicals.base;
 
+import com.ternsip.glade.graphics.display.Displayable;
 import com.ternsip.glade.universe.graphicals.impl.GraphicalSky;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.*;
 
 import java.lang.Math;
-import java.util.function.Supplier;
 
-import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1;
 
 @Getter
 @Setter
-public class Camera {
+public class Camera implements Displayable {
 
     private static final Vector3fc UP_DIRECTION = new Vector3f(0, 1, 0);
     private static final Vector3fc DOWN_DIRECTION = new Vector3f(0, -1, 0);
@@ -39,16 +38,16 @@ public class Camera {
 
     private float distanceFromTarget = (MAX_DISTANCE_FROM_TARGET + MIN_DISTANCE_FROM_TARGET) * 0.5f;
     private Vector2fc rotation = new Vector2f();
-    private Supplier<Vector3f> target = () -> new Vector3f(0, 0, 0);
+    private Vector3f target = new Vector3f(0);
     private Matrix4fc fullViewMatrix = new Matrix4f();
     private Matrix4fc spriteViewMatrix = new Matrix4f();
     private Matrix4fc skyViewMatrix = new Matrix4f();
 
     public Camera() {
-        DISPLAY_MANAGER.getDisplayCallbacks().getScrollCallbacks().add(this::recalculateZoom);
-        DISPLAY_MANAGER.getDisplayCallbacks().getResizeCallbacks().add(this::recalculateProjectionMatrices);
-        DISPLAY_MANAGER.getDisplayCallbacks().getCursorPosCallbacks().add(this::recalculateRotation);
-        recalculateProjectionMatrices(DISPLAY_MANAGER.getWidth(), DISPLAY_MANAGER.getHeight());
+        getDisplayManager().getDisplayCallbacks().getScrollCallbacks().add(this::recalculateZoom);
+        getDisplayManager().getDisplayCallbacks().getResizeCallbacks().add(this::recalculateProjectionMatrices);
+        getDisplayManager().getDisplayCallbacks().getCursorPosCallbacks().add(this::recalculateRotation);
+        recalculateProjectionMatrices(getDisplayManager().getWindowData().getWidth(), getDisplayManager().getWindowData().getHeight());
     }
 
     public static Matrix4f createProjectionMatrix(float viewDistance, float aspectRatio) {
@@ -59,8 +58,9 @@ public class Camera {
         return new Matrix4f();
     }
 
+    // TODO move to enitiy player class
     private void recalculateRotation(double xPos, double yPos, double dx, double dy) {
-        if (DISPLAY_MANAGER.isMouseDown(GLFW_MOUSE_BUTTON_1)) {
+        if (getDisplayManager().isMouseDown(GLFW_MOUSE_BUTTON_1)) {
             float nx = limitAngle(getRotation().x() + (float) (dx * ROTATION_MULTIPLIER_X), MAX_ROTATION_DELTA_X);
             float ny = limitAngle(getRotation().y() + (float) (dy * ROTATION_MULTIPLIER_Y), MAX_ROTATION_DELTA_Y);
             setRotation(new Vector2f(nx, ny));
@@ -90,7 +90,7 @@ public class Camera {
         return getFrontDirection()
                 .mul(getDistanceFromTarget(), new Vector3f())
                 .negate()
-                .add(getTarget().get());
+                .add(getTarget());
     }
 
     private void recalculateZoom(double scrollX, double scrollY) {
@@ -102,7 +102,7 @@ public class Camera {
 
     public void recalculateViewMatrices() {
         // TODO deal with the situation when UP_DIR collinear to camera view
-        Matrix4fc view = new Matrix4f().lookAt(getPosition(), getTarget().get(), UP_DIRECTION);
+        Matrix4fc view = new Matrix4f().lookAt(getPosition(), getTarget(), UP_DIRECTION);
         setFullViewMatrix(view);
         setSpriteViewMatrix(new Matrix4f().translate(getPosition()));
         setSkyViewMatrix(new Matrix4f(view).m30(0).m31(0).m32(0));
@@ -111,4 +111,5 @@ public class Camera {
     public Vector3fc getFrontDirection() {
         return BACK_DIRECTION.rotateX(getRotation().y(), new Vector3f()).rotateY(-getRotation().x());
     }
+
 }

@@ -11,8 +11,6 @@ import org.joml.Vector3fc;
 
 import java.util.Set;
 
-import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
-
 @Getter
 public abstract class GraphicalAnimated extends Graphical<AnimationShader> {
 
@@ -57,7 +55,8 @@ public abstract class GraphicalAnimated extends Graphical<AnimationShader> {
     private long getUpdateIntervalMilliseconds() {
         Vector3fc scale = getAdjustedScale();
         float maxScale = Math.max(Math.max(scale.x(), scale.y()), scale.z());
-        double criterion = (DISPLAY_MANAGER.getCamera().getPosition().distance(getAdjustedPosition()) / maxScale) / 10;
+        Camera camera = getDisplayManager().getGraphicalRepository().getCamera();
+        double criterion = (camera.getPosition().distance(getAdjustedPosition()) / maxScale) / 10;
         return (long) (criterion * criterion * criterion);
     }
 

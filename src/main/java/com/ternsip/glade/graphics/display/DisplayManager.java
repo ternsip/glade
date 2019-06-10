@@ -1,10 +1,6 @@
 package com.ternsip.glade.graphics.display;
 
-import com.ternsip.glade.graphics.general.TextureRepository;
-import com.ternsip.glade.universe.graphicals.base.Camera;
 import com.ternsip.glade.universe.graphicals.repository.GraphicalRepository;
-import com.ternsip.glade.universe.graphicals.repository.ModelRepository;
-import com.ternsip.glade.universe.graphicals.repository.ShaderRepository;
 import lombok.Getter;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
@@ -14,7 +10,6 @@ import org.lwjgl.system.Callback;
 
 import java.util.ArrayList;
 
-import static com.ternsip.glade.Glade.UNIVERSE;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_MULTISAMPLE;
@@ -23,16 +18,11 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 @Getter
 public class DisplayManager {
 
-    public static final Vector3f BACKGROUND_COLOR = new Vector3f(1f, 0f, 0f);
+    public static final DisplayManager INSTANCE = new DisplayManager();
 
-    private static final int FPS_CAP = 120;
-
-    private Camera camera;
+    public final Vector3f BACKGROUND_COLOR = new Vector3f(1f, 0f, 0f);
     private ArrayList<Callback> callbacks = new ArrayList<>();
-    private TextureRepository textureRepository;
-    private GraphicalRepository graphicalRepository = new GraphicalRepository();
-    private ModelRepository modelRepository = new ModelRepository();
-    private ShaderRepository shaderRepository = new ShaderRepository();
+    private GraphicalRepository graphicalRepository;
     private DisplayCallbacks displayCallbacks = new DisplayCallbacks();
     private DisplaySnapCollector displaySnapCollector = new DisplaySnapCollector();
     private WindowData windowData;
@@ -88,25 +78,21 @@ public class DisplayManager {
         //glEnable(GL_CULL_FACE);
         glClearColor(BACKGROUND_COLOR.x(), BACKGROUND_COLOR.y(), BACKGROUND_COLOR.z(), 1);
 
-        handleResize(getWidth(), getHeight());
+        handleResize(getWindowData().getWidth(), getWindowData().getHeight());
 
-        textureRepository = new TextureRepository();
-        textureRepository.bind();
+        graphicalRepository = new GraphicalRepository();
 
-        camera = new Camera();
-        camera.setTarget(() -> UNIVERSE.getEntityPlayer().getPosition());
     }
 
     private void handleResize(int width, int height) {
         getWindowData().setWindowSize(new Vector2i(width, height));
-        glViewport(0, 0, getWidth(), getHeight());
+        glViewport(0, 0, getWindowData().getWidth(), getWindowData().getHeight());
     }
 
     public void loop() {
         while (isActive()) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            getCamera().update();
             getGraphicalRepository().render();
 
             getWindowData().update();
@@ -121,34 +107,17 @@ public class DisplayManager {
     }
 
     public void finish() {
-
-        getWindowData().setActive(false);
         displaySnapCollector.getApplicationActive().set(false);
 
-        getModelRepository().finish();
-        getShaderRepository().finish();
+        getGraphicalRepository().finish();
 
-        textureRepository.unbind();
-        textureRepository.finish();
-
-        // Release window
         glfwDestroyWindow(getWindowData().getWindow());
 
-        // Release all callbacks
         for (Callback callback : callbacks) {
             callback.free();
         }
 
-        // Terminate GLFW
         glfwTerminate();
-    }
-
-    public int getWidth() {
-        return getWindowData().getWindowSize().x();
-    }
-
-    public int getHeight() {
-        return getWindowData().getWindowSize().y();
     }
 
     public boolean isKeyDown(int key) {

@@ -4,7 +4,6 @@ import com.ternsip.glade.universe.entities.base.EntityGraphical;
 import com.ternsip.glade.universe.graphicals.base.Graphical;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.joml.Vector3f;
 
 import java.util.function.Function;
@@ -17,7 +16,6 @@ public class EntityGenericRotating extends EntityGraphical<Graphical> {
     private final Vector3f rotationSpeed;
 
     @Override
-    @SneakyThrows
     public Graphical getVisual() {
         return loadVisual.apply(null);
     }

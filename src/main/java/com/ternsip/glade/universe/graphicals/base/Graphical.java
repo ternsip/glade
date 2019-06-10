@@ -11,23 +11,21 @@ import org.joml.*;
 import java.lang.Math;
 import java.util.Set;
 
-import static com.ternsip.glade.Glade.DISPLAY_MANAGER;
-
 @Getter
 public abstract class Graphical<SHADER extends ShaderProgram> implements Visual {
 
     @Getter(lazy = true)
-    private final Model model = DISPLAY_MANAGER.getModelRepository().getGraphicalModel(this);
+    private final Model model = getDisplayManager().getGraphicalRepository().getModelRepository().getGraphicalModel(this);
 
-    private final SHADER shader = DISPLAY_MANAGER.getShaderRepository().getGraphicalShader(this);
+    @Getter(lazy = true)
+    private final SHADER shader = getDisplayManager().getGraphicalRepository().getShaderRepository().getGraphicalShader(this);
 
-    private final Vector3f position = new Vector3f(0, 0, 0);
-    private final Vector3f scale = new Vector3f(1, 1, 1);
-    private final Vector3f rotation = new Vector3f(0, 0, 0);
+    private final Vector3f position = new Vector3f(0);
+    private final Vector3f scale = new Vector3f(1);
+    private final Vector3f rotation = new Vector3f(0);
 
     public Graphical() {
-        /// XXX Automatically saving graphical upon it's creation
-        DISPLAY_MANAGER.getGraphicalRepository().addGraphical(this);
+        getDisplayManager().getGraphicalRepository().addGraphical(this);
     }
 
     public Matrix4f getTransformationMatrix() {
@@ -79,8 +77,8 @@ public abstract class Graphical<SHADER extends ShaderProgram> implements Visual 
     }
 
     public boolean isGraphicalInsideFrustum() {
-        Matrix4fc projection = DISPLAY_MANAGER.getCamera().getGraphicalProjectionMatrix();
-        Matrix4fc view = DISPLAY_MANAGER.getCamera().getFullViewMatrix();
+        Matrix4fc projection = getDisplayManager().getGraphicalRepository().getCamera().getGraphicalProjectionMatrix();
+        Matrix4fc view = getDisplayManager().getGraphicalRepository().getCamera().getFullViewMatrix();
         Matrix4fc projectionViewMatrix = projection.mul(view, new Matrix4f());
         FrustumIntersection frustumIntersection = new FrustumIntersection(projectionViewMatrix);
         Vector3fc scale = getAdjustedScale();
@@ -88,22 +86,21 @@ public abstract class Graphical<SHADER extends ShaderProgram> implements Visual 
         return frustumIntersection.testSphere(getAdjustedPosition(), delta);
     }
 
+    public void finish() {
+        getDisplayManager().getGraphicalRepository().removeGraphical(this);
+    }
+
     protected Matrix4fc getViewMatrix() {
-        return DISPLAY_MANAGER.getCamera().getFullViewMatrix();
+        return getDisplayManager().getGraphicalRepository().getCamera().getFullViewMatrix();
     }
 
     protected Matrix4fc getProjectionMatrix() {
-        return DISPLAY_MANAGER.getCamera().getGraphicalProjectionMatrix();
+        return getDisplayManager().getGraphicalRepository().getCamera().getGraphicalProjectionMatrix();
     }
 
     public float getSquaredDistanceToCamera() {
-        return getAdjustedPosition().distanceSquared(DISPLAY_MANAGER.getCamera().getPosition());
+        return getAdjustedPosition().distanceSquared(getDisplayManager().getGraphicalRepository().getCamera().getPosition());
     }
-
-    public void finish() {
-        DISPLAY_MANAGER.getGraphicalRepository().removeGraphical(this);
-    }
-
     public Object getShaderKey() {
         return getShaderClass();
     }
