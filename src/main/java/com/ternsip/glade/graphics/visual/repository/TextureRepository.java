@@ -75,7 +75,6 @@ public class TextureRepository {
             for (int layer = 0; layer < suitableImages.size(); ++layer) {
                 Image image = suitableImages.get(layer);
                 cleanData.rewind();
-                // TODO catch bug here EXCEPTION_ACCESS_VIOLATION
                 // set the whole texture to transparent (so min/mag filters don't find bad data off the edge of the actual image data)
                 glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, layer, atlasResolution, atlasResolution, 1, GL_RGBA, GL_UNSIGNED_BYTE, cleanData);
                 glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, layer, image.getWidth(), image.getHeight(), 1, GL_RGBA, GL_UNSIGNED_BYTE, Utils.arrayToBuffer(image.getData()));
@@ -197,7 +196,6 @@ public class TextureRepository {
             this.fileToAtlasFragment = fileToAtlasFragment;
         }
 
-        // TODO shrink to squared otherwise length overflow
         static ImageAtlas buildImageAtlas(Collection<Image> images, File file) {
             Map<File, AtlasFragment> fileToAtlasFragment = new HashMap<>();
             int maxWidth = 0;
@@ -206,24 +204,29 @@ public class TextureRepository {
                 maxWidth = Math.max(maxWidth, image.getWidth());
                 maxHeight = Math.max(maxHeight, image.getHeight());
             }
-            int finalWidth = maxWidth * images.size();
-            int finalHeight = maxHeight;
+            int rowImages = (int) Math.ceil(Math.sqrt(images.size()));
+            int columnImages = (int) Math.ceil(Math.sqrt(images.size()));
+            int finalWidth = maxWidth * rowImages;
+            int finalHeight = maxHeight * columnImages;
             byte[] finalImageBytes = new byte[finalWidth * finalHeight * COMPONENT_RGBA];
             Arrays.fill(finalImageBytes, (byte)0);
             int imageNumber = 0;
-            float fragmentWidthNormalized = 1f / images.size();
+            float fragmentWidthNormalized = 1f / rowImages;
+            float fragmentHeightNormalized = 1f / columnImages;
             for (Image image : images) {
+                int imageRow = imageNumber % rowImages;
+                int imageColumn = imageNumber / rowImages;
                 byte[] imageBytes = image.getData();
                 for (int y = 0; y < image.getHeight(); ++y) {
-                    int offset = (finalWidth * y + imageNumber * maxWidth) * COMPONENT_RGBA;
+                    int offset = (finalWidth * (y + imageColumn * maxHeight) + imageRow * maxWidth) * COMPONENT_RGBA;
                     int lineSize = image.getWidth() * COMPONENT_RGBA;
                     System.arraycopy(imageBytes, lineSize * y, finalImageBytes, offset, lineSize);
                 }
                 float widthNormalized = (float) image.getWidth() / finalWidth;
                 float heightNormalized = (float) image.getHeight() / finalHeight;
                 AtlasFragment atlasFragment = new AtlasFragment(
-                        fragmentWidthNormalized * imageNumber, 0,
-                        fragmentWidthNormalized * imageNumber + widthNormalized, heightNormalized
+                        fragmentWidthNormalized * imageRow, fragmentHeightNormalized * imageColumn,
+                        fragmentWidthNormalized * imageRow + widthNormalized, fragmentHeightNormalized * imageColumn + heightNormalized
                 );
                 fileToAtlasFragment.put(image.getFile(), atlasFragment);
                 imageNumber++;
