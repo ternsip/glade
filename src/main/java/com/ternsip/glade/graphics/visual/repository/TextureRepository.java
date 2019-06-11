@@ -24,7 +24,7 @@ import static org.lwjgl.stb.STBImage.stbi_load_from_memory;
 
 public class TextureRepository {
 
-    public final static int MIPMAP_LEVELS = 5;
+    public final static int MIPMAP_LEVELS = 4;
     public final static File MISSING_TEXTURE = new File("tools/missing.jpg");
     public final static String[] EXTENSIONS = {"jpg", "png", "bmp", "jpeg"};
     public final static int[] ATLAS_RESOLUTIONS = new int[]{16, 32, 64, 128, 256, 512, 1024, 2048, 4096};
@@ -78,7 +78,7 @@ public class TextureRepository {
                 // TODO catch bug here EXCEPTION_ACCESS_VIOLATION
                 // set the whole texture to transparent (so min/mag filters don't find bad data off the edge of the actual image data)
                 glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, layer, atlasResolution, atlasResolution, 1, GL_RGBA, GL_UNSIGNED_BYTE, cleanData);
-                glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, layer, image.getWidth(), image.getHeight(), 1, GL_RGBA, GL_UNSIGNED_BYTE, image.getDataBuffer());
+                glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, layer, image.getWidth(), image.getHeight(), 1, GL_RGBA, GL_UNSIGNED_BYTE, Utils.arrayToBuffer(image.getData()));
                 Vector2f maxUV = new Vector2f(image.getWidth() / (float) atlasResolution, image.getHeight() / (float) atlasResolution);
                 Texture texture = new Texture(atlasNumber, layer, maxUV);
                 this.fileToTexture.put(image.getFile(), texture);
@@ -166,7 +166,7 @@ public class TextureRepository {
         private final File file;
         private final int width;
         private final int height;
-        private final ByteBuffer dataBuffer;
+        private final byte[] data;
 
         Image(File file) {
             this.file = file;
@@ -174,7 +174,7 @@ public class TextureRepository {
             IntBuffer w = BufferUtils.createIntBuffer(1);
             IntBuffer h = BufferUtils.createIntBuffer(1);
             IntBuffer avChannels = BufferUtils.createIntBuffer(1);
-            this.dataBuffer = stbi_load_from_memory(imageData, w, h, avChannels, COMPONENT_RGBA);
+            this.data = Utils.bufferToArray(stbi_load_from_memory(imageData, w, h, avChannels, COMPONENT_RGBA));
             this.width = w.get();
             this.height = h.get();
         }
@@ -190,10 +190,10 @@ public class TextureRepository {
                 File file,
                 int width,
                 int height,
-                ByteBuffer dataBuffer,
+                byte[] data,
                 Map<File, AtlasFragment> fileToAtlasFragment
         ) {
-            super(file, width, height, dataBuffer);
+            super(file, width, height, data);
             this.fileToAtlasFragment = fileToAtlasFragment;
         }
 
@@ -213,7 +213,7 @@ public class TextureRepository {
             int imageNumber = 0;
             float fragmentWidthNormalized = 1f / images.size();
             for (Image image : images) {
-                byte[] imageBytes = Utils.bufferToArray(image.getDataBuffer());
+                byte[] imageBytes = image.getData();
                 for (int y = 0; y < image.getHeight(); ++y) {
                     int offset = (finalWidth * y + imageNumber * maxWidth) * COMPONENT_RGBA;
                     int lineSize = image.getWidth() * COMPONENT_RGBA;
@@ -228,9 +228,7 @@ public class TextureRepository {
                 fileToAtlasFragment.put(image.getFile(), atlasFragment);
                 imageNumber++;
             }
-            ByteBuffer finalImageByteBuffer = Utils.arrayToBuffer(finalImageBytes);
-            Utils.assertThat(finalImageByteBuffer.remaining() == finalWidth * finalHeight * COMPONENT_RGBA);
-            return new ImageAtlas(file, finalWidth, finalHeight, finalImageByteBuffer, fileToAtlasFragment);
+            return new ImageAtlas(file, finalWidth, finalHeight, finalImageBytes, fileToAtlasFragment);
         }
 
     }

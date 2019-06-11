@@ -3,6 +3,7 @@ package com.ternsip.glade;
 import com.ternsip.glade.graphics.display.DisplayManager;
 import com.ternsip.glade.universe.Universe;
 
+// In case you have weird crashes checkout memory buffers (for instance that all of them rewind() after reading), try to avoid memory buffers
 // TODO TURN ALL Vectors and Matrixes and Quaternions to constant interface (quatenrionfc/matrixfc)]
 // TODO SHADOWING ?
 // TODO PHYSICAL COLLISIONS
