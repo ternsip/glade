@@ -24,7 +24,7 @@ import static org.lwjgl.stb.STBImage.stbi_load_from_memory;
 
 public class TextureRepository {
 
-    public final static int MIPMAP_LEVELS = 4;
+    public final static int MIPMAP_LEVELS = 5;
     public final static File MISSING_TEXTURE = new File("tools/missing.jpg");
     public final static String[] EXTENSIONS = {"jpg", "png", "bmp", "jpeg"};
     public final static int[] ATLAS_RESOLUTIONS = new int[]{16, 32, 64, 128, 256, 512, 1024, 2048, 4096};
