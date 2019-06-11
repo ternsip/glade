@@ -15,14 +15,6 @@ public enum Block {
     LAVA,
     SAND;
 
-    public int getIndex() {
-        return ordinal();
-    }
-
-    public String getName() {
-        return name();
-    }
-
     public static int getSize() {
         return values().length;
     }
@@ -32,6 +24,14 @@ public enum Block {
             throw new ArrayIndexOutOfBoundsException(String.format("Block index out of bounds: %s", index));
         }
         return values()[index];
+    }
+
+    public int getIndex() {
+        return ordinal();
+    }
+
+    public String getName() {
+        return name();
     }
 
 }

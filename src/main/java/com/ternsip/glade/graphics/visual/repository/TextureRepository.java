@@ -209,7 +209,6 @@ public class TextureRepository {
             int finalWidth = maxWidth * rowImages;
             int finalHeight = maxHeight * columnImages;
             byte[] finalImageBytes = new byte[finalWidth * finalHeight * COMPONENT_RGBA];
-            Arrays.fill(finalImageBytes, (byte)0);
             int imageNumber = 0;
             float fragmentWidthNormalized = 1f / rowImages;
             float fragmentHeightNormalized = 1f / columnImages;

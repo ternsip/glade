@@ -1,6 +1,9 @@
 package com.ternsip.glade.graphics.visual.impl;
 
-import com.ternsip.glade.graphics.general.*;
+import com.ternsip.glade.graphics.general.Material;
+import com.ternsip.glade.graphics.general.Mesh;
+import com.ternsip.glade.graphics.general.Model;
+import com.ternsip.glade.graphics.general.Texture;
 import com.ternsip.glade.graphics.shader.impl.ChunkShader;
 import com.ternsip.glade.graphics.visual.base.graphical.Graphical;
 import com.ternsip.glade.graphics.visual.repository.TexturePackRepository;
@@ -32,23 +35,19 @@ public class GraphicalChunk extends Graphical<ChunkShader> {
     private static final float[] VERTICES_LEFT = {-SIDE, SIDE, SIDE, -SIDE, SIDE, -SIDE, -SIDE, -SIDE, -SIDE, -SIDE, -SIDE, SIDE};
     private static final float[] VERTICES_BOTTOM = {-SIDE, -SIDE, -SIDE, SIDE, -SIDE, -SIDE, SIDE, -SIDE, SIDE, -SIDE, -SIDE, SIDE};
     private static final float[] VERTICES_BACK = {SIDE, -SIDE, -SIDE, -SIDE, -SIDE, -SIDE, -SIDE, SIDE, -SIDE, SIDE, SIDE, -SIDE};
-
-    public static boolean TEXTURES_FRONT[] = {true, false, false, false, false, true, true, true};
-    public static boolean TEXTURES_RIGHT[] = {false, false, false, true, true, true, true, false};
-    public static boolean TEXTURES_TOP[] = {true, true, true, false, false, false, false, true};
-    public static boolean TEXTURES_LEFT[] = {true, false, false, false, false, true, true, true};
-    public static boolean TEXTURES_BOTTOM[] = {false, true, true, true, true, false, false, false};
-    public static boolean TEXTURES_BACK[] = {false, true, true, true, true, false, false, false};
-
     private static final float[] NORMALS_FRONT = {0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1};
     private static final float[] NORMALS_RIGHT = {1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0};
     private static final float[] NORMALS_TOP = {0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0};
     private static final float[] NORMALS_LEFT = {-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0};
     private static final float[] NORMALS_BOTTOM = {0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0};
     private static final float[] NORMALS_BACK = {0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1};
-
     private static final int[] INDICES_ORDER = {0, 1, 2, 2, 3, 0};
-
+    public static boolean TEXTURES_FRONT[] = {true, false, false, false, false, true, true, true};
+    public static boolean TEXTURES_RIGHT[] = {false, false, false, true, true, true, true, false};
+    public static boolean TEXTURES_TOP[] = {true, true, true, false, false, false, false, true};
+    public static boolean TEXTURES_LEFT[] = {true, false, false, false, false, true, true, true};
+    public static boolean TEXTURES_BOTTOM[] = {false, true, true, true, true, false, false, false};
+    public static boolean TEXTURES_BACK[] = {false, true, true, true, true, false, false, false};
     private final Block[] blocks;
 
     public GraphicalChunk(Block[] blocks) {
