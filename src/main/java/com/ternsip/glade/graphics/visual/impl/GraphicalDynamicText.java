@@ -1,6 +1,6 @@
-package com.ternsip.glade.universe.graphicals.impl;
+package com.ternsip.glade.graphics.visual.impl;
 
-import com.ternsip.glade.universe.graphicals.base.Visual;
+import com.ternsip.glade.graphics.visual.base.Visual;
 import lombok.RequiredArgsConstructor;
 import org.joml.Vector2i;
 import org.joml.Vector4f;

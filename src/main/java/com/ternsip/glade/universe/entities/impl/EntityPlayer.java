@@ -1,7 +1,7 @@
 package com.ternsip.glade.universe.entities.impl;
 
+import com.ternsip.glade.graphics.visual.impl.GraphicalBoy;
 import com.ternsip.glade.universe.entities.base.EntityTransformable;
-import com.ternsip.glade.universe.graphicals.impl.GraphicalBoy;
 import lombok.Getter;
 import org.joml.Vector3f;
 

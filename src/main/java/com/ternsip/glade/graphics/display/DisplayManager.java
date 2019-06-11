@@ -1,6 +1,6 @@
 package com.ternsip.glade.graphics.display;
 
-import com.ternsip.glade.universe.graphicals.repository.GraphicalRepository;
+import com.ternsip.glade.graphics.visual.repository.GraphicalRepository;
 import lombok.Getter;
 import org.joml.Vector2i;
 import org.joml.Vector3f;

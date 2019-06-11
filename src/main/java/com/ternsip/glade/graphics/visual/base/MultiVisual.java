@@ -1,4 +1,4 @@
-package com.ternsip.glade.universe.graphicals.base;
+package com.ternsip.glade.graphics.visual.base;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

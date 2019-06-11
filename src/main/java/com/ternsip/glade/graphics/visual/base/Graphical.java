@@ -1,4 +1,4 @@
-package com.ternsip.glade.universe.graphicals.base;
+package com.ternsip.glade.graphics.visual.base;
 
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.shader.base.ShaderProgram;

@@ -1,11 +1,11 @@
-package com.ternsip.glade.universe.graphicals.impl;
+package com.ternsip.glade.graphics.visual.impl;
 
 
 import com.ternsip.glade.graphics.general.Material;
 import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.general.Texture;
-import com.ternsip.glade.universe.graphicals.base.GraphicalAnimated;
+import com.ternsip.glade.graphics.visual.base.GraphicalAnimated;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 

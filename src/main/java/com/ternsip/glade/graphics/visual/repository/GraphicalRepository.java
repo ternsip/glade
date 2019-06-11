@@ -1,11 +1,11 @@
-package com.ternsip.glade.universe.graphicals.repository;
+package com.ternsip.glade.graphics.visual.repository;
 
 import com.ternsip.glade.graphics.general.TextureRepository;
+import com.ternsip.glade.graphics.visual.base.*;
 import com.ternsip.glade.universe.common.Light;
 import com.ternsip.glade.universe.common.Universal;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.base.EntityTransformable;
-import com.ternsip.glade.universe.graphicals.base.*;
 import lombok.Getter;
 
 import java.util.*;

@@ -1,11 +1,11 @@
-package com.ternsip.glade.universe.graphicals.impl;
+package com.ternsip.glade.graphics.visual.impl;
 
 import com.ternsip.glade.graphics.general.Material;
 import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.shader.impl.SkyboxShader;
+import com.ternsip.glade.graphics.visual.base.Graphical;
 import com.ternsip.glade.universe.common.Light;
-import com.ternsip.glade.universe.graphicals.base.Graphical;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.Matrix4f;

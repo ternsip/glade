@@ -1,7 +1,7 @@
-package com.ternsip.glade.universe.graphicals.impl;
+package com.ternsip.glade.graphics.visual.impl;
 
 import com.ternsip.glade.graphics.general.*;
-import com.ternsip.glade.universe.graphicals.base.GraphicalAnimated;
+import com.ternsip.glade.graphics.visual.base.GraphicalAnimated;
 
 import java.io.File;
 

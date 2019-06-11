@@ -1,11 +1,11 @@
 package com.ternsip.glade.universe;
 
 import com.ternsip.glade.graphics.display.DisplaySnapReceiver;
+import com.ternsip.glade.graphics.visual.impl.*;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.base.EntityTransformable;
 import com.ternsip.glade.universe.entities.impl.*;
 import com.ternsip.glade.universe.entities.repository.EntityRepository;
-import com.ternsip.glade.universe.graphicals.impl.*;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.joml.Vector2f;
