@@ -28,6 +28,7 @@ public class GraphicalChunk extends Graphical<ChunkShader> {
     public static final int VOLUME = SIZE * SIZE * SIZE;
 
     private static final float SIDE = 1f;
+    private static final float PHYSICAL_SIZE = 2 * SIDE * SIZE;
 
     private static final float[] VERTICES_FRONT = {SIDE, SIDE, SIDE, -SIDE, SIDE, SIDE, -SIDE, -SIDE, SIDE, SIDE, -SIDE, SIDE};
     private static final float[] VERTICES_RIGHT = {SIDE, SIDE, SIDE, SIDE, -SIDE, SIDE, SIDE, -SIDE, -SIDE, SIDE, SIDE, -SIDE};
@@ -48,10 +49,13 @@ public class GraphicalChunk extends Graphical<ChunkShader> {
     public static boolean TEXTURES_LEFT[] = {true, false, false, false, false, true, true, true};
     public static boolean TEXTURES_BOTTOM[] = {false, true, true, true, true, false, false, false};
     public static boolean TEXTURES_BACK[] = {false, true, true, true, true, false, false, false};
-    private final Block[] blocks;
 
-    public GraphicalChunk(Block[] blocks) {
+    private final Block[] blocks;
+    private final Vector3ic chunkPosition;
+
+    public GraphicalChunk(Block[] blocks, Vector3ic chunkPosition) {
         this.blocks = blocks;
+        this.chunkPosition = chunkPosition;
         if (blocks.length != VOLUME) {
             String msg = String.format("Chunk size should be %s, but %s", VOLUME, blocks.length);
             throw new IllegalArgumentException(msg);
@@ -81,14 +85,15 @@ public class GraphicalChunk extends Graphical<ChunkShader> {
 
     @Override
     public Model loadModel() {
-
-        ArrayList<Float> vertices = new ArrayList<>();
-        ArrayList<Float> textures = new ArrayList<>();
-        ArrayList<Float> normals = new ArrayList<>();
-        ArrayList<Integer> indices = new ArrayList<>();
+        ArrayList<Float> vertices = new ArrayList<>(VOLUME * 3);
+        ArrayList<Float> textures = new ArrayList<>(VOLUME * 2);
+        ArrayList<Float> normals = new ArrayList<>(VOLUME * 3);
+        ArrayList<Integer> indices = new ArrayList<>(VOLUME * 3);
 
         TexturePackRepository texturePackRepository = getDisplayManager().getGraphicalRepository().getTexturePackRepository();
         TextureRepository.AtlasDecoder atlasDecoder = texturePackRepository.getBlocksAtlasDecoder();
+
+        Vector3f verticesOffset = new Vector3f(0, 0, 0);
 
         for (int x = 0, blockIdx = 0; x < SIZE; ++x) {
             for (int y = 0; y < SIZE; ++y) {
@@ -108,37 +113,37 @@ public class GraphicalChunk extends Graphical<ChunkShader> {
                     TextureRepository.AtlasFragment fragmentTop = atlasDecoder.getFileToAtlasFragment().get(textureCubeMap.getSideTop());
                     TextureRepository.AtlasFragment fragmentBottom = atlasDecoder.getFileToAtlasFragment().get(textureCubeMap.getSideBottom());
 
-                    Vector3fc verticesOffset = new Vector3f(x * 2 * SIDE, y * 2 * SIDE, z * 2 * SIDE);
+                    verticesOffset.set(x * 2 * SIDE, y * 2 * SIDE, z * 2 * SIDE);
 
-                    vertices.addAll(produceVertices(VERTICES_FRONT, verticesOffset));
-                    textures.addAll(produceTextures(TEXTURES_FRONT, fragmentFront));
-                    normals.addAll(produceNormals(NORMALS_FRONT));
-                    indices.addAll(produceIndices(INDICES_ORDER, vertices.size() / 3));
+                    produceVertices(VERTICES_FRONT, verticesOffset, vertices);
+                    produceTextures(TEXTURES_FRONT, fragmentFront, textures);
+                    produceNormals(NORMALS_FRONT, normals);
+                    produceIndices(INDICES_ORDER, vertices.size() / 3, indices);
 
-                    vertices.addAll(produceVertices(VERTICES_RIGHT, verticesOffset));
-                    textures.addAll(produceTextures(TEXTURES_RIGHT, fragmentRight));
-                    normals.addAll(produceNormals(NORMALS_RIGHT));
-                    indices.addAll(produceIndices(INDICES_ORDER, vertices.size() / 3));
+                    produceVertices(VERTICES_RIGHT, verticesOffset, vertices);
+                    produceTextures(TEXTURES_RIGHT, fragmentRight, textures);
+                    produceNormals(NORMALS_RIGHT, normals);
+                    produceIndices(INDICES_ORDER, vertices.size() / 3, indices);
 
-                    vertices.addAll(produceVertices(VERTICES_TOP, verticesOffset));
-                    textures.addAll(produceTextures(TEXTURES_TOP, fragmentTop));
-                    normals.addAll(produceNormals(NORMALS_TOP));
-                    indices.addAll(produceIndices(INDICES_ORDER, vertices.size() / 3));
+                    produceVertices(VERTICES_TOP, verticesOffset, vertices);
+                    produceTextures(TEXTURES_TOP, fragmentTop, textures);
+                    produceNormals(NORMALS_TOP, normals);
+                    produceIndices(INDICES_ORDER, vertices.size() / 3, indices);
 
-                    vertices.addAll(produceVertices(VERTICES_LEFT, verticesOffset));
-                    textures.addAll(produceTextures(TEXTURES_LEFT, fragmentLeft));
-                    normals.addAll(produceNormals(NORMALS_LEFT));
-                    indices.addAll(produceIndices(INDICES_ORDER, vertices.size() / 3));
+                    produceVertices(VERTICES_LEFT, verticesOffset, vertices);
+                    produceTextures(TEXTURES_LEFT, fragmentLeft, textures);
+                    produceNormals(NORMALS_LEFT, normals);
+                    produceIndices(INDICES_ORDER, vertices.size() / 3, indices);
 
-                    vertices.addAll(produceVertices(VERTICES_BOTTOM, verticesOffset));
-                    textures.addAll(produceTextures(TEXTURES_BOTTOM, fragmentBottom));
-                    normals.addAll(produceNormals(NORMALS_BOTTOM));
-                    indices.addAll(produceIndices(INDICES_ORDER, vertices.size() / 3));
+                    produceVertices(VERTICES_BOTTOM, verticesOffset, vertices);
+                    produceTextures(TEXTURES_BOTTOM, fragmentBottom, textures);
+                    produceNormals(NORMALS_BOTTOM, normals);
+                    produceIndices(INDICES_ORDER, vertices.size() / 3, indices);
 
-                    vertices.addAll(produceVertices(VERTICES_BACK, verticesOffset));
-                    textures.addAll(produceTextures(TEXTURES_BACK, fragmentBack));
-                    normals.addAll(produceNormals(NORMALS_BACK));
-                    indices.addAll(produceIndices(INDICES_ORDER, vertices.size() / 3));
+                    produceVertices(VERTICES_BACK, verticesOffset, vertices);
+                    produceTextures(TEXTURES_BACK, fragmentBack, textures);
+                    produceNormals(NORMALS_BACK, normals);
+                    produceIndices(INDICES_ORDER, vertices.size() / 3, indices);
 
                 }
             }
@@ -154,7 +159,7 @@ public class GraphicalChunk extends Graphical<ChunkShader> {
                         new int[0],
                         new Material(new Texture(atlasDecoder))
                 )},
-                new Vector3f(0),
+                new Vector3f(new Vector3f(chunkPosition).mul(PHYSICAL_SIZE)),
                 new Vector3f(0),
                 new Vector3f(1)
         );
@@ -166,7 +171,7 @@ public class GraphicalChunk extends Graphical<ChunkShader> {
         Matrix4fc view = getDisplayManager().getGraphicalRepository().getCamera().getViewMatrix();
         Matrix4fc projectionViewMatrix = projection.mul(view, new Matrix4f());
         FrustumIntersection frustumIntersection = new FrustumIntersection(projectionViewMatrix);
-        return frustumIntersection.testSphere(getAdjustedPosition(), 2 * SIDE * SIZE * 1.5f);
+        return frustumIntersection.testSphere(getAdjustedPosition(), PHYSICAL_SIZE * 1.5f);
     }
 
     @Override
@@ -180,39 +185,36 @@ public class GraphicalChunk extends Graphical<ChunkShader> {
         return 0;
     }
 
-    private List<Float> produceVertices(float[] vertices, Vector3fc offset) {
-        List<Float> result = new ArrayList<>(vertices.length);
+    @Override
+    public Object getModelKey() {
+        return this;
+    }
+
+    private void produceVertices(float[] vertices, Vector3fc offset, List<Float> dst) {
         for (int i = 0; i < vertices.length; i += 3) {
-            result.add(vertices[i] + offset.x());
-            result.add(vertices[i + 1] + offset.y());
-            result.add(vertices[i + 2] + offset.z());
+            dst.add(vertices[i] + offset.x());
+            dst.add(vertices[i + 1] + offset.y());
+            dst.add(vertices[i + 2] + offset.z());
         }
-        return result;
     }
 
-    private List<Float> produceNormals(float[] normals) {
-        List<Float> result = new ArrayList<>(normals.length);
+    private void produceNormals(float[] normals, List<Float> dst) {
         for (float normal : normals) {
-            result.add(normal);
+            dst.add(normal);
         }
-        return result;
     }
 
-    private List<Integer> produceIndices(int[] indices, int offset) {
-        List<Integer> result = new ArrayList<>(indices.length);
+    private void produceIndices(int[] indices, int offset, List<Integer> dst) {
         for (int index : indices) {
-            result.add(index + offset);
+            dst.add(index + offset);
         }
-        return result;
     }
 
-    private List<Float> produceTextures(boolean[] textures, TextureRepository.AtlasFragment atlasFragment) {
-        List<Float> result = new ArrayList<>(textures.length);
+    private void produceTextures(boolean[] textures, TextureRepository.AtlasFragment atlasFragment, List<Float> dst) {
         for (int i = 0; i < textures.length; i += 2) {
-            result.add(textures[i] ? atlasFragment.getEndU() : atlasFragment.getStartU());
-            result.add(textures[i + 1] ? atlasFragment.getEndV() : atlasFragment.getStartV());
+            dst.add(textures[i] ? atlasFragment.getEndU() : atlasFragment.getStartU());
+            dst.add(textures[i + 1] ? atlasFragment.getEndV() : atlasFragment.getStartV());
         }
-        return result;
     }
 
 }

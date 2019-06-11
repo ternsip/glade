@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.joml.Vector3i;
 
 import java.io.File;
 
@@ -93,24 +94,37 @@ public class Universe {
 
         new EntityStatistics();
 
-        new EntityGeneric(e -> {
-            Block[] blocks = new Block[GraphicalChunk.VOLUME];
-            for (int x = 0, idx = 0; x < GraphicalChunk.SIZE; ++x) {
-                for (int y = 0; y < GraphicalChunk.SIZE; ++y) {
-                    for (int z = 0; z < GraphicalChunk.SIZE; ++z, ++idx) {
-                        blocks[idx] = Block.AIR;
-                        if (x % 2 == 0 && y % 2 == 0 && z % 2 == 0) blocks[idx] = Block.SAND;
-                    }
-                }
-            }
-            return new GraphicalChunk(blocks);
-        });
+        generateChunks();
 
         for (int i = 0; i < 10; ++i) {
             for (int j = 0; j < 10; ++j) {
                 EntityTransformable hagrid1 = new EntityGenericRotating(e -> new GraphicalHagrid(), new Vector3f(0, 0.01f, 0));
                 hagrid1.setPosition(new Vector3f(20f + 15 * i, 2, 2 + 15 * j));
                 hagrid1.setScale(new Vector3f(15, 15, 15));
+            }
+        }
+    }
+
+    private void generateChunks() {
+        for (int cx = 0; cx < 4; ++cx) {
+            for (int cy = 0; cy < 4; ++cy) {
+                for (int cz = 0; cz < 4; ++cz) {
+                    int finalCx = cx;
+                    int finalCy = cy;
+                    int finalCz = cz;
+                    new EntityGeneric(e -> {
+                        Block[] blocks = new Block[GraphicalChunk.VOLUME];
+                        for (int x = 0, idx = 0; x < GraphicalChunk.SIZE; ++x) {
+                            for (int y = 0; y < GraphicalChunk.SIZE; ++y) {
+                                for (int z = 0; z < GraphicalChunk.SIZE; ++z, ++idx) {
+                                    blocks[idx] = Block.AIR;
+                                    if (x % 2 == 0 && y % 2 == 0 && z % 2 == 0) blocks[idx] = Block.SAND;
+                                }
+                            }
+                        }
+                        return new GraphicalChunk(blocks, new Vector3i(finalCx, finalCy, finalCz));
+                    });
+                }
             }
         }
     }
