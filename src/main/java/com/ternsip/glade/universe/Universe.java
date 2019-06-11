@@ -9,6 +9,7 @@ import com.ternsip.glade.universe.entities.repository.EntityRepository;
 import com.ternsip.glade.universe.parts.blocks.Block;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import org.joml.Random;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
@@ -113,12 +114,17 @@ public class Universe {
                     int finalCy = cy;
                     int finalCz = cz;
                     new EntityGeneric(e -> {
+                        Random random = new Random(System.currentTimeMillis());
                         Block[] blocks = new Block[GraphicalChunk.VOLUME];
                         for (int x = 0, idx = 0; x < GraphicalChunk.SIZE; ++x) {
                             for (int y = 0; y < GraphicalChunk.SIZE; ++y) {
                                 for (int z = 0; z < GraphicalChunk.SIZE; ++z, ++idx) {
                                     blocks[idx] = Block.AIR;
-                                    if (x % 2 == 0 && y % 2 == 0 && z % 2 == 0) blocks[idx] = Block.SAND;
+                                    if (random.nextFloat() < 0.1) blocks[idx] = Block.SAND;
+                                    if (random.nextFloat() < 0.1) blocks[idx] = Block.DIRT;
+                                    if (random.nextFloat() < 0.1) blocks[idx] = Block.STONE;
+                                    if (random.nextFloat() < 0.1) blocks[idx] = Block.WATER;
+                                    if (random.nextFloat() < 0.1) blocks[idx] = Block.LEAVES;
                                 }
                             }
                         }
