@@ -2,6 +2,7 @@ package com.ternsip.glade.utils;
 
 import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.assimp.AIScene;
 import org.lwjgl.assimp.Assimp;
@@ -16,7 +17,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -117,6 +118,14 @@ public class Utils {
         return buf.asReadOnlyBuffer();
     }
 
+    public static int[] listToIntArray(List<Integer> list) {
+        return ArrayUtils.toPrimitive(list.toArray(new Integer[0]), 0);
+    }
+
+    public static float[] listToFloatArray(List<Float> list) {
+        return ArrayUtils.toPrimitive(list.toArray(new Float[0]), 0);
+    }
+
     @SneakyThrows
     public static byte[] loadResourceAsByteArray(File file) {
         return IOUtils.toByteArray(loadResourceAsStream(file));
@@ -164,6 +173,36 @@ public class Utils {
     @SneakyThrows
     public static <T> T createInstanceSilently(Class<? extends T> clazz) {
         return clazz.newInstance();
+    }
+
+    public static Set<File> getAllParentDirectories(File file) {
+        Set<File> parentDirectories = new HashSet<>();
+        File parent = file.getParentFile();
+        while (parent != null) {
+            parentDirectories.add(parent);
+            parent = parent.getParentFile();
+        }
+        return parentDirectories;
+    }
+
+    public static boolean isSubDirectoryPresent(File file, String subDirectory) {
+        for (File parentDirectory : getAllParentDirectories(file)) {
+            if (parentDirectory.getName().equals(subDirectory)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static Map<File, Collection<File>> combineByParentDirectory(Collection<File> files) {
+        Map<File, Collection<File>> parentToFiles = new HashMap<>();
+        for (File file : files) {
+            if (file.getParentFile() != null) {
+                parentToFiles.computeIfAbsent(file.getParentFile(), e -> new ArrayList<>());
+                parentToFiles.get(file.getParentFile()).add(file);
+            }
+        }
+        return parentToFiles;
     }
 
 }

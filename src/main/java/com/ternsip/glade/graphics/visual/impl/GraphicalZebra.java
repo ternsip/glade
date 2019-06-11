@@ -3,7 +3,7 @@ package com.ternsip.glade.graphics.visual.impl;
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.general.ModelLoader;
 import com.ternsip.glade.graphics.general.Settings;
-import com.ternsip.glade.graphics.visual.base.GraphicalAnimated;
+import com.ternsip.glade.graphics.visual.base.graphical.GraphicalAnimated;
 
 import java.io.File;
 

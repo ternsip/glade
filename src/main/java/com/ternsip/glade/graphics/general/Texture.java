@@ -2,12 +2,13 @@ package com.ternsip.glade.graphics.general;
 
 import com.sun.istack.internal.Nullable;
 import com.ternsip.glade.graphics.display.Displayable;
+import com.ternsip.glade.graphics.visual.repository.TextureRepository;
 import lombok.Getter;
 import org.joml.Vector4f;
 
 import java.io.File;
 
-import static com.ternsip.glade.graphics.general.TextureRepository.MISSING_TEXTURE;
+import static com.ternsip.glade.graphics.visual.repository.TextureRepository.MISSING_TEXTURE;
 
 @Getter
 public class Texture implements Displayable {
@@ -21,6 +22,10 @@ public class Texture implements Displayable {
 
     public Texture() {
         this(null, null);
+    }
+
+    public Texture(TextureRepository.AtlasDecoder atlasDecoder) {
+        this(atlasDecoder.getAtlasDirectory());
     }
 
     public Texture(File file) {

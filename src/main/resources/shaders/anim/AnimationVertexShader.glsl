@@ -39,7 +39,7 @@ void main(void) {
     }
 
     gl_Position = projectionMatrix * viewMatrix * transformationMatrix * totalLocalPos;
-    pass_normal =  (transformationMatrix * totalNormal).xyz;
+    pass_normal =  (projectionMatrix * transformationMatrix * totalNormal).xyz;
     pass_textureCoords = textureCoordinates;
 
 }

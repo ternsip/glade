@@ -1,8 +1,8 @@
 package com.ternsip.glade.graphics.visual.impl;
 
 
-import com.ternsip.glade.graphics.visual.base.Graphical;
-import com.ternsip.glade.graphics.visual.base.MultiVisual;
+import com.ternsip.glade.graphics.visual.base.graphical.Graphical;
+import com.ternsip.glade.graphics.visual.base.graphical.MultiVisual;
 import lombok.Getter;
 import org.joml.Vector2i;
 import org.joml.Vector3f;

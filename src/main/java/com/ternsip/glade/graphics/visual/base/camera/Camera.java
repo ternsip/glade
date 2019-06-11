@@ -1,4 +1,4 @@
-package com.ternsip.glade.graphics.visual.base;
+package com.ternsip.glade.graphics.visual.base.camera;
 
 import com.ternsip.glade.graphics.display.Displayable;
 import lombok.Getter;

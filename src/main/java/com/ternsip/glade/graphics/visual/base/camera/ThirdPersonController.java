@@ -1,7 +1,8 @@
-package com.ternsip.glade.graphics.visual.base;
+package com.ternsip.glade.graphics.visual.base.camera;
 
 import com.ternsip.glade.graphics.display.DisplayCallbacks;
 import com.ternsip.glade.graphics.display.Displayable;
+import com.ternsip.glade.graphics.visual.base.graphical.Transformable;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.*;

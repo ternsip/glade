@@ -1,7 +1,10 @@
 package com.ternsip.glade.graphics.visual.repository;
 
-import com.ternsip.glade.graphics.general.TextureRepository;
-import com.ternsip.glade.graphics.visual.base.*;
+import com.ternsip.glade.graphics.visual.base.camera.Camera;
+import com.ternsip.glade.graphics.visual.base.camera.CameraController;
+import com.ternsip.glade.graphics.visual.base.camera.ThirdPersonController;
+import com.ternsip.glade.graphics.visual.base.graphical.Graphical;
+import com.ternsip.glade.graphics.visual.base.graphical.Visual;
 import com.ternsip.glade.universe.common.Light;
 import com.ternsip.glade.universe.common.Universal;
 import com.ternsip.glade.universe.entities.base.Entity;
@@ -20,6 +23,10 @@ public class GraphicalRepository implements Universal {
     private static final Comparator<Map.Entry<Graphical, Float>> COMPARE_BY_DISTANCE_TO_CAMERA = Comparator.comparing(Map.Entry::getValue, Comparator.reverseOrder());
 
     private final TextureRepository textureRepository = new TextureRepository();
+
+    @Getter(lazy = true)
+    private final TexturePackRepository texturePackRepository = new TexturePackRepository();
+
     private final ModelRepository modelRepository = new ModelRepository();
     private final ShaderRepository shaderRepository = new ShaderRepository();
 

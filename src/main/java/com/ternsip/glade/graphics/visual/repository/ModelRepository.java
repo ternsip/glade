@@ -1,7 +1,7 @@
 package com.ternsip.glade.graphics.visual.repository;
 
 import com.ternsip.glade.graphics.general.Model;
-import com.ternsip.glade.graphics.visual.base.Graphical;
+import com.ternsip.glade.graphics.visual.base.graphical.Graphical;
 
 import java.util.HashMap;
 import java.util.Map;

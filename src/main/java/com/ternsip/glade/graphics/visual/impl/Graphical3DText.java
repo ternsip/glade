@@ -5,7 +5,7 @@ import com.ternsip.glade.graphics.general.Material;
 import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.general.Texture;
-import com.ternsip.glade.graphics.visual.base.GraphicalAnimated;
+import com.ternsip.glade.graphics.visual.base.graphical.GraphicalAnimated;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.joml.Vector3f;

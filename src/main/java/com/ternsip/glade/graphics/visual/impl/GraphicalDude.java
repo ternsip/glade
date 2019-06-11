@@ -1,7 +1,7 @@
 package com.ternsip.glade.graphics.visual.impl;
 
 import com.ternsip.glade.graphics.general.*;
-import com.ternsip.glade.graphics.visual.base.GraphicalAnimated;
+import com.ternsip.glade.graphics.visual.base.graphical.GraphicalAnimated;
 import org.joml.Vector3f;
 
 import java.io.File;

@@ -6,6 +6,7 @@ import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.base.EntityTransformable;
 import com.ternsip.glade.universe.entities.impl.*;
 import com.ternsip.glade.universe.entities.repository.EntityRepository;
+import com.ternsip.glade.universe.parts.blocks.Block;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.joml.Vector2f;
@@ -92,8 +93,21 @@ public class Universe {
 
         new EntityStatistics();
 
-        for (int i = 0; i < 100; ++i) {
-            for (int j = 0; j < 100; ++j) {
+        new EntityGeneric(e -> {
+            Block[] blocks = new Block[GraphicalChunk.VOLUME];
+            for (int x = 0, idx = 0; x < GraphicalChunk.SIZE; ++x) {
+                for (int y = 0; y < GraphicalChunk.SIZE; ++y) {
+                    for (int z = 0; z < GraphicalChunk.SIZE; ++z, ++idx) {
+                        blocks[idx] = Block.AIR;
+                        if (x % 2 == 0 && y % 2 == 0 && z % 2 == 0) blocks[idx] = Block.SAND;
+                    }
+                }
+            }
+            return new GraphicalChunk(blocks);
+        });
+
+        for (int i = 0; i < 10; ++i) {
+            for (int j = 0; j < 10; ++j) {
                 EntityTransformable hagrid1 = new EntityGenericRotating(e -> new GraphicalHagrid(), new Vector3f(0, 0.01f, 0));
                 hagrid1.setPosition(new Vector3f(20f + 15 * i, 2, 2 + 15 * j));
                 hagrid1.setScale(new Vector3f(15, 15, 15));
