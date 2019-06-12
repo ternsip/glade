@@ -25,6 +25,10 @@ public class TexturePackRepository implements Displayable {
         return getBlocksTextures()[block.getIndex()];
     }
 
+    public Texture getBlockAtlasTexture() {
+        return new Texture(getBlocksAtlasDecoder());
+    }
+
     public void reloadBlocksTextureAltas(File atlasDirectory) {
 
         blocksAtlasDecoder = getDisplayManager().getGraphicalRepository().getTextureRepository().getAtlasDecoder(atlasDirectory);
@@ -102,7 +106,6 @@ public class TexturePackRepository implements Displayable {
             }
 
             blocksTextures[blockIndex] = new TextureCubeMap(
-                    new Texture(blocksAtlasDecoder),
                     blocksAtlasDecoder.getFileToAtlasFragment().get(sideTop),
                     blocksAtlasDecoder.getFileToAtlasFragment().get(sideBottom),
                     blocksAtlasDecoder.getFileToAtlasFragment().get(sideLeft),
@@ -119,7 +122,6 @@ public class TexturePackRepository implements Displayable {
     @Getter
     public static class TextureCubeMap {
 
-        private final Texture atlasTexture;
         private final TextureRepository.AtlasFragment sideTop;
         private final TextureRepository.AtlasFragment sideBottom;
         private final TextureRepository.AtlasFragment sideLeft;

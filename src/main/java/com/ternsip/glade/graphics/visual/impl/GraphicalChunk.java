@@ -3,7 +3,6 @@ package com.ternsip.glade.graphics.visual.impl;
 import com.ternsip.glade.graphics.general.Material;
 import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.general.Model;
-import com.ternsip.glade.graphics.general.Texture;
 import com.ternsip.glade.graphics.shader.impl.ChunkShader;
 import com.ternsip.glade.graphics.visual.base.graphical.Graphical;
 import com.ternsip.glade.graphics.visual.repository.TexturePackRepository;
@@ -15,7 +14,10 @@ import com.ternsip.glade.utils.Utils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.joml.*;
+import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
+import org.joml.Vector3f;
+import org.joml.Vector3ic;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -115,7 +117,6 @@ public class GraphicalChunk extends Graphical<ChunkShader> {
         ArrayList<Integer> indices = new ArrayList<>(VOLUME * 2);
 
         TexturePackRepository texturePackRepository = getDisplayManager().getGraphicalRepository().getTexturePackRepository();
-        TextureRepository.AtlasDecoder atlasDecoder = texturePackRepository.getBlocksAtlasDecoder();
 
         Vector3f blockOffset = new Vector3f(0, 0, 0);
 
@@ -149,7 +150,7 @@ public class GraphicalChunk extends Graphical<ChunkShader> {
                         Utils.listToIntArray(indices),
                         new float[0],
                         new int[0],
-                        new Material(new Texture(atlasDecoder))
+                        new Material(texturePackRepository.getBlockAtlasTexture())
                 )},
                 new Vector3f(new Vector3f(chunkPosition).mul(CHUNK_PHYSICAL_SIZE)),
                 new Vector3f(0),
