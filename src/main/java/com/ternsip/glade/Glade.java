@@ -20,7 +20,7 @@ public class Glade {
 
         new Thread(() -> {
             Universe universe = Universal.UNIVERSE;
-            universe.spawnTestEntities();
+            universe.initialize();
             universe.loop();
             universe.finish();
         }).start();

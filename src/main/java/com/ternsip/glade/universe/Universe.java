@@ -23,6 +23,10 @@ public class Universe {
     private final EntityRepository entityRepository = new EntityRepository();
     private int ticksPerSecond = 128; // TODO move into universe settings
 
+    public void initialize() {
+        spawnTestEntities();
+    }
+
     @SneakyThrows
     public void loop() {
         while (getDisplaySnapReceiver().isApplicationActive()) {
@@ -44,7 +48,7 @@ public class Universe {
         getEntityRepository().getEntities().forEach(Entity::update);
     }
 
-    public void spawnTestEntities() {
+    private void spawnTestEntities() {
         EntityPlayer entityPlayer = new EntityPlayer();
         entityPlayer.setScale(new Vector3f(5, 5, 5));
         getEntityRepository().setCameraTarget(entityPlayer);
