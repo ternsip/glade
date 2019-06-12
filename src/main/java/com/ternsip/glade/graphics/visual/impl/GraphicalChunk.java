@@ -34,42 +34,42 @@ public class GraphicalChunk extends Graphical<ChunkShader> {
     private static final float BLOCK_PHYSICAL_SIZE = 2 * SIDE;
     private static final float CHUNK_PHYSICAL_SIZE = BLOCK_PHYSICAL_SIZE * SIZE;
 
-    private static final CubeSide SIDE_FRONT = new CubeSide(
+    private static final CubeSideMeshData SIDE_FRONT = new CubeSideMeshData(
             new float[]{SIDE, SIDE, SIDE, -SIDE, SIDE, SIDE, -SIDE, -SIDE, SIDE, SIDE, -SIDE, SIDE},
             new float[]{0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1},
             new boolean[]{true, false, false, false, false, true, true, true},
             new int[]{0, 1, 2, 2, 3, 0}
     );
 
-    private static final CubeSide SIDE_RIGHT = new CubeSide(
+    private static final CubeSideMeshData SIDE_RIGHT = new CubeSideMeshData(
             new float[]{SIDE, SIDE, SIDE, SIDE, -SIDE, SIDE, SIDE, -SIDE, -SIDE, SIDE, SIDE, -SIDE},
             new float[]{1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0},
             new boolean[]{false, false, false, true, true, true, true, false},
             new int[]{0, 1, 2, 2, 3, 0}
     );
 
-    private static final CubeSide SIDE_TOP = new CubeSide(
+    private static final CubeSideMeshData SIDE_TOP = new CubeSideMeshData(
             new float[]{SIDE, SIDE, SIDE, SIDE, SIDE, -SIDE, -SIDE, SIDE, -SIDE, -SIDE, SIDE, SIDE},
             new float[]{0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0},
             new boolean[]{true, true, true, false, false, false, false, true},
             new int[]{0, 1, 2, 2, 3, 0}
     );
 
-    private static final CubeSide SIDE_LEFT = new CubeSide(
+    private static final CubeSideMeshData SIDE_LEFT = new CubeSideMeshData(
             new float[]{-SIDE, SIDE, SIDE, -SIDE, SIDE, -SIDE, -SIDE, -SIDE, -SIDE, -SIDE, -SIDE, SIDE},
             new float[]{-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0},
             new boolean[]{true, false, false, false, false, true, true, true},
             new int[]{0, 1, 2, 2, 3, 0}
     );
 
-    private static final CubeSide SIDE_BOTTOM = new CubeSide(
+    private static final CubeSideMeshData SIDE_BOTTOM = new CubeSideMeshData(
             new float[]{-SIDE, -SIDE, -SIDE, SIDE, -SIDE, -SIDE, SIDE, -SIDE, SIDE, -SIDE, -SIDE, SIDE},
             new float[]{0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0},
             new boolean[]{false, true, true, true, true, false, false, false},
             new int[]{0, 1, 2, 2, 3, 0}
     );
 
-    private static final CubeSide SIDE_BACK = new CubeSide(
+    private static final CubeSideMeshData SIDE_BACK = new CubeSideMeshData(
             new float[]{SIDE, -SIDE, -SIDE, -SIDE, -SIDE, -SIDE, -SIDE, SIDE, -SIDE, SIDE, SIDE, -SIDE},
             new float[]{0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1},
             new boolean[]{false, true, true, true, true, false, false, false},
@@ -181,7 +181,7 @@ public class GraphicalChunk extends Graphical<ChunkShader> {
 
     @RequiredArgsConstructor
     @Getter
-    public static class CubeSide {
+    public static class CubeSideMeshData {
 
         private final float[] vertices;
         private final float[] normals;
