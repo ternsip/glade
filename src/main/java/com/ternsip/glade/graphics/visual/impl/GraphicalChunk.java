@@ -29,7 +29,8 @@ public class GraphicalChunk extends Graphical<ChunkShader> {
     public static final int VOLUME = SIZE * SIZE * SIZE;
 
     private static final float SIDE = 1f;
-    private static final float PHYSICAL_SIZE = 2 * SIDE * SIZE;
+    private static final float BLOCK_PHYSICAL_SIZE = 2 * SIDE;
+    private static final float CHUNK_PHYSICAL_SIZE = BLOCK_PHYSICAL_SIZE * SIZE;
 
     private static final CubeSide SIDE_FRONT = new CubeSide(
             new float[]{SIDE, SIDE, SIDE, -SIDE, SIDE, SIDE, -SIDE, -SIDE, SIDE, SIDE, -SIDE, SIDE},
@@ -127,7 +128,7 @@ public class GraphicalChunk extends Graphical<ChunkShader> {
                         continue;
                     }
                     TexturePackRepository.TextureCubeMap textureCubeMap = texturePackRepository.getCubeMap(block);
-                    blockOffset.set(x * 2 * SIDE, y * 2 * SIDE, z * 2 * SIDE);
+                    blockOffset.set(x * BLOCK_PHYSICAL_SIZE, y * BLOCK_PHYSICAL_SIZE, z * BLOCK_PHYSICAL_SIZE);
 
                     SIDE_FRONT.fillArrays(vertices, normals, textures, indices, blockOffset, textureCubeMap.getSideFront());
                     SIDE_RIGHT.fillArrays(vertices, normals, textures, indices, blockOffset, textureCubeMap.getSideRight());
@@ -150,7 +151,7 @@ public class GraphicalChunk extends Graphical<ChunkShader> {
                         new int[0],
                         new Material(new Texture(atlasDecoder))
                 )},
-                new Vector3f(new Vector3f(chunkPosition).mul(PHYSICAL_SIZE)),
+                new Vector3f(new Vector3f(chunkPosition).mul(CHUNK_PHYSICAL_SIZE)),
                 new Vector3f(0),
                 new Vector3f(1)
         );
@@ -158,7 +159,7 @@ public class GraphicalChunk extends Graphical<ChunkShader> {
 
     @Override
     public boolean isGraphicalInsideFrustum() {
-        return getFrustumIntersection().testSphere(getAdjustedPosition(), PHYSICAL_SIZE * 1.5f);
+        return getFrustumIntersection().testSphere(getAdjustedPosition(), CHUNK_PHYSICAL_SIZE * 1.5f);
     }
 
     @Override
