@@ -1,9 +1,10 @@
 package com.ternsip.glade.graphics.display;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 
@@ -18,53 +19,26 @@ import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
  * @author Ternsip
  */
 @Getter
-public class DisplaySnapReceiver implements Displayable {
+public class DisplaySnapReceiver {
 
     private final boolean[] keyPressed = new boolean[512];
     private final boolean[] mouseButtonPressed = new boolean[8];
 
-    private final List<DisplaySnapCollector.KeyEvent> keyEvents = new ArrayList<>();
-    private final List<DisplaySnapCollector.ResizeEvent> resizeEvents = new ArrayList<>();
-    private final List<DisplaySnapCollector.MouseButtonEvent> mouseButtonEvents = new ArrayList<>();
-    private final List<DisplaySnapCollector.CursorPosEvent> cursorPosEvents = new ArrayList<>();
-    private final List<DisplaySnapCollector.ScrollEvent> scrollEvents = new ArrayList<>();
+    private final LinkedBlockingQueue<KeyEvent> keyEvents = new LinkedBlockingQueue<>();
+    private final LinkedBlockingQueue<ResizeEvent> resizeEvents = new LinkedBlockingQueue<>();
+    private final LinkedBlockingQueue<MouseButtonEvent> mouseButtonEvents = new LinkedBlockingQueue<>();
+    private final LinkedBlockingQueue<CursorPosEvent> cursorPosEvents = new LinkedBlockingQueue<>();
+    private final LinkedBlockingQueue<ScrollEvent> scrollEvents = new LinkedBlockingQueue<>();
+
+    private final AtomicBoolean applicationActive = new AtomicBoolean(true);
 
     private final DisplayCallbacks displayCallbacks = new DisplayCallbacks();
 
-    private boolean applicationActive = true;
-
     public void update() {
-        DisplaySnapCollector collector = getDisplayManager().getDisplaySnapCollector();
-
-        if (!keyEvents.isEmpty() || !collector.getKeyEvents().isEmpty()) {
-            keyEvents.clear();
-            collector.getKeyEvents().drainTo(keyEvents);
-        }
-
-        if (!resizeEvents.isEmpty() || !collector.getResizeEvents().isEmpty()) {
-            resizeEvents.clear();
-            collector.getResizeEvents().drainTo(resizeEvents);
-        }
-
-        if (!mouseButtonEvents.isEmpty() || !collector.getMouseButtonEvents().isEmpty()) {
-            mouseButtonEvents.clear();
-            collector.getMouseButtonEvents().drainTo(mouseButtonEvents);
-        }
-
-        if (!cursorPosEvents.isEmpty() || !collector.getCursorPosEvents().isEmpty()) {
-            cursorPosEvents.clear();
-            collector.getCursorPosEvents().drainTo(cursorPosEvents);
-        }
-
-        if (!scrollEvents.isEmpty() || !collector.getScrollEvents().isEmpty()) {
-            scrollEvents.clear();
-            collector.getScrollEvents().drainTo(scrollEvents);
-        }
-
-        for (DisplaySnapCollector.KeyEvent keyEvent : keyEvents) {
+        for (KeyEvent keyEvent : keyEvents) {
             keyPressed[keyEvent.getKey()] = keyEvent.getAction() != GLFW_RELEASE;
         }
-        for (DisplaySnapCollector.MouseButtonEvent mouseButtonEvent : mouseButtonEvents) {
+        for (MouseButtonEvent mouseButtonEvent : mouseButtonEvents) {
             mouseButtonPressed[mouseButtonEvent.getButton()] = mouseButtonEvent.getAction() != GLFW_RELEASE;
         }
         keyEvents.forEach(e -> getDisplayCallbacks().getKeyCallbacks().forEach(c -> c.apply(e.getKey(), e.getScanCode(), e.getAction(), e.getMods())));
@@ -73,7 +47,15 @@ public class DisplaySnapReceiver implements Displayable {
         cursorPosEvents.forEach(e -> getDisplayCallbacks().getCursorPosCallbacks().forEach(c -> c.apply(e.getX(), e.getY(), e.getDx(), e.getDy())));
         scrollEvents.forEach(e -> getDisplayCallbacks().getScrollCallbacks().forEach(c -> c.apply(e.getXOffset(), e.getYOffset())));
 
-        applicationActive = collector.getApplicationActive().get();
+        keyEvents.clear();
+        resizeEvents.clear();
+        mouseButtonEvents.clear();
+        cursorPosEvents.clear();
+        scrollEvents.clear();
+    }
+
+    public boolean isApplicationActive() {
+        return getApplicationActive().get();
     }
 
     public boolean isKeyDown(int key) {
@@ -82,6 +64,47 @@ public class DisplaySnapReceiver implements Displayable {
 
     public boolean isMouseDown(int button) {
         return mouseButtonPressed[button];
+    }
+
+
+    @RequiredArgsConstructor
+    @Getter
+    public static class ResizeEvent {
+        private final int width;
+        private final int height;
+    }
+
+    @RequiredArgsConstructor
+    @Getter
+    public static class KeyEvent {
+        private final int key;
+        private final int scanCode;
+        private final int action;
+        private final int mods;
+    }
+
+    @RequiredArgsConstructor
+    @Getter
+    public static class MouseButtonEvent {
+        private final int button;
+        private final int action;
+        private final int mods;
+    }
+
+    @RequiredArgsConstructor
+    @Getter
+    public static class CursorPosEvent {
+        private final double x;
+        private final double y;
+        private final double dx;
+        private final double dy;
+    }
+
+    @RequiredArgsConstructor
+    @Getter
+    public static class ScrollEvent {
+        private final double xOffset;
+        private final double yOffset;
     }
 
 }

@@ -1,6 +1,7 @@
 package com.ternsip.glade.graphics.display;
 
 import com.ternsip.glade.graphics.visual.repository.GraphicalRepository;
+import com.ternsip.glade.universe.common.Universal;
 import lombok.Getter;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
@@ -16,15 +17,15 @@ import static org.lwjgl.opengl.GL13.GL_MULTISAMPLE;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 @Getter
-public class DisplayManager {
+public class DisplayManager implements Universal {
 
     public static final DisplayManager INSTANCE = new DisplayManager();
 
+    public final Thread rootThread = Thread.currentThread();
     public final Vector3f BACKGROUND_COLOR = new Vector3f(1f, 0f, 0f);
     private ArrayList<Callback> callbacks = new ArrayList<>();
     private GraphicalRepository graphicalRepository;
     private DisplayCallbacks displayCallbacks = new DisplayCallbacks();
-    private DisplaySnapCollector displaySnapCollector = new DisplaySnapCollector();
     private WindowData windowData;
 
     public void initialize() {
@@ -107,7 +108,7 @@ public class DisplayManager {
     }
 
     public void finish() {
-        displaySnapCollector.getApplicationActive().set(false);
+        getUniverse().getDisplaySnapReceiver().getApplicationActive().set(false);
 
         getGraphicalRepository().finish();
 
@@ -128,21 +129,27 @@ public class DisplayManager {
         return glfwGetMouseButton(getWindowData().getWindow(), key) == GLFW_PRESS;
     }
 
+    public void checkThreadSafety() {
+        if (Thread.currentThread() != getRootThread()) {
+            throw new IllegalArgumentException("It is not thread safe to get display not from the main thread");
+        }
+    }
+
     private void registerDisplaySnapCollectorEvents() {
         displayCallbacks.getCursorPosCallbacks().add((x, y, dx, dy) ->
-                displaySnapCollector.getCursorPosEvents().add(new DisplaySnapCollector.CursorPosEvent(x, y, dx, dy))
+                getUniverse().getDisplaySnapReceiver().getCursorPosEvents().add(new DisplaySnapReceiver.CursorPosEvent(x, y, dx, dy))
         );
         displayCallbacks.getResizeCallbacks().add((w, h) ->
-                displaySnapCollector.getResizeEvents().add(new DisplaySnapCollector.ResizeEvent(w, h))
+                getUniverse().getDisplaySnapReceiver().getResizeEvents().add(new DisplaySnapReceiver.ResizeEvent(w, h))
         );
         displayCallbacks.getScrollCallbacks().add((dx, dy) ->
-                displaySnapCollector.getScrollEvents().add(new DisplaySnapCollector.ScrollEvent(dx, dy))
+                getUniverse().getDisplaySnapReceiver().getScrollEvents().add(new DisplaySnapReceiver.ScrollEvent(dx, dy))
         );
         displayCallbacks.getKeyCallbacks().add((k, c, a, m) ->
-                displaySnapCollector.getKeyEvents().add(new DisplaySnapCollector.KeyEvent(k, c, a, m))
+                getUniverse().getDisplaySnapReceiver().getKeyEvents().add(new DisplaySnapReceiver.KeyEvent(k, c, a, m))
         );
         displayCallbacks.getMouseButtonCallbacks().add((b, a, m) ->
-                displaySnapCollector.getMouseButtonEvents().add(new DisplaySnapCollector.MouseButtonEvent(b, a, m))
+                getUniverse().getDisplaySnapReceiver().getMouseButtonEvents().add(new DisplaySnapReceiver.MouseButtonEvent(b, a, m))
         );
     }
 
