@@ -3,6 +3,7 @@ package com.ternsip.glade.graphics.visual.repository;
 import com.ternsip.glade.utils.Utils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.joml.Vector2f;
 import org.lwjgl.BufferUtils;
 
@@ -22,6 +23,12 @@ import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 import static org.lwjgl.opengl.GL42.glTexStorage3D;
 import static org.lwjgl.stb.STBImage.stbi_load_from_memory;
 
+/**
+ * There are two types of atlases:
+ *  - GPU 3d array of textures
+ *  - Combined images in atlas directories, it all have special parent directory
+ */
+@Slf4j
 public class TextureRepository {
 
     public final static int MIPMAP_LEVELS = 5;
@@ -96,8 +103,7 @@ public class TextureRepository {
 
         images.forEach(image -> {
             if (!usedImages.contains(image)) {
-                // TODO to logs
-                System.out.println(String.format("Image %s has not been loaded into atlas because it exceeds maximal size", image.getFile()));
+                log.error(String.format("Image %s has not been loaded into atlas because it exceeds maximal size", image.getFile()));
             }
         });
 
@@ -106,7 +112,7 @@ public class TextureRepository {
 
     public Texture getTexture(File file) {
         if (!fileToTexture.containsKey(file)) {
-            System.out.println(String.format("Texture %s has not been found", file)); // TODO TO LOGS
+            log.warn(String.format("Texture %s has not been found", file));
             return fileToTexture.get(MISSING_TEXTURE);
         }
         return fileToTexture.get(file);

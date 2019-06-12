@@ -1,6 +1,7 @@
 package com.ternsip.glade.utils;
 
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.lwjgl.BufferUtils;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 
 import static org.lwjgl.assimp.Assimp.aiGetErrorString;
 
+@Slf4j
 public class Utils {
 
     @SneakyThrows
@@ -139,8 +141,7 @@ public class Utils {
     // Handle all such situations, it also can cause memory problems
     public static void assertThat(boolean condition) {
         if (!condition) {
-            // TODO use logging
-            System.out.println("Assertion failed!");
+            log.warn("Assertion failed!");
         }
     }
 
