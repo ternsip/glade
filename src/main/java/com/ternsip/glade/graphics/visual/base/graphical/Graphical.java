@@ -76,14 +76,17 @@ public abstract class Graphical<SHADER extends ShaderProgram> implements Visual,
         return 0;
     }
 
-    public boolean isGraphicalInsideFrustum() {
+    public FrustumIntersection getFrustumIntersection() {
         Matrix4fc projection = getDisplayManager().getGraphicalRepository().getCamera().getNormalProjectionMatrix();
         Matrix4fc view = getDisplayManager().getGraphicalRepository().getCamera().getViewMatrix();
         Matrix4fc projectionViewMatrix = projection.mul(view, new Matrix4f());
-        FrustumIntersection frustumIntersection = new FrustumIntersection(projectionViewMatrix);
+        return new FrustumIntersection(projectionViewMatrix);
+    }
+
+    public boolean isGraphicalInsideFrustum() {
         Vector3fc scale = getAdjustedScale();
         float delta = Math.max(Math.max(scale.x(), scale.y()), scale.z()) * 1.5f;
-        return frustumIntersection.testSphere(getAdjustedPosition(), delta);
+        return getFrustumIntersection().testSphere(getAdjustedPosition(), delta);
     }
 
     public void finish() {

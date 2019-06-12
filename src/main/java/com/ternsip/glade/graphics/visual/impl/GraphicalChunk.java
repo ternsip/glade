@@ -158,11 +158,7 @@ public class GraphicalChunk extends Graphical<ChunkShader> {
 
     @Override
     public boolean isGraphicalInsideFrustum() {
-        Matrix4fc projection = getDisplayManager().getGraphicalRepository().getCamera().getNormalProjectionMatrix();
-        Matrix4fc view = getDisplayManager().getGraphicalRepository().getCamera().getViewMatrix();
-        Matrix4fc projectionViewMatrix = projection.mul(view, new Matrix4f());
-        FrustumIntersection frustumIntersection = new FrustumIntersection(projectionViewMatrix);
-        return frustumIntersection.testSphere(getAdjustedPosition(), PHYSICAL_SIZE * 1.5f);
+        return getFrustumIntersection().testSphere(getAdjustedPosition(), PHYSICAL_SIZE * 1.5f);
     }
 
     @Override
