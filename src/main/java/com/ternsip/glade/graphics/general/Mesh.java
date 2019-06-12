@@ -1,11 +1,11 @@
 package com.ternsip.glade.graphics.general;
 
-import com.ternsip.glade.utils.Utils;
+import com.ternsip.glade.common.Utils;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.Vector3f;
 
-import static com.ternsip.glade.utils.Utils.arrayToBuffer;
+import static com.ternsip.glade.common.Utils.arrayToBuffer;
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL11.GL_INT;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;

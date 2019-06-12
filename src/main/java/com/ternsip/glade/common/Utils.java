@@ -1,4 +1,4 @@
-package com.ternsip.glade.utils;
+package com.ternsip.glade.common;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;

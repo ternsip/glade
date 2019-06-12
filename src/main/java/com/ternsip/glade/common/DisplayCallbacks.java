@@ -1,4 +1,4 @@
-package com.ternsip.glade.graphics.display;
+package com.ternsip.glade.common;
 
 import lombok.Getter;
 

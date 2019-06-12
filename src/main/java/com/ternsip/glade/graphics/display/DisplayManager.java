@@ -1,5 +1,6 @@
 package com.ternsip.glade.graphics.display;
 
+import com.ternsip.glade.common.DisplayCallbacks;
 import com.ternsip.glade.graphics.visual.repository.GraphicalRepository;
 import com.ternsip.glade.universe.common.Universal;
 import lombok.Getter;
@@ -93,11 +94,8 @@ public class DisplayManager implements Universal {
     public void loop() {
         while (isActive()) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
             getGraphicalRepository().render();
-
             getWindowData().update();
-
             glfwSwapBuffers(getWindowData().getWindow());
             glfwPollEvents();
         }
@@ -109,15 +107,11 @@ public class DisplayManager implements Universal {
 
     public void finish() {
         getUniverse().getDisplaySnapReceiver().getApplicationActive().set(false);
-
         getGraphicalRepository().finish();
-
         glfwDestroyWindow(getWindowData().getWindow());
-
         for (Callback callback : callbacks) {
             callback.free();
         }
-
         glfwTerminate();
     }
 

@@ -1,5 +1,6 @@
 package com.ternsip.glade.graphics.display;
 
+import com.ternsip.glade.common.DisplayCallbacks;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

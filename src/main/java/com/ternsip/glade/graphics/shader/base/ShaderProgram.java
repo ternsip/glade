@@ -1,6 +1,6 @@
 package com.ternsip.glade.graphics.shader.base;
 
-import com.ternsip.glade.utils.Utils;
+import com.ternsip.glade.common.Utils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

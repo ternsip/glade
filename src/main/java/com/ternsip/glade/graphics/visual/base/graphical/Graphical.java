@@ -1,10 +1,10 @@
 package com.ternsip.glade.graphics.visual.base.graphical;
 
+import com.ternsip.glade.common.Maths;
+import com.ternsip.glade.common.Utils;
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.shader.base.ShaderProgram;
 import com.ternsip.glade.universe.common.Light;
-import com.ternsip.glade.utils.Maths;
-import com.ternsip.glade.utils.Utils;
 import lombok.Getter;
 import org.joml.*;
 

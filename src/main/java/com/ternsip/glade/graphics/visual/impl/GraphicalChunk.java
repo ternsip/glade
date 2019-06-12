@@ -1,5 +1,7 @@
 package com.ternsip.glade.graphics.visual.impl;
 
+import com.ternsip.glade.common.Maths;
+import com.ternsip.glade.common.Utils;
 import com.ternsip.glade.graphics.general.Material;
 import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.general.Model;
@@ -9,8 +11,6 @@ import com.ternsip.glade.graphics.visual.repository.TexturePackRepository;
 import com.ternsip.glade.graphics.visual.repository.TextureRepository;
 import com.ternsip.glade.universe.common.Light;
 import com.ternsip.glade.universe.parts.blocks.Block;
-import com.ternsip.glade.utils.Maths;
-import com.ternsip.glade.utils.Utils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

@@ -1,6 +1,6 @@
 package com.ternsip.glade.graphics.general;
 
-import com.ternsip.glade.utils.Maths;
+import com.ternsip.glade.common.Maths;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.joml.Matrix4f;
