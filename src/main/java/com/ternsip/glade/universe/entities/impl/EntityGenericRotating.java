@@ -6,18 +6,18 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.joml.Vector3f;
 
-import java.util.function.Function;
+import java.util.function.Supplier;
 
 @RequiredArgsConstructor
 @Getter
 public class EntityGenericRotating extends EntityTransformable<Graphical> {
 
-    private final Function<Void, Graphical> loadVisual;
+    private final Supplier<Graphical> loadVisual;
     private final Vector3f rotationSpeed;
 
     @Override
     public Graphical getVisual() {
-        return loadVisual.apply(null);
+        return loadVisual.get();
     }
 
     @Override

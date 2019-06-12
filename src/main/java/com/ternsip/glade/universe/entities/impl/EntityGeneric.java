@@ -5,18 +5,17 @@ import com.ternsip.glade.universe.entities.base.EntityTransformable;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.function.Function;
+import java.util.function.Supplier;
 
 @RequiredArgsConstructor
 @Getter
 public class EntityGeneric extends EntityTransformable<Graphical> {
 
-    // TODO supplier, not function
-    private final Function<Void, Graphical> loadVisual;
+    private final Supplier<Graphical> loadVisual;
 
     @Override
     public Graphical getVisual() {
-        return loadVisual.apply(null);
+        return loadVisual.get();
     }
 
     @Override

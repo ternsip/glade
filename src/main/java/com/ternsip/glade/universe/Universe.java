@@ -56,42 +56,42 @@ public class Universe {
     private void spawnTestEntities() {
         new EntitySun(new Vector2f(0, 0), new Vector2f(20000, 20000), new Vector3f(1, 1, 1));
 
-        EntityGeneric cube = new EntityGeneric(e -> new GraphicalCube());
+        EntityGeneric cube = new EntityGeneric(() -> new GraphicalCube());
 
-        EntityGeneric lamp = new EntityGeneric(e -> new GraphicalLamp());
+        EntityGeneric lamp = new EntityGeneric(() -> new GraphicalLamp());
         lamp.setPosition(new Vector3f(-60f, 0, -60));
         lamp.setScale(new Vector3f(40, 40, 40));
 
-        EntityGeneric bottle = new EntityGeneric(e -> new GraphicalBottle());
+        EntityGeneric bottle = new EntityGeneric(() -> new GraphicalBottle());
         bottle.setPosition(new Vector3f(-30f, 0, -20));
         bottle.setScale(new Vector3f(5, 5, 5));
 
-        EntityGeneric zebra = new EntityGeneric(e -> new GraphicalZebra());
+        EntityGeneric zebra = new EntityGeneric(() -> new GraphicalZebra());
         zebra.setPosition(new Vector3f(-20f, 0, -20));
         zebra.setScale(new Vector3f(30, 30, 30));
 
-        EntityGeneric wolf = new EntityGeneric(e -> new GraphicalWolf());
+        EntityGeneric wolf = new EntityGeneric(() -> new GraphicalWolf());
         wolf.setPosition(new Vector3f(-140f, 0, -40));
         wolf.setScale(new Vector3f(30, 30, 30));
 
-        EntityTransformable hagrid = new EntityGenericRotating(e -> new GraphicalHagrid(), new Vector3f(0, 0.01f, 0));
+        EntityTransformable hagrid = new EntityGenericRotating(() -> new GraphicalHagrid(), new Vector3f(0, 0.01f, 0));
         hagrid.setPosition(new Vector3f(20f, 2, 2));
         hagrid.setScale(new Vector3f(15, 15, 15));
 
-        EntityGeneric spider = new EntityGeneric(e -> new GraphicalSpider());
+        EntityGeneric spider = new EntityGeneric(() -> new GraphicalSpider());
         spider.setPosition(new Vector3f(20f, 2, -20));
         spider.setScale(new Vector3f(5, 5, 5));
 
-        EntityGeneric warrior = new EntityGeneric(e -> new GraphicalWarrior());
+        EntityGeneric warrior = new EntityGeneric(() -> new GraphicalWarrior());
         warrior.setPosition(new Vector3f(-20f, 2, 2));
         warrior.setScale(new Vector3f(10, 10, 10));
 
-        EntityGeneric dude = new EntityGeneric(e -> new GraphicalDude());
+        EntityGeneric dude = new EntityGeneric(() -> new GraphicalDude());
         dude.setPosition(new Vector3f(-20f, 0, -20));
         dude.setScale(new Vector3f(10f, 10f, 10f));
 
-        new EntityGenericRotating(e -> new Graphical3DText(new File("fonts/default.png"), "Hello world!"), new Vector3f(0, 0.1f, 0));
-        new EntityGeneric(e -> new GraphicalAxis());
+        new EntityGenericRotating(() -> new Graphical3DText(new File("fonts/default.png"), "Hello world!"), new Vector3f(0, 0.1f, 0));
+        new EntityGeneric(() -> new GraphicalAxis());
 
         new EntityStatistics();
 
@@ -99,7 +99,7 @@ public class Universe {
 
         for (int i = 0; i < 10; ++i) {
             for (int j = 0; j < 10; ++j) {
-                EntityTransformable hagrid1 = new EntityGenericRotating(e -> new GraphicalHagrid(), new Vector3f(0, 0.01f, 0));
+                EntityTransformable hagrid1 = new EntityGenericRotating(() -> new GraphicalHagrid(), new Vector3f(0, 0.01f, 0));
                 hagrid1.setPosition(new Vector3f(20f + 15 * i, 2, 2 + 15 * j));
                 hagrid1.setScale(new Vector3f(15, 15, 15));
             }
@@ -113,7 +113,7 @@ public class Universe {
                     int finalCx = cx;
                     int finalCy = cy;
                     int finalCz = cz;
-                    new EntityGeneric(e -> {
+                    new EntityGeneric(() -> {
                         Random random = new Random(System.currentTimeMillis());
                         Block[] blocks = new Block[GraphicalChunk.VOLUME];
                         for (int x = 0, idx = 0; x < GraphicalChunk.SIZE; ++x) {
