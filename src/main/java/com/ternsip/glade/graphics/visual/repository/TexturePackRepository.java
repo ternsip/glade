@@ -1,6 +1,7 @@
 package com.ternsip.glade.graphics.visual.repository;
 
 import com.ternsip.glade.graphics.display.Displayable;
+import com.ternsip.glade.graphics.general.Texture;
 import com.ternsip.glade.universe.parts.blocks.Block;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -100,7 +101,16 @@ public class TexturePackRepository implements Displayable {
                 throw new IllegalArgumentException(msg);
             }
 
-            blocksTextures[blockIndex] = new TextureCubeMap(sideTop, sideBottom, sideLeft, sideRight, sideFront, sideBack);
+            blocksTextures[blockIndex] = new TextureCubeMap(
+                    new Texture(blocksAtlasDecoder),
+                    blocksAtlasDecoder.getFileToAtlasFragment().get(sideTop),
+                    blocksAtlasDecoder.getFileToAtlasFragment().get(sideBottom),
+                    blocksAtlasDecoder.getFileToAtlasFragment().get(sideLeft),
+                    blocksAtlasDecoder.getFileToAtlasFragment().get(sideRight),
+                    blocksAtlasDecoder.getFileToAtlasFragment().get(sideFront),
+                    blocksAtlasDecoder.getFileToAtlasFragment().get(sideBack)
+            );
+
         }
 
     }
@@ -109,12 +119,13 @@ public class TexturePackRepository implements Displayable {
     @Getter
     public static class TextureCubeMap {
 
-        private final File sideTop;
-        private final File sideBottom;
-        private final File sideLeft;
-        private final File sideRight;
-        private final File sideFront;
-        private final File sideBack;
+        private final Texture atlasTexture;
+        private final TextureRepository.AtlasFragment sideTop;
+        private final TextureRepository.AtlasFragment sideBottom;
+        private final TextureRepository.AtlasFragment sideLeft;
+        private final TextureRepository.AtlasFragment sideRight;
+        private final TextureRepository.AtlasFragment sideFront;
+        private final TextureRepository.AtlasFragment sideBack;
 
     }
 

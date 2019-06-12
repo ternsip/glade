@@ -13,6 +13,7 @@ import com.ternsip.glade.universe.parts.blocks.Block;
 import com.ternsip.glade.utils.Maths;
 import com.ternsip.glade.utils.Utils;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.joml.*;
 
@@ -30,25 +31,47 @@ public class GraphicalChunk extends Graphical<ChunkShader> {
     private static final float SIDE = 1f;
     private static final float PHYSICAL_SIZE = 2 * SIDE * SIZE;
 
-    private static final float[] VERTICES_FRONT = {SIDE, SIDE, SIDE, -SIDE, SIDE, SIDE, -SIDE, -SIDE, SIDE, SIDE, -SIDE, SIDE};
-    private static final float[] VERTICES_RIGHT = {SIDE, SIDE, SIDE, SIDE, -SIDE, SIDE, SIDE, -SIDE, -SIDE, SIDE, SIDE, -SIDE};
-    private static final float[] VERTICES_TOP = {SIDE, SIDE, SIDE, SIDE, SIDE, -SIDE, -SIDE, SIDE, -SIDE, -SIDE, SIDE, SIDE};
-    private static final float[] VERTICES_LEFT = {-SIDE, SIDE, SIDE, -SIDE, SIDE, -SIDE, -SIDE, -SIDE, -SIDE, -SIDE, -SIDE, SIDE};
-    private static final float[] VERTICES_BOTTOM = {-SIDE, -SIDE, -SIDE, SIDE, -SIDE, -SIDE, SIDE, -SIDE, SIDE, -SIDE, -SIDE, SIDE};
-    private static final float[] VERTICES_BACK = {SIDE, -SIDE, -SIDE, -SIDE, -SIDE, -SIDE, -SIDE, SIDE, -SIDE, SIDE, SIDE, -SIDE};
-    private static final float[] NORMALS_FRONT = {0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1};
-    private static final float[] NORMALS_RIGHT = {1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0};
-    private static final float[] NORMALS_TOP = {0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0};
-    private static final float[] NORMALS_LEFT = {-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0};
-    private static final float[] NORMALS_BOTTOM = {0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0};
-    private static final float[] NORMALS_BACK = {0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1};
-    private static final int[] INDICES_ORDER = {0, 1, 2, 2, 3, 0};
-    public static boolean TEXTURES_FRONT[] = {true, false, false, false, false, true, true, true};
-    public static boolean TEXTURES_RIGHT[] = {false, false, false, true, true, true, true, false};
-    public static boolean TEXTURES_TOP[] = {true, true, true, false, false, false, false, true};
-    public static boolean TEXTURES_LEFT[] = {true, false, false, false, false, true, true, true};
-    public static boolean TEXTURES_BOTTOM[] = {false, true, true, true, true, false, false, false};
-    public static boolean TEXTURES_BACK[] = {false, true, true, true, true, false, false, false};
+    private static final CubeSide SIDE_FRONT = new CubeSide(
+            new float[]{SIDE, SIDE, SIDE, -SIDE, SIDE, SIDE, -SIDE, -SIDE, SIDE, SIDE, -SIDE, SIDE},
+            new float[]{0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1},
+            new boolean[]{true, false, false, false, false, true, true, true},
+            new int[]{0, 1, 2, 2, 3, 0}
+    );
+
+    private static final CubeSide SIDE_RIGHT = new CubeSide(
+            new float[]{SIDE, SIDE, SIDE, SIDE, -SIDE, SIDE, SIDE, -SIDE, -SIDE, SIDE, SIDE, -SIDE},
+            new float[]{1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0},
+            new boolean[]{false, false, false, true, true, true, true, false},
+            new int[]{0, 1, 2, 2, 3, 0}
+    );
+
+    private static final CubeSide SIDE_TOP = new CubeSide(
+            new float[]{SIDE, SIDE, SIDE, SIDE, SIDE, -SIDE, -SIDE, SIDE, -SIDE, -SIDE, SIDE, SIDE},
+            new float[]{0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0},
+            new boolean[]{true, true, true, false, false, false, false, true},
+            new int[]{0, 1, 2, 2, 3, 0}
+    );
+
+    private static final CubeSide SIDE_LEFT = new CubeSide(
+            new float[]{-SIDE, SIDE, SIDE, -SIDE, SIDE, -SIDE, -SIDE, -SIDE, -SIDE, -SIDE, -SIDE, SIDE},
+            new float[]{-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0},
+            new boolean[]{true, false, false, false, false, true, true, true},
+            new int[]{0, 1, 2, 2, 3, 0}
+    );
+
+    private static final CubeSide SIDE_BOTTOM = new CubeSide(
+            new float[]{-SIDE, -SIDE, -SIDE, SIDE, -SIDE, -SIDE, SIDE, -SIDE, SIDE, -SIDE, -SIDE, SIDE},
+            new float[]{0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0},
+            new boolean[]{false, true, true, true, true, false, false, false},
+            new int[]{0, 1, 2, 2, 3, 0}
+    );
+
+    private static final CubeSide SIDE_BACK = new CubeSide(
+            new float[]{SIDE, -SIDE, -SIDE, -SIDE, -SIDE, -SIDE, -SIDE, SIDE, -SIDE, SIDE, SIDE, -SIDE},
+            new float[]{0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1},
+            new boolean[]{false, true, true, true, true, false, false, false},
+            new int[]{0, 1, 2, 2, 3, 0}
+    );
 
     private final Block[] blocks;
     private final Vector3ic chunkPosition;
@@ -88,62 +111,30 @@ public class GraphicalChunk extends Graphical<ChunkShader> {
         ArrayList<Float> vertices = new ArrayList<>(VOLUME * 3);
         ArrayList<Float> textures = new ArrayList<>(VOLUME * 2);
         ArrayList<Float> normals = new ArrayList<>(VOLUME * 3);
-        ArrayList<Integer> indices = new ArrayList<>(VOLUME * 3);
+        ArrayList<Integer> indices = new ArrayList<>(VOLUME * 2);
 
         TexturePackRepository texturePackRepository = getDisplayManager().getGraphicalRepository().getTexturePackRepository();
         TextureRepository.AtlasDecoder atlasDecoder = texturePackRepository.getBlocksAtlasDecoder();
 
-        Vector3f verticesOffset = new Vector3f(0, 0, 0);
+        Vector3f blockOffset = new Vector3f(0, 0, 0);
 
         for (int x = 0, blockIdx = 0; x < SIZE; ++x) {
             for (int y = 0; y < SIZE; ++y) {
                 for (int z = 0; z < SIZE; ++z, ++blockIdx) {
 
                     Block block = blocks[blockIdx];
-
                     if (block == Block.AIR) {
                         continue;
                     }
-
                     TexturePackRepository.TextureCubeMap textureCubeMap = texturePackRepository.getCubeMap(block);
-                    TextureRepository.AtlasFragment fragmentFront = atlasDecoder.getFileToAtlasFragment().get(textureCubeMap.getSideFront());
-                    TextureRepository.AtlasFragment fragmentBack = atlasDecoder.getFileToAtlasFragment().get(textureCubeMap.getSideBack());
-                    TextureRepository.AtlasFragment fragmentLeft = atlasDecoder.getFileToAtlasFragment().get(textureCubeMap.getSideLeft());
-                    TextureRepository.AtlasFragment fragmentRight = atlasDecoder.getFileToAtlasFragment().get(textureCubeMap.getSideRight());
-                    TextureRepository.AtlasFragment fragmentTop = atlasDecoder.getFileToAtlasFragment().get(textureCubeMap.getSideTop());
-                    TextureRepository.AtlasFragment fragmentBottom = atlasDecoder.getFileToAtlasFragment().get(textureCubeMap.getSideBottom());
+                    blockOffset.set(x * 2 * SIDE, y * 2 * SIDE, z * 2 * SIDE);
 
-                    verticesOffset.set(x * 2 * SIDE, y * 2 * SIDE, z * 2 * SIDE);
-
-                    produceVertices(VERTICES_FRONT, verticesOffset, vertices);
-                    produceTextures(TEXTURES_FRONT, fragmentFront, textures);
-                    produceNormals(NORMALS_FRONT, normals);
-                    produceIndices(INDICES_ORDER, vertices.size() / 3, indices);
-
-                    produceVertices(VERTICES_RIGHT, verticesOffset, vertices);
-                    produceTextures(TEXTURES_RIGHT, fragmentRight, textures);
-                    produceNormals(NORMALS_RIGHT, normals);
-                    produceIndices(INDICES_ORDER, vertices.size() / 3, indices);
-
-                    produceVertices(VERTICES_TOP, verticesOffset, vertices);
-                    produceTextures(TEXTURES_TOP, fragmentTop, textures);
-                    produceNormals(NORMALS_TOP, normals);
-                    produceIndices(INDICES_ORDER, vertices.size() / 3, indices);
-
-                    produceVertices(VERTICES_LEFT, verticesOffset, vertices);
-                    produceTextures(TEXTURES_LEFT, fragmentLeft, textures);
-                    produceNormals(NORMALS_LEFT, normals);
-                    produceIndices(INDICES_ORDER, vertices.size() / 3, indices);
-
-                    produceVertices(VERTICES_BOTTOM, verticesOffset, vertices);
-                    produceTextures(TEXTURES_BOTTOM, fragmentBottom, textures);
-                    produceNormals(NORMALS_BOTTOM, normals);
-                    produceIndices(INDICES_ORDER, vertices.size() / 3, indices);
-
-                    produceVertices(VERTICES_BACK, verticesOffset, vertices);
-                    produceTextures(TEXTURES_BACK, fragmentBack, textures);
-                    produceNormals(NORMALS_BACK, normals);
-                    produceIndices(INDICES_ORDER, vertices.size() / 3, indices);
+                    SIDE_FRONT.fillArrays(vertices, normals, textures, indices, blockOffset, textureCubeMap.getSideFront());
+                    SIDE_RIGHT.fillArrays(vertices, normals, textures, indices, blockOffset, textureCubeMap.getSideRight());
+                    SIDE_TOP.fillArrays(vertices, normals, textures, indices, blockOffset, textureCubeMap.getSideTop());
+                    SIDE_LEFT.fillArrays(vertices, normals, textures, indices, blockOffset, textureCubeMap.getSideLeft());
+                    SIDE_BOTTOM.fillArrays(vertices, normals, textures, indices, blockOffset, textureCubeMap.getSideBottom());
+                    SIDE_BACK.fillArrays(vertices, normals, textures, indices, blockOffset, textureCubeMap.getSideBack());
 
                 }
             }
@@ -190,31 +181,41 @@ public class GraphicalChunk extends Graphical<ChunkShader> {
         return this;
     }
 
-    private void produceVertices(float[] vertices, Vector3fc offset, List<Float> dst) {
-        for (int i = 0; i < vertices.length; i += 3) {
-            dst.add(vertices[i] + offset.x());
-            dst.add(vertices[i + 1] + offset.y());
-            dst.add(vertices[i + 2] + offset.z());
-        }
-    }
+    @RequiredArgsConstructor
+    @Getter
+    public static class CubeSide {
 
-    private void produceNormals(float[] normals, List<Float> dst) {
-        for (float normal : normals) {
-            dst.add(normal);
-        }
-    }
+        private final float[] vertices;
+        private final float[] normals;
+        private final boolean[] textures;
+        private final int[] indices;
 
-    private void produceIndices(int[] indices, int offset, List<Integer> dst) {
-        for (int index : indices) {
-            dst.add(index + offset);
+        public void fillArrays(
+                List<Float> vertices,
+                List<Float> normals,
+                List<Float> textures,
+                List<Integer> indices,
+                Vector3f blockOffset,
+                TextureRepository.AtlasFragment atlasFragment
+        ) {
+            for (int i = 0; i < this.vertices.length; i += 3) {
+                vertices.add(this.vertices[i] + blockOffset.x());
+                vertices.add(this.vertices[i + 1] + blockOffset.y());
+                vertices.add(this.vertices[i + 2] + blockOffset.z());
+            }
+            for (float normal : this.normals) {
+                normals.add(normal);
+            }
+            int offset = vertices.size() / 3;
+            for (int index : this.indices) {
+                indices.add(index + offset);
+            }
+            for (int i = 0; i < this.textures.length; i += 2) {
+                textures.add(this.textures[i] ? atlasFragment.getEndU() : atlasFragment.getStartU());
+                textures.add(this.textures[i + 1] ? atlasFragment.getEndV() : atlasFragment.getStartV());
+            }
         }
-    }
 
-    private void produceTextures(boolean[] textures, TextureRepository.AtlasFragment atlasFragment, List<Float> dst) {
-        for (int i = 0; i < textures.length; i += 2) {
-            dst.add(textures[i] ? atlasFragment.getEndU() : atlasFragment.getStartU());
-            dst.add(textures[i + 1] ? atlasFragment.getEndV() : atlasFragment.getStartV());
-        }
     }
 
 }

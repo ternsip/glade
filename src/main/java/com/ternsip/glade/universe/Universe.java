@@ -107,9 +107,9 @@ public class Universe {
     }
 
     private void generateChunks() {
-        for (int cx = 0; cx < 4; ++cx) {
-            for (int cy = 0; cy < 4; ++cy) {
-                for (int cz = 0; cz < 4; ++cz) {
+        for (int cx = 0; cx < 8; ++cx) {
+            for (int cy = 0; cy < 8; ++cy) {
+                for (int cz = 0; cz < 8; ++cz) {
                     int finalCx = cx;
                     int finalCy = cy;
                     int finalCz = cz;
@@ -120,11 +120,11 @@ public class Universe {
                             for (int y = 0; y < GraphicalChunk.SIZE; ++y) {
                                 for (int z = 0; z < GraphicalChunk.SIZE; ++z, ++idx) {
                                     blocks[idx] = Block.AIR;
-                                    if (random.nextFloat() < 0.1) blocks[idx] = Block.SAND;
-                                    if (random.nextFloat() < 0.1) blocks[idx] = Block.DIRT;
-                                    if (random.nextFloat() < 0.1) blocks[idx] = Block.STONE;
-                                    if (random.nextFloat() < 0.1) blocks[idx] = Block.WATER;
-                                    if (random.nextFloat() < 0.1) blocks[idx] = Block.LEAVES;
+                                    if (random.nextFloat() < 0.05) blocks[idx] = Block.SAND;
+                                    if (random.nextFloat() < 0.05) blocks[idx] = Block.DIRT;
+                                    if (random.nextFloat() < 0.05) blocks[idx] = Block.STONE;
+                                    if (random.nextFloat() < 0.05) blocks[idx] = Block.WATER;
+                                    if (random.nextFloat() < 0.05) blocks[idx] = Block.LEAVES;
                                 }
                             }
                         }
