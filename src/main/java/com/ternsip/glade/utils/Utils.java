@@ -154,20 +154,18 @@ public class Utils {
                 .collect(Collectors.toList());
     }
 
-    // TODO USE CYCLE INSTEAD OF RECURSION USING FOR (;;)
     @SneakyThrows
-    public static Method findDeclaredMethodInHierarchy(
-            Class<?> objectClass,
-            String methodName
-    ) {
-        try {
-            return objectClass.getDeclaredMethod(methodName);
-        } catch (NoSuchMethodException e) {
-            if (objectClass.getSuperclass() != null) {
-                return findDeclaredMethodInHierarchy(objectClass.getSuperclass(), methodName);
+    public static Method findDeclaredMethodInHierarchy(Class<?> objectClass, String methodName) {
+        Class<?> targetClass = objectClass;
+        while (targetClass != null) {
+            try {
+                return objectClass.getDeclaredMethod(methodName);
+            } catch (NoSuchMethodException e) {
+                targetClass = objectClass.getSuperclass();
             }
-            throw e;
         }
+        String msg = String.format("Can't find method %s anywhere in the class %s", methodName, objectClass.getName());
+        throw new IllegalArgumentException(msg);
     }
 
     @SneakyThrows
