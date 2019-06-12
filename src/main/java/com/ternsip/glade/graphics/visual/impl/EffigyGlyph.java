@@ -31,16 +31,6 @@ public class EffigyGlyph extends EffigyAnimated {
     }
 
     @Override
-    protected Matrix4fc getViewMatrix() {
-        return EMPTY_MATRIX;
-    }
-
-    @Override
-    protected Matrix4fc getProjectionMatrix() {
-        return getGraphics().getGraphicalRepository().getCamera().getOrthoProjectionMatrix();
-    }
-
-    @Override
     public int getPriority() {
         return 1000;
     }
@@ -53,6 +43,16 @@ public class EffigyGlyph extends EffigyAnimated {
     @Override
     public Object getModelKey() {
         return new GlyphKey(getFont(), getSymbol(), getColor());
+    }
+
+    @Override
+    protected Matrix4fc getViewMatrix() {
+        return EMPTY_MATRIX;
+    }
+
+    @Override
+    protected Matrix4fc getProjectionMatrix() {
+        return getGraphics().getGraphicalRepository().getCamera().getOrthoProjectionMatrix();
     }
 
     @RequiredArgsConstructor

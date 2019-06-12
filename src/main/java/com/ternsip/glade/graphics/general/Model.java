@@ -30,25 +30,12 @@ public class Model {
         this(new Mesh[]{});
     }
 
-    public Model(Mesh mesh) {
-        this(new Mesh[]{mesh});
-    }
-
     public Model(Mesh[] meshes) {
         this(meshes, new Bone(), Collections.emptyMap());
     }
 
     public Model(Mesh[] meshes, Bone rootBone, Map<String, FrameTrack> nameToFrameTrack) {
         this(meshes, new Vector3f(0), new Vector3f(0), new Vector3f(1), rootBone, nameToFrameTrack);
-    }
-
-    public Model(
-            Mesh[] meshes,
-            Vector3fc baseOffset,
-            Vector3fc baseRotation,
-            Vector3fc baseScale
-    ) {
-        this(meshes, baseOffset, baseRotation, baseScale, new Bone(), Collections.emptyMap());
     }
 
     public Model(
@@ -81,19 +68,24 @@ public class Model {
         this.boneIndexDataTopologicallySorted = topSortBones.toArray(new BoneIndexData[0]);
     }
 
+    public Model(Mesh mesh) {
+        this(new Mesh[]{mesh});
+    }
+
+    public Model(
+            Mesh[] meshes,
+            Vector3fc baseOffset,
+            Vector3fc baseRotation,
+            Vector3fc baseScale
+    ) {
+        this(meshes, baseOffset, baseRotation, baseScale, new Bone(), Collections.emptyMap());
+    }
+
     public void finish() {
         int numMeshes = this.meshes != null ? this.meshes.length : 0;
         for (int i = 0; i < numMeshes; i++) {
             this.meshes[i].finish();
         }
-    }
-
-    private float calcNormalizedScale(Mesh[] meshes) {
-        float smallestScale = Float.MAX_VALUE / 4;
-        for (Mesh mesh : meshes) {
-            smallestScale = Math.min(smallestScale, mesh.getNormalizingScale());
-        }
-        return smallestScale;
     }
 
     Matrix4f[] calcBoneTransforms(AnimationTrack animationTrack) {
@@ -121,6 +113,14 @@ public class Model {
             return new AnimationTrack(getNameToFrameTrack().get(name));
         }
         return new AnimationTrack(getNameToFrameTrack().values().stream().findFirst().orElse(new FrameTrack()));
+    }
+
+    private float calcNormalizedScale(Mesh[] meshes) {
+        float smallestScale = Float.MAX_VALUE / 4;
+        for (Mesh mesh : meshes) {
+            smallestScale = Math.min(smallestScale, mesh.getNormalizingScale());
+        }
+        return smallestScale;
     }
 
     @RequiredArgsConstructor

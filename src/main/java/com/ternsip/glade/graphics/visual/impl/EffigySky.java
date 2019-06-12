@@ -78,11 +78,6 @@ public class EffigySky extends Effigy<SkyboxShader> {
     }
 
     @Override
-    public Class<SkyboxShader> getShaderClass() {
-        return SkyboxShader.class;
-    }
-
-    @Override
     public Model loadModel() {
         return new Model(
                 new Mesh[]{new Mesh(VERTICES, new Material())},
@@ -100,6 +95,11 @@ public class EffigySky extends Effigy<SkyboxShader> {
     @Override
     public boolean isGraphicalInsideFrustum() {
         return true;
+    }
+
+    @Override
+    public Class<SkyboxShader> getShaderClass() {
+        return SkyboxShader.class;
     }
 
     @Override

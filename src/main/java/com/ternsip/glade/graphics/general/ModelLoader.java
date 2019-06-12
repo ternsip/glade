@@ -46,6 +46,31 @@ public class ModelLoader {
         );
     }
 
+    public static Bone createBones(
+            AINode aiNode,
+            Matrix4fc parentTransform,
+            Skeleton skeleton,
+            Set<String> allPossibleBoneNames,
+            Settings settings
+    ) {
+        String boneName = aiNode.mName().dataString();
+        int boneIndex = skeleton.getSkeletonBoneNameToIndex().getOrDefault(boneName, -1);
+        Matrix4f localBindTransform = toMatrix(aiNode.mTransformation());
+        boolean marginal = !allPossibleBoneNames.contains(boneName);
+        Matrix4f bindTransform = settings.isPreserveInvalidBoneLocalTransform()
+                ? (marginal ? new Matrix4f() : parentTransform).mul(localBindTransform, new Matrix4f())
+                : (marginal ? new Matrix4f() : parentTransform.mul(localBindTransform, new Matrix4f()));
+        Matrix4f inverseBindTransform = bindTransform.invert(new Matrix4f());
+        List<Bone> children = new ArrayList<>();
+        PointerBuffer aiChildren = aiNode.mChildren();
+        for (int i = 0; i < aiNode.mNumChildren(); i++) {
+            AINode aiChildNode = AINode.create(aiChildren.get(i));
+            Bone childBone = createBones(aiChildNode, bindTransform, skeleton, allPossibleBoneNames, settings);
+            children.add(childBone);
+        }
+        return new Bone(boneIndex, boneName, children, inverseBindTransform);
+    }
+
     private static Mesh[] processMeshes(
             AIScene aiSceneMesh,
             Material[] materials,
@@ -81,31 +106,6 @@ public class ModelLoader {
             meshes[meshIndex] = mesh;
         }
         return meshes;
-    }
-
-    public static Bone createBones(
-            AINode aiNode,
-            Matrix4fc parentTransform,
-            Skeleton skeleton,
-            Set<String> allPossibleBoneNames,
-            Settings settings
-    ) {
-        String boneName = aiNode.mName().dataString();
-        int boneIndex = skeleton.getSkeletonBoneNameToIndex().getOrDefault(boneName, -1);
-        Matrix4f localBindTransform = toMatrix(aiNode.mTransformation());
-        boolean marginal = !allPossibleBoneNames.contains(boneName);
-        Matrix4f bindTransform = settings.isPreserveInvalidBoneLocalTransform()
-                ? (marginal ? new Matrix4f() : parentTransform).mul(localBindTransform, new Matrix4f())
-                : (marginal ? new Matrix4f() : parentTransform.mul(localBindTransform, new Matrix4f()));
-        Matrix4f inverseBindTransform = bindTransform.invert(new Matrix4f());
-        List<Bone> children = new ArrayList<>();
-        PointerBuffer aiChildren = aiNode.mChildren();
-        for (int i = 0; i < aiNode.mNumChildren(); i++) {
-            AINode aiChildNode = AINode.create(aiChildren.get(i));
-            Bone childBone = createBones(aiChildNode, bindTransform, skeleton, allPossibleBoneNames, settings);
-            children.add(childBone);
-        }
-        return new Bone(boneIndex, boneName, children, inverseBindTransform);
     }
 
     private static Map<String, FrameTrack> buildAnimations(AIScene aiScene) {

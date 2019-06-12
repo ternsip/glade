@@ -21,14 +21,6 @@ public class TexturePackRepository implements Graphical {
         reloadBlocksTextureAltas(DEFAULT_BLOCK_ATLAS_DIRECTORY);
     }
 
-    public TextureCubeMap getCubeMap(Block block) {
-        return getBlocksTextures()[block.getIndex()];
-    }
-
-    public Texture getBlockAtlasTexture() {
-        return new Texture(getBlocksAtlasDecoder());
-    }
-
     public void reloadBlocksTextureAltas(File atlasDirectory) {
 
         blocksAtlasDecoder = getGraphics().getGraphicalRepository().getTextureRepository().getAtlasDecoder(atlasDirectory);
@@ -116,6 +108,14 @@ public class TexturePackRepository implements Graphical {
 
         }
 
+    }
+
+    public TextureCubeMap getCubeMap(Block block) {
+        return getBlocksTextures()[block.getIndex()];
+    }
+
+    public Texture getBlockAtlasTexture() {
+        return new Texture(getBlocksAtlasDecoder());
     }
 
     @RequiredArgsConstructor

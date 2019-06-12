@@ -26,22 +26,6 @@ public class Visual2DText extends MultiVisual {
     private static Effigy[] generateEntities(
             File font,
             String text,
-            Vector2i position,
-            Vector2i maxChars,
-            Vector4f color
-    ) {
-        Vector3f scale3 = new Vector3f(2f / maxChars.x(), 2f / maxChars.y(), 1);
-        Vector3f pos3 = new Vector3f(
-                -1f + scale3.x() + position.x() * scale3.x(),
-                -(-1f + scale3.y() + position.y() * scale3.y()),
-                0
-        );
-        return generateEntities(font, text, pos3, scale3, color);
-    }
-
-    private static Effigy[] generateEntities(
-            File font,
-            String text,
             Vector3f position,
             Vector3f scale,
             Vector4f color
@@ -53,6 +37,22 @@ public class Visual2DText extends MultiVisual {
             entities[i].setScale(scale);
         }
         return entities;
+    }
+
+    private static Effigy[] generateEntities(
+            File font,
+            String text,
+            Vector2i position,
+            Vector2i maxChars,
+            Vector4f color
+    ) {
+        Vector3f scale3 = new Vector3f(2f / maxChars.x(), 2f / maxChars.y(), 1);
+        Vector3f pos3 = new Vector3f(
+                -1f + scale3.x() + position.x() * scale3.x(),
+                -(-1f + scale3.y() + position.y() * scale3.y()),
+                0
+        );
+        return generateEntities(font, text, pos3, scale3, color);
     }
 
 }

@@ -15,15 +15,15 @@ public enum Block {
     LAVA,
     SAND;
 
-    public static int getSize() {
-        return values().length;
-    }
-
     public static Block getBlockByIndex(int index) {
         if (index < 0 || index > getSize()) {
             throw new ArrayIndexOutOfBoundsException(String.format("Block index out of bounds: %s", index));
         }
         return values()[index];
+    }
+
+    public static int getSize() {
+        return values().length;
     }
 
     public int getIndex() {

@@ -115,6 +115,16 @@ public class Mesh {
         return 2 / Math.max(bounds.x(), Math.max(bounds.y(), bounds.z()));
     }
 
+    private static int bindElementArrayVBO(int[] array) {
+        if (array.length == 0) {
+            return NO_VBO;
+        }
+        int vbo = glGenBuffers();
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, arrayToBuffer(array), GL_STATIC_DRAW);
+        return vbo;
+    }
+
     private static int bindArrayVBO(int index, int nPerVertex, float[] array) {
         if (array.length == 0) {
             return NO_VBO;
@@ -136,16 +146,6 @@ public class Mesh {
         glBufferData(GL_ARRAY_BUFFER, arrayToBuffer(array), GL_STATIC_DRAW);
         glVertexAttribIPointer(index, nPerVertex, GL_INT, 0, 0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-        return vbo;
-    }
-
-    private static int bindElementArrayVBO(int[] array) {
-        if (array.length == 0) {
-            return NO_VBO;
-        }
-        int vbo = glGenBuffers();
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, arrayToBuffer(array), GL_STATIC_DRAW);
         return vbo;
     }
 

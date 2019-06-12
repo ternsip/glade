@@ -42,16 +42,20 @@ public class Settings {
                     aiProcess_FixInfacingNormals |
                     aiProcess_LimitBoneWeights;
 
-    boolean isAnimationAndMeshInOneFile() {
-        return getAnimationFile() == null || getAnimationFile().equals(getMeshFile());
+    public boolean isManualMeshMaterialsExists(int meshIndex) {
+        return getManualMeshMaterials() != null && getManualMeshMaterials().length > meshIndex;
+    }
+
+    public File getAnimationFile() {
+        return animationFile == null ? meshFile : animationFile;
     }
 
     public File getMeshFile() {
         return meshFile == null ? animationFile : meshFile;
     }
 
-    public File getAnimationFile() {
-        return animationFile == null ? meshFile : animationFile;
+    boolean isAnimationAndMeshInOneFile() {
+        return getAnimationFile() == null || getAnimationFile().equals(getMeshFile());
     }
 
     File getTexturesDir() {
@@ -59,10 +63,6 @@ public class Settings {
             return new File(meshFile.getParent());
         }
         return texturesDir;
-    }
-
-    public boolean isManualMeshMaterialsExists(int meshIndex) {
-        return getManualMeshMaterials() != null && getManualMeshMaterials().length > meshIndex;
     }
 
 }

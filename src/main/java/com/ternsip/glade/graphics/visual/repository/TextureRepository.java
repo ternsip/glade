@@ -132,20 +132,6 @@ public class TextureRepository {
         }
     }
 
-    private void bind() {
-        for (int atlasNumber = 0; atlasNumber < ATLAS_RESOLUTIONS.length; ++atlasNumber) {
-            glActiveTexture(GL_TEXTURE0 + atlasNumber);
-            glBindTexture(GL_TEXTURE_2D_ARRAY, atlases[atlasNumber]);
-        }
-    }
-
-    private void unbind() {
-        for (int atlasNumber = 0; atlasNumber < ATLAS_RESOLUTIONS.length; ++atlasNumber) {
-            glActiveTexture(GL_TEXTURE0 + atlasNumber);
-            glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
-        }
-    }
-
     private Map<File, ImageAtlas> generateAtlasMapping(Collection<Image> images) {
         Map<File, Image> pathToImageForAtlas = images.stream()
                 .filter(e -> Utils.isSubDirectoryPresent(e.getFile(), ATLASES_PARENT_FOLDER))
@@ -160,6 +146,20 @@ public class TextureRepository {
                 ));
         return atlasParentFolderToImages.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> ImageAtlas.buildImageAtlas(e.getValue(), e.getKey()), (a, b) -> a, HashMap::new));
+    }
+
+    private void bind() {
+        for (int atlasNumber = 0; atlasNumber < ATLAS_RESOLUTIONS.length; ++atlasNumber) {
+            glActiveTexture(GL_TEXTURE0 + atlasNumber);
+            glBindTexture(GL_TEXTURE_2D_ARRAY, atlases[atlasNumber]);
+        }
+    }
+
+    private void unbind() {
+        for (int atlasNumber = 0; atlasNumber < ATLAS_RESOLUTIONS.length; ++atlasNumber) {
+            glActiveTexture(GL_TEXTURE0 + atlasNumber);
+            glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+        }
     }
 
     @RequiredArgsConstructor

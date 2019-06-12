@@ -47,6 +47,17 @@ public abstract class ShaderProgram {
         return shader;
     }
 
+    private static int loadShader(File file, int type) {
+        int shaderID = glCreateShader(type);
+        glShaderSource(shaderID, new String(Utils.loadResourceAsByteArray(file)));
+        glCompileShader(shaderID);
+        if (glGetShaderi(shaderID, GL_COMPILE_STATUS) == GL11.GL_FALSE) {
+            String error = glGetShaderInfoLog(shaderID, 1024);
+            throw new IllegalArgumentException(String.format("Could not compile shader %s", error));
+        }
+        return shaderID;
+    }
+
     @SneakyThrows
     private static Object findHeader(ShaderProgram instance, String fieldName) {
         for (Field field : instance.getClass().getDeclaredFields()) {
@@ -56,6 +67,15 @@ public abstract class ShaderProgram {
             }
         }
         throw new IllegalArgumentException(String.format("Can't find filed %s", fieldName));
+    }
+
+    private static void bindAttributes(int programID) {
+        glBindAttribLocation(programID, VERTICES_ATTRIBUTE_POINTER_INDEX, "position");
+        glBindAttribLocation(programID, TEXTURES_ATTRIBUTE_POINTER_INDEX, "textureCoordinates");
+        glBindAttribLocation(programID, COLORS_ATTRIBUTE_POINTER_INDEX, "colors");
+        glBindAttribLocation(programID, NORMALS_ATTRIBUTE_POINTER_INDEX, "normal");
+        glBindAttribLocation(programID, BONES_ATTRIBUTE_POINTER_INDEX, "boneIndices");
+        glBindAttribLocation(programID, WEIGHTS_ATTRIBUTE_POINTER_INDEX, "weights");
     }
 
     @SneakyThrows
@@ -73,26 +93,6 @@ public abstract class ShaderProgram {
         }
     }
 
-    private static void bindAttributes(int programID) {
-        glBindAttribLocation(programID, VERTICES_ATTRIBUTE_POINTER_INDEX, "position");
-        glBindAttribLocation(programID, TEXTURES_ATTRIBUTE_POINTER_INDEX, "textureCoordinates");
-        glBindAttribLocation(programID, COLORS_ATTRIBUTE_POINTER_INDEX, "colors");
-        glBindAttribLocation(programID, NORMALS_ATTRIBUTE_POINTER_INDEX, "normal");
-        glBindAttribLocation(programID, BONES_ATTRIBUTE_POINTER_INDEX, "boneIndices");
-        glBindAttribLocation(programID, WEIGHTS_ATTRIBUTE_POINTER_INDEX, "weights");
-    }
-
-    private static int loadShader(File file, int type) {
-        int shaderID = glCreateShader(type);
-        glShaderSource(shaderID, new String(Utils.loadResourceAsByteArray(file)));
-        glCompileShader(shaderID);
-        if (glGetShaderi(shaderID, GL_COMPILE_STATUS) == GL11.GL_FALSE) {
-            String error = glGetShaderInfoLog(shaderID, 1024);
-            throw new IllegalArgumentException(String.format("Could not compile shader %s", error));
-        }
-        return shaderID;
-    }
-
     public void start() {
         // XXX Use caching for optimisation purposes
         if (LAST_PROGRAM_ID != programID) {
@@ -101,14 +101,14 @@ public abstract class ShaderProgram {
         }
     }
 
-    public void stop() {
-        // XXX Just simply do not unbind the shader program for optimisation purposes
-        //glUseProgram(0);
-    }
-
     public void finish() {
         stop();
         glDeleteProgram(programID);
+    }
+
+    public void stop() {
+        // XXX Just simply do not unbind the shader program for optimisation purposes
+        //glUseProgram(0);
     }
 
 }

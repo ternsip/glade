@@ -19,6 +19,16 @@ public class EntityPlayer extends EntityTransformable<EffigyBoy> {
     private float upwardsSpeed = 0;
 
     @Override
+    public void update(EffigyBoy visual) {
+        super.update(visual);
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+    }
+
+    @Override
     public EffigyBoy getVisual() {
         return new EffigyBoy();
     }
@@ -36,16 +46,6 @@ public class EntityPlayer extends EntityTransformable<EffigyBoy> {
             upwardsSpeed = 0;
             getPosition().y = terrainHeight;
         }
-    }
-
-    @Override
-    public void update(EffigyBoy visual) {
-        super.update(visual);
-    }
-
-    @Override
-    public void finish() {
-        super.finish();
     }
 
     private void checkInputs() {

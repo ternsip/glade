@@ -24,6 +24,13 @@ public class Texture implements Graphical {
         this(null, null);
     }
 
+    public Texture(@Nullable Vector4f color, @Nullable File file) {
+        this.texturePresent = file != null;
+        this.colorPresent = color != null;
+        this.color = colorPresent ? color : DEFAULT_COLOR;
+        this.atlasTexture = getGraphics().getGraphicalRepository().getTextureRepository().getTexture(this.texturePresent ? file : MISSING_TEXTURE);
+    }
+
     public Texture(TextureRepository.AtlasDecoder atlasDecoder) {
         this(atlasDecoder.getAtlasDirectory());
     }
@@ -34,13 +41,6 @@ public class Texture implements Graphical {
 
     public Texture(Vector4f color) {
         this(color, null);
-    }
-
-    public Texture(@Nullable Vector4f color, @Nullable File file) {
-        this.texturePresent = file != null;
-        this.colorPresent = color != null;
-        this.color = colorPresent ? color : DEFAULT_COLOR;
-        this.atlasTexture = getGraphics().getGraphicalRepository().getTextureRepository().getTexture(this.texturePresent ? file : MISSING_TEXTURE);
     }
 
 }

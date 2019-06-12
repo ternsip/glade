@@ -59,6 +59,12 @@ public class GraphicalRepository implements Universal {
                 .forEach(k -> k.getKey().render(lights));
     }
 
+    public void finish() {
+        getModelRepository().finish();
+        getShaderRepository().finish();
+        getTextureRepository().finish();
+    }
+
     @SuppressWarnings("unchecked")
     private void updateEntities() {
         Set<Entity> entities = getUniverse().getEntityRepository().getEntities();
@@ -82,12 +88,6 @@ public class GraphicalRepository implements Universal {
         } else {
             getEntityToVisual().forEach(Entity::update);
         }
-    }
-
-    public void finish() {
-        getModelRepository().finish();
-        getShaderRepository().finish();
-        getTextureRepository().finish();
     }
 
 }

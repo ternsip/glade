@@ -89,6 +89,12 @@ public class EffigyChunk extends Effigy<ChunkShader> {
     }
 
     @Override
+    public Matrix4f getTransformationMatrix() {
+        Matrix4fc rotMatrix = Maths.getRotationQuaternion(getAdjustedRotation()).get(new Matrix4f());
+        return new Matrix4f().translate(getAdjustedPosition()).mul(rotMatrix).scale(getAdjustedScale());
+    }
+
+    @Override
     public void render(Set<Light> lights) {
         getShader().start();
         getShader().getProjectionMatrix().load(getProjectionMatrix());
@@ -102,11 +108,6 @@ public class EffigyChunk extends Effigy<ChunkShader> {
             mesh.render();
         }
         getShader().stop();
-    }
-
-    @Override
-    public Class<ChunkShader> getShaderClass() {
-        return ChunkShader.class;
     }
 
     @Override
@@ -159,19 +160,18 @@ public class EffigyChunk extends Effigy<ChunkShader> {
     }
 
     @Override
+    public int getPriority() {
+        return 0;
+    }
+
+    @Override
     public boolean isGraphicalInsideFrustum() {
         return getFrustumIntersection().testSphere(getAdjustedPosition(), CHUNK_PHYSICAL_SIZE * 1.5f);
     }
 
     @Override
-    public Matrix4f getTransformationMatrix() {
-        Matrix4fc rotMatrix = Maths.getRotationQuaternion(getAdjustedRotation()).get(new Matrix4f());
-        return new Matrix4f().translate(getAdjustedPosition()).mul(rotMatrix).scale(getAdjustedScale());
-    }
-
-    @Override
-    public int getPriority() {
-        return 0;
+    public Class<ChunkShader> getShaderClass() {
+        return ChunkShader.class;
     }
 
     @Override
@@ -215,5 +215,6 @@ public class EffigyChunk extends Effigy<ChunkShader> {
         }
 
     }
+
 
 }

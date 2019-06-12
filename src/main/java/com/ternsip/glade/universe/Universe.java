@@ -43,11 +43,6 @@ public class Universe {
     public void finish() {
     }
 
-    private void update() {
-        getDisplaySnapReceiver().update();
-        getEntityRepository().getEntities().forEach(Entity::update);
-    }
-
     private void spawnTestEntities() {
         EntityPlayer entityPlayer = new EntityPlayer();
         entityPlayer.setScale(new Vector3f(5, 5, 5));
@@ -132,6 +127,11 @@ public class Universe {
                 }
             }
         }
+    }
+
+    private void update() {
+        getDisplaySnapReceiver().update();
+        getEntityRepository().getEntities().forEach(Entity::update);
     }
 
 }

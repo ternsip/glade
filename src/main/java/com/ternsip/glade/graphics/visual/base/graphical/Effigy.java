@@ -34,6 +34,18 @@ public abstract class Effigy<SHADER extends ShaderProgram> implements Visual, Tr
         return new Matrix4f().translate(getAdjustedPosition()).mul(rotMatrix).scale(totalScale);
     }
 
+    public Vector3f getAdjustedScale() {
+        return new Vector3f(getScale()).mul(getModel().getBaseScale());
+    }
+
+    public Vector3f getAdjustedRotation() {
+        return new Vector3f(getRotation()).add(getModel().getBaseRotation());
+    }
+
+    public Vector3f getAdjustedPosition() {
+        return new Vector3f(getPosition()).add(getModel().getBaseOffset());
+    }
+
     public void setPosition(Vector3f position) {
         this.position.set(position);
     }
@@ -54,26 +66,18 @@ public abstract class Effigy<SHADER extends ShaderProgram> implements Visual, Tr
         rotation.add(delta);
     }
 
-    public Vector3f getAdjustedScale() {
-        return new Vector3f(getScale()).mul(getModel().getBaseScale());
-    }
-
-    public Vector3f getAdjustedPosition() {
-        return new Vector3f(getPosition()).add(getModel().getBaseOffset());
-    }
-
-    public Vector3f getAdjustedRotation() {
-        return new Vector3f(getRotation()).add(getModel().getBaseRotation());
-    }
-
     public abstract void render(Set<Light> lights);
-
-    public abstract Class<SHADER> getShaderClass();
 
     public abstract Model loadModel();
 
     public int getPriority() {
         return 0;
+    }
+
+    public boolean isGraphicalInsideFrustum() {
+        Vector3fc scale = getAdjustedScale();
+        float delta = Math.max(Math.max(scale.x(), scale.y()), scale.z()) * 1.5f;
+        return getFrustumIntersection().testSphere(getAdjustedPosition(), delta);
     }
 
     public FrustumIntersection getFrustumIntersection() {
@@ -83,22 +87,8 @@ public abstract class Effigy<SHADER extends ShaderProgram> implements Visual, Tr
         return new FrustumIntersection(projectionViewMatrix);
     }
 
-    public boolean isGraphicalInsideFrustum() {
-        Vector3fc scale = getAdjustedScale();
-        float delta = Math.max(Math.max(scale.x(), scale.y()), scale.z()) * 1.5f;
-        return getFrustumIntersection().testSphere(getAdjustedPosition(), delta);
-    }
-
     public void finish() {
         getGraphics().getGraphicalRepository().removeGraphical(this);
-    }
-
-    protected Matrix4fc getViewMatrix() {
-        return getGraphics().getGraphicalRepository().getCamera().getViewMatrix();
-    }
-
-    protected Matrix4fc getProjectionMatrix() {
-        return getGraphics().getGraphicalRepository().getCamera().getNormalProjectionMatrix();
     }
 
     public float getSquaredDistanceToCamera() {
@@ -109,8 +99,18 @@ public abstract class Effigy<SHADER extends ShaderProgram> implements Visual, Tr
         return getShaderClass();
     }
 
+    public abstract Class<SHADER> getShaderClass();
+
     public Object getModelKey() {
         return Utils.findDeclaredMethodInHierarchy(getClass(), "loadModel");
+    }
+
+    protected Matrix4fc getViewMatrix() {
+        return getGraphics().getGraphicalRepository().getCamera().getViewMatrix();
+    }
+
+    protected Matrix4fc getProjectionMatrix() {
+        return getGraphics().getGraphicalRepository().getCamera().getNormalProjectionMatrix();
     }
 
 }

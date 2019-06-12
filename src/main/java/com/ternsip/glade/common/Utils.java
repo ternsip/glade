@@ -28,15 +28,6 @@ import static org.lwjgl.assimp.Assimp.aiGetErrorString;
 public class Utils {
 
     @SneakyThrows
-    public static InputStream loadResourceAsStream(File file) {
-        InputStream in = Utils.class.getClassLoader().getResourceAsStream(file.getPath());
-        if (in == null) {
-            throw new FileNotFoundException("Can't find file: " + file.getPath());
-        }
-        return in;
-    }
-
-    @SneakyThrows
     public static FileInputStream loadResourceAsFileStream(File file) {
         URL resource = Utils.class.getClassLoader().getResource(file.getPath());
         if (resource == null) {
@@ -49,6 +40,15 @@ public class Utils {
     @SneakyThrows
     public static BufferedReader loadResourceAsBufferedReader(File file) {
         return new BufferedReader(new InputStreamReader(loadResourceAsStream(file), StandardCharsets.UTF_8));
+    }
+
+    @SneakyThrows
+    public static InputStream loadResourceAsStream(File file) {
+        InputStream in = Utils.class.getClassLoader().getResourceAsStream(file.getPath());
+        if (in == null) {
+            throw new FileNotFoundException("Can't find file: " + file.getPath());
+        }
+        return in;
     }
 
     @SneakyThrows
@@ -69,13 +69,6 @@ public class Utils {
         byte[] arr = new byte[buf.remaining()];
         buf.get(arr, 0, arr.length);
         return arr;
-    }
-
-    public static ByteBuffer arrayToBuffer(byte[] array) {
-        ByteBuffer buf = ByteBuffer.allocateDirect(array.length);
-        buf.put(array);
-        buf.rewind();
-        return buf.asReadOnlyBuffer();
     }
 
     public static int[] bufferToArray(IntBuffer buf) {
@@ -129,13 +122,20 @@ public class Utils {
     }
 
     @SneakyThrows
-    public static byte[] loadResourceAsByteArray(File file) {
-        return IOUtils.toByteArray(loadResourceAsStream(file));
+    public static ByteBuffer loadResourceToByteBuffer(File file) {
+        return arrayToBuffer(loadResourceAsByteArray(file));
+    }
+
+    public static ByteBuffer arrayToBuffer(byte[] array) {
+        ByteBuffer buf = ByteBuffer.allocateDirect(array.length);
+        buf.put(array);
+        buf.rewind();
+        return buf.asReadOnlyBuffer();
     }
 
     @SneakyThrows
-    public static ByteBuffer loadResourceToByteBuffer(File file) {
-        return arrayToBuffer(loadResourceAsByteArray(file));
+    public static byte[] loadResourceAsByteArray(File file) {
+        return IOUtils.toByteArray(loadResourceAsStream(file));
     }
 
     // Handle all such situations, it also can cause memory problems
@@ -174,6 +174,15 @@ public class Utils {
         return clazz.newInstance();
     }
 
+    public static boolean isSubDirectoryPresent(File file, String subDirectory) {
+        for (File parentDirectory : getAllParentDirectories(file)) {
+            if (parentDirectory.getName().equals(subDirectory)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static Set<File> getAllParentDirectories(File file) {
         Set<File> parentDirectories = new HashSet<>();
         File parent = file.getParentFile();
@@ -182,15 +191,6 @@ public class Utils {
             parent = parent.getParentFile();
         }
         return parentDirectories;
-    }
-
-    public static boolean isSubDirectoryPresent(File file, String subDirectory) {
-        for (File parentDirectory : getAllParentDirectories(file)) {
-            if (parentDirectory.getName().equals(subDirectory)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public static Map<File, Collection<File>> combineByParentDirectory(Collection<File> files) {
