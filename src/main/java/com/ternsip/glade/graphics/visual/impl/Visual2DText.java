@@ -1,7 +1,7 @@
 package com.ternsip.glade.graphics.visual.impl;
 
 
-import com.ternsip.glade.graphics.visual.base.graphical.Graphical;
+import com.ternsip.glade.graphics.visual.base.graphical.Effigy;
 import com.ternsip.glade.graphics.visual.base.graphical.MultiVisual;
 import lombok.Getter;
 import org.joml.Vector2i;
@@ -23,7 +23,7 @@ public class Visual2DText extends MultiVisual {
         super(generateEntities(font, text, position, maxChars, color));
     }
 
-    private static Graphical[] generateEntities(
+    private static Effigy[] generateEntities(
             File font,
             String text,
             Vector2i position,
@@ -39,16 +39,16 @@ public class Visual2DText extends MultiVisual {
         return generateEntities(font, text, pos3, scale3, color);
     }
 
-    private static Graphical[] generateEntities(
+    private static Effigy[] generateEntities(
             File font,
             String text,
             Vector3f position,
             Vector3f scale,
             Vector4f color
     ) {
-        Graphical[] entities = new Graphical[text.length()];
+        Effigy[] entities = new Effigy[text.length()];
         for (int i = 0; i < text.length(); ++i) {
-            entities[i] = new GraphicalGlyph(font, text.charAt(i), color);
+            entities[i] = new EffigyGlyph(font, text.charAt(i), color);
             entities[i].setPosition(new Vector3f(i * scale.x() * TEXT_COMPRESSION, 0, 0).add(position));
             entities[i].setScale(scale);
         }

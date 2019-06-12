@@ -1,6 +1,6 @@
 package com.ternsip.glade.universe;
 
-import com.ternsip.glade.graphics.display.DisplaySnapReceiver;
+import com.ternsip.glade.common.DisplaySnapReceiver;
 import com.ternsip.glade.graphics.visual.impl.*;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.base.EntityTransformable;
@@ -19,18 +19,9 @@ import java.io.File;
 @Getter
 public class Universe {
 
-    public static final Universe INSTANCE = new Universe();
-
     private final DisplaySnapReceiver displaySnapReceiver = new DisplaySnapReceiver();
     private final EntityRepository entityRepository = new EntityRepository();
-    private int ticksPerSecond = 128;
-
-    public void initialize() {
-        EntityPlayer entityPlayer = new EntityPlayer();
-        entityPlayer.setScale(new Vector3f(5, 5, 5));
-        getEntityRepository().setCameraTarget(entityPlayer);
-        spawnTestEntities();
-    }
+    private int ticksPerSecond = 128; // TODO move into universe settings
 
     @SneakyThrows
     public void loop() {
@@ -53,45 +44,49 @@ public class Universe {
         getEntityRepository().getEntities().forEach(Entity::update);
     }
 
-    private void spawnTestEntities() {
+    public void spawnTestEntities() {
+        EntityPlayer entityPlayer = new EntityPlayer();
+        entityPlayer.setScale(new Vector3f(5, 5, 5));
+        getEntityRepository().setCameraTarget(entityPlayer);
+
         new EntitySun(new Vector2f(0, 0), new Vector2f(20000, 20000), new Vector3f(1, 1, 1));
 
-        EntityGeneric cube = new EntityGeneric(() -> new GraphicalCube());
+        EntityGeneric cube = new EntityGeneric(() -> new EffigyCube());
 
-        EntityGeneric lamp = new EntityGeneric(() -> new GraphicalLamp());
+        EntityGeneric lamp = new EntityGeneric(() -> new EffigyLamp());
         lamp.setPosition(new Vector3f(-60f, 0, -60));
         lamp.setScale(new Vector3f(40, 40, 40));
 
-        EntityGeneric bottle = new EntityGeneric(() -> new GraphicalBottle());
+        EntityGeneric bottle = new EntityGeneric(() -> new EffigyBottle());
         bottle.setPosition(new Vector3f(-30f, 0, -20));
         bottle.setScale(new Vector3f(5, 5, 5));
 
-        EntityGeneric zebra = new EntityGeneric(() -> new GraphicalZebra());
+        EntityGeneric zebra = new EntityGeneric(() -> new EffigyZebra());
         zebra.setPosition(new Vector3f(-20f, 0, -20));
         zebra.setScale(new Vector3f(30, 30, 30));
 
-        EntityGeneric wolf = new EntityGeneric(() -> new GraphicalWolf());
+        EntityGeneric wolf = new EntityGeneric(() -> new EffigyWolf());
         wolf.setPosition(new Vector3f(-140f, 0, -40));
         wolf.setScale(new Vector3f(30, 30, 30));
 
-        EntityTransformable hagrid = new EntityGenericRotating(() -> new GraphicalHagrid(), new Vector3f(0, 0.01f, 0));
+        EntityTransformable hagrid = new EntityGenericRotating(() -> new EffigyHagrid(), new Vector3f(0, 0.01f, 0));
         hagrid.setPosition(new Vector3f(20f, 2, 2));
         hagrid.setScale(new Vector3f(15, 15, 15));
 
-        EntityGeneric spider = new EntityGeneric(() -> new GraphicalSpider());
+        EntityGeneric spider = new EntityGeneric(() -> new EffigySpider());
         spider.setPosition(new Vector3f(20f, 2, -20));
         spider.setScale(new Vector3f(5, 5, 5));
 
-        EntityGeneric warrior = new EntityGeneric(() -> new GraphicalWarrior());
+        EntityGeneric warrior = new EntityGeneric(() -> new EffigyWarrior());
         warrior.setPosition(new Vector3f(-20f, 2, 2));
         warrior.setScale(new Vector3f(10, 10, 10));
 
-        EntityGeneric dude = new EntityGeneric(() -> new GraphicalDude());
+        EntityGeneric dude = new EntityGeneric(() -> new EffigyDude());
         dude.setPosition(new Vector3f(-20f, 0, -20));
         dude.setScale(new Vector3f(10f, 10f, 10f));
 
-        new EntityGenericRotating(() -> new Graphical3DText(new File("fonts/default.png"), "Hello world!"), new Vector3f(0, 0.1f, 0));
-        new EntityGeneric(() -> new GraphicalAxis());
+        new EntityGenericRotating(() -> new Effigy3DText(new File("fonts/default.png"), "Hello world!"), new Vector3f(0, 0.1f, 0));
+        new EntityGeneric(() -> new EffigyAxis());
 
         new EntityStatistics();
 
@@ -99,7 +94,7 @@ public class Universe {
 
         for (int i = 0; i < 10; ++i) {
             for (int j = 0; j < 10; ++j) {
-                EntityTransformable hagrid1 = new EntityGenericRotating(() -> new GraphicalHagrid(), new Vector3f(0, 0.01f, 0));
+                EntityTransformable hagrid1 = new EntityGenericRotating(() -> new EffigyHagrid(), new Vector3f(0, 0.01f, 0));
                 hagrid1.setPosition(new Vector3f(20f + 15 * i, 2, 2 + 15 * j));
                 hagrid1.setScale(new Vector3f(15, 15, 15));
             }
@@ -115,10 +110,10 @@ public class Universe {
                     int finalCz = cz;
                     new EntityGeneric(() -> {
                         Random random = new Random(System.currentTimeMillis());
-                        Block[] blocks = new Block[GraphicalChunk.VOLUME];
-                        for (int x = 0, idx = 0; x < GraphicalChunk.SIZE; ++x) {
-                            for (int y = 0; y < GraphicalChunk.SIZE; ++y) {
-                                for (int z = 0; z < GraphicalChunk.SIZE; ++z, ++idx) {
+                        Block[] blocks = new Block[EffigyChunk.VOLUME];
+                        for (int x = 0, idx = 0; x < EffigyChunk.SIZE; ++x) {
+                            for (int y = 0; y < EffigyChunk.SIZE; ++y) {
+                                for (int z = 0; z < EffigyChunk.SIZE; ++z, ++idx) {
                                     blocks[idx] = Block.AIR;
                                     if (random.nextFloat() < 0.05) blocks[idx] = Block.SAND;
                                     if (random.nextFloat() < 0.05) blocks[idx] = Block.DIRT;
@@ -128,7 +123,7 @@ public class Universe {
                                 }
                             }
                         }
-                        return new GraphicalChunk(blocks, new Vector3i(finalCx, finalCy, finalCz));
+                        return new EffigyChunk(blocks, new Vector3i(finalCx, finalCy, finalCz));
                     });
                 }
             }

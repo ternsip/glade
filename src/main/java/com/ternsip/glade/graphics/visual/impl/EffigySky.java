@@ -4,7 +4,7 @@ import com.ternsip.glade.graphics.general.Material;
 import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.shader.impl.SkyboxShader;
-import com.ternsip.glade.graphics.visual.base.graphical.Graphical;
+import com.ternsip.glade.graphics.visual.base.graphical.Effigy;
 import com.ternsip.glade.universe.common.Light;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,7 +17,7 @@ import java.util.Set;
 
 @Getter
 @Setter
-public class GraphicalSky extends Graphical<SkyboxShader> {
+public class EffigySky extends Effigy<SkyboxShader> {
 
     public static final float SIZE = 10000f;
 
@@ -104,13 +104,13 @@ public class GraphicalSky extends Graphical<SkyboxShader> {
 
     @Override
     protected Matrix4fc getViewMatrix() {
-        Matrix4fc viewMatrix = getDisplayManager().getGraphicalRepository().getCamera().getViewMatrix();
+        Matrix4fc viewMatrix = getGraphics().getGraphicalRepository().getCamera().getViewMatrix();
         return new Matrix4f(viewMatrix).m30(0).m31(0).m32(0);
     }
 
     @Override
     protected Matrix4fc getProjectionMatrix() {
-        return getDisplayManager().getGraphicalRepository().getCamera().getFarProjectionMatrix();
+        return getGraphics().getGraphicalRepository().getCamera().getFarProjectionMatrix();
     }
 
 }

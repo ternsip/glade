@@ -1,7 +1,7 @@
 package com.ternsip.glade.graphics.visual.base.camera;
 
 import com.ternsip.glade.common.DisplayCallbacks;
-import com.ternsip.glade.graphics.display.Displayable;
+import com.ternsip.glade.graphics.display.Graphical;
 import com.ternsip.glade.graphics.visual.base.graphical.Transformable;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +13,7 @@ import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1;
 
 @Setter
 @Getter
-public class ThirdPersonController implements Displayable, CameraController {
+public class ThirdPersonController implements Graphical, CameraController {
 
     private static final Vector3fc UP_DIRECTION = new Vector3f(0, 1, 0);
     private static final Vector3fc DOWN_DIRECTION = new Vector3f(0, -1, 0);
@@ -39,13 +39,13 @@ public class ThirdPersonController implements Displayable, CameraController {
     private DisplayCallbacks.CursorPosCallback cursorPosCallback = this::recalculateRotation;
 
     public ThirdPersonController() {
-        getDisplayManager().getDisplayCallbacks().getScrollCallbacks().add(scrollCallback);
-        getDisplayManager().getDisplayCallbacks().getCursorPosCallbacks().add(cursorPosCallback);
+        getGraphics().getDisplayCallbacks().getScrollCallbacks().add(scrollCallback);
+        getGraphics().getDisplayCallbacks().getCursorPosCallbacks().add(cursorPosCallback);
     }
 
     public void update(Transformable transformable) {
         setTarget(transformable.getPosition());
-        Camera camera = getDisplayManager().getGraphicalRepository().getCamera();
+        Camera camera = getGraphics().getGraphicalRepository().getCamera();
         camera.setPosition(getEyePosition());
         camera.setViewMatrix(getViewMatrix());
     }
@@ -63,12 +63,12 @@ public class ThirdPersonController implements Displayable, CameraController {
     }
 
     public void finish() {
-        getDisplayManager().getDisplayCallbacks().getScrollCallbacks().remove(getScrollCallback());
-        getDisplayManager().getDisplayCallbacks().getCursorPosCallbacks().remove(getCursorPosCallback());
+        getGraphics().getDisplayCallbacks().getScrollCallbacks().remove(getScrollCallback());
+        getGraphics().getDisplayCallbacks().getCursorPosCallbacks().remove(getCursorPosCallback());
     }
 
     private void recalculateRotation(double xPos, double yPos, double dx, double dy) {
-        if (getDisplayManager().isMouseDown(GLFW_MOUSE_BUTTON_1)) {
+        if (getGraphics().isMouseDown(GLFW_MOUSE_BUTTON_1)) {
             float nx = limitAngle(getRotation().x() + (float) (dx * ROTATION_MULTIPLIER_X), MAX_ROTATION_DELTA_X);
             float ny = limitAngle(getRotation().y() + (float) (dy * ROTATION_MULTIPLIER_Y), MAX_ROTATION_DELTA_Y);
             setRotation(new Vector2f(nx, ny));

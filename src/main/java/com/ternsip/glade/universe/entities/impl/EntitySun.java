@@ -1,6 +1,6 @@
 package com.ternsip.glade.universe.entities.impl;
 
-import com.ternsip.glade.graphics.visual.impl.GraphicalSky;
+import com.ternsip.glade.graphics.visual.impl.EffigySky;
 import com.ternsip.glade.universe.common.Light;
 import com.ternsip.glade.universe.entities.base.Entity;
 import lombok.Getter;
@@ -8,7 +8,7 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 @Getter
-public class EntitySun extends Entity<GraphicalSky> implements Light {
+public class EntitySun extends Entity<EffigySky> implements Light {
 
     // TODO supposed to run moon on the night
     private float phase;
@@ -27,12 +27,12 @@ public class EntitySun extends Entity<GraphicalSky> implements Light {
     }
 
     @Override
-    public GraphicalSky getVisual() {
-        return new GraphicalSky();
+    public EffigySky getVisual() {
+        return new EffigySky();
     }
 
     @Override
-    public void update(GraphicalSky visual) {
+    public void update(EffigySky visual) {
         visual.setSunPosition(getPosition());
     }
 

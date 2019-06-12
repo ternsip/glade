@@ -1,11 +1,13 @@
 package com.ternsip.glade.graphics.display;
 
 import com.ternsip.glade.common.DisplayCallbacks;
+import com.ternsip.glade.common.DisplaySnapReceiver;
 import com.ternsip.glade.graphics.visual.repository.GraphicalRepository;
 import com.ternsip.glade.universe.common.Universal;
 import lombok.Getter;
 import org.joml.Vector2i;
-import org.joml.Vector3f;
+import org.joml.Vector4f;
+import org.joml.Vector4fc;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.Callback;
@@ -18,18 +20,22 @@ import static org.lwjgl.opengl.GL13.GL_MULTISAMPLE;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 @Getter
-public class DisplayManager implements Universal {
+public class Graphics implements Universal {
 
-    public static final DisplayManager INSTANCE = new DisplayManager();
+    public static final Vector4fc BACKGROUND_COLOR  = new Vector4f(1f, 0f, 0f, 1f);
 
-    public final Thread rootThread = Thread.currentThread();
-    public final Vector3f BACKGROUND_COLOR = new Vector3f(1f, 0f, 0f);
-    private ArrayList<Callback> callbacks = new ArrayList<>();
-    private GraphicalRepository graphicalRepository;
-    private DisplayCallbacks displayCallbacks = new DisplayCallbacks();
-    private WindowData windowData;
+    private final Thread rootThread;
+    private final ArrayList<Callback> callbacks;
+    private final DisplayCallbacks displayCallbacks;
+    private final WindowData windowData;
 
-    public void initialize() {
+    @Getter(lazy = true)
+    private final GraphicalRepository graphicalRepository = new GraphicalRepository();
+
+    public Graphics() {
+        rootThread = Thread.currentThread();
+        callbacks = new ArrayList<>();
+        displayCallbacks = new DisplayCallbacks();
         displayCallbacks.getErrorCallbacks().add((e, d) -> GLFWErrorCallback.createPrint(System.err).invoke(e, d));
         displayCallbacks.getResizeCallbacks().add(this::handleResize);
         // TODO MOVE IN HOTKEY CLASS
@@ -78,11 +84,10 @@ public class DisplayManager implements Universal {
         //glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
         glEnable(GL_MULTISAMPLE);
         //glEnable(GL_CULL_FACE);
-        glClearColor(BACKGROUND_COLOR.x(), BACKGROUND_COLOR.y(), BACKGROUND_COLOR.z(), 1);
+        final Vector4fc BACKGROUND_COLOR  = new Vector4f(1f, 0f, 0f, 1f);
+        glClearColor(BACKGROUND_COLOR.x(), BACKGROUND_COLOR.y(), BACKGROUND_COLOR.z(), BACKGROUND_COLOR.w());
 
         handleResize(getWindowData().getWidth(), getWindowData().getHeight());
-
-        graphicalRepository = new GraphicalRepository();
 
     }
 
@@ -130,19 +135,19 @@ public class DisplayManager implements Universal {
     }
 
     private void registerDisplaySnapCollectorEvents() {
-        displayCallbacks.getCursorPosCallbacks().add((x, y, dx, dy) ->
+        getDisplayCallbacks().getCursorPosCallbacks().add((x, y, dx, dy) ->
                 getUniverse().getDisplaySnapReceiver().getCursorPosEvents().add(new DisplaySnapReceiver.CursorPosEvent(x, y, dx, dy))
         );
-        displayCallbacks.getResizeCallbacks().add((w, h) ->
+        getDisplayCallbacks().getResizeCallbacks().add((w, h) ->
                 getUniverse().getDisplaySnapReceiver().getResizeEvents().add(new DisplaySnapReceiver.ResizeEvent(w, h))
         );
-        displayCallbacks.getScrollCallbacks().add((dx, dy) ->
+        getDisplayCallbacks().getScrollCallbacks().add((dx, dy) ->
                 getUniverse().getDisplaySnapReceiver().getScrollEvents().add(new DisplaySnapReceiver.ScrollEvent(dx, dy))
         );
-        displayCallbacks.getKeyCallbacks().add((k, c, a, m) ->
+        getDisplayCallbacks().getKeyCallbacks().add((k, c, a, m) ->
                 getUniverse().getDisplaySnapReceiver().getKeyEvents().add(new DisplaySnapReceiver.KeyEvent(k, c, a, m))
         );
-        displayCallbacks.getMouseButtonCallbacks().add((b, a, m) ->
+        getDisplayCallbacks().getMouseButtonCallbacks().add((b, a, m) ->
                 getUniverse().getDisplaySnapReceiver().getMouseButtonEvents().add(new DisplaySnapReceiver.MouseButtonEvent(b, a, m))
         );
     }
@@ -151,7 +156,7 @@ public class DisplayManager implements Universal {
         GLFWScrollCallback scrollCallback = GLFWScrollCallback.create(
                 (window, xOffset, yOffset) -> getDisplayCallbacks().getScrollCallbacks().forEach(e -> e.apply(xOffset, yOffset))
         );
-        callbacks.add(scrollCallback);
+        getCallbacks().add(scrollCallback);
         glfwSetScrollCallback(getWindowData().getWindow(), scrollCallback);
     }
 

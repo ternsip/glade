@@ -1,7 +1,7 @@
 package com.ternsip.glade.graphics.visual.repository;
 
 import com.ternsip.glade.graphics.general.Model;
-import com.ternsip.glade.graphics.visual.base.graphical.Graphical;
+import com.ternsip.glade.graphics.visual.base.graphical.Effigy;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,8 +14,8 @@ public class ModelRepository {
         modelKeyToModel.values().forEach(Model::finish);
     }
 
-    public Model getGraphicalModel(Graphical graphical) {
-        return modelKeyToModel.computeIfAbsent(graphical.getModelKey(), e -> graphical.loadModel());
+    public Model getGraphicalModel(Effigy effigy) {
+        return modelKeyToModel.computeIfAbsent(effigy.getModelKey(), e -> effigy.loadModel());
     }
 
 }

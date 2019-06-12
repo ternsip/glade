@@ -5,7 +5,7 @@ import com.ternsip.glade.graphics.general.Material;
 import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.general.Texture;
-import com.ternsip.glade.graphics.visual.base.graphical.GraphicalAnimated;
+import com.ternsip.glade.graphics.visual.base.graphical.EffigyAnimated;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ import java.io.File;
 
 @RequiredArgsConstructor
 @Getter
-public class GraphicalGlyph extends GraphicalAnimated {
+public class EffigyGlyph extends EffigyAnimated {
 
     private static final Matrix4fc EMPTY_MATRIX = new Matrix4f();
     private final File font;
@@ -26,7 +26,7 @@ public class GraphicalGlyph extends GraphicalAnimated {
     private final Vector4f color;
 
     public Model loadModel() {
-        Mesh mesh = Graphical3DText.createTextMesh(String.valueOf(symbol), new Material(new Texture(color, font)));
+        Mesh mesh = Effigy3DText.createTextMesh(String.valueOf(symbol), new Material(new Texture(color, font)));
         return new Model(new Mesh[]{mesh}, new Vector3f(0), new Vector3f(0), new Vector3f(1));
     }
 
@@ -37,7 +37,7 @@ public class GraphicalGlyph extends GraphicalAnimated {
 
     @Override
     protected Matrix4fc getProjectionMatrix() {
-        return getDisplayManager().getGraphicalRepository().getCamera().getOrthoProjectionMatrix();
+        return getGraphics().getGraphicalRepository().getCamera().getOrthoProjectionMatrix();
     }
 
     @Override

@@ -4,8 +4,10 @@ import com.ternsip.glade.universe.Universe;
 
 public interface Universal {
 
+    Universe UNIVERSE = new Universe();
+
     default Universe getUniverse() {
-        return Universe.INSTANCE;
+        return UNIVERSE;
     }
 
 }

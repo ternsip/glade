@@ -1,6 +1,5 @@
-package com.ternsip.glade.graphics.display;
+package com.ternsip.glade.common;
 
-import com.ternsip.glade.common.DisplayCallbacks;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -66,7 +65,6 @@ public class DisplaySnapReceiver {
     public boolean isMouseDown(int button) {
         return mouseButtonPressed[button];
     }
-
 
     @RequiredArgsConstructor
     @Getter

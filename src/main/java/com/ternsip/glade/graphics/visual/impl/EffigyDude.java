@@ -1,12 +1,12 @@
 package com.ternsip.glade.graphics.visual.impl;
 
 import com.ternsip.glade.graphics.general.*;
-import com.ternsip.glade.graphics.visual.base.graphical.GraphicalAnimated;
+import com.ternsip.glade.graphics.visual.base.graphical.EffigyAnimated;
 import org.joml.Vector3f;
 
 import java.io.File;
 
-public class GraphicalDude extends GraphicalAnimated {
+public class EffigyDude extends EffigyAnimated {
 
     public Model loadModel() {
         return ModelLoader.loadModel(Settings

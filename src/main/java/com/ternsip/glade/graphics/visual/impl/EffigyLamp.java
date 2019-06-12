@@ -1,11 +1,11 @@
 package com.ternsip.glade.graphics.visual.impl;
 
 import com.ternsip.glade.graphics.general.*;
-import com.ternsip.glade.graphics.visual.base.graphical.GraphicalAnimated;
+import com.ternsip.glade.graphics.visual.base.graphical.EffigyAnimated;
 
 import java.io.File;
 
-public class GraphicalLamp extends GraphicalAnimated {
+public class EffigyLamp extends EffigyAnimated {
 
     public Model loadModel() {
         Material[] lampMaterials = new Material[]{

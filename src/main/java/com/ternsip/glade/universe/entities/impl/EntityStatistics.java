@@ -19,8 +19,8 @@ public class EntityStatistics extends Entity<GraphicalDynamicText> {
     @Override
     public void update(GraphicalDynamicText visual) {
         StringBuilder sb = new StringBuilder();
-        sb.append("FPS : ").append(visual.getDisplayManager().getWindowData().getFps()).append(System.lineSeparator());
-        sb.append("Entities : ").append(visual.getDisplayManager().getGraphicalRepository().getLastSeenNumberOfEntitiesInFrustum());
+        sb.append("FPS : ").append(visual.getGraphics().getWindowData().getFps()).append(System.lineSeparator());
+        sb.append("Entities : ").append(visual.getGraphics().getGraphicalRepository().getLastSeenNumberOfEntitiesInFrustum());
         visual.changeText(sb.toString(), new Vector2i(0, 0), new Vector2i(75, 75), new Vector4f(1, 1, 0, 1));
     }
 

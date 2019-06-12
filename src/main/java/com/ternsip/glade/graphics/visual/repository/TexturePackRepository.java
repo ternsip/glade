@@ -1,6 +1,6 @@
 package com.ternsip.glade.graphics.visual.repository;
 
-import com.ternsip.glade.graphics.display.Displayable;
+import com.ternsip.glade.graphics.display.Graphical;
 import com.ternsip.glade.graphics.general.Texture;
 import com.ternsip.glade.universe.parts.blocks.Block;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import java.io.File;
 
 @Getter
-public class TexturePackRepository implements Displayable {
+public class TexturePackRepository implements Graphical {
 
     public static final File DEFAULT_BLOCK_ATLAS_DIRECTORY = new File("atlases/blocks");
 
@@ -31,7 +31,7 @@ public class TexturePackRepository implements Displayable {
 
     public void reloadBlocksTextureAltas(File atlasDirectory) {
 
-        blocksAtlasDecoder = getDisplayManager().getGraphicalRepository().getTextureRepository().getAtlasDecoder(atlasDirectory);
+        blocksAtlasDecoder = getGraphics().getGraphicalRepository().getTextureRepository().getAtlasDecoder(atlasDirectory);
 
         for (int blockIndex = 0; blockIndex < blocksTextures.length; ++blockIndex) {
 

@@ -1,7 +1,7 @@
 package com.ternsip.glade.graphics.visual.repository;
 
 import com.ternsip.glade.graphics.shader.base.ShaderProgram;
-import com.ternsip.glade.graphics.visual.base.graphical.Graphical;
+import com.ternsip.glade.graphics.visual.base.graphical.Effigy;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,10 +15,10 @@ public class ShaderRepository {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T getGraphicalShader(Graphical graphical) {
+    public <T> T getShader(Effigy effigy) {
         return (T) keyToShader.computeIfAbsent(
-                graphical.getShaderKey(),
-                e -> ShaderProgram.createShader(graphical.getShaderClass())
+                effigy.getShaderKey(),
+                e -> ShaderProgram.createShader(effigy.getShaderClass())
         );
     }
 

@@ -6,7 +6,7 @@ import com.ternsip.glade.graphics.general.Material;
 import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.shader.impl.ChunkShader;
-import com.ternsip.glade.graphics.visual.base.graphical.Graphical;
+import com.ternsip.glade.graphics.visual.base.graphical.Effigy;
 import com.ternsip.glade.graphics.visual.repository.TexturePackRepository;
 import com.ternsip.glade.graphics.visual.repository.TextureRepository;
 import com.ternsip.glade.universe.common.Light;
@@ -25,7 +25,7 @@ import java.util.Set;
 
 @Getter
 @Setter
-public class GraphicalChunk extends Graphical<ChunkShader> {
+public class EffigyChunk extends Effigy<ChunkShader> {
 
     public static final int SIZE = 16;
     public static final int VOLUME = SIZE * SIZE * SIZE;
@@ -79,7 +79,7 @@ public class GraphicalChunk extends Graphical<ChunkShader> {
     private final Block[] blocks;
     private final Vector3ic chunkPosition;
 
-    public GraphicalChunk(Block[] blocks, Vector3ic chunkPosition) {
+    public EffigyChunk(Block[] blocks, Vector3ic chunkPosition) {
         this.blocks = blocks;
         this.chunkPosition = chunkPosition;
         if (blocks.length != VOLUME) {
@@ -116,7 +116,7 @@ public class GraphicalChunk extends Graphical<ChunkShader> {
         ArrayList<Float> normals = new ArrayList<>(VOLUME * 3);
         ArrayList<Integer> indices = new ArrayList<>(VOLUME * 2);
 
-        TexturePackRepository texturePackRepository = getDisplayManager().getGraphicalRepository().getTexturePackRepository();
+        TexturePackRepository texturePackRepository = getGraphics().getGraphicalRepository().getTexturePackRepository();
 
         Vector3f blockOffset = new Vector3f(0, 0, 0);
 

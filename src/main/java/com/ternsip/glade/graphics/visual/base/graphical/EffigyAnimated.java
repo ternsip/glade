@@ -13,7 +13,7 @@ import org.joml.Vector3fc;
 import java.util.Set;
 
 @Getter
-public abstract class GraphicalAnimated extends Graphical<AnimationShader> {
+public abstract class EffigyAnimated extends Effigy<AnimationShader> {
 
     @Getter(lazy = true)
     private final Animation animation = new Animation(getModel());
@@ -56,7 +56,7 @@ public abstract class GraphicalAnimated extends Graphical<AnimationShader> {
     private long getUpdateIntervalMilliseconds() {
         Vector3fc scale = getAdjustedScale();
         float maxScale = Math.max(Math.max(scale.x(), scale.y()), scale.z());
-        Camera camera = getDisplayManager().getGraphicalRepository().getCamera();
+        Camera camera = getGraphics().getGraphicalRepository().getCamera();
         double criterion = (camera.getPosition().distance(getAdjustedPosition()) / maxScale) / 10;
         return (long) (criterion * criterion * criterion);
     }

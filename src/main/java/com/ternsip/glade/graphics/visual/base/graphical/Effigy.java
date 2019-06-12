@@ -12,20 +12,20 @@ import java.lang.Math;
 import java.util.Set;
 
 @Getter
-public abstract class Graphical<SHADER extends ShaderProgram> implements Visual, Transformable {
+public abstract class Effigy<SHADER extends ShaderProgram> implements Visual, Transformable {
 
     @Getter(lazy = true)
-    private final Model model = getDisplayManager().getGraphicalRepository().getModelRepository().getGraphicalModel(this);
+    private final Model model = getGraphics().getGraphicalRepository().getModelRepository().getGraphicalModel(this);
 
     @Getter(lazy = true)
-    private final SHADER shader = getDisplayManager().getGraphicalRepository().getShaderRepository().getGraphicalShader(this);
+    private final SHADER shader = getGraphics().getGraphicalRepository().getShaderRepository().getShader(this);
 
     private final Vector3f position = new Vector3f(0);
     private final Vector3f scale = new Vector3f(1);
     private final Vector3f rotation = new Vector3f(0);
 
-    public Graphical() {
-        getDisplayManager().getGraphicalRepository().addGraphical(this);
+    public Effigy() {
+        getGraphics().getGraphicalRepository().addGraphical(this);
     }
 
     public Matrix4f getTransformationMatrix() {
@@ -77,8 +77,8 @@ public abstract class Graphical<SHADER extends ShaderProgram> implements Visual,
     }
 
     public FrustumIntersection getFrustumIntersection() {
-        Matrix4fc projection = getDisplayManager().getGraphicalRepository().getCamera().getNormalProjectionMatrix();
-        Matrix4fc view = getDisplayManager().getGraphicalRepository().getCamera().getViewMatrix();
+        Matrix4fc projection = getGraphics().getGraphicalRepository().getCamera().getNormalProjectionMatrix();
+        Matrix4fc view = getGraphics().getGraphicalRepository().getCamera().getViewMatrix();
         Matrix4fc projectionViewMatrix = projection.mul(view, new Matrix4f());
         return new FrustumIntersection(projectionViewMatrix);
     }
@@ -90,19 +90,19 @@ public abstract class Graphical<SHADER extends ShaderProgram> implements Visual,
     }
 
     public void finish() {
-        getDisplayManager().getGraphicalRepository().removeGraphical(this);
+        getGraphics().getGraphicalRepository().removeGraphical(this);
     }
 
     protected Matrix4fc getViewMatrix() {
-        return getDisplayManager().getGraphicalRepository().getCamera().getViewMatrix();
+        return getGraphics().getGraphicalRepository().getCamera().getViewMatrix();
     }
 
     protected Matrix4fc getProjectionMatrix() {
-        return getDisplayManager().getGraphicalRepository().getCamera().getNormalProjectionMatrix();
+        return getGraphics().getGraphicalRepository().getCamera().getNormalProjectionMatrix();
     }
 
     public float getSquaredDistanceToCamera() {
-        return getAdjustedPosition().distanceSquared(getDisplayManager().getGraphicalRepository().getCamera().getPosition());
+        return getAdjustedPosition().distanceSquared(getGraphics().getGraphicalRepository().getCamera().getPosition());
     }
 
     public Object getShaderKey() {
