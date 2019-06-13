@@ -1,6 +1,6 @@
 package com.ternsip.glade.universe.entities.impl;
 
-import com.ternsip.glade.graphics.visual.impl.EffigySky;
+import com.ternsip.glade.graphics.visual.impl.basis.EffigySky;
 import com.ternsip.glade.universe.common.Light;
 import com.ternsip.glade.universe.entities.base.Entity;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.ternsip.glade.graphics.visual.impl;
+package com.ternsip.glade.graphics.visual.impl.test;
 
 import com.ternsip.glade.common.logic.Maths;
 import com.ternsip.glade.common.logic.Utils;

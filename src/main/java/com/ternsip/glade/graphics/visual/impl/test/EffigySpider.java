@@ -1,4 +1,4 @@
-package com.ternsip.glade.graphics.visual.impl;
+package com.ternsip.glade.graphics.visual.impl.test;
 
 import com.ternsip.glade.graphics.general.*;
 import com.ternsip.glade.graphics.visual.base.EffigyAnimated;

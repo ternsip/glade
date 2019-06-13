@@ -1,7 +1,9 @@
 package com.ternsip.glade.universe;
 
 import com.ternsip.glade.common.events.base.EventSnapReceiver;
-import com.ternsip.glade.graphics.visual.impl.*;
+import com.ternsip.glade.graphics.visual.impl.basis.Effigy3DText;
+import com.ternsip.glade.graphics.visual.impl.basis.EffigyAxis;
+import com.ternsip.glade.graphics.visual.impl.test.*;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.base.EntityTransformable;
 import com.ternsip.glade.universe.entities.impl.*;

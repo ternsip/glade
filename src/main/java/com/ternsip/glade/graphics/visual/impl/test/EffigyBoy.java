@@ -1,4 +1,4 @@
-package com.ternsip.glade.graphics.visual.impl;
+package com.ternsip.glade.graphics.visual.impl.test;
 
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.general.ModelLoader;
@@ -8,13 +8,13 @@ import org.joml.Vector3f;
 
 import java.io.File;
 
-public class EffigyWarrior extends EffigyAnimated {
+public class EffigyBoy extends EffigyAnimated {
 
     public Model loadModel() {
         return ModelLoader.loadModel(Settings
                 .builder()
-                .meshFile(new File("models/warrior/warrior.3ds"))
-                .baseRotation(new Vector3f(0, 0, (float) (-Math.PI / 2)))
+                .meshFile(new File("models/boy/boy.dae"))
+                .baseRotation(new Vector3f(0, 0, (float) (-Math.PI / 2.0f)))
                 .build()
         );
     }

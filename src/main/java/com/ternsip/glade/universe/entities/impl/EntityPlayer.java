@@ -1,6 +1,6 @@
 package com.ternsip.glade.universe.entities.impl;
 
-import com.ternsip.glade.graphics.visual.impl.EffigyBoy;
+import com.ternsip.glade.graphics.visual.impl.test.EffigyBoy;
 import com.ternsip.glade.universe.entities.base.EntityTransformable;
 import lombok.Getter;
 import org.joml.Vector3f;

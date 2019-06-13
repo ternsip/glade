@@ -1,4 +1,4 @@
-package com.ternsip.glade.graphics.visual.impl;
+package com.ternsip.glade.graphics.visual.impl.basis;
 
 import com.ternsip.glade.graphics.general.Material;
 import com.ternsip.glade.graphics.general.Mesh;

@@ -1,6 +1,6 @@
 package com.ternsip.glade.universe.entities.impl;
 
-import com.ternsip.glade.graphics.visual.impl.GraphicalDynamicText;
+import com.ternsip.glade.graphics.visual.impl.basis.GraphicalDynamicText;
 import com.ternsip.glade.universe.entities.base.Entity;
 import lombok.RequiredArgsConstructor;
 import org.joml.Vector2i;
