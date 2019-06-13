@@ -1,6 +1,6 @@
 package com.ternsip.glade.universe;
 
-import com.ternsip.glade.common.DisplaySnapReceiver;
+import com.ternsip.glade.common.events.base.EventSnapReceiver;
 import com.ternsip.glade.graphics.visual.impl.*;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.base.EntityTransformable;
@@ -19,7 +19,7 @@ import java.io.File;
 @Getter
 public class Universe {
 
-    private final DisplaySnapReceiver displaySnapReceiver = new DisplaySnapReceiver();
+    private final EventSnapReceiver eventSnapReceiver = new EventSnapReceiver();
     private final EntityRepository entityRepository = new EntityRepository();
     private int ticksPerSecond = 128; // TODO move into universe settings
 
@@ -29,7 +29,7 @@ public class Universe {
 
     @SneakyThrows
     public void loop() {
-        while (getDisplaySnapReceiver().isApplicationActive()) {
+        while (getEventSnapReceiver().isApplicationActive()) {
             long startTime = System.currentTimeMillis();
             update();
             long pastTime = System.currentTimeMillis() - startTime;
@@ -130,7 +130,7 @@ public class Universe {
     }
 
     private void update() {
-        getDisplaySnapReceiver().update();
+        getEventSnapReceiver().update();
         getEntityRepository().getEntities().forEach(Entity::update);
     }
 

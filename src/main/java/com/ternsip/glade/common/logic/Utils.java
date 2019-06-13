@@ -1,4 +1,4 @@
-package com.ternsip.glade.common;
+package com.ternsip.glade.common.logic;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +9,7 @@ import org.lwjgl.assimp.AIScene;
 import org.lwjgl.assimp.Assimp;
 import org.reflections.Reflections;
 import org.reflections.scanners.ResourcesScanner;
+import org.reflections.scanners.SubTypesScanner;
 
 import java.io.*;
 import java.lang.reflect.Method;
@@ -143,6 +144,11 @@ public class Utils {
         if (!condition) {
             log.warn("Assertion failed!");
         }
+    }
+
+    public static <T> Set<Class<? extends T>> getAllClasses(Class<T> clazz) {
+        Reflections reflections = new Reflections("", new SubTypesScanner());
+        return reflections.getSubTypesOf(clazz);
     }
 
     public static List<File> getResourceListing(String[] extensions) {

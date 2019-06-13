@@ -1,6 +1,8 @@
 package com.ternsip.glade.graphics.visual.base.camera;
 
-import com.ternsip.glade.common.DisplayCallbacks;
+import com.ternsip.glade.common.events.base.Callback;
+import com.ternsip.glade.common.events.display.CursorPosEvent;
+import com.ternsip.glade.common.events.display.ScrollEvent;
 import com.ternsip.glade.graphics.display.Graphical;
 import com.ternsip.glade.graphics.visual.base.graphical.Transformable;
 import lombok.Getter;
@@ -35,12 +37,12 @@ public class ThirdPersonController implements Graphical, CameraController {
     private float distanceFromTarget = (MAX_DISTANCE_FROM_TARGET + MIN_DISTANCE_FROM_TARGET) * 0.5f;
     private Vector2fc rotation = new Vector2f();
 
-    private DisplayCallbacks.ScrollCallback scrollCallback = this::recalculateZoom;
-    private DisplayCallbacks.CursorPosCallback cursorPosCallback = this::recalculateRotation;
+    private Callback<ScrollEvent> scrollCallback = this::recalculateZoom;
+    private Callback<CursorPosEvent> cursorPosCallback = this::recalculateRotation;
 
     public ThirdPersonController() {
-        getGraphics().getDisplayCallbacks().getScrollCallbacks().add(scrollCallback);
-        getGraphics().getDisplayCallbacks().getCursorPosCallbacks().add(cursorPosCallback);
+        getGraphics().getEventSnapReceiver().registerCallback(ScrollEvent.class, scrollCallback);
+        getGraphics().getEventSnapReceiver().registerCallback(CursorPosEvent.class, cursorPosCallback);
     }
 
     public void update(Transformable transformable) {
@@ -63,14 +65,14 @@ public class ThirdPersonController implements Graphical, CameraController {
     }
 
     public void finish() {
-        getGraphics().getDisplayCallbacks().getScrollCallbacks().remove(getScrollCallback());
-        getGraphics().getDisplayCallbacks().getCursorPosCallbacks().remove(getCursorPosCallback());
+        getGraphics().getEventSnapReceiver().unregisterCallback(ScrollEvent.class, scrollCallback);
+        getGraphics().getEventSnapReceiver().unregisterCallback(CursorPosEvent.class, cursorPosCallback);
     }
 
-    private void recalculateRotation(double xPos, double yPos, double dx, double dy) {
+    private void recalculateRotation(CursorPosEvent event) {
         if (getGraphics().isMouseDown(GLFW_MOUSE_BUTTON_1)) {
-            float nx = limitAngle(getRotation().x() + (float) (dx * ROTATION_MULTIPLIER_X), MAX_ROTATION_DELTA_X);
-            float ny = limitAngle(getRotation().y() + (float) (dy * ROTATION_MULTIPLIER_Y), MAX_ROTATION_DELTA_Y);
+            float nx = limitAngle(getRotation().x() + (float) (event.getDx() * ROTATION_MULTIPLIER_X), MAX_ROTATION_DELTA_X);
+            float ny = limitAngle(getRotation().y() + (float) (event.getDy() * ROTATION_MULTIPLIER_Y), MAX_ROTATION_DELTA_Y);
             setRotation(new Vector2f(nx, ny));
         }
     }
@@ -82,8 +84,8 @@ public class ThirdPersonController implements Graphical, CameraController {
         return Math.max(Math.min(angle, limit), -limit);
     }
 
-    private void recalculateZoom(double scrollX, double scrollY) {
-        float newDistance = (float) (getDistanceFromTarget() - scrollY * SCROLL_MULTIPLIER);
+    private void recalculateZoom(ScrollEvent event) {
+        float newDistance = (float) (getDistanceFromTarget() - event.getYOffset() * SCROLL_MULTIPLIER);
         newDistance = Math.min(newDistance, MAX_DISTANCE_FROM_TARGET);
         newDistance = Math.max(newDistance, MIN_DISTANCE_FROM_TARGET);
         setDistanceFromTarget(newDistance);

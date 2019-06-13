@@ -1,4 +1,4 @@
-package com.ternsip.glade.common;
+package com.ternsip.glade.common.logic;
 
 import org.joml.*;
 

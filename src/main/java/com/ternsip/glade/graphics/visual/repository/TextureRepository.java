@@ -1,6 +1,6 @@
 package com.ternsip.glade.graphics.visual.repository;
 
-import com.ternsip.glade.common.Utils;
+import com.ternsip.glade.common.logic.Utils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +13,7 @@ import java.nio.IntBuffer;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.ternsip.glade.common.Utils.loadResourceToByteBuffer;
+import static com.ternsip.glade.common.logic.Utils.loadResourceToByteBuffer;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12C.glTexSubImage3D;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;

@@ -11,8 +11,8 @@ import java.nio.IntBuffer;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.ternsip.glade.common.Utils.assertThat;
-import static com.ternsip.glade.common.Utils.loadResourceAsAssimp;
+import static com.ternsip.glade.common.logic.Utils.assertThat;
+import static com.ternsip.glade.common.logic.Utils.loadResourceAsAssimp;
 import static com.ternsip.glade.graphics.general.Mesh.MAX_BONES;
 import static org.lwjgl.assimp.Assimp.*;
 

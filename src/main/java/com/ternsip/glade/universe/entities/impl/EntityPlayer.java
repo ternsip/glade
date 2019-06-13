@@ -50,23 +50,23 @@ public class EntityPlayer extends EntityTransformable<EffigyBoy> {
 
     private void checkInputs() {
 
-        if (getUniverse().getDisplaySnapReceiver().isKeyDown(GLFW_KEY_W)) {
+        if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_W)) {
             this.currentSpeed = RUN_SPEED;
-        } else if (getUniverse().getDisplaySnapReceiver().isKeyDown(GLFW_KEY_S)) {
+        } else if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_S)) {
             this.currentSpeed = -RUN_SPEED;
         } else {
             this.currentSpeed = 0;
         }
 
-        if (getUniverse().getDisplaySnapReceiver().isKeyDown(GLFW_KEY_D)) {
+        if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_D)) {
             this.currentTurnSpeed = -TURN_SPEED;
-        } else if (getUniverse().getDisplaySnapReceiver().isKeyDown(GLFW_KEY_A)) {
+        } else if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_A)) {
             this.currentTurnSpeed = TURN_SPEED;
         } else {
             this.currentTurnSpeed = 0;
         }
 
-        if (getUniverse().getDisplaySnapReceiver().isKeyDown(GLFW_KEY_R)) {
+        if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_R)) {
             setRotation(new Vector3f(0, 0, 0));
             setPosition(new Vector3f(600, 30, 550));
         }

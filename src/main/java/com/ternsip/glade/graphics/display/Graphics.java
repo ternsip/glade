@@ -1,7 +1,9 @@
 package com.ternsip.glade.graphics.display;
 
-import com.ternsip.glade.common.DisplayCallbacks;
-import com.ternsip.glade.common.DisplaySnapReceiver;
+import com.ternsip.glade.common.events.base.ErrorEvent;
+import com.ternsip.glade.common.events.base.Event;
+import com.ternsip.glade.common.events.base.EventSnapReceiver;
+import com.ternsip.glade.common.events.display.*;
 import com.ternsip.glade.graphics.visual.repository.GraphicalRepository;
 import com.ternsip.glade.universe.common.Universal;
 import lombok.Getter;
@@ -26,7 +28,7 @@ public class Graphics implements Universal {
 
     private final Thread rootThread;
     private final ArrayList<Callback> callbacks;
-    private final DisplayCallbacks displayCallbacks;
+    private final EventSnapReceiver eventSnapReceiver;
     private final WindowData windowData;
 
     @Getter(lazy = true)
@@ -35,16 +37,16 @@ public class Graphics implements Universal {
     public Graphics() {
         rootThread = Thread.currentThread();
         callbacks = new ArrayList<>();
-        displayCallbacks = new DisplayCallbacks();
-        displayCallbacks.getErrorCallbacks().add((e, d) -> GLFWErrorCallback.createPrint(System.err).invoke(e, d));
-        displayCallbacks.getResizeCallbacks().add(this::handleResize);
+        eventSnapReceiver = new EventSnapReceiver();
+        getEventSnapReceiver().registerCallback(ErrorEvent.class, this::handleError);
+        getEventSnapReceiver().registerCallback(ResizeEvent.class, this::handleResize);
         // TODO MOVE IN HOTKEY CLASS
-        displayCallbacks.getKeyCallbacks().add((key, scanCode, action, mods) -> {
-            if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+        getEventSnapReceiver().registerCallback(KeyEvent.class, e -> {
+            if (e.getKey() == GLFW_KEY_ESCAPE && e.getAction() == GLFW_PRESS) {
                 close();
             }
         });
-        registerErrorCallback();
+        registerErrorEvent();
         if (!glfwInit()) {
             throw new IllegalStateException("Unable to initialize GLFW");
         }
@@ -56,13 +58,11 @@ public class Graphics implements Universal {
             throw new RuntimeException("Failed to create the GLFW window");
         }
         windowData = new WindowData(window, windowSize);
-        registerScrollCallback();
-        registerCursorPosCallback();
-        registerKeyCallback();
-        registerFrameBufferSizeCallback();
-        registerMouseButtonCallback();
-
-        registerDisplaySnapCollectorEvents();
+        registerScrollEvent();
+        registerCursorPosEvent();
+        registerKeyEvent();
+        registerFrameBufferSizeEvent();
+        registerMouseButtonEvent();
 
         glfwSetWindowPos(window, (int) (mainDisplaySize.x() * 0.1), (int) (mainDisplaySize.y() * 0.1));
 
@@ -87,8 +87,7 @@ public class Graphics implements Universal {
         final Vector4fc BACKGROUND_COLOR = new Vector4f(1f, 0f, 0f, 1f);
         glClearColor(BACKGROUND_COLOR.x(), BACKGROUND_COLOR.y(), BACKGROUND_COLOR.z(), BACKGROUND_COLOR.w());
 
-        handleResize(getWindowData().getWidth(), getWindowData().getHeight());
-
+        registerDisplayEvent(ResizeEvent.class, new ResizeEvent(getWindowData().getWidth(), getWindowData().getHeight()));
     }
 
     public void close() {
@@ -103,6 +102,7 @@ public class Graphics implements Universal {
     public void loop() {
         while (isActive()) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            getEventSnapReceiver().update();
             getGraphicalRepository().render();
             getWindowData().update();
             glfwSwapBuffers(getWindowData().getWindow());
@@ -115,7 +115,7 @@ public class Graphics implements Universal {
     }
 
     public void finish() {
-        getUniverse().getDisplaySnapReceiver().getApplicationActive().set(false);
+        getUniverse().getEventSnapReceiver().getApplicationActive().set(false);
         getGraphicalRepository().finish();
         glfwDestroyWindow(getWindowData().getWindow());
         for (Callback callback : callbacks) {
@@ -138,23 +138,23 @@ public class Graphics implements Universal {
         }
     }
 
-    private void registerErrorCallback() {
+    private void registerErrorEvent() {
         GLFWErrorCallback errorCallback = GLFWErrorCallback.create(
-                (error, description) -> getDisplayCallbacks().getErrorCallbacks().forEach(e -> e.apply(error, description))
+                (error, description) -> registerDisplayEvent(ErrorEvent.class, new ErrorEvent(error, description))
         );
         callbacks.add(errorCallback);
         glfwSetErrorCallback(errorCallback);
     }
 
-    private void registerScrollCallback() {
+    private void registerScrollEvent() {
         GLFWScrollCallback scrollCallback = GLFWScrollCallback.create(
-                (window, xOffset, yOffset) -> getDisplayCallbacks().getScrollCallbacks().forEach(e -> e.apply(xOffset, yOffset))
+                (window, xOffset, yOffset) -> registerDisplayEvent(ScrollEvent.class, new ScrollEvent(xOffset, yOffset))
         );
         getCallbacks().add(scrollCallback);
         glfwSetScrollCallback(getWindowData().getWindow(), scrollCallback);
     }
 
-    private void registerCursorPosCallback() {
+    private void registerCursorPosEvent() {
         GLFWCursorPosCallback posCallback = GLFWCursorPosCallback.create((new GLFWCursorPosCallbackI() {
             private float dx;
             private float dy;
@@ -167,57 +167,48 @@ public class Graphics implements Universal {
                 dy = (float) (yPos - prevY);
                 prevX = (float) xPos;
                 prevY = (float) yPos;
-                getDisplayCallbacks().getCursorPosCallbacks().forEach(e -> e.apply(xPos, yPos, dx, dy));
+                registerDisplayEvent(CursorPosEvent.class, new CursorPosEvent(xPos, yPos, dx, dy));
             }
         }));
         callbacks.add(posCallback);
         glfwSetCursorPosCallback(getWindowData().getWindow(), posCallback);
     }
 
-    private void registerKeyCallback() {
+    private void registerKeyEvent() {
         GLFWKeyCallback keyCallback = GLFWKeyCallback.create(
-                (window, key, scanCode, action, mods) -> getDisplayCallbacks().getKeyCallbacks().forEach(e -> e.apply(key, scanCode, action, mods))
+                (window, key, scanCode, action, mods) -> registerDisplayEvent(KeyEvent.class, new KeyEvent(key, scanCode, action, mods))
         );
         callbacks.add(keyCallback);
         glfwSetKeyCallback(getWindowData().getWindow(), keyCallback);
     }
 
-    private void registerFrameBufferSizeCallback() {
+    private void registerFrameBufferSizeEvent() {
         GLFWFramebufferSizeCallback framebufferSizeCallback = GLFWFramebufferSizeCallback.create(
-                (window, width, height) -> getDisplayCallbacks().getResizeCallbacks().forEach(e -> e.apply(width, height))
+                (window, width, height) -> registerDisplayEvent(ResizeEvent.class, new ResizeEvent(width, height))
         );
         callbacks.add(framebufferSizeCallback);
         glfwSetFramebufferSizeCallback(getWindowData().getWindow(), framebufferSizeCallback);
     }
 
-    private void registerMouseButtonCallback() {
+    private void registerMouseButtonEvent() {
         GLFWMouseButtonCallback mouseButtonCallback = GLFWMouseButtonCallback.create(
-                (window, button, action, mods) -> getDisplayCallbacks().getMouseButtonCallbacks().forEach(e -> e.apply(button, action, mods))
+                (window, button, action, mods) -> registerDisplayEvent(MouseButtonEvent.class, new MouseButtonEvent(button, action, mods))
         );
         callbacks.add(mouseButtonCallback);
         glfwSetMouseButtonCallback(getWindowData().getWindow(), mouseButtonCallback);
     }
 
-    private void registerDisplaySnapCollectorEvents() {
-        getDisplayCallbacks().getCursorPosCallbacks().add((x, y, dx, dy) ->
-                getUniverse().getDisplaySnapReceiver().getCursorPosEvents().add(new DisplaySnapReceiver.CursorPosEvent(x, y, dx, dy))
-        );
-        getDisplayCallbacks().getResizeCallbacks().add((w, h) ->
-                getUniverse().getDisplaySnapReceiver().getResizeEvents().add(new DisplaySnapReceiver.ResizeEvent(w, h))
-        );
-        getDisplayCallbacks().getScrollCallbacks().add((dx, dy) ->
-                getUniverse().getDisplaySnapReceiver().getScrollEvents().add(new DisplaySnapReceiver.ScrollEvent(dx, dy))
-        );
-        getDisplayCallbacks().getKeyCallbacks().add((k, c, a, m) ->
-                getUniverse().getDisplaySnapReceiver().getKeyEvents().add(new DisplaySnapReceiver.KeyEvent(k, c, a, m))
-        );
-        getDisplayCallbacks().getMouseButtonCallbacks().add((b, a, m) ->
-                getUniverse().getDisplaySnapReceiver().getMouseButtonEvents().add(new DisplaySnapReceiver.MouseButtonEvent(b, a, m))
-        );
+    private <T extends Event> void registerDisplayEvent(Class<T> clazz, T event) {
+        getEventSnapReceiver().registerEvent(clazz, event);
+        getUniverse().getEventSnapReceiver().registerEvent(clazz, event);
     }
 
-    private void handleResize(int width, int height) {
-        getWindowData().setWindowSize(new Vector2i(width, height));
+    private void handleError(ErrorEvent errorEvent) {
+        GLFWErrorCallback.createPrint(System.err).invoke(errorEvent.getError(), errorEvent.getDescription());
+    }
+
+    private void handleResize(ResizeEvent resizeEvent) {
+        getWindowData().setWindowSize(new Vector2i(resizeEvent.getWidth(), resizeEvent.getHeight()));
         glViewport(0, 0, getWindowData().getWidth(), getWindowData().getHeight());
     }
 

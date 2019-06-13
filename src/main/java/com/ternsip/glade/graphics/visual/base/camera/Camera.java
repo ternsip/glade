@@ -1,5 +1,6 @@
 package com.ternsip.glade.graphics.visual.base.camera;
 
+import com.ternsip.glade.common.events.display.ResizeEvent;
 import com.ternsip.glade.graphics.display.Graphical;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,7 +26,7 @@ public class Camera implements Graphical {
     private Matrix4fc viewMatrix = new Matrix4f();
 
     public Camera() {
-        getGraphics().getDisplayCallbacks().getResizeCallbacks().add(this::recalculateProjectionMatrices);
+        getGraphics().getEventSnapReceiver().registerCallback(ResizeEvent.class, e -> this.recalculateProjectionMatrices(e.getWidth(), e.getHeight()));
         recalculateProjectionMatrices(getGraphics().getWindowData().getWidth(), getGraphics().getWindowData().getHeight());
     }
 
@@ -37,8 +38,8 @@ public class Camera implements Graphical {
         return new Matrix4f();
     }
 
-    private void recalculateProjectionMatrices(float width, int height) {
-        float ratio = width / height;
+    private void recalculateProjectionMatrices(int width, int height) {
+        float ratio = (float) width / height;
         normalProjectionMatrix = createProjectionMatrix(NORMAL_DISTANCE, ratio);
         farProjectionMatrix = createProjectionMatrix(FAR_DISTANCE, ratio);
         orthoProjectionMatrix = createOrthoProjectionMatrix(FAR_DISTANCE, width, height);

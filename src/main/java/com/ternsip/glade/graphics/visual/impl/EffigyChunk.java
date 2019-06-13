@@ -1,7 +1,7 @@
 package com.ternsip.glade.graphics.visual.impl;
 
-import com.ternsip.glade.common.Maths;
-import com.ternsip.glade.common.Utils;
+import com.ternsip.glade.common.logic.Maths;
+import com.ternsip.glade.common.logic.Utils;
 import com.ternsip.glade.graphics.general.Material;
 import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.general.Model;
