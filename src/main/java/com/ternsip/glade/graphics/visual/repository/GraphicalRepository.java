@@ -1,8 +1,8 @@
 package com.ternsip.glade.graphics.visual.repository;
 
-import com.ternsip.glade.graphics.visual.base.camera.Camera;
-import com.ternsip.glade.graphics.visual.base.camera.CameraController;
-import com.ternsip.glade.graphics.visual.base.camera.ThirdPersonController;
+import com.ternsip.glade.graphics.camera.Camera;
+import com.ternsip.glade.graphics.camera.CameraController;
+import com.ternsip.glade.graphics.camera.ThirdPersonController;
 import com.ternsip.glade.graphics.visual.base.graphical.Effigy;
 import com.ternsip.glade.graphics.visual.base.graphical.Visual;
 import com.ternsip.glade.universe.common.Light;

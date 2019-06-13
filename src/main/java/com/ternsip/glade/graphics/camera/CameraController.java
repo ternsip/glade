@@ -1,4 +1,4 @@
-package com.ternsip.glade.graphics.visual.base.camera;
+package com.ternsip.glade.graphics.camera;
 
 import com.ternsip.glade.graphics.visual.base.graphical.Transformable;
 import org.joml.Matrix4fc;
