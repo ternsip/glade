@@ -1,6 +1,6 @@
 package com.ternsip.glade.universe.entities.base;
 
-import com.ternsip.glade.graphics.visual.base.graphical.Visual;
+import com.ternsip.glade.graphics.visual.base.Visual;
 import com.ternsip.glade.universe.common.Universal;
 import lombok.Getter;
 

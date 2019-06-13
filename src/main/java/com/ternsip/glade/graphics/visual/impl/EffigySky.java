@@ -4,7 +4,7 @@ import com.ternsip.glade.graphics.general.Material;
 import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.shader.impl.SkyboxShader;
-import com.ternsip.glade.graphics.visual.base.graphical.Effigy;
+import com.ternsip.glade.graphics.visual.base.Effigy;
 import com.ternsip.glade.universe.common.Light;
 import lombok.Getter;
 import lombok.Setter;

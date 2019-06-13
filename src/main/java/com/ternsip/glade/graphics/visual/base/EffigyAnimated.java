@@ -1,9 +1,9 @@
-package com.ternsip.glade.graphics.visual.base.graphical;
+package com.ternsip.glade.graphics.visual.base;
 
+import com.ternsip.glade.graphics.camera.Camera;
 import com.ternsip.glade.graphics.general.Animation;
 import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.shader.impl.AnimationShader;
-import com.ternsip.glade.graphics.camera.Camera;
 import com.ternsip.glade.universe.common.Light;
 import lombok.Getter;
 import org.joml.Matrix4f;

@@ -4,7 +4,7 @@ import com.ternsip.glade.graphics.general.Material;
 import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.general.Texture;
-import com.ternsip.glade.graphics.visual.base.graphical.EffigyAnimated;
+import com.ternsip.glade.graphics.visual.base.EffigyAnimated;
 import org.joml.*;
 
 public class EffigyAxis extends EffigyAnimated {

@@ -1,7 +1,7 @@
 package com.ternsip.glade.graphics.visual.impl;
 
 import com.ternsip.glade.graphics.general.*;
-import com.ternsip.glade.graphics.visual.base.graphical.EffigyAnimated;
+import com.ternsip.glade.graphics.visual.base.EffigyAnimated;
 
 import java.io.File;
 

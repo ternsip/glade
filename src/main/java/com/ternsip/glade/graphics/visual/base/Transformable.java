@@ -1,4 +1,4 @@
-package com.ternsip.glade.graphics.visual.base.graphical;
+package com.ternsip.glade.graphics.visual.base;
 
 import org.joml.Vector3f;
 
