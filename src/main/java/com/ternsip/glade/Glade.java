@@ -5,15 +5,23 @@ import com.ternsip.glade.graphics.display.Graphics;
 import com.ternsip.glade.universe.Universe;
 import com.ternsip.glade.universe.common.Universal;
 
-// In case you have weird crashes checkout memory buffers (for instance that all of them rewind() after reading), try to avoid memory buffers
+/**
+ * The main entry point of the application
+ * Initializes graphical, network and logic thread
+ * Graphical thread should always be main by multi-platform purposes
+ * <p>
+ * In case you have GPU-dump crashes:
+ * - checkout memory buffers (for instance that all of them rewind() after reading)
+ * - try to avoid memory buffers if possible
+ * - check memory buffers' explicit free calls
+ * - check data that you send to GPU i.e. number of vertices/textures/indices/colors etc.
+ *
+ * @author Ternsip
+ */
 // TODO TURN ALL Vectors and Matrixes and Quaternions to constant interface (quatenrionfc/matrixfc)]
-// TODO SHADOWING ?
+// TODO SHADOWING/LIGHTING
 // TODO PHYSICAL COLLISIONS
-// TODO read about MemoryStack for optimising buffer allocation
-// TODO LookAt bug (collinear)
 // TODO Animated Textures
-// TODO Author rights
-// TODO Multithreading (1 logic, 1 network, 1 graphical (including input))
 public class Glade {
 
     public static void main(String[] args) {

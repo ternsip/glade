@@ -248,15 +248,16 @@ public class ModelLoader {
             CharSequence aiMaterialColor,
             File texturesDir
     ) {
-        AIString path = AIString.calloc(); // TODO think about removal
+        AIString path = AIString.calloc();
         Assimp.aiGetMaterialTexture(aiMaterial, aiTextureType, 0, path, (IntBuffer) null, null, null, null, null, null);
         String textPath = path.dataString();
         File file = textPath == null || textPath.isEmpty() ? null : new File(texturesDir, textPath);
-        AIColor4D aiColor4D = AIColor4D.create(); // TODO think about removal buffer
+        AIColor4D aiColor4D = AIColor4D.create();
         Vector4f color = null;
         if (aiGetMaterialColor(aiMaterial, aiMaterialColor, aiTextureType_NONE, 0, aiColor4D) == 0) {
             color = new Vector4f(aiColor4D.r(), aiColor4D.g(), aiColor4D.b(), aiColor4D.a());
         }
+        path.free();
         return new Texture(color, file);
     }
 
