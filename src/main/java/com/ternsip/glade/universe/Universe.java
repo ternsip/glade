@@ -3,15 +3,15 @@ package com.ternsip.glade.universe;
 import com.ternsip.glade.common.events.base.EventSnapReceiver;
 import com.ternsip.glade.graphics.visual.impl.basis.Effigy3DText;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigyAxis;
+import com.ternsip.glade.graphics.visual.impl.chunk.EffigyChunk;
 import com.ternsip.glade.graphics.visual.impl.test.*;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.base.EntityTransformable;
 import com.ternsip.glade.universe.entities.impl.*;
 import com.ternsip.glade.universe.entities.repository.EntityRepository;
-import com.ternsip.glade.universe.parts.blocks.Block;
+import com.ternsip.glade.universe.parts.blocks.Chunk;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.joml.Random;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
@@ -103,28 +103,16 @@ public class Universe {
     }
 
     private void generateChunks() {
-        for (int cx = 0; cx < 8; ++cx) {
-            for (int cy = 0; cy < 8; ++cy) {
-                for (int cz = 0; cz < 8; ++cz) {
+        for (int cx = 0; cx < 2; ++cx) {
+            for (int cy = 0; cy < 2; ++cy) {
+                for (int cz = 0; cz < 2; ++cz) {
                     int finalCx = cx;
                     int finalCy = cy;
                     int finalCz = cz;
                     new EntityGeneric(() -> {
-                        Random random = new Random(System.currentTimeMillis());
-                        Block[] blocks = new Block[EffigyChunk.VOLUME];
-                        for (int x = 0, idx = 0; x < EffigyChunk.SIZE; ++x) {
-                            for (int y = 0; y < EffigyChunk.SIZE; ++y) {
-                                for (int z = 0; z < EffigyChunk.SIZE; ++z, ++idx) {
-                                    blocks[idx] = Block.AIR;
-                                    if (random.nextFloat() < 0.05) blocks[idx] = Block.SAND;
-                                    if (random.nextFloat() < 0.05) blocks[idx] = Block.DIRT;
-                                    if (random.nextFloat() < 0.05) blocks[idx] = Block.STONE;
-                                    if (random.nextFloat() < 0.05) blocks[idx] = Block.WATER;
-                                    if (random.nextFloat() < 0.05) blocks[idx] = Block.LEAVES;
-                                }
-                            }
-                        }
-                        return new EffigyChunk(blocks, new Vector3i(finalCx, finalCy, finalCz));
+                        Chunk chunk = new Chunk(new Vector3i(finalCx, finalCy, finalCz));
+                        chunk.randomize();
+                        return new EffigyChunk(chunk);
                     });
                 }
             }

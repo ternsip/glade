@@ -1,4 +1,4 @@
-package com.ternsip.glade.graphics.visual.impl.test;
+package com.ternsip.glade.graphics.visual.impl.chunk;
 
 import com.ternsip.glade.common.logic.Maths;
 import com.ternsip.glade.common.logic.Utils;
@@ -11,13 +11,14 @@ import com.ternsip.glade.graphics.visual.repository.TexturePackRepository;
 import com.ternsip.glade.graphics.visual.repository.TextureRepository;
 import com.ternsip.glade.universe.common.Light;
 import com.ternsip.glade.universe.parts.blocks.Block;
+import com.ternsip.glade.universe.parts.blocks.BlockSide;
+import com.ternsip.glade.universe.parts.blocks.Chunk;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.joml.Vector3f;
-import org.joml.Vector3ic;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,65 +28,62 @@ import java.util.Set;
 @Setter
 public class EffigyChunk extends Effigy<ChunkShader> {
 
-    public static final int SIZE = 16;
-    public static final int VOLUME = SIZE * SIZE * SIZE;
-
-    private static final float SIDE = 1f;
+    private static final float SIDE = 8f; // TODO should be one (testing)
     private static final float BLOCK_PHYSICAL_SIZE = 2 * SIDE;
-    private static final float CHUNK_PHYSICAL_SIZE = BLOCK_PHYSICAL_SIZE * SIZE;
+    private static final float CHUNK_PHYSICAL_SIZE = BLOCK_PHYSICAL_SIZE * Chunk.SIZE;
 
     private static final CubeSideMeshData SIDE_FRONT = new CubeSideMeshData(
             new float[]{SIDE, SIDE, SIDE, -SIDE, SIDE, SIDE, -SIDE, -SIDE, SIDE, SIDE, -SIDE, SIDE},
             new float[]{0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1},
             new boolean[]{true, false, false, false, false, true, true, true},
-            new int[]{0, 1, 2, 2, 3, 0}
+            new int[]{0, 1, 2, 2, 3, 0},
+            BlockSide.FRONT
     );
 
     private static final CubeSideMeshData SIDE_RIGHT = new CubeSideMeshData(
             new float[]{SIDE, SIDE, SIDE, SIDE, -SIDE, SIDE, SIDE, -SIDE, -SIDE, SIDE, SIDE, -SIDE},
             new float[]{1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0},
             new boolean[]{false, false, false, true, true, true, true, false},
-            new int[]{0, 1, 2, 2, 3, 0}
+            new int[]{0, 1, 2, 2, 3, 0},
+            BlockSide.RIGHT
     );
 
     private static final CubeSideMeshData SIDE_TOP = new CubeSideMeshData(
             new float[]{SIDE, SIDE, SIDE, SIDE, SIDE, -SIDE, -SIDE, SIDE, -SIDE, -SIDE, SIDE, SIDE},
             new float[]{0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0},
             new boolean[]{true, true, true, false, false, false, false, true},
-            new int[]{0, 1, 2, 2, 3, 0}
+            new int[]{0, 1, 2, 2, 3, 0},
+            BlockSide.TOP
     );
 
     private static final CubeSideMeshData SIDE_LEFT = new CubeSideMeshData(
             new float[]{-SIDE, SIDE, SIDE, -SIDE, SIDE, -SIDE, -SIDE, -SIDE, -SIDE, -SIDE, -SIDE, SIDE},
             new float[]{-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0},
             new boolean[]{true, false, false, false, false, true, true, true},
-            new int[]{0, 1, 2, 2, 3, 0}
+            new int[]{0, 1, 2, 2, 3, 0},
+            BlockSide.LEFT
     );
 
     private static final CubeSideMeshData SIDE_BOTTOM = new CubeSideMeshData(
             new float[]{-SIDE, -SIDE, -SIDE, SIDE, -SIDE, -SIDE, SIDE, -SIDE, SIDE, -SIDE, -SIDE, SIDE},
             new float[]{0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0},
             new boolean[]{false, true, true, true, true, false, false, false},
-            new int[]{0, 1, 2, 2, 3, 0}
+            new int[]{0, 1, 2, 2, 3, 0},
+            BlockSide.BOTTOM
     );
 
     private static final CubeSideMeshData SIDE_BACK = new CubeSideMeshData(
             new float[]{SIDE, -SIDE, -SIDE, -SIDE, -SIDE, -SIDE, -SIDE, SIDE, -SIDE, SIDE, SIDE, -SIDE},
             new float[]{0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1},
             new boolean[]{false, true, true, true, true, false, false, false},
-            new int[]{0, 1, 2, 2, 3, 0}
+            new int[]{0, 1, 2, 2, 3, 0},
+            BlockSide.BACK
     );
 
-    private final Block[] blocks;
-    private final Vector3ic chunkPosition;
+    private final Chunk chunk;
 
-    public EffigyChunk(Block[] blocks, Vector3ic chunkPosition) {
-        this.blocks = blocks;
-        this.chunkPosition = chunkPosition;
-        if (blocks.length != VOLUME) {
-            String msg = String.format("Chunk size should be %s, but %s", VOLUME, blocks.length);
-            throw new IllegalArgumentException(msg);
-        }
+    public EffigyChunk(Chunk chunk) {
+        this.chunk = chunk;
     }
 
     @Override
@@ -112,32 +110,44 @@ public class EffigyChunk extends Effigy<ChunkShader> {
 
     @Override
     public Model loadModel() {
-        ArrayList<Float> vertices = new ArrayList<>(VOLUME * 3);
-        ArrayList<Float> textures = new ArrayList<>(VOLUME * 2);
-        ArrayList<Float> normals = new ArrayList<>(VOLUME * 3);
-        ArrayList<Integer> indices = new ArrayList<>(VOLUME * 2);
+        ArrayList<Float> vertices = new ArrayList<>(Chunk.VOLUME * 3);
+        ArrayList<Float> textures = new ArrayList<>(Chunk.VOLUME * 2);
+        ArrayList<Float> normals = new ArrayList<>(Chunk.VOLUME * 3);
+        ArrayList<Integer> indices = new ArrayList<>(Chunk.VOLUME * 2);
 
         TexturePackRepository texturePackRepository = getGraphics().getGraphicalRepository().getTexturePackRepository();
 
         Vector3f blockOffset = new Vector3f(0, 0, 0);
 
-        for (int x = 0, blockIdx = 0; x < SIZE; ++x) {
-            for (int y = 0; y < SIZE; ++y) {
-                for (int z = 0; z < SIZE; ++z, ++blockIdx) {
+        for (int x = 0; x < Chunk.SIZE; ++x) {
+            for (int y = 0; y < Chunk.SIZE; ++y) {
+                for (int z = 0; z < Chunk.SIZE; ++z) {
 
-                    Block block = blocks[blockIdx];
+                    Block block = getChunk().getBlock(x, y, z);
                     if (block == Block.AIR) {
                         continue;
                     }
                     TexturePackRepository.TextureCubeMap textureCubeMap = texturePackRepository.getCubeMap(block);
                     blockOffset.set(x * BLOCK_PHYSICAL_SIZE, y * BLOCK_PHYSICAL_SIZE, z * BLOCK_PHYSICAL_SIZE);
 
-                    SIDE_FRONT.fillArrays(vertices, normals, textures, indices, blockOffset, textureCubeMap.getSideFront());
-                    SIDE_RIGHT.fillArrays(vertices, normals, textures, indices, blockOffset, textureCubeMap.getSideRight());
-                    SIDE_TOP.fillArrays(vertices, normals, textures, indices, blockOffset, textureCubeMap.getSideTop());
-                    SIDE_LEFT.fillArrays(vertices, normals, textures, indices, blockOffset, textureCubeMap.getSideLeft());
-                    SIDE_BOTTOM.fillArrays(vertices, normals, textures, indices, blockOffset, textureCubeMap.getSideBottom());
-                    SIDE_BACK.fillArrays(vertices, normals, textures, indices, blockOffset, textureCubeMap.getSideBack());
+                    if (isSideVisible(x, y, z, SIDE_FRONT.blockSide)) {
+                        SIDE_FRONT.fillArrays(vertices, normals, textures, indices, blockOffset, textureCubeMap.getSideFront());
+                    }
+                    if (isSideVisible(x, y, z, SIDE_RIGHT.blockSide)) {
+                        SIDE_RIGHT.fillArrays(vertices, normals, textures, indices, blockOffset, textureCubeMap.getSideRight());
+                    }
+                    if (isSideVisible(x, y, z, SIDE_TOP.blockSide)) {
+                        SIDE_TOP.fillArrays(vertices, normals, textures, indices, blockOffset, textureCubeMap.getSideTop());
+                    }
+                    if (isSideVisible(x, y, z, SIDE_LEFT.blockSide)) {
+                        SIDE_LEFT.fillArrays(vertices, normals, textures, indices, blockOffset, textureCubeMap.getSideLeft());
+                    }
+                    if (isSideVisible(x, y, z, SIDE_BOTTOM.blockSide)) {
+                        SIDE_BOTTOM.fillArrays(vertices, normals, textures, indices, blockOffset, textureCubeMap.getSideBottom());
+                    }
+                    if (isSideVisible(x, y, z, SIDE_BACK.blockSide)) {
+                        SIDE_BACK.fillArrays(vertices, normals, textures, indices, blockOffset, textureCubeMap.getSideBack());
+                    }
 
                 }
             }
@@ -153,7 +163,7 @@ public class EffigyChunk extends Effigy<ChunkShader> {
                         new int[0],
                         new Material(texturePackRepository.getBlockAtlasTexture())
                 )},
-                new Vector3f(new Vector3f(chunkPosition).mul(CHUNK_PHYSICAL_SIZE)),
+                new Vector3f(new Vector3f(getChunk().getChunkPosition()).mul(CHUNK_PHYSICAL_SIZE)),
                 new Vector3f(0),
                 new Vector3f(1)
         );
@@ -179,6 +189,13 @@ public class EffigyChunk extends Effigy<ChunkShader> {
         return this;
     }
 
+    private boolean isSideVisible(int x, int y, int z, BlockSide side) {
+        int sx = x + side.getAdjacentBlockOffset().x();
+        int sy = y + side.getAdjacentBlockOffset().y();
+        int sz = z + side.getAdjacentBlockOffset().z();
+        return !getChunk().isInside(sx, sy, sz) || getChunk().getBlock(sx, sy, sz).isSemiTransparent();
+    }
+
     @RequiredArgsConstructor
     @Getter
     public static class CubeSideMeshData {
@@ -187,6 +204,7 @@ public class EffigyChunk extends Effigy<ChunkShader> {
         private final float[] normals;
         private final boolean[] textures;
         private final int[] indices;
+        private final BlockSide blockSide;
 
         public void fillArrays(
                 List<Float> vertices,

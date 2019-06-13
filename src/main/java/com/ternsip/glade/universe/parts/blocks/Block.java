@@ -1,19 +1,23 @@
 package com.ternsip.glade.universe.parts.blocks;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
+@Getter
 public enum Block {
 
-    AIR,
-    DIRT,
-    STONE,
-    LAWN,
-    WOOD,
-    LEAVES,
-    WATER,
-    LAVA,
-    SAND;
+    AIR(true),
+    DIRT(false),
+    STONE(false),
+    LAWN(false),
+    WOOD(false),
+    LEAVES(true),
+    WATER(true),
+    LAVA(false),
+    SAND(false);
+
+    private final boolean semiTransparent;
 
     public static Block getBlockByIndex(int index) {
         if (index < 0 || index > getSize()) {
