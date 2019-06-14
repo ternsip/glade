@@ -17,6 +17,9 @@ import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
  * You can work with fields in the thread without worrying about changes
  * The changes occurs only after calling update method
  * Receiving events is allowed from any thread
+ * If you log event with unsafe variables like links to unsafe objects you should:
+ * - do that only in the same thread with callbacks
+ * - avoid such situation if it is possible
  * It is supposed to use callbacks in the original thread only
  * During update method some data may be refreshed in another thread and hence be applied in current
  *
