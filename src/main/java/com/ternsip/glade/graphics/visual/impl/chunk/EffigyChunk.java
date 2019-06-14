@@ -12,13 +12,11 @@ import com.ternsip.glade.graphics.visual.repository.TextureRepository;
 import com.ternsip.glade.universe.common.Light;
 import com.ternsip.glade.universe.parts.blocks.Block;
 import com.ternsip.glade.universe.parts.blocks.BlockSide;
-import com.ternsip.glade.universe.parts.blocks.Chunk;
+import com.ternsip.glade.universe.parts.chunks.Chunk;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.joml.Matrix4f;
-import org.joml.Matrix4fc;
-import org.joml.Vector3f;
+import org.joml.*;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -27,7 +25,7 @@ import java.util.Set;
 @Setter
 public class EffigyChunk extends Effigy<ChunkShader> {
 
-    private static final float SIDE = 8f; // TODO should be one (testing)
+    private static final float SIDE = 0.5f;
     private static final float BLOCK_PHYSICAL_SIZE = 2 * SIDE;
     private static final float CHUNK_PHYSICAL_SIZE = BLOCK_PHYSICAL_SIZE * Chunk.SIZE;
 
@@ -118,25 +116,22 @@ public class EffigyChunk extends Effigy<ChunkShader> {
         TexturePackRepository texturePackRepository = getGraphics().getGraphicalRepository().getTexturePackRepository();
         Vector3f blockOffset = new Vector3f(0, 0, 0);
 
-        for (int x = 0; x < Chunk.SIZE; ++x) {
-            for (int y = 0; y < Chunk.SIZE; ++y) {
-                for (int z = 0; z < Chunk.SIZE; ++z) {
+        chunk.forEach((Vector3ic pos, Block block) -> {
+            if (block == Block.AIR) {
+                return;
+            }
+            TexturePackRepository.TextureCubeMap textureCubeMap = texturePackRepository.getCubeMap(block);
+            blockOffset.set(pos.x() * BLOCK_PHYSICAL_SIZE, pos.y() * BLOCK_PHYSICAL_SIZE, pos.z() * BLOCK_PHYSICAL_SIZE);
 
-                    Block block = getChunk().getBlock(x, y, z);
-                    if (block == Block.AIR) {
-                        continue;
-                    }
-                    TexturePackRepository.TextureCubeMap textureCubeMap = texturePackRepository.getCubeMap(block);
-                    blockOffset.set(x * BLOCK_PHYSICAL_SIZE, y * BLOCK_PHYSICAL_SIZE, z * BLOCK_PHYSICAL_SIZE);
-
-                    for (CubeSideMeshData meshDataSide : ALL_SIDES) {
-                        if (isSideVisible(x, y, z, meshDataSide.blockSide)) {
-                            chunkCombinator.fillArrays(blockOffset, textureCubeMap, meshDataSide);
-                        }
-                    }
-
+            for (CubeSideMeshData meshDataSide : ALL_SIDES) {
+                if (isSideVisible(pos, meshDataSide.blockSide)) {
+                    chunkCombinator.fillArrays(blockOffset, textureCubeMap, meshDataSide);
                 }
             }
+        });
+
+        if (chunkCombinator.isEmpty()) {
+            return new Model();
         }
 
         return new Model(
@@ -177,15 +172,13 @@ public class EffigyChunk extends Effigy<ChunkShader> {
         return this;
     }
 
-    private boolean isSideVisible(int x, int y, int z, BlockSide side) {
-        int sx = x + side.getAdjacentBlockOffset().x();
-        int sy = y + side.getAdjacentBlockOffset().y();
-        int sz = z + side.getAdjacentBlockOffset().z();
-        if (!getChunk().isInside(sx, sy, sz)) {
+    private boolean isSideVisible(Vector3ic pos, BlockSide side) {
+        Vector3ic sPos = new Vector3i(pos).add(side.getAdjacentBlockOffset());
+        if (!getChunk().isInside(sPos)) {
             return true;
         }
-        Block curBlock = getChunk().getBlock(x, y, z);
-        Block nextBlock = getChunk().getBlock(sx, sy, sz);
+        Block curBlock = getChunk().getBlock(pos);
+        Block nextBlock = getChunk().getBlock(sPos);
         return (nextBlock.isSemiTransparent() && (curBlock != nextBlock || !curBlock.isCombineSides()));
     }
 
@@ -231,6 +224,10 @@ public class EffigyChunk extends Effigy<ChunkShader> {
                 textures.add(cubeSideMeshData.getTextures()[i] ? atlasFragment.getEndU() : atlasFragment.getStartU());
                 textures.add(cubeSideMeshData.getTextures()[i + 1] ? atlasFragment.getEndV() : atlasFragment.getStartV());
             }
+        }
+
+        public boolean isEmpty() {
+            return vertices.isEmpty();
         }
 
     }

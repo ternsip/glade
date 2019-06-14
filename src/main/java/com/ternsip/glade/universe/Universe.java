@@ -9,7 +9,7 @@ import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.base.EntityTransformable;
 import com.ternsip.glade.universe.entities.impl.*;
 import com.ternsip.glade.universe.entities.repository.EntityRepository;
-import com.ternsip.glade.universe.parts.blocks.Chunks;
+import com.ternsip.glade.universe.parts.chunks.Chunks;
 import com.ternsip.glade.universe.storage.Storage;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -107,9 +107,9 @@ public class Universe {
     }
 
     private void generateChunks() {
-        for (int cx = 0; cx < 1; ++cx) {
-            for (int cy = 0; cy < 1; ++cy) {
-                for (int cz = 0; cz < 1; ++cz) {
+        for (int cx = 0; cx < 4; ++cx) {
+            for (int cy = 0; cy < 8; ++cy) {
+                for (int cz = 0; cz < 4; ++cz) {
                     int finalCx = cx;
                     int finalCy = cy;
                     int finalCz = cz;

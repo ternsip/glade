@@ -1,11 +1,11 @@
 package com.ternsip.glade.graphics.general;
 
-import com.sun.istack.internal.Nullable;
 import com.ternsip.glade.graphics.display.Graphical;
 import com.ternsip.glade.graphics.visual.repository.TextureRepository;
 import lombok.Getter;
 import org.joml.Vector4f;
 
+import javax.annotation.Nullable;
 import java.io.File;
 
 import static com.ternsip.glade.graphics.visual.repository.TextureRepository.MISSING_TEXTURE;
