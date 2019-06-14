@@ -7,18 +7,19 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum Block {
 
-    AIR(true, true),
-    DIRT(false, false),
-    STONE(false, false),
-    LAWN(false, false),
-    WOOD(false, false),
-    LEAVES(true, false),
-    WATER(true, true),
-    LAVA(false, false),
-    SAND(false, false);
+    AIR(true, true, 0),
+    DIRT(false, false, 16),
+    STONE(false, false, 16),
+    LAWN(false, false, 16),
+    WOOD(false, false, 16),
+    LEAVES(true, false, 4),
+    WATER(true, true, 1),
+    LAVA(false, false, 1),
+    SAND(false, false, 16);
 
     private final boolean semiTransparent;
     private final boolean combineSides;
+    private final int lightOpacity;
 
     public static Block getBlockByIndex(int index) {
         if (index < 0 || index > getSize()) {

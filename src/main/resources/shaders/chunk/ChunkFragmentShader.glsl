@@ -10,6 +10,7 @@ struct TextureData {
 };
 
 in vec2 pass_textureCoords;
+in float pass_ambient;
 in vec3 pass_normal;
 
 out vec4 out_colour;
@@ -30,7 +31,7 @@ vec4 getTextureColor(TextureData textureData, bool mainTexture) {
 
 void main(void){
 
-    vec3 base_ambient = vec3(1, 1, 1);
+    vec3 base_ambient = vec3(pass_ambient, pass_ambient, pass_ambient);
     float ambient_multiplier = 0.5;
     float diffuseFactor = 0.6;
 

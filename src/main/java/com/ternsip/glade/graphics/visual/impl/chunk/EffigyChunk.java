@@ -126,7 +126,7 @@ public class EffigyChunk extends Effigy<ChunkShader> {
 
             for (CubeSideMeshData meshDataSide : ALL_SIDES) {
                 if (isSideVisible(pos, meshDataSide.blockSide)) {
-                    chunkCombinator.fillArrays(blockOffset, textureCubeMap, meshDataSide);
+                    chunkCombinator.fillArrays(blockOffset, 0.5f, textureCubeMap, meshDataSide);
                 }
             }
         });
@@ -139,7 +139,7 @@ public class EffigyChunk extends Effigy<ChunkShader> {
                 new Mesh[]{new Mesh(
                         Utils.listToFloatArray(chunkCombinator.getVertices()),
                         Utils.listToFloatArray(chunkCombinator.getNormals()),
-                        new float[0],
+                        Utils.listToFloatArray(chunkCombinator.getColors()),
                         Utils.listToFloatArray(chunkCombinator.getTextures()),
                         Utils.listToIntArray(chunkCombinator.getIndices()),
                         new float[0],
@@ -203,10 +203,12 @@ public class EffigyChunk extends Effigy<ChunkShader> {
         private final ArrayList<Float> vertices = new ArrayList<>(Chunk.VOLUME * 3);
         private final ArrayList<Float> textures = new ArrayList<>(Chunk.VOLUME * 2);
         private final ArrayList<Float> normals = new ArrayList<>(Chunk.VOLUME * 3);
+        private final ArrayList<Float> colors = new ArrayList<>(Chunk.VOLUME * 4);
         private final ArrayList<Integer> indices = new ArrayList<>(Chunk.VOLUME * 2);
 
         public void fillArrays(
                 Vector3f blockOffset,
+                float ambientLight,
                 TexturePackRepository.TextureCubeMap textureCubeMap,
                 CubeSideMeshData cubeSideMeshData
         ) {
@@ -218,6 +220,11 @@ public class EffigyChunk extends Effigy<ChunkShader> {
                 vertices.add(cubeSideMeshData.getVertices()[i] + blockOffset.x());
                 vertices.add(cubeSideMeshData.getVertices()[i + 1] + blockOffset.y());
                 vertices.add(cubeSideMeshData.getVertices()[i + 2] + blockOffset.z());
+
+                colors.add(0f);
+                colors.add(0f);
+                colors.add(0f);
+                colors.add(ambientLight);
             }
             for (float normal : cubeSideMeshData.getNormals()) {
                 normals.add(normal);
