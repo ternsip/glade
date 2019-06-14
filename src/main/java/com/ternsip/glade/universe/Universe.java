@@ -3,7 +3,6 @@ package com.ternsip.glade.universe;
 import com.ternsip.glade.common.events.base.EventSnapReceiver;
 import com.ternsip.glade.graphics.visual.impl.basis.Effigy3DText;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigyAxis;
-import com.ternsip.glade.graphics.visual.impl.chunk.EffigyChunk;
 import com.ternsip.glade.graphics.visual.impl.test.*;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.base.EntityTransformable;
@@ -58,21 +57,21 @@ public class Universe {
 
         new EntitySun(new Vector2f(0, 0), new Vector2f(20000, 20000), new Vector3f(1, 1, 1));
 
-        EntityGeneric cube = new EntityGeneric(() -> new EffigyCube());
+        EntityGenericTransformable cube = new EntityGenericTransformable(() -> new EffigyCube());
 
-        EntityGeneric lamp = new EntityGeneric(() -> new EffigyLamp());
+        EntityGenericTransformable lamp = new EntityGenericTransformable(() -> new EffigyLamp());
         lamp.setPosition(new Vector3f(-60f, 0, -60));
         lamp.setScale(new Vector3f(40, 40, 40));
 
-        EntityGeneric bottle = new EntityGeneric(() -> new EffigyBottle());
+        EntityGenericTransformable bottle = new EntityGenericTransformable(() -> new EffigyBottle());
         bottle.setPosition(new Vector3f(-30f, 0, -20));
         bottle.setScale(new Vector3f(5, 5, 5));
 
-        EntityGeneric zebra = new EntityGeneric(() -> new EffigyZebra());
+        EntityGenericTransformable zebra = new EntityGenericTransformable(() -> new EffigyZebra());
         zebra.setPosition(new Vector3f(-20f, 0, -20));
         zebra.setScale(new Vector3f(30, 30, 30));
 
-        EntityGeneric wolf = new EntityGeneric(() -> new EffigyWolf());
+        EntityGenericTransformable wolf = new EntityGenericTransformable(() -> new EffigyWolf());
         wolf.setPosition(new Vector3f(-140f, 0, -40));
         wolf.setScale(new Vector3f(30, 30, 30));
 
@@ -80,20 +79,20 @@ public class Universe {
         hagrid.setPosition(new Vector3f(20f, 2, 2));
         hagrid.setScale(new Vector3f(15, 15, 15));
 
-        EntityGeneric spider = new EntityGeneric(() -> new EffigySpider());
+        EntityGenericTransformable spider = new EntityGenericTransformable(() -> new EffigySpider());
         spider.setPosition(new Vector3f(20f, 2, -20));
         spider.setScale(new Vector3f(5, 5, 5));
 
-        EntityGeneric warrior = new EntityGeneric(() -> new EffigyWarrior());
+        EntityGenericTransformable warrior = new EntityGenericTransformable(() -> new EffigyWarrior());
         warrior.setPosition(new Vector3f(-20f, 2, 2));
         warrior.setScale(new Vector3f(10, 10, 10));
 
-        EntityGeneric dude = new EntityGeneric(() -> new EffigyDude());
+        EntityGenericTransformable dude = new EntityGenericTransformable(() -> new EffigyDude());
         dude.setPosition(new Vector3f(-20f, 0, -20));
         dude.setScale(new Vector3f(10f, 10f, 10f));
 
         new EntityGenericRotating(() -> new Effigy3DText(new File("fonts/default.png"), "Hello world!"), new Vector3f(0, 0.1f, 0));
-        new EntityGeneric(() -> new EffigyAxis());
+        new EntityGenericTransformable(() -> new EffigyAxis());
 
         new EntityStatistics();
 
@@ -110,10 +109,7 @@ public class Universe {
         for (int cx = 0; cx < 16; ++cx) {
             for (int cy = 0; cy < 8; ++cy) {
                 for (int cz = 0; cz < 16; ++cz) {
-                    int finalCx = cx;
-                    int finalCy = cy;
-                    int finalCz = cz;
-                    new EntityGeneric(() -> new EffigyChunk(getChunks().getChunk(new Vector3i(finalCx, finalCy, finalCz))));
+                    new EntityChunk(getChunks().getChunk(new Vector3i(cx, cy, cz)));
                 }
             }
         }

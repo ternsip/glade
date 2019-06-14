@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
+import org.joml.Vector4fc;
 
 import java.io.File;
 
@@ -23,7 +23,7 @@ public class EffigyGlyph extends EffigyAnimated {
     private static final Matrix4fc EMPTY_MATRIX = new Matrix4f();
     private final File font;
     private final char symbol;
-    private final Vector4f color;
+    private final Vector4fc color;
 
     public Model loadModel() {
         Mesh mesh = Effigy3DText.createTextMesh(String.valueOf(symbol), new Material(new Texture(color, font)));
@@ -60,7 +60,7 @@ public class EffigyGlyph extends EffigyAnimated {
     private static class GlyphKey {
         private final File font;
         private final char symbol;
-        private final Vector4f color;
+        private final Vector4fc color;
     }
 
 }

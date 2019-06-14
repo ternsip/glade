@@ -3,6 +3,7 @@ package com.ternsip.glade.universe.parts.chunks;
 import com.ternsip.glade.universe.common.Universal;
 import com.ternsip.glade.universe.parts.blocks.Block;
 import lombok.Getter;
+import lombok.Setter;
 import org.joml.Random;
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
@@ -10,6 +11,7 @@ import org.joml.Vector3ic;
 import java.io.Serializable;
 
 @Getter
+@Setter
 public class Chunk implements Serializable, Universal {
 
     public static final int SIZE = 16;
@@ -17,6 +19,9 @@ public class Chunk implements Serializable, Universal {
 
     private final Block[][][] blocks;
     private final Vector3ic chunkPosition;
+    private transient final int[][][] light;
+    private transient boolean logicReloadRequired = false;
+    private transient boolean visualReloadRequired = false;
 
     public Chunk(Vector3ic chunkPosition) {
         this(createEmptyBlockArray(), chunkPosition);
@@ -28,6 +33,30 @@ public class Chunk implements Serializable, Universal {
         if (blocks.length != SIZE || blocks[0].length != SIZE || blocks[0][0].length != SIZE) {
             throw new IllegalArgumentException("Invalid Chunk size");
         }
+        this.light = new int[SIZE][SIZE][SIZE];
+    }
+
+    private static Block[][][] createEmptyBlockArray() {
+        Block[][][] blocks = new Block[SIZE][SIZE][SIZE];
+        for (int x = 0; x < SIZE; ++x) {
+            for (int y = 0; y < SIZE; ++y) {
+                for (int z = 0; z < SIZE; ++z) {
+                    blocks[x][y][z] = Block.AIR;
+                }
+            }
+        }
+        return blocks;
+    }
+
+    public void update() {
+        if (logicReloadRequired) {
+            recalculateLight();
+            setLogicReloadRequired(false);
+        }
+    }
+
+    public void recalculateLight() {
+
     }
 
     public boolean isInside(Vector3ic pos) {
@@ -85,18 +114,6 @@ public class Chunk implements Serializable, Universal {
     @FunctionalInterface
     public interface ProcessEachBlock {
         void apply(Vector3ic pos, Block block);
-    }
-
-    private static Block[][][] createEmptyBlockArray() {
-        Block[][][] blocks = new Block[SIZE][SIZE][SIZE];
-        for (int x = 0; x < SIZE; ++x) {
-            for (int y = 0; y < SIZE; ++y) {
-                for (int z = 0; z < SIZE; ++z) {
-                    blocks[x][y][z] = Block.AIR;
-                }
-            }
-        }
-        return blocks;
     }
 
 }

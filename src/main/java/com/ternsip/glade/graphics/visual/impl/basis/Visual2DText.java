@@ -4,9 +4,10 @@ package com.ternsip.glade.graphics.visual.impl.basis;
 import com.ternsip.glade.graphics.visual.base.Effigy;
 import com.ternsip.glade.graphics.visual.base.MultiVisual;
 import lombok.Getter;
-import org.joml.Vector2i;
+import org.joml.Vector2ic;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
+import org.joml.Vector3fc;
+import org.joml.Vector4fc;
 
 import java.io.File;
 
@@ -15,20 +16,20 @@ public class Visual2DText extends MultiVisual {
 
     private static final float TEXT_COMPRESSION = 0.8f;
 
-    public Visual2DText(File font, String text, Vector3f position, Vector3f scale, Vector4f color) {
+    public Visual2DText(File font, String text, Vector3fc position, Vector3fc scale, Vector4fc color) {
         super(generateEntities(font, text, position, scale, color));
     }
 
-    public Visual2DText(File font, String text, Vector2i position, Vector2i maxChars, Vector4f color) {
+    public Visual2DText(File font, String text, Vector2ic position, Vector2ic maxChars, Vector4fc color) {
         super(generateEntities(font, text, position, maxChars, color));
     }
 
     private static Effigy[] generateEntities(
             File font,
             String text,
-            Vector3f position,
-            Vector3f scale,
-            Vector4f color
+            Vector3fc position,
+            Vector3fc scale,
+            Vector4fc color
     ) {
         Effigy[] entities = new Effigy[text.length()];
         for (int i = 0; i < text.length(); ++i) {
@@ -42,9 +43,9 @@ public class Visual2DText extends MultiVisual {
     private static Effigy[] generateEntities(
             File font,
             String text,
-            Vector2i position,
-            Vector2i maxChars,
-            Vector4f color
+            Vector2ic position,
+            Vector2ic maxChars,
+            Vector4fc color
     ) {
         Vector3f scale3 = new Vector3f(2f / maxChars.x(), 2f / maxChars.y(), 1);
         Vector3f pos3 = new Vector3f(

@@ -181,7 +181,7 @@ public class EffigyChunk extends Effigy<ChunkShader> {
             return true;
         }
         Block curBlock = chunks.getBlock(worldPos);
-        Block nextBlock =  chunks.getBlock(nextBlockWorldPos);
+        Block nextBlock = chunks.getBlock(nextBlockWorldPos);
         return (nextBlock.isSemiTransparent() && (curBlock != nextBlock || !curBlock.isCombineSides()));
     }
 

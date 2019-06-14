@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 
 @RequiredArgsConstructor
 @Getter
-public class EntityGeneric extends EntityTransformable<Effigy> {
+public class EntityGenericTransformable extends EntityTransformable<Effigy> {
 
     private final Supplier<Effigy> loadVisual;
 
@@ -20,7 +20,6 @@ public class EntityGeneric extends EntityTransformable<Effigy> {
 
     @Override
     public void update() {
-
     }
 
 }

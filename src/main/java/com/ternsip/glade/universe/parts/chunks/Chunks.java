@@ -24,6 +24,13 @@ public class Chunks implements Universal {
 
     private HashMap<Vector3ic, Chunk> positionToChunk = new HashMap<>();
 
+    private static List<ChunkGenerator> constructChunkGenerators() {
+        return Utils.getAllClasses(ChunkGenerator.class).stream()
+                .map(Utils::createInstanceSilently)
+                .sorted(Comparator.comparing(ChunkGenerator::getPriority))
+                .collect(Collectors.toList());
+    }
+
     public Chunk getChunk(Vector3ic position) {
         if (!isChunkInMemory(position)) {
             if (!isChunkGenerated(position)) {
@@ -82,13 +89,6 @@ public class Chunks implements Universal {
 
     private Chunk loadChunk(Vector3ic position) {
         return getUniverse().getUniverseStorage().load(position);
-    }
-
-    private static List<ChunkGenerator> constructChunkGenerators() {
-        return Utils.getAllClasses(ChunkGenerator.class).stream()
-                .map(Utils::createInstanceSilently)
-                .sorted(Comparator.comparing(ChunkGenerator::getPriority))
-                .collect(Collectors.toList());
     }
 
 }

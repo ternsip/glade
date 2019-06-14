@@ -4,6 +4,7 @@ import com.ternsip.glade.graphics.display.Graphical;
 import com.ternsip.glade.graphics.visual.repository.TextureRepository;
 import lombok.Getter;
 import org.joml.Vector4f;
+import org.joml.Vector4fc;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -17,14 +18,14 @@ public class Texture implements Graphical {
 
     private final boolean texturePresent;
     private final boolean colorPresent;
-    private final Vector4f color;
+    private final Vector4fc color;
     private final TextureRepository.Texture atlasTexture;
 
     public Texture() {
         this(null, null);
     }
 
-    public Texture(@Nullable Vector4f color, @Nullable File file) {
+    public Texture(@Nullable Vector4fc color, @Nullable File file) {
         this.texturePresent = file != null;
         this.colorPresent = color != null;
         this.color = colorPresent ? color : DEFAULT_COLOR;

@@ -46,23 +46,23 @@ public abstract class Effigy<SHADER extends ShaderProgram> implements Visual, Tr
         return new Vector3f(getPosition()).add(getModel().getBaseOffset());
     }
 
-    public void setPosition(Vector3f position) {
+    public void setPosition(Vector3fc position) {
         this.position.set(position);
     }
 
-    public void setScale(Vector3f scale) {
+    public void setScale(Vector3fc scale) {
         this.scale.set(scale);
     }
 
-    public void setRotation(Vector3f rotation) {
+    public void setRotation(Vector3fc rotation) {
         this.rotation.set(rotation);
     }
 
-    public void increasePosition(Vector3f delta) {
+    public void increasePosition(Vector3fc delta) {
         position.add(delta);
     }
 
-    public void increaseRotation(Vector3f delta) {
+    public void increaseRotation(Vector3fc delta) {
         rotation.add(delta);
     }
 
