@@ -14,8 +14,13 @@ public class ModelRepository {
         modelKeyToModel.values().forEach(Model::finish);
     }
 
-    public Model getGraphicalModel(Effigy effigy) {
+    public Model getEffigyModel(Effigy effigy) {
         return modelKeyToModel.computeIfAbsent(effigy.getModelKey(), e -> effigy.loadModel());
+    }
+
+    public void removeEffigyModel(Effigy effigy) {
+        modelKeyToModel.get(effigy.getModelKey()).finish();
+        modelKeyToModel.remove(effigy.getModelKey());
     }
 
 }

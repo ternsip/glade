@@ -1,32 +1,19 @@
 package com.ternsip.glade.universe.entities.impl;
 
-import com.ternsip.glade.graphics.visual.impl.basis.DynamicText2D;
-import com.ternsip.glade.universe.entities.base.Entity;
+import com.ternsip.glade.graphics.display.Graphics;
 import lombok.RequiredArgsConstructor;
 import org.joml.Vector2i;
 import org.joml.Vector4f;
 
-import java.io.File;
-
 @RequiredArgsConstructor
-public class EntityStatistics extends Entity<DynamicText2D> {
+public class EntityStatistics extends EntityDynamicText2D {
 
     @Override
-    public DynamicText2D getVisual() {
-        return new DynamicText2D(new File("fonts/default.png"));
-    }
-
-    @Override
-    public void update(DynamicText2D visual) {
+    public void graphicalUpdate(Graphics graphics) {
         StringBuilder sb = new StringBuilder();
-        sb.append("FPS : ").append(visual.getGraphics().getWindowData().getFps()).append(System.lineSeparator());
-        sb.append("Entities : ").append(visual.getGraphics().getGraphicalRepository().getLastSeenNumberOfEntitiesInFrustum());
-        visual.changeText(sb.toString(), new Vector2i(0, 0), new Vector2i(75, 75), new Vector4f(1, 1, 0, 1));
-    }
-
-    @Override
-    public void update() {
-
+        sb.append("FPS : ").append(graphics.getWindowData().getFps()).append(System.lineSeparator());
+        sb.append("Entities : ").append(graphics.getGraphicalRepository().getLastSeenNumberOfEntitiesInFrustum());
+        changeText(sb.toString(), new Vector2i(0, 0), new Vector2i(75, 75), new Vector4f(1, 1, 0, 1));
     }
 
 }

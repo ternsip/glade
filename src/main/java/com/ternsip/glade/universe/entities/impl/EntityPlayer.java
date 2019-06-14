@@ -1,14 +1,14 @@
 package com.ternsip.glade.universe.entities.impl;
 
 import com.ternsip.glade.graphics.visual.impl.test.EffigyBoy;
-import com.ternsip.glade.universe.entities.base.EntityTransformable;
+import com.ternsip.glade.universe.entities.base.Entity;
 import lombok.Getter;
 import org.joml.Vector3f;
 
 import static org.lwjgl.glfw.GLFW.*;
 
 @Getter
-public class EntityPlayer extends EntityTransformable<EffigyBoy> {
+public class EntityPlayer extends Entity<EffigyBoy> {
 
     private static final float RUN_SPEED = 5;
     private static final float TURN_SPEED = 0.02f;
@@ -19,17 +19,17 @@ public class EntityPlayer extends EntityTransformable<EffigyBoy> {
     private float upwardsSpeed = 0;
 
     @Override
-    public void update(EffigyBoy visual) {
-        super.update(visual);
-    }
-
-    @Override
     public void finish() {
         super.finish();
     }
 
     @Override
-    public EffigyBoy getVisual() {
+    public void update(EffigyBoy effigy) {
+        super.update(effigy);
+    }
+
+    @Override
+    public EffigyBoy getEffigy() {
         return new EffigyBoy();
     }
 

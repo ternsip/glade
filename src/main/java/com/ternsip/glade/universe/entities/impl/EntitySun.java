@@ -27,13 +27,13 @@ public class EntitySun extends Entity<EffigySky> implements Light {
     }
 
     @Override
-    public EffigySky getVisual() {
-        return new EffigySky();
+    public void update(EffigySky effigy) {
+        effigy.setSunPosition(getPosition());
     }
 
     @Override
-    public void update(EffigySky visual) {
-        visual.setSunPosition(getPosition());
+    public EffigySky getEffigy() {
+        return new EffigySky();
     }
 
     @Override

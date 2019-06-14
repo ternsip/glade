@@ -1,7 +1,9 @@
 package com.ternsip.glade.graphics.visual.base;
 
 import com.ternsip.glade.common.logic.Maths;
+import com.ternsip.glade.common.logic.Transformable;
 import com.ternsip.glade.common.logic.Utils;
+import com.ternsip.glade.graphics.display.Graphical;
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.shader.base.ShaderProgram;
 import com.ternsip.glade.universe.common.Light;
@@ -12,10 +14,10 @@ import java.lang.Math;
 import java.util.Set;
 
 @Getter
-public abstract class Effigy<SHADER extends ShaderProgram> implements Visual, Transformable {
+public abstract class Effigy<SHADER extends ShaderProgram> implements Transformable, Graphical {
 
     @Getter(lazy = true)
-    private final Model model = getGraphics().getGraphicalRepository().getModelRepository().getGraphicalModel(this);
+    private final Model model = getGraphics().getGraphicalRepository().getModelRepository().getEffigyModel(this);
 
     @Getter(lazy = true)
     private final SHADER shader = getGraphics().getGraphicalRepository().getShaderRepository().getShader(this);
@@ -23,10 +25,6 @@ public abstract class Effigy<SHADER extends ShaderProgram> implements Visual, Tr
     private final Vector3f position = new Vector3f(0);
     private final Vector3f scale = new Vector3f(1);
     private final Vector3f rotation = new Vector3f(0);
-
-    public Effigy() {
-        getGraphics().getGraphicalRepository().addGraphical(this);
-    }
 
     public Matrix4f getTransformationMatrix() {
         Vector3fc totalScale = getAdjustedScale().mul(getModel().getNormalizingScale());
@@ -70,6 +68,23 @@ public abstract class Effigy<SHADER extends ShaderProgram> implements Visual, Tr
 
     public abstract Model loadModel();
 
+    public boolean deleteModelOnFinish() {
+        return false;
+    }
+
+    public boolean deleteShaderOnFinish() {
+        return false;
+    }
+
+    public void finish() {
+        if (deleteModelOnFinish()) {
+            getGraphics().getGraphicalRepository().getModelRepository().getEffigyModel(this);
+        }
+        if (deleteShaderOnFinish()) {
+            getGraphics().getGraphicalRepository().getShaderRepository().removeShader(this);
+        }
+    }
+
     public int getPriority() {
         return 0;
     }
@@ -85,10 +100,6 @@ public abstract class Effigy<SHADER extends ShaderProgram> implements Visual, Tr
         Matrix4fc view = getGraphics().getGraphicalRepository().getCamera().getViewMatrix();
         Matrix4fc projectionViewMatrix = projection.mul(view, new Matrix4f());
         return new FrustumIntersection(projectionViewMatrix);
-    }
-
-    public void finish() {
-        getGraphics().getGraphicalRepository().removeGraphical(this);
     }
 
     public float getSquaredDistanceToCamera() {

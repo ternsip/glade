@@ -22,4 +22,9 @@ public class ShaderRepository {
         );
     }
 
+    public void removeShader(Effigy effigy) {
+        keyToShader.get(effigy.getShaderKey()).finish();
+        keyToShader.remove(effigy.getShaderKey());
+    }
+
 }

@@ -2,7 +2,7 @@ package com.ternsip.glade.universe.entities.repository;
 
 import com.ternsip.glade.universe.common.Light;
 import com.ternsip.glade.universe.entities.base.Entity;
-import com.ternsip.glade.universe.entities.base.EntityTransformable;
+import com.ternsip.glade.universe.entities.base.MultiEntity;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,11 +14,20 @@ import java.util.concurrent.ConcurrentHashMap;
 @Setter
 public class EntityRepository {
 
-    public static final EntityTransformable NO_CAMERA_TARGET = null;
+    public static final Entity NO_CAMERA_TARGET = null;
 
+    private final Set<MultiEntity> multiEntities = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private final Set<Entity> entities = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private final Set<Light> lights = Collections.newSetFromMap(new ConcurrentHashMap<>());
-    private EntityTransformable cameraTarget = NO_CAMERA_TARGET;
+    private Entity cameraTarget = NO_CAMERA_TARGET;
+
+    public void register(MultiEntity entity) {
+        multiEntities.add(entity);
+    }
+
+    public void unregister(MultiEntity entity) {
+        multiEntities.remove(entity);
+    }
 
     public void register(Entity entity) {
         entities.add(entity);
@@ -32,6 +41,11 @@ public class EntityRepository {
         if (entity instanceof Light) {
             lights.remove(entity);
         }
+    }
+
+    public void update() {
+        getMultiEntities().forEach(MultiEntity::update);
+        getEntities().forEach(Entity::update);
     }
 
 }

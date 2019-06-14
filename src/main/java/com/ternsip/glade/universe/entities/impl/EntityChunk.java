@@ -1,7 +1,7 @@
 package com.ternsip.glade.universe.entities.impl;
 
-import com.ternsip.glade.graphics.visual.impl.basis.DynamicReloadable;
-import com.ternsip.glade.graphics.visual.impl.chunk.EffigyChunk;
+import com.ternsip.glade.graphics.visual.base.Effigy;
+import com.ternsip.glade.graphics.visual.impl.basis.EffigyChunk;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.parts.chunks.Chunk;
 import lombok.Getter;
@@ -9,21 +9,13 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public class EntityChunk extends Entity<DynamicReloadable> {
+public class EntityChunk extends Entity {
 
     private final Chunk chunk;
 
     @Override
-    public DynamicReloadable getVisual() {
-        return new DynamicReloadable(() -> new EffigyChunk(chunk));
-    }
-
-    @Override
-    public void update(DynamicReloadable visual) {
-        if (getChunk().isVisualReloadRequired()) {
-            visual.reload();
-            getChunk().setLogicReloadRequired(false);
-        }
+    public Effigy getEffigy() {
+        return new EffigyChunk(getChunk());
     }
 
     @Override
@@ -31,4 +23,13 @@ public class EntityChunk extends Entity<DynamicReloadable> {
         getChunk().update();
     }
 
+    @Override
+    public boolean isVisualReloadRequired() {
+        return getChunk().isVisualReloadRequired();
+    }
+
+    @Override
+    public void setVisualReloadRequired(boolean visualReloadRequired) {
+        getChunk().setVisualReloadRequired(visualReloadRequired);
+    }
 }
