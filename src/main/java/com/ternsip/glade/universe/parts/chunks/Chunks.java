@@ -14,6 +14,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * This class and all folded data should be thread safe
+ */
 @Getter(AccessLevel.PRIVATE)
 public class Chunks implements Universal {
 

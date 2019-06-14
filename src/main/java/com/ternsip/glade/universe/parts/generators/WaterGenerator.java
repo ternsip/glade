@@ -6,7 +6,7 @@ import org.joml.Vector3ic;
 
 public class WaterGenerator implements ChunkGenerator {
 
-    private final int waterHeight = 64;
+    private final int waterHeight = 60;
 
     @Override
     public int getPriority() {

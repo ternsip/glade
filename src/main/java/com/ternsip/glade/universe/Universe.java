@@ -107,9 +107,9 @@ public class Universe {
     }
 
     private void generateChunks() {
-        for (int cx = 0; cx < 4; ++cx) {
+        for (int cx = 0; cx < 16; ++cx) {
             for (int cy = 0; cy < 8; ++cy) {
-                for (int cz = 0; cz < 4; ++cz) {
+                for (int cz = 0; cz < 16; ++cz) {
                     int finalCx = cx;
                     int finalCy = cy;
                     int finalCz = cz;
