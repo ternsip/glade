@@ -27,6 +27,7 @@ public class Universe {
 
     public void initialize() {
         spawnTestEntities();
+        generateChunks();
     }
 
     @SneakyThrows
@@ -91,8 +92,6 @@ public class Universe {
 
         new EntityStatistics();
 
-        generateChunks();
-
         for (int i = 0; i < 10; ++i) {
             for (int j = 0; j < 10; ++j) {
                 EntityTransformable hagrid1 = new EntityGenericRotating(() -> new EffigyHagrid(), new Vector3f(0, 0.01f, 0));
@@ -103,9 +102,9 @@ public class Universe {
     }
 
     private void generateChunks() {
-        for (int cx = 0; cx < 2; ++cx) {
-            for (int cy = 0; cy < 2; ++cy) {
-                for (int cz = 0; cz < 2; ++cz) {
+        for (int cx = 0; cx < 1; ++cx) {
+            for (int cy = 0; cy < 1; ++cy) {
+                for (int cz = 0; cz < 1; ++cz) {
                     int finalCx = cx;
                     int finalCy = cy;
                     int finalCz = cz;

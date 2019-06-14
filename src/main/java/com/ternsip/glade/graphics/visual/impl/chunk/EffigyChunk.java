@@ -193,7 +193,12 @@ public class EffigyChunk extends Effigy<ChunkShader> {
         int sx = x + side.getAdjacentBlockOffset().x();
         int sy = y + side.getAdjacentBlockOffset().y();
         int sz = z + side.getAdjacentBlockOffset().z();
-        return !getChunk().isInside(sx, sy, sz) || getChunk().getBlock(sx, sy, sz).isSemiTransparent();
+        if (!getChunk().isInside(sx, sy, sz)) {
+            return true;
+        }
+        Block curBlock = getChunk().getBlock(x, y, z);
+        Block nextBlock = getChunk().getBlock(sx, sy, sz);
+        return (nextBlock.isSemiTransparent() && (curBlock != nextBlock || !curBlock.isCombineSides()));
     }
 
     @RequiredArgsConstructor
@@ -214,6 +219,10 @@ public class EffigyChunk extends Effigy<ChunkShader> {
                 Vector3f blockOffset,
                 TextureRepository.AtlasFragment atlasFragment
         ) {
+            int offset = vertices.size() / 3;
+            for (int index : this.indices) {
+                indices.add(index + offset);
+            }
             for (int i = 0; i < this.vertices.length; i += 3) {
                 vertices.add(this.vertices[i] + blockOffset.x());
                 vertices.add(this.vertices[i + 1] + blockOffset.y());
@@ -221,10 +230,6 @@ public class EffigyChunk extends Effigy<ChunkShader> {
             }
             for (float normal : this.normals) {
                 normals.add(normal);
-            }
-            int offset = vertices.size() / 3;
-            for (int index : this.indices) {
-                indices.add(index + offset);
             }
             for (int i = 0; i < this.textures.length; i += 2) {
                 textures.add(this.textures[i] ? atlasFragment.getEndU() : atlasFragment.getStartU());
