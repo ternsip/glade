@@ -3,6 +3,7 @@ package com.ternsip.glade.graphics.visual.repository;
 import com.ternsip.glade.graphics.display.Graphical;
 import com.ternsip.glade.graphics.general.Texture;
 import com.ternsip.glade.universe.parts.blocks.Block;
+import com.ternsip.glade.universe.parts.blocks.BlockSide;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -128,6 +129,28 @@ public class TexturePackRepository implements Graphical {
         private final TextureRepository.AtlasFragment sideRight;
         private final TextureRepository.AtlasFragment sideFront;
         private final TextureRepository.AtlasFragment sideBack;
+
+        public TextureRepository.AtlasFragment getByBlockSide(BlockSide side) {
+            if (side == BlockSide.TOP) {
+                return sideTop;
+            }
+            if (side == BlockSide.BOTTOM) {
+                return sideBottom;
+            }
+            if (side == BlockSide.LEFT) {
+                return sideLeft;
+            }
+            if (side == BlockSide.RIGHT) {
+                return sideRight;
+            }
+            if (side == BlockSide.FRONT) {
+                return sideFront;
+            }
+            if (side == BlockSide.BACK) {
+                return sideBack;
+            }
+            throw new IllegalArgumentException(String.format("Unknown block side %s", side));
+        }
 
     }
 

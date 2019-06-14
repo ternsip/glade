@@ -21,7 +21,6 @@ import org.joml.Matrix4fc;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -80,6 +79,10 @@ public class EffigyChunk extends Effigy<ChunkShader> {
             BlockSide.BACK
     );
 
+    private static final CubeSideMeshData ALL_SIDES[] = new CubeSideMeshData[]{
+            SIDE_FRONT, SIDE_BACK, SIDE_LEFT, SIDE_RIGHT, SIDE_TOP, SIDE_BOTTOM
+    };
+
     private final Chunk chunk;
 
     public EffigyChunk(Chunk chunk) {
@@ -110,13 +113,9 @@ public class EffigyChunk extends Effigy<ChunkShader> {
 
     @Override
     public Model loadModel() {
-        ArrayList<Float> vertices = new ArrayList<>(Chunk.VOLUME * 3);
-        ArrayList<Float> textures = new ArrayList<>(Chunk.VOLUME * 2);
-        ArrayList<Float> normals = new ArrayList<>(Chunk.VOLUME * 3);
-        ArrayList<Integer> indices = new ArrayList<>(Chunk.VOLUME * 2);
 
+        ChunkCombinator chunkCombinator = new ChunkCombinator();
         TexturePackRepository texturePackRepository = getGraphics().getGraphicalRepository().getTexturePackRepository();
-
         Vector3f blockOffset = new Vector3f(0, 0, 0);
 
         for (int x = 0; x < Chunk.SIZE; ++x) {
@@ -130,35 +129,23 @@ public class EffigyChunk extends Effigy<ChunkShader> {
                     TexturePackRepository.TextureCubeMap textureCubeMap = texturePackRepository.getCubeMap(block);
                     blockOffset.set(x * BLOCK_PHYSICAL_SIZE, y * BLOCK_PHYSICAL_SIZE, z * BLOCK_PHYSICAL_SIZE);
 
-                    if (isSideVisible(x, y, z, SIDE_FRONT.blockSide)) {
-                        SIDE_FRONT.fillArrays(vertices, normals, textures, indices, blockOffset, textureCubeMap.getSideFront());
-                    }
-                    if (isSideVisible(x, y, z, SIDE_RIGHT.blockSide)) {
-                        SIDE_RIGHT.fillArrays(vertices, normals, textures, indices, blockOffset, textureCubeMap.getSideRight());
-                    }
-                    if (isSideVisible(x, y, z, SIDE_TOP.blockSide)) {
-                        SIDE_TOP.fillArrays(vertices, normals, textures, indices, blockOffset, textureCubeMap.getSideTop());
-                    }
-                    if (isSideVisible(x, y, z, SIDE_LEFT.blockSide)) {
-                        SIDE_LEFT.fillArrays(vertices, normals, textures, indices, blockOffset, textureCubeMap.getSideLeft());
-                    }
-                    if (isSideVisible(x, y, z, SIDE_BOTTOM.blockSide)) {
-                        SIDE_BOTTOM.fillArrays(vertices, normals, textures, indices, blockOffset, textureCubeMap.getSideBottom());
-                    }
-                    if (isSideVisible(x, y, z, SIDE_BACK.blockSide)) {
-                        SIDE_BACK.fillArrays(vertices, normals, textures, indices, blockOffset, textureCubeMap.getSideBack());
+                    for (CubeSideMeshData meshDataSide : ALL_SIDES) {
+                        if (isSideVisible(x, y, z, meshDataSide.blockSide)) {
+                            chunkCombinator.fillArrays(blockOffset, textureCubeMap, meshDataSide);
+                        }
                     }
 
                 }
             }
         }
+
         return new Model(
                 new Mesh[]{new Mesh(
-                        Utils.listToFloatArray(vertices),
-                        Utils.listToFloatArray(normals),
+                        Utils.listToFloatArray(chunkCombinator.getVertices()),
+                        Utils.listToFloatArray(chunkCombinator.getNormals()),
                         new float[0],
-                        Utils.listToFloatArray(textures),
-                        Utils.listToIntArray(indices),
+                        Utils.listToFloatArray(chunkCombinator.getTextures()),
+                        Utils.listToIntArray(chunkCombinator.getIndices()),
                         new float[0],
                         new int[0],
                         new Material(texturePackRepository.getBlockAtlasTexture())
@@ -167,6 +154,7 @@ public class EffigyChunk extends Effigy<ChunkShader> {
                 new Vector3f(0),
                 new Vector3f(1)
         );
+
     }
 
     @Override
@@ -211,29 +199,37 @@ public class EffigyChunk extends Effigy<ChunkShader> {
         private final int[] indices;
         private final BlockSide blockSide;
 
+    }
+
+    @Getter
+    private static class ChunkCombinator {
+
+        private final ArrayList<Float> vertices = new ArrayList<>(Chunk.VOLUME * 3);
+        private final ArrayList<Float> textures = new ArrayList<>(Chunk.VOLUME * 2);
+        private final ArrayList<Float> normals = new ArrayList<>(Chunk.VOLUME * 3);
+        private final ArrayList<Integer> indices = new ArrayList<>(Chunk.VOLUME * 2);
+
         public void fillArrays(
-                List<Float> vertices,
-                List<Float> normals,
-                List<Float> textures,
-                List<Integer> indices,
                 Vector3f blockOffset,
-                TextureRepository.AtlasFragment atlasFragment
+                TexturePackRepository.TextureCubeMap textureCubeMap,
+                CubeSideMeshData cubeSideMeshData
         ) {
             int offset = vertices.size() / 3;
-            for (int index : this.indices) {
+            for (int index : cubeSideMeshData.getIndices()) {
                 indices.add(index + offset);
             }
-            for (int i = 0; i < this.vertices.length; i += 3) {
-                vertices.add(this.vertices[i] + blockOffset.x());
-                vertices.add(this.vertices[i + 1] + blockOffset.y());
-                vertices.add(this.vertices[i + 2] + blockOffset.z());
+            for (int i = 0; i < cubeSideMeshData.getVertices().length; i += 3) {
+                vertices.add(cubeSideMeshData.getVertices()[i] + blockOffset.x());
+                vertices.add(cubeSideMeshData.getVertices()[i + 1] + blockOffset.y());
+                vertices.add(cubeSideMeshData.getVertices()[i + 2] + blockOffset.z());
             }
-            for (float normal : this.normals) {
+            for (float normal : cubeSideMeshData.getNormals()) {
                 normals.add(normal);
             }
-            for (int i = 0; i < this.textures.length; i += 2) {
-                textures.add(this.textures[i] ? atlasFragment.getEndU() : atlasFragment.getStartU());
-                textures.add(this.textures[i + 1] ? atlasFragment.getEndV() : atlasFragment.getStartV());
+            TextureRepository.AtlasFragment atlasFragment = textureCubeMap.getByBlockSide(cubeSideMeshData.getBlockSide());
+            for (int i = 0; i < cubeSideMeshData.getTextures().length; i += 2) {
+                textures.add(cubeSideMeshData.getTextures()[i] ? atlasFragment.getEndU() : atlasFragment.getStartU());
+                textures.add(cubeSideMeshData.getTextures()[i + 1] ? atlasFragment.getEndV() : atlasFragment.getStartV());
             }
         }
 
