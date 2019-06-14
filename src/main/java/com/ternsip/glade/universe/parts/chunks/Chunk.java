@@ -1,5 +1,6 @@
 package com.ternsip.glade.universe.parts.chunks;
 
+import com.ternsip.glade.universe.common.Universal;
 import com.ternsip.glade.universe.parts.blocks.Block;
 import lombok.Getter;
 import org.joml.Random;
@@ -9,7 +10,7 @@ import org.joml.Vector3ic;
 import java.io.Serializable;
 
 @Getter
-public class Chunk implements Serializable {
+public class Chunk implements Serializable, Universal {
 
     public static final int SIZE = 16;
     public static final int VOLUME = SIZE * SIZE * SIZE;

@@ -89,7 +89,7 @@ public class EffigySky extends Effigy<SkyboxShader> {
 
     @Override
     public int getPriority() {
-        return -1;
+        return -100;
     }
 
     @Override

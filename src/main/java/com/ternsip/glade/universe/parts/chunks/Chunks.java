@@ -2,9 +2,11 @@ package com.ternsip.glade.universe.parts.chunks;
 
 import com.ternsip.glade.common.logic.Utils;
 import com.ternsip.glade.universe.common.Universal;
+import com.ternsip.glade.universe.parts.blocks.Block;
 import com.ternsip.glade.universe.parts.generators.ChunkGenerator;
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.joml.Vector3i;
 import org.joml.Vector3ic;
 
 import java.util.Comparator;
@@ -29,6 +31,30 @@ public class Chunks implements Universal {
             getPositionToChunk().put(chunk.getChunkPosition(), chunk);
         }
         return getPositionToChunk().get(position);
+    }
+
+    public boolean isBlockLoaded(Vector3ic pos) {
+        return isChunkInMemory(getChunkPosition(pos));
+    }
+
+    public Block getBlock(Vector3ic pos) {
+        return getChunk(getChunkPosition(pos)).getBlock(getBlockPositionInsideChunk(pos));
+    }
+
+    public void setBlock(Vector3ic pos, Block block) {
+        getChunk(getChunkPosition(pos)).setBlock(getBlockPositionInsideChunk(pos), block);
+    }
+
+    private Vector3ic getChunkPosition(Vector3ic pos) {
+        return new Vector3i(
+                (pos.x() >= 0 ? pos.x() : (pos.x() - Chunk.SIZE + 1)) / Chunk.SIZE,
+                (pos.y() >= 0 ? pos.y() : (pos.y() - Chunk.SIZE + 1)) / Chunk.SIZE,
+                (pos.z() >= 0 ? pos.z() : (pos.z() - Chunk.SIZE + 1)) / Chunk.SIZE
+        );
+    }
+
+    private Vector3ic getBlockPositionInsideChunk(Vector3ic pos) {
+        return getChunkPosition(pos).mul(Chunk.SIZE, new Vector3i()).negate().add(pos);
     }
 
     private Chunk generate(Vector3ic position) {

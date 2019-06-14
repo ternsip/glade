@@ -13,6 +13,7 @@ import com.ternsip.glade.universe.common.Light;
 import com.ternsip.glade.universe.parts.blocks.Block;
 import com.ternsip.glade.universe.parts.blocks.BlockSide;
 import com.ternsip.glade.universe.parts.chunks.Chunk;
+import com.ternsip.glade.universe.parts.chunks.Chunks;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -154,7 +155,7 @@ public class EffigyChunk extends Effigy<ChunkShader> {
 
     @Override
     public int getPriority() {
-        return 0;
+        return -1;
     }
 
     @Override
@@ -173,12 +174,14 @@ public class EffigyChunk extends Effigy<ChunkShader> {
     }
 
     private boolean isSideVisible(Vector3ic pos, BlockSide side) {
-        Vector3ic sPos = new Vector3i(pos).add(side.getAdjacentBlockOffset());
-        if (!getChunk().isInside(sPos)) {
+        Chunks chunks = getChunk().getUniverse().getChunks();
+        Vector3ic worldPos = getChunk().toWorldPos(pos);
+        Vector3ic nextBlockWorldPos = new Vector3i(worldPos).add(side.getAdjacentBlockOffset());
+        if (!chunks.isBlockLoaded(nextBlockWorldPos)) {
             return true;
         }
-        Block curBlock = getChunk().getBlock(pos);
-        Block nextBlock = getChunk().getBlock(sPos);
+        Block curBlock = chunks.getBlock(worldPos);
+        Block nextBlock =  chunks.getBlock(nextBlockWorldPos);
         return (nextBlock.isSemiTransparent() && (curBlock != nextBlock || !curBlock.isCombineSides()));
     }
 
