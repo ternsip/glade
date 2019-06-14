@@ -4,8 +4,10 @@ import lombok.Getter;
 import org.joml.Random;
 import org.joml.Vector3ic;
 
+import java.io.Serializable;
+
 @Getter
-public class Chunk {
+public class Chunk implements Serializable {
 
     public static final int SIZE = 16;
     public static final int VOLUME = SIZE * SIZE * SIZE;

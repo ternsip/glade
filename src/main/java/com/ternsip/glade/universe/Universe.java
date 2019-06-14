@@ -9,7 +9,8 @@ import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.base.EntityTransformable;
 import com.ternsip.glade.universe.entities.impl.*;
 import com.ternsip.glade.universe.entities.repository.EntityRepository;
-import com.ternsip.glade.universe.parts.blocks.Chunk;
+import com.ternsip.glade.universe.parts.blocks.Chunks;
+import com.ternsip.glade.universe.storage.Storage;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.joml.Vector2f;
@@ -23,6 +24,8 @@ public class Universe {
 
     private final EventSnapReceiver eventSnapReceiver = new EventSnapReceiver();
     private final EntityRepository entityRepository = new EntityRepository();
+    private final Storage universeStorage = new Storage("universe");
+    private final Chunks chunks = new Chunks();
     private int ticksPerSecond = 128; // TODO move into universe settings
 
     public void initialize() {
@@ -44,6 +47,8 @@ public class Universe {
     }
 
     public void finish() {
+        getUniverseStorage().commit();
+        getUniverseStorage().finish();
     }
 
     private void spawnTestEntities() {
@@ -108,11 +113,7 @@ public class Universe {
                     int finalCx = cx;
                     int finalCy = cy;
                     int finalCz = cz;
-                    new EntityGeneric(() -> {
-                        Chunk chunk = new Chunk(new Vector3i(finalCx, finalCy, finalCz));
-                        chunk.randomize();
-                        return new EffigyChunk(chunk);
-                    });
+                    new EntityGeneric(() -> new EffigyChunk(getChunks().getChunk(new Vector3i(finalCx, finalCy, finalCz))));
                 }
             }
         }

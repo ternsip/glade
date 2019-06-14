@@ -18,3 +18,6 @@
 # Maven
 /log/
 /target/
+
+#Game specific
+/storage/
