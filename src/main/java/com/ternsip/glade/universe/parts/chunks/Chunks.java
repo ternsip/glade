@@ -1,5 +1,6 @@
 package com.ternsip.glade.universe.parts.chunks;
 
+import com.ternsip.glade.common.logic.Indexer;
 import com.ternsip.glade.common.logic.Utils;
 import com.ternsip.glade.universe.common.Universal;
 import com.ternsip.glade.universe.parts.blocks.Block;
@@ -195,6 +196,7 @@ public class Chunks implements Universal {
         int[][][] lightCoverage = new int[sizeX][sizeY][sizeZ];
         int[][][] lightOpacity = new int[sizeX][sizeY][sizeZ];
         Queue<Integer> queue = new ArrayDeque<>();
+        Indexer indexer = new Indexer(new Vector3i(sizeX, sizeY, sizeZ));
 
         for (int x = 0, wx = start.x() - MAX_LIGHT_LEVEL; x < sizeX; ++x, ++wx) {
             for (int z = 0, wz = start.z() - MAX_LIGHT_LEVEL; z < sizeZ; ++z, ++wz) {
@@ -223,7 +225,7 @@ public class Chunks implements Universal {
                         lightCoverage[x][y][z] = MAX_LIGHT_LEVEL;
                     }
                     if (lightCoverage[x][y][z] > 0 && heights.getThroughAir() >= wPos.y()) {
-                        queue.add(x + y * sizeX * sizeZ + z * sizeX);
+                        queue.add(indexer.getIndex(x, y, z));
                     }
                 }
             }
@@ -234,21 +236,21 @@ public class Chunks implements Universal {
         int[] dz = {0, 0, 1, 0, 0, -1};
         while (!queue.isEmpty()) {
             Integer top = queue.poll();
-            int x = top % sizeX;
-            int y = top / (sizeX * sizeZ);
-            int z = (top / sizeX) % sizeZ;
+            int x = indexer.getX(top);
+            int y = indexer.getY(top);
+            int z = indexer.getZ(top);
             int lightLevel = lightCoverage[x][y][z];
             for (int k = 0; k < dx.length; ++k) {
                 int nx = x + dx[k];
                 int ny = y + dy[k];
                 int nz = z + dz[k];
-                if (nx < 0 || ny < 0 || nz < 0 || nx >= sizeX || ny >= sizeY || nz >= sizeZ) {
+                if (!indexer.isInside(nx, ny, nz)) {
                     continue;
                 }
                 int destinationLight = lightLevel - lightOpacity[nx][ny][nz];
                 if (lightCoverage[nx][ny][nz] < destinationLight) {
                     lightCoverage[nx][ny][nz] = destinationLight;
-                    queue.add(nx + ny * sizeX * sizeZ + nz * sizeX);
+                    queue.add(indexer.getIndex(nx, ny, nz));
                 }
             }
         }
@@ -266,7 +268,7 @@ public class Chunks implements Universal {
         for (int x = startChunk.x(); x <= endChunk.x(); ++x) {
             for (int y = startChunk.y(); y <= endChunk.y(); ++y) {
                 for (int z = startChunk.z(); z <= endChunk.z(); ++z) {
-                    Vector3i chunkPos = new Vector3i(x, y, z );
+                    Vector3i chunkPos = new Vector3i(x, y, z);
                     if (isChunkInMemory(chunkPos)) {
                         getChunk(chunkPos).setVisualReloadRequired(true);
                     }
