@@ -52,6 +52,9 @@ public class Chunks implements Universal {
             getPositionToChunk().put(chunk.getPosition(), chunk);
         }
         getHeightMap(new Vector2i(toSlicePosition(position)));
+        if (position.z() >= 16) {
+            int a = 6;
+        }
         return getPositionToChunk().get(position);
     }
 
@@ -266,7 +269,10 @@ public class Chunks implements Universal {
         for (int x = startChunk.x(); x <= endChunk.x(); ++x) {
             for (int y = startChunk.y(); y <= endChunk.y(); ++y) {
                 for (int z = startChunk.z(); z <= endChunk.z(); ++z) {
-                    getChunk(new Vector3i(x, y, z)).setVisualReloadRequired(true);
+                    Vector3i chunkPos = new Vector3i(x, y, z );
+                    if (isChunkInMemory(chunkPos)) {
+                        getChunk(chunkPos).setVisualReloadRequired(true);
+                    }
                 }
             }
         }
