@@ -130,11 +130,68 @@ public class Chunks implements Universal {
         return getChunkPositionForBlock(pos).mul(Chunk.SIZE, new Vector3i()).negate().add(pos);
     }
 
-    public void recalculateLightInBlockRegion(Vector3ic start, Vector3ic size) {
+    public void recalculateBlockRegion(Vector3ic start, Vector3ic size) {
 
         int sizeX = size.x() + 2 * MAX_LIGHT_LEVEL;
         int sizeY = size.y() + 2 * MAX_LIGHT_LEVEL;
         int sizeZ = size.z() + 2 * MAX_LIGHT_LEVEL;
+
+        Chunks chunks = getUniverse().getChunks();
+
+        // Recalculate height maps
+        for (int x = start.x() - MAX_LIGHT_LEVEL, sx = 0; sx < size.x() + MAX_LIGHT_LEVEL; ++x, ++sx) {
+            for (int z = start.z() - MAX_LIGHT_LEVEL, sz = 0; sz < size.z() + MAX_LIGHT_LEVEL; ++z, ++sz) {
+
+                Vector3i wPos = new Vector3i(x, 0, z);
+                Vector2i slicePos = toSlicePosition(getChunkPositionForBlock(wPos));
+                if (!isHeightMapInMemory(slicePos)) {
+                    continue;
+                }
+
+                Vector2i positionInsideSlice = toSlicePosition(getBlockPositionInsideChunk(wPos));
+                int sliceX = positionInsideSlice.x();
+                int sliceZ = positionInsideSlice.y();
+
+                HeightMap heightMap = getHeightMap(slicePos);
+
+                int yAir = SKY_BLOCK_HEIGHT;
+                for (; yAir >= 0; --yAir) {
+                    if (chunks.getBlock(new Vector3i(x, yAir, z)) != Block.AIR) {
+                        break;
+                    }
+                }
+                heightMap.getHeights()[sliceX][sliceZ].setThroughAir(yAir + 1);
+
+                int yGas = SKY_BLOCK_HEIGHT;
+                for (; yGas >= 0; --yGas) {
+                    if (chunks.getBlock(new Vector3i(x, yGas, z)).getBlockMaterial() != BlockMaterial.GAS) {
+                        break;
+                    }
+                }
+                heightMap.getHeights()[sliceX][sliceZ].setThroughGas(yGas + 1);
+
+                int yGasAndLiquid = SKY_BLOCK_HEIGHT;
+                for (; yGasAndLiquid >= 0; --yGasAndLiquid) {
+                    BlockMaterial material = chunks.getBlock(new Vector3i(x, yGasAndLiquid, z)).getBlockMaterial();
+                    if (material != BlockMaterial.GAS && material != BlockMaterial.LIQUID) {
+                        break;
+                    }
+                }
+                heightMap.getHeights()[sliceX][sliceZ].setThroughGasAndLiquid(yGasAndLiquid + 1);
+
+                int ySoil = SKY_BLOCK_HEIGHT;
+                for (; ySoil >= 0; --ySoil) {
+                    BlockMaterial material = chunks.getBlock(new Vector3i(x, ySoil, z)).getBlockMaterial();
+                    if (material == BlockMaterial.SOIL) {
+                        break;
+                    }
+                }
+                heightMap.getHeights()[sliceX][sliceZ].setUntilSoil(ySoil + 1);
+
+            }
+        }
+
+        // Recalculate light maps
         int[][][] lightCoverage = new int[sizeX][sizeY][sizeZ];
         int[][][] lightOpacity = new int[sizeX][sizeY][sizeZ];
         Queue<Integer> queue = new ArrayDeque<>();
@@ -214,70 +271,6 @@ public class Chunks implements Universal {
             }
         }
 
-    }
-
-    public void recalculateHeightMapsInBlockRegion(Vector2ic start, Vector2ic size) {
-
-        // TODO calculate borders for light too
-        Chunks chunks = getUniverse().getChunks();
-
-        for (int x = start.x(), sx = 0; sx < size.x(); ++x, ++sx) {
-            for (int z = start.y(), sz = 0; sz < size.y(); ++z, ++sz) {
-
-                Vector3i wPos = new Vector3i(x, 0, z);
-                Vector2i slicePos = toSlicePosition(getChunkPositionForBlock(wPos));
-                if (!isHeightMapInMemory(slicePos)) {
-                    continue;
-                }
-
-                Vector2i positionInsideSlice = toSlicePosition(getBlockPositionInsideChunk(wPos));
-                int sliceX = positionInsideSlice.x();
-                int sliceZ = positionInsideSlice.y();
-
-                HeightMap heightMap = getHeightMap(slicePos);
-
-                int yAir = SKY_BLOCK_HEIGHT;
-                for (; yAir >= 0; --yAir) {
-                    if (chunks.getBlock(new Vector3i(x, yAir, z)) != Block.AIR) {
-                        break;
-                    }
-                }
-                heightMap.getHeights()[sliceX][sliceZ].setThroughAir(yAir + 1);
-
-                int yGas = SKY_BLOCK_HEIGHT;
-                for (; yGas >= 0; --yGas) {
-                    if (chunks.getBlock(new Vector3i(x, yGas, z)).getBlockMaterial() != BlockMaterial.GAS) {
-                        break;
-                    }
-                }
-                heightMap.getHeights()[sliceX][sliceZ].setThroughGas(yGas + 1);
-
-                int yGasAndLiquid = SKY_BLOCK_HEIGHT;
-                for (; yGasAndLiquid >= 0; --yGasAndLiquid) {
-                    BlockMaterial material = chunks.getBlock(new Vector3i(x, yGasAndLiquid, z)).getBlockMaterial();
-                    if (material != BlockMaterial.GAS && material != BlockMaterial.LIQUID) {
-                        break;
-                    }
-                }
-                heightMap.getHeights()[sliceX][sliceZ].setThroughGasAndLiquid(yGasAndLiquid + 1);
-
-                int ySoil = SKY_BLOCK_HEIGHT;
-                for (; ySoil >= 0; --ySoil) {
-                    BlockMaterial material = chunks.getBlock(new Vector3i(x, ySoil, z)).getBlockMaterial();
-                    if (material == BlockMaterial.SOIL) {
-                        break;
-                    }
-                }
-                heightMap.getHeights()[sliceX][sliceZ].setUntilSoil(ySoil + 1);
-
-            }
-        }
-
-    }
-
-    public void recalculateBlockRegion(Vector3ic start, Vector3ic size) {
-        recalculateHeightMapsInBlockRegion(toSlicePosition(start), toSlicePosition(size));
-        recalculateLightInBlockRegion(start, size);
     }
 
     public boolean isHeightMapInMemory(Vector2ic position) {
