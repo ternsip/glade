@@ -52,9 +52,6 @@ public class Chunks implements Universal {
             getPositionToChunk().put(chunk.getPosition(), chunk);
         }
         getHeightMap(new Vector2i(toSlicePosition(position)));
-        if (position.z() >= 16) {
-            int a = 6;
-        }
         return getPositionToChunk().get(position);
     }
 
