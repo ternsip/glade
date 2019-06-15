@@ -8,6 +8,8 @@ import org.joml.Random;
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 
 @Getter
@@ -19,7 +21,8 @@ public class Chunk implements Serializable, Universal {
 
     private final Block[][][] blocks;
     private final Vector3ic position;
-    private final int[][][] light = new int[SIZE][SIZE][SIZE]; // TODO  mb make transient?
+
+    private transient int[][][] light = new int[SIZE][SIZE][SIZE];
     private transient boolean logicReloadRequired = true;
     private transient boolean visualReloadRequired = false;
 
@@ -115,6 +118,12 @@ public class Chunk implements Serializable, Universal {
     @FunctionalInterface
     public interface ProcessEachBlock {
         void apply(Vector3ic pos, Block block, int light);
+    }
+
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        light = new int[SIZE][SIZE][SIZE];
     }
 
 }

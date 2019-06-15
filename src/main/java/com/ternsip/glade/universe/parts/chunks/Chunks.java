@@ -69,21 +69,14 @@ public class Chunks implements Universal {
 
     public HeightMap getHeightMap(Vector2ic position) {
         if (!isHeightMapInMemory(position)) {
-            if (!isHeightMapGenerated(position)) {
-                HeightMap heightMap = generateHeightMap(position);
-                saveHeightMap(heightMap);
-            }
-            HeightMap heightMap = loadHeightMap(position);
+            HeightMap heightMap = new HeightMap(position);
             getPositionToHeightMap().put(heightMap.getPosition(), heightMap);
         }
         return getPositionToHeightMap().get(position);
     }
 
     public void unloadHeightMap(Vector2ic position) {
-        if (isHeightMapInMemory(position)) {
-            saveHeightMap(getPositionToHeightMap().get(position));
-            getPositionToHeightMap().remove(position);
-        }
+        getPositionToHeightMap().remove(position);
     }
 
     public boolean isSliceUnloaded(Vector2ic slicePos) {
@@ -292,22 +285,6 @@ public class Chunks implements Universal {
             chunkGenerator.populate(chunk);
         }
         return chunk;
-    }
-
-    private HeightMap generateHeightMap(Vector2ic position) {
-        return new HeightMap(position);
-    }
-
-    private boolean isHeightMapGenerated(Vector2ic position) {
-        return getStorage().isExists(position);
-    }
-
-    private void saveHeightMap(HeightMap heightMap) {
-        getStorage().save(heightMap.getPosition(), heightMap);
-    }
-
-    private HeightMap loadHeightMap(Vector2ic position) {
-        return getStorage().load(position);
     }
 
     private boolean isChunkGenerated(Vector3ic position) {
