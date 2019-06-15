@@ -107,6 +107,19 @@ public class Chunk implements Serializable, Universal {
         }
     }
 
+    public void forEachStartingFromOpaque(ProcessEachBlock processEachBlock) {
+        forEach((Vector3ic pos, Block block, int light) -> {
+            if (!block.isTranslucent()) {
+                processEachBlock.apply(pos, block, light);
+            }
+        });
+        forEach((Vector3ic pos, Block block, int light) -> {
+            if (block.isTranslucent()) {
+                processEachBlock.apply(pos, block, light);
+            }
+        });
+    }
+
     public Vector3ic toWorldPos(Vector3ic position) {
         return new Vector3i(
                 getPosition().x() * SIZE,

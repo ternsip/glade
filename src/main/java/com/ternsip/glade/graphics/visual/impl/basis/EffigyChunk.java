@@ -92,6 +92,16 @@ public class EffigyChunk extends Effigy<ChunkShader> {
     }
 
     @Override
+    public float getSquaredDistanceToCamera() {
+        Vector3fc cameraPos = getGraphics().getGraphicalRepository().getCamera().getPosition();
+        Vector3fc start = getAdjustedPosition();
+        float dx = Math.max(0, Math.max(start.x() - cameraPos.x(), cameraPos.x() - start.x() - CHUNK_PHYSICAL_SIZE));
+        float dy = Math.max(0, Math.max(start.y() - cameraPos.y(), cameraPos.y() - start.y() - CHUNK_PHYSICAL_SIZE));
+        float dz = Math.max(0, Math.max(start.z() - cameraPos.z(), cameraPos.z() - start.z() - CHUNK_PHYSICAL_SIZE));
+        return dx * dx + dy * dy + dz * dz;
+    }
+
+    @Override
     public Matrix4f getTransformationMatrix() {
         Matrix4fc rotMatrix = Maths.getRotationQuaternion(getAdjustedRotation()).get(new Matrix4f());
         return new Matrix4f().translate(getAdjustedPosition()).mul(rotMatrix).scale(getAdjustedScale());
@@ -120,7 +130,7 @@ public class EffigyChunk extends Effigy<ChunkShader> {
         TexturePackRepository texturePackRepository = getGraphics().getGraphicalRepository().getTexturePackRepository();
         Vector3f blockOffset = new Vector3f(0, 0, 0);
 
-        chunk.forEach((Vector3ic pos, Block block, int light) -> {
+        chunk.forEachStartingFromOpaque((Vector3ic pos, Block block, int light) -> {
             if (block == Block.AIR) {
                 return;
             }
@@ -150,7 +160,7 @@ public class EffigyChunk extends Effigy<ChunkShader> {
                         new int[0],
                         new Material(texturePackRepository.getBlockAtlasTexture())
                 )},
-                new Vector3f(new Vector3f(getChunk().getPosition()).mul(CHUNK_PHYSICAL_SIZE)),
+                new Vector3f(new Vector3f(getChunk().getPosition()).mul(CHUNK_PHYSICAL_SIZE)).add(new Vector3f(SIDE)),
                 new Vector3f(0),
                 new Vector3f(1)
         );
