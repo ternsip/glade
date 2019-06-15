@@ -5,7 +5,6 @@ import com.ternsip.glade.universe.parts.blocks.Block;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.Random;
-import org.joml.Vector2i;
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
 
@@ -21,8 +20,8 @@ public class Chunk implements Serializable, Universal {
     private final Block[][][] blocks;
     private final Vector3ic position;
     private final int[][][] light = new int[SIZE][SIZE][SIZE]; // TODO  mb make transient?
-    private boolean logicReloadRequired = true;
-    private boolean visualReloadRequired = false;
+    private transient boolean logicReloadRequired = true;
+    private transient boolean visualReloadRequired = false;
 
     public Chunk(Vector3ic position) {
         this(createEmptyBlockArray(), position);
@@ -50,29 +49,21 @@ public class Chunk implements Serializable, Universal {
 
     public void update() {
         if (isLogicReloadRequired()) {
-            recalculateHeightMap();
-            recalculateLight();
+            //getUniverse().getChunks().recalculateBlockRegion(toWorldPos(new Vector3i(0)), new Vector3i(SIZE));
             setLogicReloadRequired(false);
-            setVisualReloadRequired(true);
         }
     }
 
-    public void recalculateHeightMap() {
-        getChunkHeightMap().recalculate();
-    }
-
-    public void recalculateLight() {
-
-    }
-
-    public HeightMap getChunkHeightMap() {
-        return getUniverse().getChunks().getHeightMap(new Vector2i(getPosition().x(), getPosition().z()));
-    }
-
     public boolean isInside(Vector3ic pos) {
-        return pos.x() >= 0 && pos.x() < blocks.length &&
-                pos.y() >= 0 && pos.y() < blocks[pos.x()].length &&
-                pos.z() >= 0 && pos.z() < blocks[pos.x()][pos.y()].length;
+        return pos.x() >= 0 && pos.x() < SIZE && pos.y() >= 0 && pos.y() < SIZE && pos.z() >= 0 && pos.z() < SIZE;
+    }
+
+    public int getLight(Vector3ic pos) {
+        return getLight()[pos.x()][pos.y()][pos.z()];
+    }
+
+    public void setLight(Vector3ic pos, int light) {
+        getLight()[pos.x()][pos.y()][pos.z()] = light;
     }
 
     public Block getBlock(Vector3ic pos) {
@@ -81,18 +72,17 @@ public class Chunk implements Serializable, Universal {
 
     public void setBlock(Vector3ic pos, Block block) {
         getBlocks()[pos.x()][pos.y()][pos.z()] = block;
-        setVisualReloadRequired(true);
     }
 
     public void clean() {
-        forEach((Vector3ic pos, Block block) -> {
+        forEach((Vector3ic pos, Block block, int light) -> {
             setBlock(pos, Block.AIR);
         });
     }
 
     public void randomize() {
         Random random = new Random(System.currentTimeMillis());
-        forEach((Vector3ic pos, Block block) -> {
+        forEach((Vector3ic pos, Block block, int light) -> {
             setBlock(pos, Block.AIR);
             if (random.nextFloat() < 0.05) setBlock(pos, Block.SAND);
             if (random.nextFloat() < 0.05) setBlock(pos, Block.DIRT);
@@ -108,7 +98,7 @@ public class Chunk implements Serializable, Universal {
             for (int y = 0; y < SIZE; ++y) {
                 for (int z = 0; z < SIZE; ++z) {
                     pos.set(x, y, z);
-                    processEachBlock.apply(pos, getBlocks()[x][y][z]);
+                    processEachBlock.apply(pos, getBlocks()[x][y][z], getLight()[x][y][z]);
                 }
             }
         }
@@ -124,7 +114,7 @@ public class Chunk implements Serializable, Universal {
 
     @FunctionalInterface
     public interface ProcessEachBlock {
-        void apply(Vector3ic pos, Block block);
+        void apply(Vector3ic pos, Block block, int light);
     }
 
 }

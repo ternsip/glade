@@ -110,6 +110,7 @@ public class Universe {
                 }
             }
         }
+        getChunks().recalculateBlockRegion(new Vector3i(0, 0, 0), new Vector3i(16 * 16, 16 * 8, 16 * 16));
     }
 
     private void update() {

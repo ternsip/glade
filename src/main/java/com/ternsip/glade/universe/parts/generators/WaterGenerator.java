@@ -15,7 +15,7 @@ public class WaterGenerator implements ChunkGenerator {
 
     @Override
     public void populate(Chunk chunk) {
-        chunk.forEach((Vector3ic pos, Block block) -> {
+        chunk.forEach((Vector3ic pos, Block block, int light) -> {
             Vector3ic wPos = chunk.toWorldPos(pos);
             if (wPos.y() <= waterHeight && block == Block.AIR) {
                 chunk.setBlock(pos, Block.WATER);

@@ -19,8 +19,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.joml.*;
 
+import java.lang.Math;
 import java.util.ArrayList;
 import java.util.Set;
+
+import static com.ternsip.glade.universe.parts.chunks.Chunks.MAX_LIGHT_LEVEL;
 
 @Getter
 @Setter
@@ -117,7 +120,7 @@ public class EffigyChunk extends Effigy<ChunkShader> {
         TexturePackRepository texturePackRepository = getGraphics().getGraphicalRepository().getTexturePackRepository();
         Vector3f blockOffset = new Vector3f(0, 0, 0);
 
-        chunk.forEach((Vector3ic pos, Block block) -> {
+        chunk.forEach((Vector3ic pos, Block block, int light) -> {
             if (block == Block.AIR) {
                 return;
             }
@@ -126,7 +129,8 @@ public class EffigyChunk extends Effigy<ChunkShader> {
 
             for (CubeSideMeshData meshDataSide : ALL_SIDES) {
                 if (isSideVisible(pos, meshDataSide.blockSide)) {
-                    chunkCombinator.fillArrays(blockOffset, 0.5f, textureCubeMap, meshDataSide);
+                    float sideLight = (float) Math.max(light, getSideLight(pos, meshDataSide.blockSide)) / MAX_LIGHT_LEVEL;
+                    chunkCombinator.fillArrays(blockOffset, sideLight, textureCubeMap, meshDataSide);
                 }
             }
         });
@@ -171,6 +175,16 @@ public class EffigyChunk extends Effigy<ChunkShader> {
     @Override
     public Object getModelKey() {
         return this;
+    }
+
+    private int getSideLight(Vector3ic pos, BlockSide side) {
+        Chunks chunks = getChunk().getUniverse().getChunks();
+        Vector3ic worldPos = getChunk().toWorldPos(pos);
+        Vector3ic nextBlockWorldPos = new Vector3i(worldPos).add(side.getAdjacentBlockOffset());
+        if (!chunks.isBlockLoaded(nextBlockWorldPos)) {
+            return 0;
+        }
+        return chunks.getLight(nextBlockWorldPos);
     }
 
     private boolean isSideVisible(Vector3ic pos, BlockSide side) {

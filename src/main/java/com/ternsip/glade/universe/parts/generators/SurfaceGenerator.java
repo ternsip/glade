@@ -23,7 +23,7 @@ public class SurfaceGenerator implements ChunkGenerator {
     @Override
     public void populate(Chunk chunk) {
         int[][] heightMap = generateHeightMap(chunk);
-        chunk.forEach((Vector3ic pos, Block block) -> {
+        chunk.forEach((Vector3ic pos, Block block, int light) -> {
             Vector3ic wPos = chunk.toWorldPos(pos);
             int curHeight = heightMap[pos.x()][pos.z()];
             if (wPos.y() <= curHeight) {
