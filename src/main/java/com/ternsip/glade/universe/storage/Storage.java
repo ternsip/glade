@@ -1,5 +1,6 @@
 package com.ternsip.glade.universe.storage;
 
+import com.ternsip.glade.universe.common.Universal;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.mapdb.DB;
@@ -9,7 +10,7 @@ import java.io.File;
 import java.util.concurrent.ConcurrentMap;
 
 @Getter
-public class Storage {
+public class Storage implements Universal {
 
     private final File STORAGE_PARENT_FOLDER = new File("storage");
     private final String EXTENSION = "dat";
@@ -20,10 +21,10 @@ public class Storage {
 
     @SneakyThrows
     public Storage(String name) {
-        this.file = new File(STORAGE_PARENT_FOLDER, name + "." + EXTENSION);
+        this.file = new File(new File(STORAGE_PARENT_FOLDER, getUniverse().getName()), name + "." + EXTENSION);
         File parent = this.file.getParentFile();
         if (!parent.exists()) {
-            parent.getParentFile().mkdirs();
+            parent.mkdirs();
         }
         this.db = DBMaker
                 .fileDB(file)

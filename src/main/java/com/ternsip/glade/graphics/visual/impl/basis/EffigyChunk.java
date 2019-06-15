@@ -146,7 +146,7 @@ public class EffigyChunk extends Effigy<ChunkShader> {
                         new int[0],
                         new Material(texturePackRepository.getBlockAtlasTexture())
                 )},
-                new Vector3f(new Vector3f(getChunk().getChunkPosition()).mul(CHUNK_PHYSICAL_SIZE)),
+                new Vector3f(new Vector3f(getChunk().getPosition()).mul(CHUNK_PHYSICAL_SIZE)),
                 new Vector3f(0),
                 new Vector3f(1)
         );

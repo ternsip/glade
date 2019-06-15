@@ -5,6 +5,7 @@ import com.ternsip.glade.universe.parts.blocks.Block;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.Random;
+import org.joml.Vector2i;
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
 
@@ -18,22 +19,21 @@ public class Chunk implements Serializable, Universal {
     public static final int VOLUME = SIZE * SIZE * SIZE;
 
     private final Block[][][] blocks;
-    private final Vector3ic chunkPosition;
-    private transient final int[][][] light;
-    private transient boolean logicReloadRequired = false;
-    private transient boolean visualReloadRequired = false;
+    private final Vector3ic position;
+    private final int[][][] light = new int[SIZE][SIZE][SIZE]; // TODO  mb make transient?
+    private boolean logicReloadRequired = true;
+    private boolean visualReloadRequired = false;
 
-    public Chunk(Vector3ic chunkPosition) {
-        this(createEmptyBlockArray(), chunkPosition);
+    public Chunk(Vector3ic position) {
+        this(createEmptyBlockArray(), position);
     }
 
-    public Chunk(Block[][][] blocks, Vector3ic chunkPosition) {
+    public Chunk(Block[][][] blocks, Vector3ic position) {
         this.blocks = blocks;
-        this.chunkPosition = chunkPosition;
+        this.position = position;
         if (blocks.length != SIZE || blocks[0].length != SIZE || blocks[0][0].length != SIZE) {
             throw new IllegalArgumentException("Invalid Chunk size");
         }
-        this.light = new int[SIZE][SIZE][SIZE];
     }
 
     private static Block[][][] createEmptyBlockArray() {
@@ -49,14 +49,24 @@ public class Chunk implements Serializable, Universal {
     }
 
     public void update() {
-        if (logicReloadRequired) {
+        if (isLogicReloadRequired()) {
+            recalculateHeightMap();
             recalculateLight();
             setLogicReloadRequired(false);
+            setVisualReloadRequired(true);
         }
+    }
+
+    public void recalculateHeightMap() {
+        getChunkHeightMap().recalculate();
     }
 
     public void recalculateLight() {
 
+    }
+
+    public HeightMap getChunkHeightMap() {
+        return getUniverse().getChunks().getHeightMap(new Vector2i(getPosition().x(), getPosition().z()));
     }
 
     public boolean isInside(Vector3ic pos) {
@@ -71,6 +81,7 @@ public class Chunk implements Serializable, Universal {
 
     public void setBlock(Vector3ic pos, Block block) {
         getBlocks()[pos.x()][pos.y()][pos.z()] = block;
+        setVisualReloadRequired(true);
     }
 
     public void clean() {
@@ -105,9 +116,9 @@ public class Chunk implements Serializable, Universal {
 
     public Vector3ic toWorldPos(Vector3ic position) {
         return new Vector3i(
-                getChunkPosition().x() * SIZE,
-                getChunkPosition().y() * SIZE,
-                getChunkPosition().z() * SIZE
+                getPosition().x() * SIZE,
+                getPosition().y() * SIZE,
+                getPosition().z() * SIZE
         ).add(position);
     }
 

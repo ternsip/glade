@@ -8,7 +8,6 @@ import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.impl.*;
 import com.ternsip.glade.universe.entities.repository.EntityRepository;
 import com.ternsip.glade.universe.parts.chunks.Chunks;
-import com.ternsip.glade.universe.storage.Storage;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.joml.Vector2f;
@@ -22,8 +21,8 @@ public class Universe {
 
     private final EventSnapReceiver eventSnapReceiver = new EventSnapReceiver();
     private final EntityRepository entityRepository = new EntityRepository();
-    private final Storage universeStorage = new Storage("universe");
     private final Chunks chunks = new Chunks();
+    private final String name = "universe";
     private int ticksPerSecond = 128; // TODO move into universe settings
 
     public void initialize() {
@@ -45,8 +44,7 @@ public class Universe {
     }
 
     public void finish() {
-        getUniverseStorage().commit();
-        getUniverseStorage().finish();
+        getChunks().finish();
     }
 
     private void spawnTestEntities() {

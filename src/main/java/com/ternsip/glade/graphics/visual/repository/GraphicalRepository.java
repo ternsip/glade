@@ -71,10 +71,12 @@ public class GraphicalRepository implements Universal, Graphical {
             }
             return false;
         });
-        entities.forEach(entity -> {
+        getEntityToEffigy().entrySet().forEach(entry -> {
+            Entity entity = entry.getKey();
+            Effigy effigy = entry.getValue();
             if (entity.isVisualReloadRequired()) {
-                getEntityToEffigy().get(entity).finish();
-                getEntityToEffigy().put(entity, entity.getEffigy());
+                effigy.finish();
+                entry.setValue(entity.getEffigy());
                 entity.setVisualReloadRequired(false);
             }
         });
