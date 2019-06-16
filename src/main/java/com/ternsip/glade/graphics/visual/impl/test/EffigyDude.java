@@ -13,7 +13,7 @@ public class EffigyDude extends EffigyAnimated {
                 .builder()
                 .meshFile(new File("models/dude/dude.3ds"))
                 .manualMeshMaterials((new Material[]{new Material(new Texture(new File("models/dude/dude.png")))}))
-                .baseRotation(new Vector3f(0, 0, (float) (-Math.PI / 2)))
+                .baseRotation(new Vector3f((float) (-Math.PI / 2), 0, 0))
                 .build()
         );
     }

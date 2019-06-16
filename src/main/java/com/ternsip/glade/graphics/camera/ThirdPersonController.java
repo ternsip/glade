@@ -11,25 +11,21 @@ import org.joml.*;
 
 import java.lang.Math;
 
+import static com.ternsip.glade.common.logic.Maths.FRONT_DIRECTION;
+import static com.ternsip.glade.common.logic.Maths.UP_DIRECTION;
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1;
+import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_2;
 
 @Setter
 @Getter
 public class ThirdPersonController implements Graphical, CameraController {
-
-    private static final Vector3fc UP_DIRECTION = new Vector3f(0, 1, 0);
-    private static final Vector3fc DOWN_DIRECTION = new Vector3f(0, -1, 0);
-    private static final Vector3fc BACK_DIRECTION = new Vector3f(0, 0, 1);
-    private static final Vector3fc FRONT_DIRECTION = new Vector3f(0, 0, -1);
-    private static final Vector3fc LEFT_DIRECTION = new Vector3f(-1, 0, 0);
-    private static final Vector3fc RIGHT_DIRECTION = new Vector3f(1, 0, 0);
 
     private static final float MIN_DISTANCE_FROM_TARGET = 0.1f;
     private static final float MAX_DISTANCE_FROM_TARGET = 320;
     private static final float ROTATION_OVERLAP_EPSILON = 0.001f;
     private static final float MAX_ROTATION_DELTA_X = (float) (Math.PI * 2);
     private static final float MAX_ROTATION_DELTA_Y = (float) (Math.PI / 2 - 0.01f);
-    private static final float ROTATION_MULTIPLIER_X = 0.005f;
+    private static final float ROTATION_MULTIPLIER_X = -0.005f;
     private static final float ROTATION_MULTIPLIER_Y = 0.005f;
     private static final float SCROLL_MULTIPLIER = 5f;
 
@@ -50,6 +46,12 @@ public class ThirdPersonController implements Graphical, CameraController {
         Camera camera = getGraphics().getGraphicalRepository().getCamera();
         camera.setPosition(getEyePosition());
         camera.setViewMatrix(getViewMatrix());
+
+        if (getGraphics().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_1) &&
+                getGraphics().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_2)) {
+            transformable.setRotation(new Vector3f(0, getRotation().x(), 0));
+        }
+
     }
 
     public Vector3fc getEyePosition() {
@@ -92,7 +94,7 @@ public class ThirdPersonController implements Graphical, CameraController {
     }
 
     private Vector3fc getLookDirection() {
-        return BACK_DIRECTION.rotateX(getRotation().y(), new Vector3f()).rotateY(-getRotation().x());
+        return FRONT_DIRECTION.rotateX(getRotation().y(), new Vector3f()).rotateY(getRotation().x());
     }
 
 }

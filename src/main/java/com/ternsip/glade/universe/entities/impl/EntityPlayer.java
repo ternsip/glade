@@ -1,22 +1,25 @@
 package com.ternsip.glade.universe.entities.impl;
 
+import com.ternsip.glade.common.logic.Maths;
 import com.ternsip.glade.graphics.visual.impl.test.EffigyBoy;
+import com.ternsip.glade.universe.common.Collision;
 import com.ternsip.glade.universe.entities.base.Entity;
 import lombok.Getter;
+import lombok.Setter;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
+import static com.ternsip.glade.common.logic.Maths.*;
 import static org.lwjgl.glfw.GLFW.*;
 
 @Getter
+@Setter
 public class EntityPlayer extends Entity<EffigyBoy> {
 
-    private static final float RUN_SPEED = 5;
-    private static final float TURN_SPEED = 0.02f;
-    private static final float GRAVITY = -0.2f;
-
-    private float currentSpeed = 0;
-    private float currentTurnSpeed = 0;
-    private float upwardsSpeed = 0;
+    private Vector3f currentVelocity = new Vector3f();
+    private Vector3fc lookDirection = new Vector3f(0);
+    private Vector3fc moveEffort = new Vector3f(0);
+    private float velocity = 5f;
 
     @Override
     public void finish() {
@@ -36,35 +39,32 @@ public class EntityPlayer extends Entity<EffigyBoy> {
     @Override
     public void update() {
         checkInputs();
-        increaseRotation(new Vector3f(0, currentTurnSpeed, 0));
-        float dx = (float) (currentSpeed * Math.sin(getRotation().y()));
-        float dz = (float) (currentSpeed * Math.cos(getRotation().y()));
-        upwardsSpeed += GRAVITY;
-        increasePosition(new Vector3f(dx, upwardsSpeed, dz));
-        float terrainHeight = -5;
-        if (getPosition().y < terrainHeight) {
-            upwardsSpeed = 0;
-            getPosition().y = terrainHeight;
-        }
+        Vector3f moveDirection = getMoveEffort().rotate(Maths.getRotationQuaternion(getRotation()), new Vector3f());
+        getCurrentVelocity().add(getUniverse().getBalance().getGravity());
+        Vector3fc nextPosition = new Vector3f(getPosition())
+                .add(getCurrentVelocity())
+                .add(moveDirection);
+        Collision collision = getUniverse().getCollisions().collideSegment(getPosition(), nextPosition);
+        setPosition(collision.getPosition());
     }
 
     private void checkInputs() {
 
+        Vector3f move = new Vector3f(0);
         if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_W)) {
-            this.currentSpeed = RUN_SPEED;
-        } else if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_S)) {
-            this.currentSpeed = -RUN_SPEED;
-        } else {
-            this.currentSpeed = 0;
+            move.add(FRONT_DIRECTION);
+        }
+        if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_S)) {
+            move.add(BACK_DIRECTION);
+        }
+        if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_D)) {
+            move.add(RIGHT_DIRECTION);
+        }
+        if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_A)) {
+            move.add(LEFT_DIRECTION);
         }
 
-        if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_D)) {
-            this.currentTurnSpeed = -TURN_SPEED;
-        } else if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_A)) {
-            this.currentTurnSpeed = TURN_SPEED;
-        } else {
-            this.currentTurnSpeed = 0;
-        }
+        setMoveEffort(normalizeOrEmpty(move).mul(getVelocity(), new Vector3f()));
 
         if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_R)) {
             setRotation(new Vector3f(0, 0, 0));

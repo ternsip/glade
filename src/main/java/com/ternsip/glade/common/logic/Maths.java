@@ -6,6 +6,15 @@ import java.lang.Math;
 
 public class Maths {
 
+    public static final float EPS = 1e-6f;
+
+    public static final Vector3fc UP_DIRECTION = new Vector3f(0, 1, 0);
+    public static final Vector3fc DOWN_DIRECTION = new Vector3f(0, -1, 0);
+    public static final Vector3fc BACK_DIRECTION = new Vector3f(0, 0, -1);
+    public static final Vector3fc FRONT_DIRECTION = new Vector3f(0, 0, 1);
+    public static final Vector3fc LEFT_DIRECTION = new Vector3f(1, 0, 0);
+    public static final Vector3fc RIGHT_DIRECTION = new Vector3f(-1, 0, 0);
+
     public static Matrix4f createTransformationMatrix(Vector3fc translation, Quaternionfc rotation, Vector3fc scale) {
         Matrix4f matrix = new Matrix4f();
         matrix.identity();
@@ -16,23 +25,27 @@ public class Maths {
     }
 
     public static Quaternionfc getRotationQuaternion(Vector3f rotation) {
-        float attitude = rotation.x();
-        float heading = rotation.y();
-        float bank = rotation.z();
+        float roll = rotation.x();
+        float pitch = rotation.y();
+        float yaw = rotation.z();
 
-        // Assuming the angles are in radians.
-        float c1 = (float) Math.cos(heading);
-        float s1 = (float) Math.sin(heading);
-        float c2 = (float) Math.cos(attitude);
-        float s2 = (float) Math.sin(attitude);
-        float c3 = (float) Math.cos(bank);
-        float s3 = (float) Math.sin(bank);
-        float w = (float) (Math.sqrt(1.0 + c1 * c2 + c1 * c3 - s1 * s2 * s3 + c2 * c3) / 2.0);
-        float w4 = (4.0f * w);
-        float x = (c2 * s3 + c1 * s3 + s1 * s2 * c3) / w4;
-        float y = (s1 * c2 + s1 * c3 + c1 * s2 * s3) / w4;
-        float z = (-s1 * s3 + c1 * s2 * c3 + s2) / w4;
-        return new Quaternionf(x, y, z, w);
+        float cy = (float) Math.cos(yaw * 0.5f);
+        float sy = (float) Math.sin(yaw * 0.5f);
+        float cp = (float) Math.cos(pitch * 0.5f);
+        float sp = (float) Math.sin(pitch * 0.5f);
+        float cr = (float) Math.cos(roll * 0.5f);
+        float sr = (float) Math.sin(roll * 0.5f);
+
+        return new Quaternionf(
+                cy * cp * sr - sy * sp * cr,
+                sy * cp * sr + cy * sp * cr,
+                sy * cp * cr - cy * sp * sr,
+                cy * cp * cr + sy * sp * sr
+        );
+    }
+
+    public static Vector3fc normalizeOrEmpty(Vector3fc v) {
+        return v.lengthSquared() <= EPS ? v : v.normalize(new Vector3f());
     }
 
     public static Matrix4f createTransformationMatrix(Vector3f translation, Vector3f rot, float scale) {

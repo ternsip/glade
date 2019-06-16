@@ -14,7 +14,7 @@ public class EffigyBoy extends EffigyAnimated {
         return ModelLoader.loadModel(Settings
                 .builder()
                 .meshFile(new File("models/boy/boy.dae"))
-                .baseRotation(new Vector3f(0, 0, (float) (-Math.PI / 2.0f)))
+                .baseRotation(new Vector3f((float) (-Math.PI / 2.0f), 0, 0))
                 .build()
         );
     }

@@ -128,15 +128,15 @@ public class Chunk implements Serializable, Universal {
         ).add(position);
     }
 
-    @FunctionalInterface
-    public interface ProcessEachBlock {
-        void apply(Vector3ic pos, Block block, int light);
-    }
-
-
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
         light = new int[SIZE][SIZE][SIZE];
+    }
+
+
+    @FunctionalInterface
+    public interface ProcessEachBlock {
+        void apply(Vector3ic pos, Block block, int light);
     }
 
 }

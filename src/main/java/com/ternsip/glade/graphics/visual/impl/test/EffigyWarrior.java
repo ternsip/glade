@@ -14,7 +14,7 @@ public class EffigyWarrior extends EffigyAnimated {
         return ModelLoader.loadModel(Settings
                 .builder()
                 .meshFile(new File("models/warrior/warrior.3ds"))
-                .baseRotation(new Vector3f(0, 0, (float) (-Math.PI / 2)))
+                .baseRotation(new Vector3f((float) (-Math.PI / 2), 0, 0))
                 .build()
         );
     }

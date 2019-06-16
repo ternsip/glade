@@ -4,6 +4,8 @@ import com.ternsip.glade.common.events.base.EventSnapReceiver;
 import com.ternsip.glade.graphics.visual.impl.basis.Effigy3DText;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigyAxis;
 import com.ternsip.glade.graphics.visual.impl.test.*;
+import com.ternsip.glade.universe.common.Balance;
+import com.ternsip.glade.universe.common.Collisions;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.impl.*;
 import com.ternsip.glade.universe.entities.repository.EntityRepository;
@@ -23,7 +25,8 @@ public class Universe {
     private final EntityRepository entityRepository = new EntityRepository();
     private final Chunks chunks = new Chunks();
     private final String name = "universe";
-    private int ticksPerSecond = 128; // TODO move into universe settings
+    private final Balance balance = new Balance();
+    private final Collisions collisions = new Collisions();
 
     public void initialize() {
         spawnTestEntities();
@@ -36,7 +39,7 @@ public class Universe {
             long startTime = System.currentTimeMillis();
             update();
             long pastTime = System.currentTimeMillis() - startTime;
-            long needToSleep = (long) Math.max(1000.0f / ticksPerSecond - pastTime, 0);
+            long needToSleep = (long) Math.max(1000.0f / getBalance().getTicksPerSecond() - pastTime, 0);
             if (needToSleep > 0) {
                 Thread.sleep(needToSleep);
             }
