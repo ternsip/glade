@@ -90,7 +90,7 @@ public class EntityPlayer extends Entity<EffigyBoy> {
 
         if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_R)) {
             setRotation(new Vector3f(0, 0, 0));
-            setPosition(new Vector3f(600, 30, 550));
+            setPosition(new Vector3f(50, 90, 50));
         }
 
         if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_SPACE)) {

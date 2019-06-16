@@ -6,7 +6,7 @@ import java.lang.Math;
 
 public class Maths {
 
-    public static final float EPS = 1e-6f;
+    public static final float EPS = 1e-5f;
 
     public static final Vector3fc UP_DIRECTION = new Vector3f(0, 1, 0);
     public static final Vector3fc DOWN_DIRECTION = new Vector3f(0, -1, 0);

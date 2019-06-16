@@ -14,9 +14,9 @@ public interface Obstacle {
      */
     Vector3fc collideSegment(LineSegmentf segment);
 
-    default Vector3fc collideSegmentDefault(LineSegmentf segment) {
+    default Vector3fc collideSegmentDefault(LineSegmentf segment, AABBf aabb) {
         Vector2f pResult = new Vector2f();
-        int result = getAabb().intersectLineSegment(segment, pResult);
+        int result = aabb.intersectLineSegment(segment, pResult);
         if (result == OUTSIDE || result == INSIDE) {
             return null;
         }

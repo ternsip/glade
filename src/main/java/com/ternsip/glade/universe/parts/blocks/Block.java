@@ -10,16 +10,17 @@ import static com.ternsip.glade.universe.parts.chunks.Chunks.MAX_LIGHT_LEVEL;
 @Getter
 public enum Block {
 
-    AIR(true, true, true, 1, 0, GAS),
-    DIRT(false, false, false, MAX_LIGHT_LEVEL, 0, SOIL),
-    STONE(false, false, false, MAX_LIGHT_LEVEL, 0, SOIL),
-    LAWN(false, false, false, MAX_LIGHT_LEVEL, 0, SOIL),
-    WOOD(false, false, false, MAX_LIGHT_LEVEL, 0, DECORATIVE),
-    LEAVES(false, true, false, 4, 0, DECORATIVE),
-    WATER(true, true, true, 1, 0, LIQUID),
-    LAVA(true, false, false, 1, 4, LIQUID),
-    SAND(false, false, false, MAX_LIGHT_LEVEL, 0, SOIL);
+    AIR(false, true, true, true, 1, 0, GAS),
+    DIRT(true, false, false, false, MAX_LIGHT_LEVEL, 0, SOIL),
+    STONE(true, false, false, false, MAX_LIGHT_LEVEL, 0, SOIL),
+    LAWN(true, false, false, false, MAX_LIGHT_LEVEL, 0, SOIL),
+    WOOD(true, false, false, false, MAX_LIGHT_LEVEL, 0, DECORATIVE),
+    LEAVES(true, false, true, false, 4, 0, DECORATIVE),
+    WATER(false, true, true, true, 1, 0, LIQUID),
+    LAVA(false, true, false, false, 1, 4, LIQUID),
+    SAND(true, false, false, false, MAX_LIGHT_LEVEL, 0, SOIL);
 
+    private final boolean obstacle;
     private final boolean translucent;
     private final boolean semiTransparent;
     private final boolean combineSides;

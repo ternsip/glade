@@ -13,6 +13,6 @@ public class GroundObstacle implements Obstacle {
 
     @Override
     public Vector3fc collideSegment(LineSegmentf segment) {
-        return collideSegmentDefault(segment);
+        return collideSegmentDefault(segment, getAabb());
     }
 }

@@ -55,7 +55,7 @@ public class Universe {
         EntityPlayer entityPlayer = new EntityPlayer();
         entityPlayer.register();
         entityPlayer.setPosition(new Vector3f(0, 50, 0));
-        entityPlayer.setScale(new Vector3f(5, 5, 5));
+        entityPlayer.setScale(new Vector3f(1, 1, 1));
         getEntityRepository().setCameraTarget(entityPlayer);
 
         new EntitySun(new Vector2f(0, 0), new Vector2f(20000, 20000), new Vector3f(1, 1, 1)).register();

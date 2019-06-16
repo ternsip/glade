@@ -164,10 +164,11 @@ public class Collisions implements Universal {
         }
 
         private boolean isInside(AABBf aabb) {
-            return dx >= aabb.minX && dx + (1 << level) < aabb.maxX &&
-                    dy >= aabb.minY && dy + (1 << level) < aabb.maxY &&
-                    dz >= aabb.minZ && dz + (1 << level) < aabb.maxZ;
-        }
+            int last = (1 << (level + 1)) - 1;
+            return dx <= aabb.minX && dx + last >= aabb.maxX &&
+                    dy <= aabb.minY && dy + last >= aabb.maxY &&
+                    dz <= aabb.minZ && dz + last >= aabb.maxZ;
+    }
 
         private OctreeNode findTree(int sx, int sy, int sz, int ex, int ey, int ez) {
 
