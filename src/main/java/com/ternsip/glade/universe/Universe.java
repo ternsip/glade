@@ -4,6 +4,7 @@ import com.ternsip.glade.common.events.base.EventSnapReceiver;
 import com.ternsip.glade.graphics.visual.impl.basis.Effigy3DText;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigyAxis;
 import com.ternsip.glade.graphics.visual.impl.test.*;
+import com.ternsip.glade.universe.collisions.impl.ChunksObstacle;
 import com.ternsip.glade.universe.collisions.impl.GroundObstacle;
 import com.ternsip.glade.universe.common.Balance;
 import com.ternsip.glade.universe.collisions.base.Collisions;
@@ -109,6 +110,7 @@ public class Universe {
         new EntityStatistics().register();
 
         getCollisions().add(new GroundObstacle());
+        getCollisions().add(new ChunksObstacle());
 
         for (int i = 0; i < 10; ++i) {
             for (int j = 0; j < 10; ++j) {
