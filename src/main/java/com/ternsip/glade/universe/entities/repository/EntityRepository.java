@@ -1,6 +1,6 @@
 package com.ternsip.glade.universe.entities.repository;
 
-import com.ternsip.glade.universe.collisions.base.Colliding;
+import com.ternsip.glade.universe.collisions.base.Obstacle;
 import com.ternsip.glade.universe.common.Light;
 import com.ternsip.glade.universe.common.Universal;
 import com.ternsip.glade.universe.entities.base.Entity;
@@ -36,8 +36,8 @@ public class EntityRepository implements Universal {
         if (entity instanceof Light) {
             lights.add((Light) entity);
         }
-        if (entity instanceof Colliding) {
-            getUniverse().getCollisions().add((Colliding) entity);
+        if (entity instanceof Obstacle) {
+            getUniverse().getCollisions().add((Obstacle) entity);
         }
     }
 
@@ -46,8 +46,8 @@ public class EntityRepository implements Universal {
         if (entity instanceof Light) {
             lights.remove(entity);
         }
-        if (entity instanceof Colliding) {
-            getUniverse().getCollisions().remove((Colliding) entity);
+        if (entity instanceof Obstacle) {
+            getUniverse().getCollisions().remove((Obstacle) entity);
         }
     }
 

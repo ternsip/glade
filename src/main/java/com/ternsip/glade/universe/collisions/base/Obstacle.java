@@ -5,8 +5,7 @@ import org.joml.*;
 import static org.joml.Intersectionf.INSIDE;
 import static org.joml.Intersectionf.OUTSIDE;
 
-// TODO rename to obstacle
-public interface Colliding {
+public interface Obstacle {
 
     AABBf getAabb();
 

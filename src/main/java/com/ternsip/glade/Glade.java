@@ -20,7 +20,6 @@ import com.ternsip.glade.universe.common.Universal;
  */
 // TODO TURN ALL Vectors and Matrixes and Quaternions to constant interface (quatenrionfc/matrixfc)]
 // TODO SHADOWING/LIGHTING
-// TODO PHYSICAL COLLISIONS
 // TODO Animated Textures
 public class Glade {
 

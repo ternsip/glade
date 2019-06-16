@@ -26,64 +26,56 @@ public class Collisions implements Universal {
         return getOctree().collideSegment(segment);
     }
 
-    public void add(Colliding colliding) {
-        getOctree().add(colliding);
+    public void add(Obstacle obstacle) {
+        getOctree().add(obstacle);
     }
 
-    public void remove(Colliding colliding) {
-        getOctree().remove(colliding);
+    public void remove(Obstacle obstacle) {
+        getOctree().remove(obstacle);
     }
 
     public void update() {
         getOctree().update();
     }
 
-    //public Collision collideWithGround(Vector3fc start, Vector3fc end) {
-    //    return new Collision(
-    //            end.y() <= 0,
-    //            "ground",
-    //            new Vector3f(end.x(), Math.max(end.y(), 0), end.z())
-    //    );
-    //}
-
     @Getter
     private static class Octree {
 
         private final OctreeNode root = new OctreeNode();
-        private final Map<Colliding, OctreeNode> collisionToOctreeNode = new HashMap<>();
-        private final Map<Colliding, AABBf> collisionToPreviousAABB = new HashMap<>();
+        private final Map<Obstacle, OctreeNode> obstacleToOctreeNode = new HashMap<>();
+        private final Map<Obstacle, AABBf> obstacleToPreviousAABB = new HashMap<>();
         private final AtomicBoolean modified = new AtomicBoolean(false);
 
         public List<Collision> collideSegment(LineSegmentf segment) {
             return getRoot().collideSegment(segment);
         }
 
-        public void add(Colliding colliding) {
-            OctreeNode tree = getRoot().findTree(colliding);
-            getCollisionToOctreeNode().put(colliding, tree);
-            tree.getCollidings().add(colliding);
-            getCollisionToPreviousAABB().put(colliding, colliding.getAabb());
+        public void add(Obstacle obstacle) {
+            OctreeNode tree = getRoot().findTree(obstacle);
+            getObstacleToOctreeNode().put(obstacle, tree);
+            tree.getObstacles().add(obstacle);
+            getObstacleToPreviousAABB().put(obstacle, obstacle.getAabb());
         }
 
-        public void remove(Colliding colliding) {
-            OctreeNode tree = getCollisionToOctreeNode().get(colliding);
-            getCollisionToOctreeNode().remove(colliding);
-            tree.getCollidings().remove(colliding);
+        public void remove(Obstacle obstacle) {
+            OctreeNode tree = getObstacleToOctreeNode().get(obstacle);
+            getObstacleToOctreeNode().remove(obstacle);
+            tree.getObstacles().remove(obstacle);
             getModified().set(true);
         }
 
         public void update() {
-            getCollisionToPreviousAABB().entrySet().forEach(entry -> {
+            getObstacleToPreviousAABB().entrySet().forEach(entry -> {
 
-                Colliding colliding = entry.getKey();
+                Obstacle obstacle = entry.getKey();
                 AABBf aabb = entry.getValue();
-                AABBf newAABB = colliding.getAabb();
+                AABBf newAABB = obstacle.getAabb();
 
                 if (!aabb.equals(newAABB)) {
-                    getCollisionToOctreeNode().get(colliding).getCollidings().remove(colliding);
-                    OctreeNode addTreeNode = getRoot().findTree(colliding);
-                    getCollisionToOctreeNode().put(colliding, addTreeNode);
-                    addTreeNode.getCollidings().add(colliding);
+                    getObstacleToOctreeNode().get(obstacle).getObstacles().remove(obstacle);
+                    OctreeNode addTreeNode = getRoot().findTree(obstacle);
+                    getObstacleToOctreeNode().put(obstacle, addTreeNode);
+                    addTreeNode.getObstacles().add(obstacle);
                     entry.setValue(newAABB);
                     getModified().set(true);
                 }
@@ -101,7 +93,7 @@ public class Collisions implements Universal {
     @Getter
     private static class OctreeNode {
 
-        private final Set<Colliding> collidings = new HashSet<>();
+        private final Set<Obstacle> obstacles = new HashSet<>();
         private final OctreeNode parent;
         private final OctreeNode[] children = new OctreeNode[8];
         private final int level;
@@ -131,7 +123,7 @@ public class Collisions implements Universal {
             queue.push(this);
             while (!queue.isEmpty()) {
                 OctreeNode top = queue.poll();
-                top.getCollidings().forEach(e -> {
+                top.getObstacles().forEach(e -> {
                     Vector3fc collisionPoint = e.collideSegment(segment);
                     if (collisionPoint != null) {
                         collisions.add(new Collision(e, collisionPoint));
@@ -148,8 +140,8 @@ public class Collisions implements Universal {
             return collisions;
         }
 
-        public OctreeNode findTree(Colliding colliding) {
-            AABBf aabb = colliding.getAabb();
+        public OctreeNode findTree(Obstacle obstacle) {
+            AABBf aabb = obstacle.getAabb();
             return findTree((int) aabb.minX, (int) aabb.minY, (int) aabb.minZ, (int) aabb.maxX, (int) aabb.maxY, (int) aabb.maxZ);
         }
 
@@ -159,7 +151,7 @@ public class Collisions implements Universal {
                     return false;
                 }
             }
-            return getCollidings().isEmpty();
+            return getObstacles().isEmpty();
         }
 
         public void cleanEmptyChildren() {
