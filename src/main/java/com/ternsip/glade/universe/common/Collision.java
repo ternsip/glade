@@ -8,7 +8,7 @@ import org.joml.Vector3fc;
 @Getter
 public class Collision {
 
-    private final boolean collision;
+    private final boolean collided;
     private final Object object;
     private final Vector3fc position;
 

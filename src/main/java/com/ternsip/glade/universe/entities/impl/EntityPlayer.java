@@ -20,6 +20,8 @@ public class EntityPlayer extends Entity<EffigyBoy> {
     private Vector3fc lookDirection = new Vector3f(0);
     private Vector3fc moveEffort = new Vector3f(0);
     private float velocity = 5f;
+    private float jumpPower = 4f;
+    private boolean onTheGround = false;
 
     @Override
     public void finish() {
@@ -45,6 +47,12 @@ public class EntityPlayer extends Entity<EffigyBoy> {
                 .add(getCurrentVelocity())
                 .add(moveDirection);
         Collision collision = getUniverse().getCollisions().collideSegment(getPosition(), nextPosition);
+        if (collision.isCollided()) {
+            setCurrentVelocity(new Vector3f(0));
+            setOnTheGround(true);
+        } else {
+            setOnTheGround(false);
+        }
         setPosition(collision.getPosition());
     }
 
@@ -64,11 +72,18 @@ public class EntityPlayer extends Entity<EffigyBoy> {
             move.add(LEFT_DIRECTION);
         }
 
-        setMoveEffort(normalizeOrEmpty(move).mul(getVelocity(), new Vector3f()));
+        setMoveEffort(normalizeOrEmpty(move).mul(getJumpPower(), new Vector3f()));
 
         if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_R)) {
             setRotation(new Vector3f(0, 0, 0));
             setPosition(new Vector3f(600, 30, 550));
+        }
+
+        if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_SPACE)) {
+            if (isOnTheGround()) {
+                getCurrentVelocity().add(new Vector3f(0, jumpPower, 0));
+                setOnTheGround(false);
+            }
         }
 
     }
