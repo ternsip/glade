@@ -23,7 +23,7 @@ public class ChunksObstacle implements Obstacle, Universal {
 
     private static final int MAX_TRAVERSAL_LENGTH = 256;
     private static final float BLOCK_SAVE_DELTA = 1e-4f;
-    private static final int CUBE_SIZE = 1;
+    private static final float CUBE_SIZE = 1;
 
     private final AABBf aabb = new AABBf(-Float.MAX_VALUE, 0, -Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
 
