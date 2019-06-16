@@ -23,10 +23,10 @@ public class ThirdPersonController implements Graphical, CameraController {
     private static final float MIN_DISTANCE_FROM_TARGET = 0.1f;
     private static final float MAX_DISTANCE_FROM_TARGET = 320;
     private static final float ROTATION_OVERLAP_EPSILON = 0.001f;
-    private static final float MAX_ROTATION_DELTA_X = (float) (Math.PI * 2);
-    private static final float MAX_ROTATION_DELTA_Y = (float) (Math.PI / 2 - 0.01f);
-    private static final float ROTATION_MULTIPLIER_X = -0.005f;
-    private static final float ROTATION_MULTIPLIER_Y = 0.005f;
+    private static final float MAX_ROTATION_DELTA_X = (float) (Math.PI / 2 - 0.01f);
+    private static final float MAX_ROTATION_DELTA_Y = (float) (Math.PI * 2);
+    private static final float ROTATION_MULTIPLIER_X = 0.005f;
+    private static final float ROTATION_MULTIPLIER_Y = -0.005f;
     private static final float SCROLL_MULTIPLIER = 5f;
 
     private Vector3f target = new Vector3f(0);
@@ -49,7 +49,7 @@ public class ThirdPersonController implements Graphical, CameraController {
 
         if (getGraphics().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_1) &&
                 getGraphics().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_2)) {
-            transformable.setRotation(new Vector3f(0, getRotation().x(), 0));
+            transformable.setRotation(new Vector3f(0, getRotation().y(), 0));
         }
 
     }
@@ -73,8 +73,8 @@ public class ThirdPersonController implements Graphical, CameraController {
 
     private void recalculateRotation(CursorPosEvent event) {
         if (getGraphics().isMouseDown(GLFW_MOUSE_BUTTON_1)) {
-            float nx = limitAngle(getRotation().x() + (float) (event.getDx() * ROTATION_MULTIPLIER_X), MAX_ROTATION_DELTA_X);
-            float ny = limitAngle(getRotation().y() + (float) (event.getDy() * ROTATION_MULTIPLIER_Y), MAX_ROTATION_DELTA_Y);
+            float nx = limitAngle(getRotation().x() + (float) (event.getDy() * ROTATION_MULTIPLIER_X), MAX_ROTATION_DELTA_X);
+            float ny = limitAngle(getRotation().y() + (float) (event.getDx() * ROTATION_MULTIPLIER_Y), MAX_ROTATION_DELTA_Y);
             setRotation(new Vector2f(nx, ny));
         }
     }
@@ -94,7 +94,7 @@ public class ThirdPersonController implements Graphical, CameraController {
     }
 
     private Vector3fc getLookDirection() {
-        return FRONT_DIRECTION.rotateX(getRotation().y(), new Vector3f()).rotateY(getRotation().x());
+        return FRONT_DIRECTION.rotateX(getRotation().x(), new Vector3f()).rotateY(getRotation().y());
     }
 
 }
