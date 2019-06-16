@@ -23,7 +23,7 @@ public class EntityPlayer extends Entity<EffigyBoy> {
     private Vector3fc lookDirection = new Vector3f(0);
     private Vector3fc moveEffort = new Vector3f(0);
     private float velocity = 0.1f;
-    private float jumpPower = 1f;
+    private float jumpPower = 0.5f;
     private boolean onTheGround = false;
 
     @Override
