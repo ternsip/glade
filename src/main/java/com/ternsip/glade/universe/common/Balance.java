@@ -12,6 +12,6 @@ import org.joml.Vector3fc;
 public class Balance {
 
     private int ticksPerSecond = 128;
-    private Vector3fc gravity = new Vector3f(0, -0.02f, 0);
+    private Vector3fc gravity = new Vector3f(0, -0.005f, 0);
 
 }
