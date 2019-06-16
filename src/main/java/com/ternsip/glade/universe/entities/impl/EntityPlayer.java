@@ -22,8 +22,8 @@ public class EntityPlayer extends Entity<EffigyBoy> {
     private Vector3f currentVelocity = new Vector3f();
     private Vector3fc lookDirection = new Vector3f(0);
     private Vector3fc moveEffort = new Vector3f(0);
-    private float velocity = 5f;
-    private float jumpPower = 4f;
+    private float velocity = 0.1f;
+    private float jumpPower = 1f;
     private boolean onTheGround = false;
 
     @Override
@@ -73,7 +73,7 @@ public class EntityPlayer extends Entity<EffigyBoy> {
     private void checkInputs() {
 
         Vector3f move = new Vector3f(0);
-        if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_W)) {
+        if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_W) || getUniverse().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_1) && getUniverse().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_2)) {
             move.add(FRONT_DIRECTION);
         }
         if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_S)) {
@@ -86,7 +86,7 @@ public class EntityPlayer extends Entity<EffigyBoy> {
             move.add(LEFT_DIRECTION);
         }
 
-        setMoveEffort(normalizeOrEmpty(move).mul(getJumpPower(), new Vector3f()));
+        setMoveEffort(normalizeOrEmpty(move).mul(getVelocity(), new Vector3f()));
 
         if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_R)) {
             setRotation(new Vector3f(0, 0, 0));

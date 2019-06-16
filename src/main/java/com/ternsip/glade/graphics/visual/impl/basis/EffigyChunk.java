@@ -159,7 +159,7 @@ public class EffigyChunk extends Effigy<ChunkShader> {
 
     @Override
     public int getPriority() {
-        return -1;
+        return 1;
     }
 
     @Override

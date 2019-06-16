@@ -25,7 +25,7 @@ public class EntityChunk extends Entity implements Obstacle {
     public EntityChunk(Chunk chunk) {
         this.chunk = chunk;
         Vector3fc start = new Vector3f(getChunk().getPosition().mul(Chunk.SIZE, new Vector3i()));
-        Vector3fc end = new Vector3f(Chunk.SIZE - EPS).add(start); // TODO be careful dont fall down/stuck between chunks
+        Vector3fc end = new Vector3f(Chunk.SIZE).add(start);
         this.aabb = new AABBf(start, end);
     }
 
