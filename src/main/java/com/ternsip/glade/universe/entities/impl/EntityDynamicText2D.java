@@ -39,6 +39,7 @@ public class EntityDynamicText2D extends MultiEntity {
             entities[i] = new EntityGeneric(() -> new EffigyGlyph(font, text.charAt(finalI), color));
             entities[i].setPosition(new Vector3f(i * scale.x() * TEXT_COMPRESSION, 0, 0).add(position));
             entities[i].setScale(scale);
+            entities[i].register();
         }
         return Arrays.asList(entities);
     }

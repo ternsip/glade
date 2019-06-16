@@ -12,7 +12,7 @@ public abstract class MultiEntity implements Universal {
 
     public final Collection<Entity> entities = new ArrayList<>();
 
-    public MultiEntity() {
+    public void register() {
         getUniverse().getEntityRepository().register(this);
     }
 

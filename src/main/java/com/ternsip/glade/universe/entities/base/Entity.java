@@ -21,7 +21,7 @@ public abstract class Entity<T extends Effigy> implements Universal, Transformab
 
     private boolean visualReloadRequired = false;
 
-    public Entity() {
+    public void register() {
         getUniverse().getEntityRepository().register(this);
     }
 

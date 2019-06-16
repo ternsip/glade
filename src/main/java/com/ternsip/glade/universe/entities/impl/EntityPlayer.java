@@ -2,12 +2,15 @@ package com.ternsip.glade.universe.entities.impl;
 
 import com.ternsip.glade.common.logic.Maths;
 import com.ternsip.glade.graphics.visual.impl.test.EffigyBoy;
-import com.ternsip.glade.universe.common.Collision;
+import com.ternsip.glade.universe.collisions.base.Collision;
 import com.ternsip.glade.universe.entities.base.Entity;
 import lombok.Getter;
 import lombok.Setter;
+import org.joml.LineSegmentf;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
+
+import java.util.List;
 
 import static com.ternsip.glade.common.logic.Maths.*;
 import static org.lwjgl.glfw.GLFW.*;
@@ -43,17 +46,28 @@ public class EntityPlayer extends Entity<EffigyBoy> {
         checkInputs();
         Vector3f moveDirection = getMoveEffort().rotate(Maths.getRotationQuaternion(getRotation()), new Vector3f());
         getCurrentVelocity().add(getUniverse().getBalance().getGravity());
-        Vector3fc nextPosition = new Vector3f(getPosition())
+        Vector3fc cPos = getPosition();
+        Vector3fc nPos = new Vector3f(cPos)
                 .add(getCurrentVelocity())
                 .add(moveDirection);
-        Collision collision = getUniverse().getCollisions().collideSegment(getPosition(), nextPosition);
-        if (collision.isCollided()) {
-            setCurrentVelocity(new Vector3f(0));
-            setOnTheGround(true);
-        } else {
-            setOnTheGround(false);
+        Vector3fc tryX = tryToMove(cPos, new Vector3f(nPos.x(), cPos.y(), cPos.z()));
+        Vector3fc tryY = tryToMove(tryX, new Vector3f(tryX.x(), nPos.y(), cPos.z()));
+        Vector3fc tryZ = tryToMove(tryY, new Vector3f(tryY.x(), tryY.y(), nPos.z()));
+        setOnTheGround(tryToMove(cPos, new Vector3f(cPos).add(DOWN_DIRECTION)).equals(cPos, 5 * EPS));
+        if (isOnTheGround()) {
+            getCurrentVelocity().y = 0;
         }
-        setPosition(collision.getPosition());
+        setPosition(tryZ);
+    }
+
+    private Vector3fc tryToMove(Vector3fc startPosition, Vector3fc endPosition) {
+        List<Collision> collisions = getUniverse().getCollisions().collideSegment(new LineSegmentf(startPosition, endPosition));
+        if (!collisions.isEmpty()) {
+            Vector3fc intersection = collisions.get(0).getPosition();
+            Vector3f shift = Maths.normalizeOrEmpty(new Vector3f(startPosition).sub(endPosition)).mul(2 * EPS, new Vector3f());
+            return shift.add(intersection);
+        }
+        return endPosition;
     }
 
     private void checkInputs() {
@@ -82,10 +96,10 @@ public class EntityPlayer extends Entity<EffigyBoy> {
         if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_SPACE)) {
             if (isOnTheGround()) {
                 getCurrentVelocity().add(new Vector3f(0, jumpPower, 0));
-                setOnTheGround(false);
             }
         }
 
     }
+
 
 }
