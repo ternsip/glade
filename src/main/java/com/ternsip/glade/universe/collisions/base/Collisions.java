@@ -11,7 +11,6 @@ import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Getter(AccessLevel.PRIVATE)
 public class Collisions implements Universal {
@@ -44,7 +43,6 @@ public class Collisions implements Universal {
         private final OctreeNode root = new OctreeNode();
         private final Map<Obstacle, OctreeNode> obstacleToOctreeNode = new HashMap<>();
         private final Map<Obstacle, AABBf> obstacleToPreviousAABB = new HashMap<>();
-        private final AtomicBoolean modified = new AtomicBoolean(false);
 
         public List<Collision> collideSegment(LineSegmentf segment) {
             return getRoot().collideSegment(segment);
@@ -61,7 +59,7 @@ public class Collisions implements Universal {
             OctreeNode tree = getObstacleToOctreeNode().get(obstacle);
             getObstacleToOctreeNode().remove(obstacle);
             tree.getObstacles().remove(obstacle);
-            getModified().set(true);
+            tree.cleanEmptyChildrenForParent();
         }
 
         public void update() {
@@ -72,19 +70,16 @@ public class Collisions implements Universal {
                 AABBf newAABB = obstacle.getAabb();
 
                 if (!aabb.equals(newAABB)) {
-                    getObstacleToOctreeNode().get(obstacle).getObstacles().remove(obstacle);
+                    OctreeNode removeTreeNode = getObstacleToOctreeNode().get(obstacle);
+                    removeTreeNode.getObstacles().remove(obstacle);
                     OctreeNode addTreeNode = getRoot().findTree(obstacle);
                     getObstacleToOctreeNode().put(obstacle, addTreeNode);
                     addTreeNode.getObstacles().add(obstacle);
                     entry.setValue(newAABB);
-                    getModified().set(true);
+                    removeTreeNode.cleanEmptyChildrenForParent();
                 }
 
             });
-            if (getModified().get()) {
-                getRoot().cleanEmptyChildren();
-                getModified().set(false);
-            }
         }
 
     }
@@ -154,9 +149,14 @@ public class Collisions implements Universal {
             return getObstacles().isEmpty();
         }
 
+        public void cleanEmptyChildrenForParent() {
+            if (getParent() != null) {
+                getParent().cleanEmptyChildren();
+            }
+        }
+
         public void cleanEmptyChildren() {
             for (int i = 0; i < getChildren().length; ++i) {
-                getChildren()[i].cleanEmptyChildren();
                 if (getChildren()[i].isEmpty()) {
                     getChildren()[i] = null;
                 }
