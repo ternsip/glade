@@ -11,6 +11,8 @@ import org.joml.Vector3ic;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -25,6 +27,7 @@ public class Chunk implements Serializable, Universal {
     private transient int[][][] light = new int[SIZE][SIZE][SIZE];
     private transient boolean logicReloadRequired = true;
     private transient boolean visualReloadRequired = false;
+    private transient List<Vector3ic> changedBlocks = new ArrayList<>();
 
     public Chunk(Vector3ic position) {
         this(createEmptyBlockArray(), position);
@@ -128,9 +131,15 @@ public class Chunk implements Serializable, Universal {
         ).add(position);
     }
 
+    public void registerBlockChange(Vector3ic pos) {
+        getChangedBlocks().add(pos);
+    }
+
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
-        light = new int[SIZE][SIZE][SIZE];
+        this.light = new int[SIZE][SIZE][SIZE];
+        this.logicReloadRequired = false;
+        this.changedBlocks = new ArrayList<>();
     }
 
 

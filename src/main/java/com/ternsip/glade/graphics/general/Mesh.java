@@ -1,11 +1,20 @@
 package com.ternsip.glade.graphics.general;
 
 import com.ternsip.glade.common.logic.Utils;
+import com.ternsip.glade.graphics.shader.base.AttributeData;
+import com.ternsip.glade.graphics.shader.base.MeshAttributes;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.Vector3f;
+import org.lwjgl.opengl.GL15;
 
-import static com.ternsip.glade.common.logic.Utils.arrayToBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.ternsip.glade.graphics.shader.base.ShaderProgram.INDICES;
+import static com.ternsip.glade.graphics.shader.base.ShaderProgram.VERTICES;
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL11.GL_INT;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
@@ -17,20 +26,19 @@ import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL20.glDisableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
+import static org.lwjgl.opengl.GL30.GL_DYNAMIC_DRAW;
 import static org.lwjgl.opengl.GL30.*;
 
 @Getter
 @Setter
 public class Mesh {
 
+    public static final float MAX_VERTICES = 1 << 16;
     public static final float MIN_INTERNAL_SIZE = 0.01f;
-    public static final int MAX_WEIGHTS = 4;
-    public static final int MAX_BONES = 180;
 
     public static int VERTICES_ATTRIBUTE_POINTER_INDEX = 0;
     public static int NORMALS_ATTRIBUTE_POINTER_INDEX = 1;
@@ -39,61 +47,54 @@ public class Mesh {
     public static int WEIGHTS_ATTRIBUTE_POINTER_INDEX = 4;
     public static int BONES_ATTRIBUTE_POINTER_INDEX = 5;
 
-    private static int NO_VBO = -1;
-
+    private final MeshAttributes meshAttributes;
     private final int indicesCount;
+    private final int vertexCount;
     private final Material material;
-    private final int vao;
-    private final int vboIndices;
-    private final int vboVertices;
-    private final int vboNormals;
-    private final int vboColors;
-    private final int vboTextures;
-    private final int vboWeights;
-    private final int vboBones;
     private final float normalizingScale;
+    private final boolean dynamic;
 
-    public Mesh(float[] vertices, Material material) {
-        this(vertices, new float[0], new float[0], new float[0], new int[0], new float[0], new int[0], material);
+    private final int vao;
+    private final Map<AttributeData, Integer> vbos = new HashMap<>();
+
+    public Mesh(MeshAttributes meshAttributes, Material material) {
+        this(meshAttributes, material, false);
     }
 
-    public Mesh(
-            float[] vertices,
-            float[] normals,
-            float[] colors,
-            float[] textures,
-            int[] indices,
-            float[] weights,
-            int[] bones,
-            Material material
-    ) {
-        indicesCount = indices.length == 0 ? vertices.length / 3 : indices.length;
+    public Mesh(MeshAttributes meshAttributes, Material material, boolean dynamic) {
 
-        if (textures.length == 0) {
-            textures = new float[(2 * vertices.length) / 3];
+        this.dynamic = dynamic;
+        this.meshAttributes = meshAttributes;
+        this.vertexCount = meshAttributes.getVerticesBuffer().limit() / VERTICES.getNumberPerVertex();
+        this.indicesCount = meshAttributes.getAttributeToBuffer().containsKey(INDICES) ? meshAttributes.getAttributeToBuffer().get(INDICES).limit() : 0;
+        if (vertexCount == 0) {
+            throw new IllegalArgumentException("Number of vertices should not be zero");
         }
+        if (vertexCount > MAX_VERTICES) {
+            throw new IllegalArgumentException(String.format("Number of vertices is more than the maximum: %s", vertexCount));
+        }
+        meshAttributes.getAttributeToBuffer().entrySet().removeIf(e -> e.getValue().limit() == 0);
+        meshAttributes.getAttributeToBuffer().forEach((k, v) -> Utils.assertThat(k == INDICES || vertexCount == v.limit() / k.getNumberPerVertex()));
 
-        Utils.assertThat(vertices.length > 0);
-        Utils.assertThat(vertices.length % 3 == 0);
-        Utils.assertThat(normals.length == 0 || vertices.length == normals.length);
-        Utils.assertThat(colors.length == 0 || (4 * vertices.length / 3) == colors.length);
-        Utils.assertThat(textures.length == 0 || (2 * vertices.length) / 3 == textures.length);
-        Utils.assertThat(weights.length == 0 || (MAX_WEIGHTS * vertices.length) / 3 == weights.length);
-        Utils.assertThat(bones.length == 0 || (MAX_WEIGHTS * vertices.length) / 3 == bones.length);
-
-        this.normalizingScale = calculateNormalizingScale(vertices);
+        this.normalizingScale = calculateNormalizingScale(Utils.bufferToArray(meshAttributes.getVerticesBuffer()));
         this.material = material;
-        vao = glGenVertexArrays();
+        this.vao = glGenVertexArrays();
+
         glBindVertexArray(vao);
-        vboIndices = bindElementArrayVBO(indices);
-        vboVertices = bindArrayVBO(VERTICES_ATTRIBUTE_POINTER_INDEX, 3, vertices);
-        vboNormals = bindArrayVBO(NORMALS_ATTRIBUTE_POINTER_INDEX, 3, normals);
-        vboColors = bindArrayVBO(COLORS_ATTRIBUTE_POINTER_INDEX, 4, colors);
-        vboTextures = bindArrayVBO(TEXTURES_ATTRIBUTE_POINTER_INDEX, 2, textures);
-        vboWeights = bindArrayVBO(WEIGHTS_ATTRIBUTE_POINTER_INDEX, MAX_WEIGHTS, weights);
-        vboBones = bindArrayVBO(BONES_ATTRIBUTE_POINTER_INDEX, MAX_WEIGHTS, bones);
+        fillBuffers();
         glBindVertexArray(0);
 
+        if (!dynamic) {
+            meshAttributes.getAttributeToBuffer().clear();
+        }
+
+    }
+
+    public void updateBuffers() {
+        if (!isDynamic()) {
+            throw new IllegalArgumentException("You can't update static meshes");
+        }
+        fillBuffers();
     }
 
     private static float calculateNormalizingScale(float[] vertices) {
@@ -115,63 +116,46 @@ public class Mesh {
         return 2 / Math.max(bounds.x(), Math.max(bounds.y(), bounds.z()));
     }
 
-    private static int bindElementArrayVBO(int[] array) {
-        if (array.length == 0) {
-            return NO_VBO;
-        }
-        int vbo = glGenBuffers();
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, arrayToBuffer(array), GL_STATIC_DRAW);
-        return vbo;
-    }
-
-    private static int bindArrayVBO(int index, int nPerVertex, float[] array) {
-        if (array.length == 0) {
-            return NO_VBO;
-        }
-        int vbo = glGenBuffers();
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, arrayToBuffer(array), GL_STATIC_DRAW);
-        glVertexAttribPointer(index, nPerVertex, GL_FLOAT, false, 0, 0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        return vbo;
-    }
-
-    private static int bindArrayVBO(int index, int nPerVertex, int[] array) {
-        if (array.length == 0) {
-            return NO_VBO;
-        }
-        int vbo = glGenBuffers();
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, arrayToBuffer(array), GL_STATIC_DRAW);
-        glVertexAttribIPointer(index, nPerVertex, GL_INT, 0, 0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        return vbo;
+    private void fillBuffers() {
+        getMeshAttributes().getAttributeToBuffer().forEach((attributeData, buffer) -> {
+            int vbo = getVbos().computeIfAbsent(attributeData, e -> glGenBuffers());
+            buffer.rewind();
+            if (attributeData.getType() == AttributeData.ArrayType.ELEMENT_ARRAY) {
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, (IntBuffer) buffer, isDynamic() ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+            }
+            if (attributeData.getType() == AttributeData.ArrayType.FLOAT) {
+                glBindBuffer(GL_ARRAY_BUFFER, vbo);
+                glBufferData(GL_ARRAY_BUFFER, (FloatBuffer) buffer, isDynamic() ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+                glVertexAttribPointer(attributeData.getIndex(), attributeData.getNumberPerVertex(), GL_FLOAT, false, 0, 0);
+                glBindBuffer(GL_ARRAY_BUFFER, 0);
+            }
+            if (attributeData.getType() == AttributeData.ArrayType.INT) {
+                glBindBuffer(GL_ARRAY_BUFFER, vbo);
+                glBufferData(GL_ARRAY_BUFFER, (IntBuffer) buffer, isDynamic() ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+                glVertexAttribIPointer(attributeData.getIndex(), attributeData.getNumberPerVertex(), GL_INT, 0, 0);
+                glBindBuffer(GL_ARRAY_BUFFER, 0);
+            }
+        });
     }
 
     public void render() {
 
         glBindVertexArray(vao);
 
-        if (vboVertices != NO_VBO) glEnableVertexAttribArray(VERTICES_ATTRIBUTE_POINTER_INDEX);
-        if (vboNormals != NO_VBO) glEnableVertexAttribArray(NORMALS_ATTRIBUTE_POINTER_INDEX);
-        if (vboColors != NO_VBO) glEnableVertexAttribArray(COLORS_ATTRIBUTE_POINTER_INDEX);
-        if (vboTextures != NO_VBO) glEnableVertexAttribArray(TEXTURES_ATTRIBUTE_POINTER_INDEX);
-        if (vboWeights != NO_VBO) glEnableVertexAttribArray(WEIGHTS_ATTRIBUTE_POINTER_INDEX);
-        if (vboBones != NO_VBO) glEnableVertexAttribArray(BONES_ATTRIBUTE_POINTER_INDEX);
+        getVbos().keySet().forEach(attributeData -> {
+            glEnableVertexAttribArray(attributeData.getIndex());
+        });
 
-        if (vboIndices == NO_VBO) {
-            glDrawArrays(GL_TRIANGLES, 0, indicesCount);
+        if (getIndicesCount() == 0) {
+            glDrawArrays(GL_TRIANGLES, 0, getVertexCount());
         } else {
-            glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, 0);
+            glDrawElements(GL_TRIANGLES, getIndicesCount(), GL_UNSIGNED_INT, 0);
         }
 
-        if (vboVertices != NO_VBO) glDisableVertexAttribArray(VERTICES_ATTRIBUTE_POINTER_INDEX);
-        if (vboNormals != NO_VBO) glDisableVertexAttribArray(NORMALS_ATTRIBUTE_POINTER_INDEX);
-        if (vboColors != NO_VBO) glDisableVertexAttribArray(COLORS_ATTRIBUTE_POINTER_INDEX);
-        if (vboTextures != NO_VBO) glDisableVertexAttribArray(TEXTURES_ATTRIBUTE_POINTER_INDEX);
-        if (vboWeights != NO_VBO) glDisableVertexAttribArray(WEIGHTS_ATTRIBUTE_POINTER_INDEX);
-        if (vboBones != NO_VBO) glDisableVertexAttribArray(BONES_ATTRIBUTE_POINTER_INDEX);
+        getVbos().keySet().forEach(attributeData -> {
+            glDisableVertexAttribArray(attributeData.getIndex());
+        });
 
         glBindVertexArray(0);
 
@@ -179,11 +163,7 @@ public class Mesh {
 
     public void finish() {
         glDeleteVertexArrays(vao);
-        if (vboVertices != NO_VBO) glDeleteBuffers(vboVertices);
-        if (vboNormals != NO_VBO) glDeleteBuffers(vboNormals);
-        if (vboTextures != NO_VBO) glDeleteBuffers(vboTextures);
-        if (vboWeights != NO_VBO) glDeleteBuffers(vboWeights);
-        if (vboBones != NO_VBO) glDeleteBuffers(vboBones);
+        getVbos().values().forEach(GL15::glDeleteBuffers);
     }
 
 }

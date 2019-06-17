@@ -1,5 +1,6 @@
 package com.ternsip.glade.graphics.shader.impl;
 
+import com.ternsip.glade.graphics.shader.base.AttributeData;
 import com.ternsip.glade.graphics.shader.base.ShaderProgram;
 import com.ternsip.glade.graphics.shader.uniforms.*;
 import lombok.AccessLevel;
@@ -8,15 +9,23 @@ import lombok.NoArgsConstructor;
 
 import java.io.File;
 
-import static com.ternsip.glade.graphics.general.Mesh.MAX_BONES;
 import static com.ternsip.glade.graphics.shader.uniforms.UniformLightArray.MAX_LIGHTS;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AnimationShader extends ShaderProgram {
 
+    public static final int MAX_WEIGHTS = 4;
+    public static final int MAX_BONES = 180;
+
     public static final File VERTEX_SHADER = new File("shaders/anim/AnimationVertexShader.glsl");
     public static final File FRAGMENT_SHADER = new File("shaders/anim/AnimationFragmentShader.glsl");
+
+    public static final AttributeData TEXTURES = new AttributeData(2, "textureCoordinates", 2, AttributeData.ArrayType.FLOAT);
+    public static final AttributeData COLORS = new AttributeData(3, "colors", 4, AttributeData.ArrayType.FLOAT);
+    public static final AttributeData NORMALS = new AttributeData(4, "normal", 3, AttributeData.ArrayType.FLOAT);
+    public static final AttributeData BONE_INDICES = new AttributeData(5, "boneIndices", MAX_WEIGHTS, AttributeData.ArrayType.INT);
+    public static final AttributeData WEIGHTS = new AttributeData(6, "weights", MAX_WEIGHTS, AttributeData.ArrayType.FLOAT);
 
     private UniformBoolean animated = new UniformBoolean();
     private UniformMatrix4 projectionMatrix = new UniformMatrix4();

@@ -11,8 +11,9 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collection;
 
-import static com.ternsip.glade.graphics.general.Mesh.*;
 import static org.lwjgl.opengl.GL20.glDeleteProgram;
 import static org.lwjgl.opengl.GL20C.*;
 
@@ -21,6 +22,9 @@ import static org.lwjgl.opengl.GL20C.*;
 public abstract class ShaderProgram {
 
     private static int LAST_PROGRAM_ID = -100;
+
+    public static final AttributeData INDICES = new AttributeData(0, "indices", 3, AttributeData.ArrayType.ELEMENT_ARRAY);
+    public static final AttributeData VERTICES = new AttributeData(1, "position", 3, AttributeData.ArrayType.FLOAT);
 
     @SuppressWarnings("unused")
     private int programID;
@@ -32,10 +36,11 @@ public abstract class ShaderProgram {
         T shader = constructor.newInstance();
         int vertexShaderID = loadShader((File) findHeader(shader, "VERTEX_SHADER"), GL_VERTEX_SHADER);
         int fragmentShaderID = loadShader((File) findHeader(shader, "FRAGMENT_SHADER"), GL_FRAGMENT_SHADER);
+        Collection<AttributeData> attributeData = collectAttributeData(shader);
         int programID = glCreateProgram();
         glAttachShader(programID, vertexShaderID);
         glAttachShader(programID, fragmentShaderID);
-        bindAttributes(programID);
+        bindAttributes(programID, attributeData);
         glLinkProgram(programID);
         glDetachShader(programID, vertexShaderID);
         glDetachShader(programID, fragmentShaderID);
@@ -69,13 +74,22 @@ public abstract class ShaderProgram {
         throw new IllegalArgumentException(String.format("Can't find filed %s", fieldName));
     }
 
-    private static void bindAttributes(int programID) {
-        glBindAttribLocation(programID, VERTICES_ATTRIBUTE_POINTER_INDEX, "position");
-        glBindAttribLocation(programID, TEXTURES_ATTRIBUTE_POINTER_INDEX, "textureCoordinates");
-        glBindAttribLocation(programID, COLORS_ATTRIBUTE_POINTER_INDEX, "colors");
-        glBindAttribLocation(programID, NORMALS_ATTRIBUTE_POINTER_INDEX, "normal");
-        glBindAttribLocation(programID, BONES_ATTRIBUTE_POINTER_INDEX, "boneIndices");
-        glBindAttribLocation(programID, WEIGHTS_ATTRIBUTE_POINTER_INDEX, "weights");
+    @SneakyThrows
+    private static Collection<AttributeData> collectAttributeData(ShaderProgram instance) {
+        Collection<AttributeData> attributeData = new ArrayList<>();
+        for (Field field : instance.getClass().getFields()) {
+            if (Modifier.isStatic(field.getModifiers()) && field.getType() == AttributeData.class) {
+                field.setAccessible(true);
+                attributeData.add((AttributeData) field.get(instance));
+            }
+        }
+        return attributeData;
+    }
+
+    private static void bindAttributes(int programID, Collection<AttributeData> attributeData) {
+        for (AttributeData data : attributeData) {
+            glBindAttribLocation(programID, data.getIndex(), data.getName());
+        }
     }
 
     @SneakyThrows

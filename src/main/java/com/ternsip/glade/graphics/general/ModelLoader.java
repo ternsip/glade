@@ -1,5 +1,6 @@
 package com.ternsip.glade.graphics.general;
 
+import com.ternsip.glade.graphics.shader.base.MeshAttributes;
 import lombok.SneakyThrows;
 import org.joml.*;
 import org.lwjgl.PointerBuffer;
@@ -13,7 +14,9 @@ import java.util.stream.Collectors;
 
 import static com.ternsip.glade.common.logic.Utils.assertThat;
 import static com.ternsip.glade.common.logic.Utils.loadResourceAsAssimp;
-import static com.ternsip.glade.graphics.general.Mesh.MAX_BONES;
+import static com.ternsip.glade.graphics.shader.base.ShaderProgram.INDICES;
+import static com.ternsip.glade.graphics.shader.base.ShaderProgram.VERTICES;
+import static com.ternsip.glade.graphics.shader.impl.AnimationShader.*;
 import static org.lwjgl.assimp.Assimp.*;
 
 public class ModelLoader {
@@ -93,14 +96,14 @@ public class ModelLoader {
             float[] textures = processTextures(aiMesh.mTextureCoords(0));
             int[] indices = processIndices(aiMesh.mFaces());
 
-            Mesh mesh = new Mesh(
-                    vertices,
-                    normals,
-                    colors,
-                    textures,
-                    indices,
-                    skeleton.getBonesWeights(meshIndex, numVertices),
-                    skeleton.getBoneNameToBone(meshIndex, numVertices),
+            Mesh mesh = new Mesh(new MeshAttributes()
+                    .add(VERTICES, vertices)
+                    .add(NORMALS, normals)
+                    .add(COLORS, colors)
+                    .add(TEXTURES, textures)
+                    .add(INDICES, indices)
+                    .add(WEIGHTS, skeleton.getBonesWeights(meshIndex, numVertices))
+                    .add(BONE_INDICES, skeleton.getBoneNameToBone(meshIndex, numVertices)),
                     material
             );
             meshes[meshIndex] = mesh;

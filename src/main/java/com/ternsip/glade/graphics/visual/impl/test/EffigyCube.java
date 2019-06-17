@@ -5,11 +5,17 @@ import com.ternsip.glade.graphics.general.Material;
 import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.general.Texture;
+import com.ternsip.glade.graphics.shader.base.MeshAttributes;
 import com.ternsip.glade.graphics.visual.base.EffigyAnimated;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.io.File;
+
+import static com.ternsip.glade.graphics.shader.base.ShaderProgram.INDICES;
+import static com.ternsip.glade.graphics.shader.base.ShaderProgram.VERTICES;
+import static com.ternsip.glade.graphics.shader.impl.AnimationShader.NORMALS;
+import static com.ternsip.glade.graphics.shader.impl.AnimationShader.TEXTURES;
 
 public class EffigyCube extends EffigyAnimated {
 
@@ -27,7 +33,7 @@ public class EffigyCube extends EffigyAnimated {
     //  |/      |/
     //  v2------v3
 
-    public static float VERTICES[] = {
+    public static float CUBE_VERTICES[] = {
             SIZE, SIZE, SIZE, -SIZE, SIZE, SIZE, -SIZE, -SIZE, SIZE, SIZE, -SIZE, SIZE, // v0,v1,v2,v3 (front)
             SIZE, SIZE, SIZE, SIZE, -SIZE, SIZE, SIZE, -SIZE, -SIZE, SIZE, SIZE, -SIZE, // v0,v3,v4,v5 (right)
             SIZE, SIZE, SIZE, SIZE, SIZE, -SIZE, -SIZE, SIZE, -SIZE, -SIZE, SIZE, SIZE, // v0,v5,v6,v1 (top)
@@ -37,7 +43,7 @@ public class EffigyCube extends EffigyAnimated {
     };
 
     // texture coord array
-    public static float TEXCOORDS[] = {
+    public static float CUBE_TEXCOORDS[] = {
             1, 0, 0, 0, 0, 1, 1, 1,               // v0,v1,v2,v3 (front)
             0, 0, 0, 1, 1, 1, 1, 0,               // v0,v3,v4,v5 (right)
             1, 1, 1, 0, 0, 0, 0, 1,               // v0,v5,v6,v1 (top)
@@ -47,7 +53,7 @@ public class EffigyCube extends EffigyAnimated {
     };
 
     // normal array
-    public static float NORMALS[] = {
+    public static float CUBE_NORMALS[] = {
             0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,  // v0,v1,v2,v3 (front)
             1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,  // v0,v3,v4,v5 (right)
             0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0,  // v0,v5,v6,v1 (top)
@@ -57,7 +63,7 @@ public class EffigyCube extends EffigyAnimated {
     };
 
     // A cube requires 36 indices = 6 sides * 2 tris * 3 verts
-    public static int INDICES[] = {
+    public static int CUBE_INDICES[] = {
             0, 1, 2, 2, 3, 0,    // v0-v1-v2, v2-v3-v0 (front)
             4, 5, 6, 6, 7, 4,    // v0-v3-v4, v4-v5-v0 (right)
             8, 9, 10, 10, 11, 8,    // v0-v5-v6, v6-v1-v0 (top)
@@ -67,13 +73,20 @@ public class EffigyCube extends EffigyAnimated {
     };
 
     public static Mesh createAABBMesh(Vector3f scale, Material material) {
-        float[] vertices = new float[VERTICES.length];
+        float[] vertices = new float[CUBE_VERTICES.length];
         for (int i = 0; i < vertices.length / 3; ++i) {
-            vertices[i * 3] = VERTICES[i * 3] * scale.x();
-            vertices[i * 3 + 1] = VERTICES[i * 3 + 1] * scale.y();
-            vertices[i * 3 + 2] = VERTICES[i * 3 + 2] * scale.z();
+            vertices[i * 3] = CUBE_VERTICES[i * 3] * scale.x();
+            vertices[i * 3 + 1] = CUBE_VERTICES[i * 3 + 1] * scale.y();
+            vertices[i * 3 + 2] = CUBE_VERTICES[i * 3 + 2] * scale.z();
         }
-        return new Mesh(vertices, NORMALS, new float[0], TEXCOORDS, INDICES, new float[0], new int[0], material);
+        return new Mesh(
+                new MeshAttributes()
+                        .add(VERTICES, vertices)
+                        .add(NORMALS, CUBE_NORMALS)
+                        .add(TEXTURES, CUBE_TEXCOORDS)
+                        .add(INDICES, CUBE_INDICES),
+                material
+        );
     }
 
     public Model loadModel() {

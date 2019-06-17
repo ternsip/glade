@@ -4,11 +4,13 @@ import com.ternsip.glade.common.logic.Maths;
 import com.ternsip.glade.graphics.visual.impl.test.EffigyBoy;
 import com.ternsip.glade.universe.collisions.base.Collision;
 import com.ternsip.glade.universe.entities.base.Entity;
+import com.ternsip.glade.universe.parts.blocks.Block;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.LineSegmentf;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
+import org.joml.Vector3i;
 
 import java.util.List;
 
@@ -60,6 +62,14 @@ public class EntityPlayer extends Entity<EffigyBoy> {
         setPosition(tryZ);
     }
 
+    public Vector3i getBlockPositionStandingOn() {
+        return new Vector3i(
+                (int)(getPosition().x()),
+                (int)(getPosition().y()) - 1,
+                (int)(getPosition().z())
+        );
+    }
+
     private Vector3fc tryToMove(Vector3fc startPosition, Vector3fc endPosition) {
         List<Collision> collisions = getUniverse().getCollisions().collideSegment(new LineSegmentf(startPosition, endPosition));
         if (!collisions.isEmpty()) {
@@ -97,6 +107,11 @@ public class EntityPlayer extends Entity<EffigyBoy> {
             if (isOnTheGround()) {
                 getCurrentVelocity().add(new Vector3f(0, jumpPower, 0));
             }
+        }
+
+        if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_B)) {
+            getUniverse().getChunks().setBlock(getBlockPositionStandingOn(), Block.AIR);
+            getUniverse().getChunks().recalculateBlockRegion(getBlockPositionStandingOn());
         }
 
     }

@@ -3,6 +3,7 @@ package com.ternsip.glade.graphics.visual.impl.basis;
 import com.ternsip.glade.graphics.general.Material;
 import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.general.Model;
+import com.ternsip.glade.graphics.shader.base.MeshAttributes;
 import com.ternsip.glade.graphics.shader.impl.SkyboxShader;
 import com.ternsip.glade.graphics.visual.base.Effigy;
 import com.ternsip.glade.universe.common.Light;
@@ -15,13 +16,15 @@ import org.joml.Vector3fc;
 
 import java.util.Set;
 
+import static com.ternsip.glade.graphics.shader.base.ShaderProgram.VERTICES;
+
 @Getter
 @Setter
 public class EffigySky extends Effigy<SkyboxShader> {
 
     public static final float SIZE = 10000f;
 
-    private static final float[] VERTICES = {
+    private static final float[] SKY_VERTICES = {
             -SIZE, SIZE, -SIZE,
             -SIZE, -SIZE, -SIZE,
             SIZE, -SIZE, -SIZE,
@@ -80,7 +83,7 @@ public class EffigySky extends Effigy<SkyboxShader> {
     @Override
     public Model loadModel() {
         return new Model(
-                new Mesh[]{new Mesh(VERTICES, new Material())},
+                new Mesh[]{new Mesh(new MeshAttributes().add(VERTICES, SKY_VERTICES), new Material())},
                 new Vector3f(0),
                 new Vector3f(0),
                 new Vector3f(2 * SIZE)

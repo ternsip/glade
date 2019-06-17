@@ -49,7 +49,6 @@ public class Chunks implements Universal {
             }
             Chunk chunk = loadChunk(position);
             chunk.setLogicReloadRequired(true);
-            chunk.setVisualReloadRequired(false);
             getPositionToChunk().put(chunk.getPosition(), chunk);
         }
         getHeightMap(new Vector2i(toSlicePosition(position)));
@@ -103,6 +102,10 @@ public class Chunks implements Universal {
         getChunk(getChunkPositionForBlock(pos)).setLight(getBlockPositionInsideChunk(pos), light);
     }
 
+    public void registerBlockChange(Vector3ic pos) {
+        getChunk(getChunkPositionForBlock(pos)).registerBlockChange(getBlockPositionInsideChunk(pos));
+    }
+
     public Vector2i toSlicePosition(Vector3ic pos) {
         return new Vector2i(pos.x(), pos.z());
     }
@@ -122,6 +125,10 @@ public class Chunks implements Universal {
 
     public Vector3ic getBlockPositionInsideChunk(Vector3ic pos) {
         return getChunkPositionForBlock(pos).mul(Chunk.SIZE, new Vector3i()).negate().add(pos);
+    }
+
+    public void recalculateBlockRegion(Vector3ic pos) {
+        recalculateBlockRegion(pos, new Vector3i(1));
     }
 
     public void recalculateBlockRegion(Vector3ic start, Vector3ic size) {
@@ -252,15 +259,16 @@ public class Chunks implements Universal {
             for (int z = MAX_LIGHT_LEVEL, wz = start.z(), az = 0; az < size.z(); ++z, ++wz, ++az) {
                 for (int y = MAX_LIGHT_LEVEL, wy = start.y(), ay = 0; ay < size.y(); ++y, ++wy, ++ay) {
                     setLight(new Vector3i(wx, wy, wz), lightCoverage[x][y][z]);
+
                 }
             }
         }
 
         Vector3ic startChunk = getChunkPositionForBlock(start);
         Vector3ic endChunk = getChunkPositionForBlock(new Vector3i(start).add(size));
-        for (int x = startChunk.x(); x <= endChunk.x(); ++x) {
-            for (int y = startChunk.y(); y <= endChunk.y(); ++y) {
-                for (int z = startChunk.z(); z <= endChunk.z(); ++z) {
+        for (int x = startChunk.x() - 1; x <= endChunk.x() + 1; ++x) {
+            for (int y = startChunk.y() - 1; y <= endChunk.y() + 1; ++y) {
+                for (int z = startChunk.z() - 1; z <= endChunk.z() + 1; ++z) {
                     Vector3i chunkPos = new Vector3i(x, y, z);
                     if (isChunkInMemory(chunkPos)) {
                         getChunk(chunkPos).setVisualReloadRequired(true);

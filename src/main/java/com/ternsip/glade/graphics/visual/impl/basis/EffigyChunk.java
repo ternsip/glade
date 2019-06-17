@@ -5,6 +5,7 @@ import com.ternsip.glade.common.logic.Utils;
 import com.ternsip.glade.graphics.general.Material;
 import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.general.Model;
+import com.ternsip.glade.graphics.shader.base.MeshAttributes;
 import com.ternsip.glade.graphics.shader.impl.ChunkShader;
 import com.ternsip.glade.graphics.visual.base.Effigy;
 import com.ternsip.glade.graphics.visual.repository.TexturePackRepository;
@@ -23,6 +24,9 @@ import java.lang.Math;
 import java.util.ArrayList;
 import java.util.Set;
 
+import static com.ternsip.glade.graphics.shader.base.ShaderProgram.INDICES;
+import static com.ternsip.glade.graphics.shader.base.ShaderProgram.VERTICES;
+import static com.ternsip.glade.graphics.shader.impl.ChunkShader.*;
 import static com.ternsip.glade.universe.parts.chunks.Chunks.MAX_LIGHT_LEVEL;
 
 @Getter
@@ -141,13 +145,12 @@ public class EffigyChunk extends Effigy<ChunkShader> {
 
         return new Model(
                 new Mesh[]{new Mesh(
-                        Utils.listToFloatArray(chunkCombinator.getVertices()),
-                        Utils.listToFloatArray(chunkCombinator.getNormals()),
-                        Utils.listToFloatArray(chunkCombinator.getColors()),
-                        Utils.listToFloatArray(chunkCombinator.getTextures()),
-                        Utils.listToIntArray(chunkCombinator.getIndices()),
-                        new float[0],
-                        new int[0],
+                        new MeshAttributes()
+                                .add(VERTICES, Utils.listToFloatArray(chunkCombinator.getVertices()))
+                                .add(NORMALS, Utils.listToFloatArray(chunkCombinator.getNormals()))
+                                .add(COLORS, Utils.listToFloatArray(chunkCombinator.getColors()))
+                                .add(TEXTURES, Utils.listToFloatArray(chunkCombinator.getTextures()))
+                                .add(INDICES, Utils.listToIntArray(chunkCombinator.getIndices())),
                         new Material(texturePackRepository.getBlockAtlasTexture())
                 )},
                 new Vector3f(new Vector3f(getChunk().getPosition()).mul(CHUNK_PHYSICAL_SIZE)).add(new Vector3f(SIDE)),
