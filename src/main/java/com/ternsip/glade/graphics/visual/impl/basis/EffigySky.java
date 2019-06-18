@@ -14,6 +14,7 @@ import org.joml.Matrix4fc;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
+import java.util.Collections;
 import java.util.Set;
 
 import static com.ternsip.glade.graphics.shader.base.ShaderProgram.VERTICES;
@@ -76,14 +77,14 @@ public class EffigySky extends Effigy<SkyboxShader> {
         getShader().getProjectionMatrix().load(getProjectionMatrix());
         getShader().getSunVector().load(getSunPosition());
         getShader().getViewMatrix().load(getViewMatrix());
-        getModel().getMeshes()[0].render();
+        getModel().getMeshes().get(0).render();
         getShader().stop();
     }
 
     @Override
     public Model loadModel() {
         return new Model(
-                new Mesh[]{new Mesh(new MeshAttributes().add(VERTICES, SKY_VERTICES), new Material())},
+                Collections.singletonList(new Mesh(new MeshAttributes().add(VERTICES, SKY_VERTICES), new Material())),
                 new Vector3f(0),
                 new Vector3f(0),
                 new Vector3f(2 * SIZE)

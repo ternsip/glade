@@ -40,12 +40,11 @@ public class ModelLoader {
         Bone rootBone = createBones(aiSceneMesh.mRootNode(), new Matrix4f(), skeleton, allPossibleBoneNames, settings);
         assertThat(MAX_BONES > skeleton.numberOfUniqueBones());
         return new Model(
-                meshes,
+                Arrays.asList(meshes),
                 settings.getBaseOffset(),
                 settings.getBaseRotation(),
                 settings.getBaseScale(),
-                rootBone,
-                animationsFrames
+                new AnimationData(rootBone, animationsFrames)
         );
     }
 

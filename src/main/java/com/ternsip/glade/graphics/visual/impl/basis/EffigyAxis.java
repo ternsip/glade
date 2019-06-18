@@ -8,6 +8,8 @@ import com.ternsip.glade.graphics.visual.base.EffigyAnimated;
 import com.ternsip.glade.graphics.visual.impl.test.EffigyCube;
 import org.joml.*;
 
+import java.util.Arrays;
+
 public class EffigyAxis extends EffigyAnimated {
 
     @Override
@@ -32,7 +34,7 @@ public class EffigyAxis extends EffigyAnimated {
         Mesh meshX = EffigyCube.createAABBMesh(new Vector3f(1, proportion, proportion), red);
         Mesh meshY = EffigyCube.createAABBMesh(new Vector3f(proportion, 1, proportion), greed);
         Mesh meshZ = EffigyCube.createAABBMesh(new Vector3f(proportion, proportion, 1), blue);
-        return new Model(new Mesh[]{meshX, meshY, meshZ}, new Vector3f(0), new Vector3f(0), new Vector3f(0.075f));
+        return new Model(Arrays.asList(meshX, meshY, meshZ), new Vector3f(0), new Vector3f(0), new Vector3f(0.075f));
     }
 
     @Override

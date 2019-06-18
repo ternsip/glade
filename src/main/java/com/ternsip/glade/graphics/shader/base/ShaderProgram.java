@@ -21,11 +21,9 @@ import static org.lwjgl.opengl.GL20C.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class ShaderProgram {
 
-    private static int LAST_PROGRAM_ID = -100;
-
     public static final AttributeData INDICES = new AttributeData(0, "indices", 3, AttributeData.ArrayType.ELEMENT_ARRAY);
     public static final AttributeData VERTICES = new AttributeData(1, "position", 3, AttributeData.ArrayType.FLOAT);
-
+    private static int LAST_PROGRAM_ID = -100;
     @SuppressWarnings("unused")
     private int programID;
 

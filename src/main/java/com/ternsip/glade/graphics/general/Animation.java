@@ -15,12 +15,12 @@ public class Animation {
 
     public Animation(Model model) {
         this.model = model;
-        this.animationTrack = model.getAnimationTrack("");
+        this.animationTrack = model.getAnimationData().getAnimationTrack("");
         this.boneTransforms = new Matrix4f[0];
     }
 
     public void play(String animationName) {
-        this.animationTrack = model.getAnimationTrack(animationName);
+        this.animationTrack = getModel().getAnimationData().getAnimationTrack(animationName);
     }
 
     public void update(long updateIntervalMilliseconds) {
@@ -29,8 +29,12 @@ public class Animation {
         }
         if (getLastUpdateMillis() + updateIntervalMilliseconds < System.currentTimeMillis()) {
             setLastUpdateMillis(System.currentTimeMillis());
-            setBoneTransforms(model.calcBoneTransforms(getAnimationTrack()));
+            setBoneTransforms(getModel().getAnimationData().calcBoneTransforms(getAnimationTrack()));
         }
+    }
+
+    public boolean isAnimated() {
+        return getBoneTransforms().length > 0;
     }
 
 }

@@ -64,9 +64,9 @@ public class EntityPlayer extends Entity<EffigyBoy> {
 
     public Vector3i getBlockPositionStandingOn() {
         return new Vector3i(
-                (int)(getPosition().x()),
-                (int)(getPosition().y()) - 1,
-                (int)(getPosition().z())
+                (int) (getPosition().x()),
+                (int) (getPosition().y()) - 1,
+                (int) (getPosition().z())
         );
     }
 

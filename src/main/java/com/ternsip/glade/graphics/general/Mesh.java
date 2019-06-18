@@ -90,13 +90,6 @@ public class Mesh {
 
     }
 
-    public void updateBuffers() {
-        if (!isDynamic()) {
-            throw new IllegalArgumentException("You can't update static meshes");
-        }
-        fillBuffers();
-    }
-
     private static float calculateNormalizingScale(float[] vertices) {
         Vector3f lowestPoint = new Vector3f(Float.MAX_VALUE / 4);
         Vector3f highestPoint = new Vector3f(-Float.MAX_VALUE / 4);
@@ -116,27 +109,11 @@ public class Mesh {
         return 2 / Math.max(bounds.x(), Math.max(bounds.y(), bounds.z()));
     }
 
-    private void fillBuffers() {
-        getMeshAttributes().getAttributeToBuffer().forEach((attributeData, buffer) -> {
-            int vbo = getVbos().computeIfAbsent(attributeData, e -> glGenBuffers());
-            buffer.rewind();
-            if (attributeData.getType() == AttributeData.ArrayType.ELEMENT_ARRAY) {
-                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo);
-                glBufferData(GL_ELEMENT_ARRAY_BUFFER, (IntBuffer) buffer, isDynamic() ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
-            }
-            if (attributeData.getType() == AttributeData.ArrayType.FLOAT) {
-                glBindBuffer(GL_ARRAY_BUFFER, vbo);
-                glBufferData(GL_ARRAY_BUFFER, (FloatBuffer) buffer, isDynamic() ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
-                glVertexAttribPointer(attributeData.getIndex(), attributeData.getNumberPerVertex(), GL_FLOAT, false, 0, 0);
-                glBindBuffer(GL_ARRAY_BUFFER, 0);
-            }
-            if (attributeData.getType() == AttributeData.ArrayType.INT) {
-                glBindBuffer(GL_ARRAY_BUFFER, vbo);
-                glBufferData(GL_ARRAY_BUFFER, (IntBuffer) buffer, isDynamic() ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
-                glVertexAttribIPointer(attributeData.getIndex(), attributeData.getNumberPerVertex(), GL_INT, 0, 0);
-                glBindBuffer(GL_ARRAY_BUFFER, 0);
-            }
-        });
+    public void updateBuffers() {
+        if (!isDynamic()) {
+            throw new IllegalArgumentException("You can't update static meshes");
+        }
+        fillBuffers();
     }
 
     public void render() {
@@ -164,6 +141,29 @@ public class Mesh {
     public void finish() {
         glDeleteVertexArrays(vao);
         getVbos().values().forEach(GL15::glDeleteBuffers);
+    }
+
+    private void fillBuffers() {
+        getMeshAttributes().getAttributeToBuffer().forEach((attributeData, buffer) -> {
+            int vbo = getVbos().computeIfAbsent(attributeData, e -> glGenBuffers());
+            buffer.rewind();
+            if (attributeData.getType() == AttributeData.ArrayType.ELEMENT_ARRAY) {
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, (IntBuffer) buffer, isDynamic() ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+            }
+            if (attributeData.getType() == AttributeData.ArrayType.FLOAT) {
+                glBindBuffer(GL_ARRAY_BUFFER, vbo);
+                glBufferData(GL_ARRAY_BUFFER, (FloatBuffer) buffer, isDynamic() ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+                glVertexAttribPointer(attributeData.getIndex(), attributeData.getNumberPerVertex(), GL_FLOAT, false, 0, 0);
+                glBindBuffer(GL_ARRAY_BUFFER, 0);
+            }
+            if (attributeData.getType() == AttributeData.ArrayType.INT) {
+                glBindBuffer(GL_ARRAY_BUFFER, vbo);
+                glBufferData(GL_ARRAY_BUFFER, (IntBuffer) buffer, isDynamic() ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+                glVertexAttribIPointer(attributeData.getIndex(), attributeData.getNumberPerVertex(), GL_INT, 0, 0);
+                glBindBuffer(GL_ARRAY_BUFFER, 0);
+            }
+        });
     }
 
 }

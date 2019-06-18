@@ -168,7 +168,7 @@ public class Collisions implements Universal {
             return dx <= aabb.minX && dx + last >= aabb.maxX &&
                     dy <= aabb.minY && dy + last >= aabb.maxY &&
                     dz <= aabb.minZ && dz + last >= aabb.maxZ;
-    }
+        }
 
         private OctreeNode findTree(int sx, int sy, int sz, int ex, int ey, int ez) {
 

@@ -15,6 +15,7 @@ import org.joml.Vector3f;
 import org.joml.Vector4fc;
 
 import java.io.File;
+import java.util.Collections;
 
 @RequiredArgsConstructor
 @Getter
@@ -27,7 +28,7 @@ public class EffigyGlyph extends EffigyAnimated {
 
     public Model loadModel() {
         Mesh mesh = Effigy3DText.createTextMesh(String.valueOf(symbol), new Material(new Texture(color, font)));
-        return new Model(new Mesh[]{mesh}, new Vector3f(0), new Vector3f(0), new Vector3f(1));
+        return new Model(Collections.singletonList(mesh), new Vector3f(0), new Vector3f(0), new Vector3f(1));
     }
 
     @Override

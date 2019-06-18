@@ -18,8 +18,8 @@ public final class AnimationShader extends ShaderProgram {
     public static final int MAX_WEIGHTS = 4;
     public static final int MAX_BONES = 180;
 
-    public static final File VERTEX_SHADER = new File("shaders/anim/AnimationVertexShader.glsl");
-    public static final File FRAGMENT_SHADER = new File("shaders/anim/AnimationFragmentShader.glsl");
+    public static final File VERTEX_SHADER = new File("shaders/animation/AnimationVertexShader.glsl");
+    public static final File FRAGMENT_SHADER = new File("shaders/animation/AnimationFragmentShader.glsl");
 
     public static final AttributeData TEXTURES = new AttributeData(2, "textureCoordinates", 2, AttributeData.ArrayType.FLOAT);
     public static final AttributeData COLORS = new AttributeData(3, "colors", 4, AttributeData.ArrayType.FLOAT);

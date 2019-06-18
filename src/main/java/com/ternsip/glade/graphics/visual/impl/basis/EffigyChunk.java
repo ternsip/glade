@@ -22,6 +22,7 @@ import org.joml.*;
 
 import java.lang.Math;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Set;
 
 import static com.ternsip.glade.graphics.shader.base.ShaderProgram.INDICES;
@@ -144,7 +145,7 @@ public class EffigyChunk extends Effigy<ChunkShader> {
         }
 
         return new Model(
-                new Mesh[]{new Mesh(
+                Collections.singletonList(new Mesh(
                         new MeshAttributes()
                                 .add(VERTICES, Utils.listToFloatArray(chunkCombinator.getVertices()))
                                 .add(NORMALS, Utils.listToFloatArray(chunkCombinator.getNormals()))
@@ -152,7 +153,7 @@ public class EffigyChunk extends Effigy<ChunkShader> {
                                 .add(TEXTURES, Utils.listToFloatArray(chunkCombinator.getTextures()))
                                 .add(INDICES, Utils.listToIntArray(chunkCombinator.getIndices())),
                         new Material(texturePackRepository.getBlockAtlasTexture())
-                )},
+                )),
                 new Vector3f(new Vector3f(getChunk().getPosition()).mul(CHUNK_PHYSICAL_SIZE)).add(new Vector3f(SIDE)),
                 new Vector3f(0),
                 new Vector3f(1)

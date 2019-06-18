@@ -18,6 +18,7 @@ public class MeshAttributes {
     public MeshAttributes add(AttributeData attributeData, float[] array) {
         return add(attributeData, Utils.arrayToBuffer(array));
     }
+
     public MeshAttributes add(AttributeData attributeData, int[] array) {
         return add(attributeData, Utils.arrayToBuffer(array));
     }

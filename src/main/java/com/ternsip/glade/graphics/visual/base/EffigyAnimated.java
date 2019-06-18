@@ -25,7 +25,7 @@ public abstract class EffigyAnimated extends Effigy<AnimationShader> {
         Matrix4f[] boneTransforms = getAnimation().getBoneTransforms();
         Matrix4fc projection = getProjectionMatrix();
         Matrix4fc view = getViewMatrix();
-        getShader().getAnimated().load(boneTransforms.length > 0);
+        getShader().getAnimated().load(getAnimation().isAnimated());
         getShader().getProjectionMatrix().load(projection);
         getShader().getViewMatrix().load(view);
         getShader().getLights().load(lights);

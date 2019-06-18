@@ -1,7 +1,10 @@
 package com.ternsip.glade.graphics.visual.impl.basis;
 
 
-import com.ternsip.glade.graphics.general.*;
+import com.ternsip.glade.graphics.general.Material;
+import com.ternsip.glade.graphics.general.Mesh;
+import com.ternsip.glade.graphics.general.Model;
+import com.ternsip.glade.graphics.general.Texture;
 import com.ternsip.glade.graphics.shader.base.MeshAttributes;
 import com.ternsip.glade.graphics.visual.base.EffigyAnimated;
 import lombok.Getter;
@@ -10,6 +13,7 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.io.File;
+import java.util.Collections;
 
 import static com.ternsip.glade.graphics.shader.base.ShaderProgram.INDICES;
 import static com.ternsip.glade.graphics.shader.base.ShaderProgram.VERTICES;
@@ -71,7 +75,7 @@ public class Effigy3DText extends EffigyAnimated {
 
     public Model loadModel() {
         Mesh mesh = createTextMesh(text, new Material(new Texture(new Vector4f(0, 0, 1, 1), font)));
-        return new Model(new Mesh[]{mesh}, new Vector3f(0), new Vector3f(0), new Vector3f(text.length(), 1, 1));
+        return new Model(Collections.singletonList(mesh), new Vector3f(0), new Vector3f(0), new Vector3f(text.length(), 1, 1));
     }
 
     @Override

@@ -78,7 +78,7 @@ public abstract class Effigy<SHADER extends ShaderProgram> implements Transforma
 
     public void finish() {
         if (deleteModelOnFinish()) {
-            getGraphics().getGraphicalRepository().getModelRepository().getEffigyModel(this);
+            getGraphics().getGraphicalRepository().getModelRepository().removeEffigyModel(this);
         }
         if (deleteShaderOnFinish()) {
             getGraphics().getGraphicalRepository().getShaderRepository().removeShader(this);
