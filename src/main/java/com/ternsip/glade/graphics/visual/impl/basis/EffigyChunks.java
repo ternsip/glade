@@ -88,6 +88,7 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
     private final Map<SidePosition, Integer> sidePosToSideIndex = new HashMap<>();
     private final Map<Integer, SidePosition> sideIndexToSidePos = new HashMap<>();
     private int length = 0;
+    // TODO FIX REMOVAL BUGS
 
     public void update(Collection<Vector3i> positions) {
         List<Integer> sidesToRemove = new ArrayList<>();
@@ -182,6 +183,9 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
             return true;
         }
         Block curBlock = getUniverse().getChunks().getBlock(pos);
+        if (curBlock == Block.AIR) {
+            return false;
+        }
         Block nextBlock = getUniverse().getChunks().getBlock(nextBlockWorldPos);
         return (nextBlock.isSemiTransparent() && (curBlock != nextBlock || !curBlock.isCombineSides()));
     }
