@@ -123,10 +123,11 @@ public class Universe {
     }
 
     private void generateChunks() {
+        new EntityChunks().register();
         for (int cx = 0; cx < 16; ++cx) {
             for (int cy = 0; cy < 8; ++cy) {
                 for (int cz = 0; cz < 16; ++cz) {
-                    new EntityChunk(getChunks().getChunk(new Vector3i(cx, cy, cz))).register();
+                    getChunks().getChunk(new Vector3i(cx, cy, cz));
                 }
             }
         }

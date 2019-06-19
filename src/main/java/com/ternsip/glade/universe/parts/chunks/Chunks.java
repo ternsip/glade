@@ -34,6 +34,9 @@ public class Chunks implements Universal {
     private final Map<Vector3ic, Chunk> positionToChunk = new ConcurrentHashMap<>();
     private final Map<Vector2ic, HeightMap> positionToHeightMap = new ConcurrentHashMap<>();
 
+    @Getter(AccessLevel.PUBLIC)
+    private final Collection<Vector3i> positionsToUpdate = Collections.synchronizedList(new ArrayList<>());
+
     private static List<ChunkGenerator> constructChunkGenerators() {
         return Utils.getAllClasses(ChunkGenerator.class).stream()
                 .map(Utils::createInstanceSilently)
@@ -255,27 +258,38 @@ public class Chunks implements Universal {
             }
         }
 
+        List<Vector3i> positionsToUpdate = new ArrayList<>();
         for (int x = MAX_LIGHT_LEVEL, wx = start.x(), ax = 0; ax < size.x(); ++x, ++wx, ++ax) {
             for (int z = MAX_LIGHT_LEVEL, wz = start.z(), az = 0; az < size.z(); ++z, ++wz, ++az) {
                 for (int y = MAX_LIGHT_LEVEL, wy = start.y(), ay = 0; ay < size.y(); ++y, ++wy, ++ay) {
-                    setLight(new Vector3i(wx, wy, wz), lightCoverage[x][y][z]);
-
+                    Vector3i wPos = new Vector3i(wx, wy, wz);
+                    setLight(wPos, lightCoverage[x][y][z]);
+                    positionsToUpdate.add(wPos);
                 }
             }
         }
 
-        Vector3ic startChunk = getChunkPositionForBlock(start);
-        Vector3ic endChunk = getChunkPositionForBlock(new Vector3i(start).add(size));
-        for (int x = startChunk.x() - 1; x <= endChunk.x() + 1; ++x) {
-            for (int y = startChunk.y() - 1; y <= endChunk.y() + 1; ++y) {
-                for (int z = startChunk.z() - 1; z <= endChunk.z() + 1; ++z) {
-                    Vector3i chunkPos = new Vector3i(x, y, z);
-                    if (isChunkInMemory(chunkPos)) {
-                        getChunk(chunkPos).setVisualReloadRequired(true);
-                    }
-                }
+        Vector3i end = new Vector3i(start).add(size);
+        for (int wy = start.y(); wy < end.y(); ++wy) {
+            for (int wz = start.z(); wz < end.z(); ++wz) {
+                positionsToUpdate.add(new Vector3i(start.x() - 1, wy, wz));
+                positionsToUpdate.add(new Vector3i(end.x(), wy, wz));
             }
         }
+        for (int wx = start.x(); wx < end.x(); ++wx) {
+            for (int wz = start.z(); wz < end.z(); ++wz) {
+                positionsToUpdate.add(new Vector3i(wx, start.y() - 1, wz));
+                positionsToUpdate.add(new Vector3i(wx, end.y(), wz));
+            }
+        }
+        for (int wx = start.x(); wx < end.x(); ++wx) {
+            for (int wy = start.y(); wy < end.y(); ++wy) {
+                positionsToUpdate.add(new Vector3i(wx, wy, start.z() - 1));
+                positionsToUpdate.add(new Vector3i(wx, wy, end.z()));
+            }
+        }
+
+        getPositionsToUpdate().addAll(positionsToUpdate);
 
     }
 

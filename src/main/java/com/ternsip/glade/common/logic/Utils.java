@@ -83,7 +83,7 @@ public class Utils {
         IntBuffer buf = BufferUtils.createIntBuffer(array.length);
         buf.put(array);
         buf.flip();
-        return buf.asReadOnlyBuffer();
+        return buf;
     }
 
     public static float[] bufferToArray(FloatBuffer buf) {
@@ -97,7 +97,7 @@ public class Utils {
         FloatBuffer buf = BufferUtils.createFloatBuffer(array.length);
         buf.put(array);
         buf.flip();
-        return buf.asReadOnlyBuffer();
+        return buf;
     }
 
     public static short[] bufferToArray(ShortBuffer buf) {
@@ -111,7 +111,7 @@ public class Utils {
         ShortBuffer buf = BufferUtils.createShortBuffer(array.length);
         buf.put(array);
         buf.flip();
-        return buf.asReadOnlyBuffer();
+        return buf;
     }
 
     public static int[] listToIntArray(List<Integer> list) {
@@ -131,7 +131,7 @@ public class Utils {
         ByteBuffer buf = ByteBuffer.allocateDirect(array.length);
         buf.put(array);
         buf.rewind();
-        return buf.asReadOnlyBuffer();
+        return buf;
     }
 
     @SneakyThrows

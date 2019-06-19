@@ -41,6 +41,14 @@ public class MeshAttributes {
         return this;
     }
 
+    @SuppressWarnings("unchecked")
+    public <T extends Buffer> T getBuffer(AttributeData attributeData) {
+        if (!getAttributeToBuffer().containsKey(attributeData)) {
+            throw new IllegalArgumentException("Attribute data does not exists!");
+        }
+        return (T) getAttributeToBuffer().get(attributeData);
+    }
+
     public FloatBuffer getVerticesBuffer() {
         if (!getAttributeToBuffer().containsKey(VERTICES)) {
             throw new IllegalArgumentException("Vertices should always exist in mesh!");

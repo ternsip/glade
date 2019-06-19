@@ -30,14 +30,15 @@ import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL20.glDisableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
-import static org.lwjgl.opengl.GL30.GL_DYNAMIC_DRAW;
+import static org.lwjgl.opengl.GL30.GL_STREAM_DRAW;
 import static org.lwjgl.opengl.GL30.*;
+import static org.lwjgl.system.MemoryUtil.NULL;
 
 @Getter
 @Setter
 public class Mesh {
 
-    public static final float MAX_VERTICES = 1 << 16;
+    public static final int MAX_VERTICES = 1 << 16;
     public static final float MIN_INTERNAL_SIZE = 0.01f;
 
     public static int VERTICES_ATTRIBUTE_POINTER_INDEX = 0;
@@ -48,14 +49,15 @@ public class Mesh {
     public static int BONES_ATTRIBUTE_POINTER_INDEX = 5;
 
     private final MeshAttributes meshAttributes;
-    private final int indicesCount;
-    private final int vertexCount;
     private final Material material;
     private final float normalizingScale;
     private final boolean dynamic;
 
     private final int vao;
     private final Map<AttributeData, Integer> vbos = new HashMap<>();
+
+    private int indicesCount;
+    private int vertexCount;
 
     public Mesh(MeshAttributes meshAttributes, Material material) {
         this(meshAttributes, material, false);
@@ -80,9 +82,7 @@ public class Mesh {
         this.material = material;
         this.vao = glGenVertexArrays();
 
-        glBindVertexArray(vao);
-        fillBuffers();
-        glBindVertexArray(0);
+        assignBuffers();
 
         if (!dynamic) {
             meshAttributes.getAttributeToBuffer().clear();
@@ -113,10 +113,14 @@ public class Mesh {
         if (!isDynamic()) {
             throw new IllegalArgumentException("You can't update static meshes");
         }
-        fillBuffers();
+        assignBuffers();
     }
 
     public void render() {
+
+        if (getVertexCount() == 0) {
+            return;
+        }
 
         glBindVertexArray(vao);
 
@@ -143,27 +147,30 @@ public class Mesh {
         getVbos().values().forEach(GL15::glDeleteBuffers);
     }
 
-    private void fillBuffers() {
+    private void assignBuffers() {
+        glBindVertexArray(vao);
         getMeshAttributes().getAttributeToBuffer().forEach((attributeData, buffer) -> {
             int vbo = getVbos().computeIfAbsent(attributeData, e -> glGenBuffers());
             buffer.rewind();
             if (attributeData.getType() == AttributeData.ArrayType.ELEMENT_ARRAY) {
                 glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo);
-                glBufferData(GL_ELEMENT_ARRAY_BUFFER, (IntBuffer) buffer, isDynamic() ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+                glBufferData(GL_ARRAY_BUFFER, NULL, isDynamic() ? GL_STREAM_DRAW : GL_STATIC_DRAW);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, (IntBuffer) buffer, isDynamic() ? GL_STREAM_DRAW : GL_STATIC_DRAW);
             }
             if (attributeData.getType() == AttributeData.ArrayType.FLOAT) {
                 glBindBuffer(GL_ARRAY_BUFFER, vbo);
-                glBufferData(GL_ARRAY_BUFFER, (FloatBuffer) buffer, isDynamic() ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+                glBufferData(GL_ARRAY_BUFFER, (FloatBuffer) buffer, isDynamic() ? GL_STREAM_DRAW : GL_STATIC_DRAW);
                 glVertexAttribPointer(attributeData.getIndex(), attributeData.getNumberPerVertex(), GL_FLOAT, false, 0, 0);
                 glBindBuffer(GL_ARRAY_BUFFER, 0);
             }
             if (attributeData.getType() == AttributeData.ArrayType.INT) {
                 glBindBuffer(GL_ARRAY_BUFFER, vbo);
-                glBufferData(GL_ARRAY_BUFFER, (IntBuffer) buffer, isDynamic() ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+                glBufferData(GL_ARRAY_BUFFER, (IntBuffer) buffer, isDynamic() ? GL_STREAM_DRAW : GL_STATIC_DRAW);
                 glVertexAttribIPointer(attributeData.getIndex(), attributeData.getNumberPerVertex(), GL_INT, 0, 0);
                 glBindBuffer(GL_ARRAY_BUFFER, 0);
             }
         });
+        glBindVertexArray(0);
     }
 
 }
