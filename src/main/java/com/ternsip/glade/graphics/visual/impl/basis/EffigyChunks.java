@@ -88,10 +88,9 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
     private final Map<SidePosition, Integer> sidePosToSideIndex = new HashMap<>();
     private final Map<Integer, SidePosition> sideIndexToSidePos = new HashMap<>();
     private int length = 0;
-    // TODO FIX REMOVAL BUGS
 
     public void update(Collection<Vector3i> positions) {
-        List<Integer> sidesToRemove = new ArrayList<>();
+        TreeSet<Integer> sidesToRemove = new TreeSet<>();
         List<SideData> sidesToAdd = new ArrayList<>();
         TexturePackRepository texturePackRepository = getGraphics().getGraphicalRepository().getTexturePackRepository();
         positions.forEach(pos -> {
@@ -105,6 +104,9 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
                 return;
             }
             Block block = getUniverse().getChunks().getBlock(pos);
+            if (block == Block.AIR) {
+                return;
+            }
             TexturePackRepository.TextureCubeMap textureCubeMap = texturePackRepository.getCubeMap(block);
 
             for (CubeSideMeshData meshDataSide : ALL_SIDES) {
@@ -117,7 +119,7 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
         updateSides(sidesToRemove, sidesToAdd);
     }
 
-    private void updateSides(List<Integer> sidesToRemove, List<SideData> sidesToAdd) {
+    private void updateSides(TreeSet<Integer> sidesToRemove, List<SideData> sidesToAdd) {
         Material material = new Material(getGraphics().getGraphicalRepository().getTexturePackRepository().getBlockAtlasTexture());
         int oldLength = getLength();
         int newLength = oldLength + (sidesToAdd.size() - sidesToRemove.size());
@@ -183,9 +185,6 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
             return true;
         }
         Block curBlock = getUniverse().getChunks().getBlock(pos);
-        if (curBlock == Block.AIR) {
-            return false;
-        }
         Block nextBlock = getUniverse().getChunks().getBlock(nextBlockWorldPos);
         return (nextBlock.isSemiTransparent() && (curBlock != nextBlock || !curBlock.isCombineSides()));
     }
@@ -237,7 +236,9 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
 
     private void fillSide(int sideIndex, SideData sideData) {
 
-        getSidePosToSideIndex().remove(getSideIndexToSidePos().get(sideIndex));
+        if (getSideIndexToSidePos().containsKey(sideIndex)) {
+            getSidePosToSideIndex().remove(getSideIndexToSidePos().get(sideIndex));
+        }
         registerSidePosition(sideIndex, new SidePosition(sideData.getPos(), sideData.getCubeSideMeshData()));
         SideIndexData sideIndexData = new SideIndexData(sideIndex, getModel());
         CubeSideMeshData cubeSideMeshData = sideData.getCubeSideMeshData();
