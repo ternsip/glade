@@ -12,5 +12,6 @@ public class BlocksUpdate {
     private final Block[][][] blocks;
     private final int[][] heights;
     private final Vector3ic start;
+    private final boolean forceUpdate;
 
 }

@@ -90,7 +90,7 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
     private final int viewDistance;
     private final Vector3i shift;
     private final Block[][][] blocks;
-    private final int[][][] light;
+    private final int[][][] light; // TODO use byte
     private final int[][] heights;
     private final Integer[][][][] sidesIndex;
     private final Indexer indexer;
@@ -120,7 +120,7 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
         Vector3ic endExcluding = new Vector3i(realEndExcluding).sub(blocksUpdate.getStart());
         Vector3i size = new Vector3i(endExcluding).sub(start);
 
-        if (size.x() == 0 || size.y() == 0 || size.z() == 0) {
+        if (size.x() <= 0 || size.y() <= 0 || size.z() <= 0) {
             return;
         }
 
@@ -145,7 +145,7 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
                     if (newLight > 0 && height >= cy) {
                         queue.add(posIndex);
                     }
-                    if (newBlock != getBlocks()[rcx][rcy][rcz] || newLight != getLight()[rcx][rcy][rcz]) {
+                    if (blocksUpdate.isForceUpdate() || newBlock != getBlocks()[rcx][rcy][rcz] || newLight != getLight()[rcx][rcy][rcz]) {
                         getBlocks()[rcx][rcy][rcz] = newBlock;
                         getLight()[rcx][rcy][rcz] = newLight;
                         changedBlocks.add(posIndex);

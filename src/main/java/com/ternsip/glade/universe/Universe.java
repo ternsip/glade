@@ -124,7 +124,7 @@ public class Universe {
 
     private void generateChunks() {
         new EntityChunks().register();
-        getChunks().recalculateBlockRegion(new Vector3i(0, 0, 0), new Vector3i(16 * 16, 16 * 8, 16 * 16));
+        getChunks().recalculateBlockRegion(new Vector3i(0, 0, 0), new Vector3i(16 * 16, 16 * 8, 16 * 16), true);
     }
 
     private void update() {

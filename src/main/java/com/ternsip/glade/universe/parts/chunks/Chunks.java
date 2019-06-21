@@ -92,10 +92,10 @@ public class Chunks implements Universal {
     }
 
     public void recalculateBlockRegion(Vector3ic pos) {
-        recalculateBlockRegion(pos, new Vector3i(1));
+        recalculateBlockRegion(pos, new Vector3i(1), false);
     }
 
-    public void recalculateBlockRegion(Vector3ic start, Vector3ic size) {
+    public void recalculateBlockRegion(Vector3ic start, Vector3ic size, boolean forceUpdate) {
         if (size.x() <= 0 || size.y() <= 0 || size.z() <= 0) {
             return;
         }
@@ -119,7 +119,7 @@ public class Chunks implements Universal {
                 heights[x][z] = yAir + 1;
             }
         }
-        getBlocksUpdates().add(new BlocksUpdate(blocks, heights, start));
+        getBlocksUpdates().add(new BlocksUpdate(blocks, heights, start, forceUpdate));
     }
 
     public boolean isChunkInMemory(Vector3ic position) {
