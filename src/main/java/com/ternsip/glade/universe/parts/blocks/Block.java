@@ -10,22 +10,22 @@ import static com.ternsip.glade.universe.parts.chunks.Chunks.MAX_LIGHT_LEVEL;
 @Getter
 public enum Block {
 
-    AIR(false, true, true, true, 1, 0, GAS),
-    DIRT(true, false, false, false, MAX_LIGHT_LEVEL, 0, SOIL),
-    STONE(true, false, false, false, MAX_LIGHT_LEVEL, 0, SOIL),
-    LAWN(true, false, false, false, MAX_LIGHT_LEVEL, 0, SOIL),
-    WOOD(true, false, false, false, MAX_LIGHT_LEVEL, 0, DECORATIVE),
-    LEAVES(true, false, true, false, 4, 0, DECORATIVE),
-    WATER(false, true, true, true, 1, 0, LIQUID),
-    LAVA(false, true, false, false, 1, 4, LIQUID),
-    SAND(true, false, false, false, MAX_LIGHT_LEVEL, 0, SOIL);
+    AIR(false, true, true, true, (byte)1, (byte)0, GAS),
+    DIRT(true, false, false, false, MAX_LIGHT_LEVEL, (byte)0, SOIL),
+    STONE(true, false, false, false, MAX_LIGHT_LEVEL, (byte)0, SOIL),
+    LAWN(true, false, false, false, MAX_LIGHT_LEVEL, (byte)0, SOIL),
+    WOOD(true, false, false, false, MAX_LIGHT_LEVEL, (byte)0, DECORATIVE),
+    LEAVES(true, false, true, false, (byte)4, (byte)0, DECORATIVE),
+    WATER(false, true, true, true, (byte)1, (byte)0, LIQUID),
+    LAVA(false, true, false, false, (byte)1, (byte)4, LIQUID),
+    SAND(true, false, false, false, MAX_LIGHT_LEVEL, (byte)0, SOIL);
 
     private final boolean obstacle;
     private final boolean translucent;
     private final boolean semiTransparent;
     private final boolean combineSides;
-    private final int lightOpacity;
-    private final int emitLight;
+    private final byte lightOpacity;
+    private final byte emitLight;
     private final BlockMaterial blockMaterial;
 
     public static Block getBlockByIndex(int index) {

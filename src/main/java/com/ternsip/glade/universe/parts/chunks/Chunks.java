@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @Getter(AccessLevel.PRIVATE)
 public class Chunks implements Universal {
 
-    public static final int MAX_LIGHT_LEVEL = 16;
+    public static final byte MAX_LIGHT_LEVEL = 16;
     public static final int SKY_BLOCK_HEIGHT = 127;
 
     private static final List<ChunkGenerator> CHUNK_GENERATORS = constructChunkGenerators();

@@ -90,7 +90,7 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
     private final int viewDistance;
     private final Vector3i shift;
     private final Block[][][] blocks;
-    private final int[][][] light; // TODO use byte
+    private final byte[][][] light;
     private final int[][] heights;
     private final Integer[][][][] sidesIndex;
     private final Indexer indexer;
@@ -100,7 +100,7 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
         this.viewDistance = viewDistance;
         this.shift = new Vector3i(0, 0, 0);
         this.blocks = new Block[viewDistance][viewDistance][viewDistance];
-        this.light = new int[viewDistance][viewDistance][viewDistance];
+        this.light = new byte[viewDistance][viewDistance][viewDistance];
         this.heights = new int[viewDistance][viewDistance];
         this.sidesIndex = new Integer[ALL_SIDES.length][viewDistance][viewDistance][viewDistance];
         this.indexer = new Indexer(new Vector3i(getViewDistance()));
@@ -137,7 +137,7 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
                 for (int y = start.y(), cy = realStart.y(); y < endExcluding.y(); ++y, ++cy) {
                     int rcy = Math.floorMod(cy, getViewDistance());
                     Block newBlock = blocksUpdate.getBlocks()[x][y][z];
-                    int newLight = newBlock.getEmitLight();
+                    byte newLight = newBlock.getEmitLight();
                     int posIndex = getIndexer().getIndex(rcx, rcy, rcz);
                     if (height <= cy) {
                         newLight = MAX_LIGHT_LEVEL;
@@ -191,7 +191,7 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
             int x = getIndexer().getX(top);
             int y = getIndexer().getY(top);
             int z = getIndexer().getZ(top);
-            int lightLevel = getLight()[x][y][z];
+            byte lightLevel = getLight()[x][y][z];
             for (int k = 0; k < dx.length; ++k) {
                 int nx = x + dx[k];
                 int ny = y + dy[k];
@@ -199,8 +199,8 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
                 if (!getIndexer().isInside(nx, ny, nz)) {
                     continue;
                 }
-                int dstLightOpacity = getBlocks()[nx][ny][nz] == null ? MAX_LIGHT_LEVEL : getBlocks()[nx][ny][nz].getLightOpacity();
-                int dstLight = lightLevel - dstLightOpacity;
+                byte dstLightOpacity = getBlocks()[nx][ny][nz] == null ? MAX_LIGHT_LEVEL : getBlocks()[nx][ny][nz].getLightOpacity();
+                byte dstLight = (byte) (lightLevel - dstLightOpacity);
                 if (getLight()[nx][ny][nz] < dstLight) {
                     getLight()[nx][ny][nz] = dstLight;
                     int nIndex = getIndexer().getIndex(nx, ny, nz);
@@ -315,7 +315,7 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
         getSidesIndex()[sidePosition.getSide()][sidePosition.getX()][sidePosition.getY()][sidePosition.getZ()] = index;
     }
 
-    private int getSideLight(int x, int y, int z) {
+    private byte getSideLight(int x, int y, int z) {
         if (!getIndexer().isInside(x, y, z)) {
             return 0;
         }
