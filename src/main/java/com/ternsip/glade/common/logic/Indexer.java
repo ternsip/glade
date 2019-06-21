@@ -34,8 +34,4 @@ public class Indexer {
         return x >= 0 && x < getSize().x() && y >= 0 && y < getSize().y() && z >= 0 && z < getSize().z();
     }
 
-    public boolean isInside(int index) {
-        return isInside(getX(index), getY(index), getZ(index));
-    }
-
 }

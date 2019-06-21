@@ -11,13 +11,14 @@ public class EntityChunks extends Entity<EffigyChunks> {
 
     @Override
     public EffigyChunks getEffigy() {
-        return new EffigyChunks();
+        return new EffigyChunks(256);
     }
 
     @Override
     public void update(EffigyChunks effigy) {
         super.update(effigy);
-        effigy.update(getUniverse().getChunks().getPositionsToUpdate());
-        getUniverse().getChunks().getPositionsToUpdate().clear();
+        if (!getUniverse().getChunks().getBlocksUpdates().isEmpty()) {
+            effigy.recalculateBlockRegion(getUniverse().getChunks().getBlocksUpdates().poll());
+        }
     }
 }

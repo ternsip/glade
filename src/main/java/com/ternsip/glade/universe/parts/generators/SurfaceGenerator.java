@@ -21,7 +21,7 @@ public class SurfaceGenerator implements ChunkGenerator {
     public void populate(Chunk chunk) {
         int[][] heightMapStone = generateHeightMap(chunk, 11, 5, 50, 0.01f);
         int[][] heightMapDirt = generateHeightMap(chunk, 60, 5, 20, 0.01f);
-        chunk.forEach((Vector3ic pos, Block block, int light) -> {
+        chunk.forEach((Vector3ic pos, Block block) -> {
             Vector3ic wPos = chunk.toWorldPos(pos);
             int stoneHeight = height + heightMapStone[pos.x()][pos.z()];
             int dirtHeight = stoneHeight + heightMapDirt[pos.x()][pos.z()];
