@@ -16,7 +16,6 @@ import com.ternsip.glade.universe.common.Universal;
 import com.ternsip.glade.universe.parts.blocks.Block;
 import com.ternsip.glade.universe.parts.blocks.BlockSide;
 import com.ternsip.glade.universe.parts.chunks.BlocksUpdate;
-import com.ternsip.glade.universe.parts.chunks.Chunk;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -37,47 +36,43 @@ import static com.ternsip.glade.universe.parts.chunks.Chunks.MAX_LIGHT_LEVEL;
 @Setter
 public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
 
-    private static final float SIDE = 0.5f;
-    private static final float BLOCK_PHYSICAL_SIZE = 2 * SIDE;
-    private static final float CHUNK_PHYSICAL_SIZE = BLOCK_PHYSICAL_SIZE * Chunk.SIZE;
-
     private static final CubeSideMeshData SIDE_FRONT = new CubeSideMeshData(
-            new float[]{SIDE, SIDE, SIDE, -SIDE, SIDE, SIDE, -SIDE, -SIDE, SIDE, SIDE, -SIDE, SIDE},
+            new float[]{1f, 1f, 1f, 0f, 1f, 1f, 0f, 0f, 1f, 1f, 0f, 1f},
             new float[]{0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1},
             new boolean[]{true, false, false, false, false, true, true, true},
             BlockSide.FRONT
     );
 
     private static final CubeSideMeshData SIDE_RIGHT = new CubeSideMeshData(
-            new float[]{SIDE, SIDE, SIDE, SIDE, -SIDE, SIDE, SIDE, -SIDE, -SIDE, SIDE, SIDE, -SIDE},
+            new float[]{1f, 1f, 1f, 1f, 0f, 1f, 1f, 0f, 0f, 1f, 1f, 0f},
             new float[]{1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0},
             new boolean[]{false, false, false, true, true, true, true, false},
             BlockSide.RIGHT
     );
 
     private static final CubeSideMeshData SIDE_TOP = new CubeSideMeshData(
-            new float[]{SIDE, SIDE, SIDE, SIDE, SIDE, -SIDE, -SIDE, SIDE, -SIDE, -SIDE, SIDE, SIDE},
+            new float[]{1f, 1f, 1f, 1f, 1f, 0f, 0f, 1f, 0f, 0f, 1f, 1f},
             new float[]{0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0},
             new boolean[]{true, true, true, false, false, false, false, true},
             BlockSide.TOP
     );
 
     private static final CubeSideMeshData SIDE_LEFT = new CubeSideMeshData(
-            new float[]{-SIDE, SIDE, SIDE, -SIDE, SIDE, -SIDE, -SIDE, -SIDE, -SIDE, -SIDE, -SIDE, SIDE},
+            new float[]{0f, 1f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, 0f, 0f, 1f},
             new float[]{-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0},
             new boolean[]{true, false, false, false, false, true, true, true},
             BlockSide.LEFT
     );
 
     private static final CubeSideMeshData SIDE_BOTTOM = new CubeSideMeshData(
-            new float[]{-SIDE, -SIDE, -SIDE, SIDE, -SIDE, -SIDE, SIDE, -SIDE, SIDE, -SIDE, -SIDE, SIDE},
+            new float[]{0f, 0f, 0f, 1f, 0f, 0f, 1f, 0f, 1f, 0f, 0f, 1f},
             new float[]{0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0},
             new boolean[]{false, true, true, true, true, false, false, false},
             BlockSide.BOTTOM
     );
 
     private static final CubeSideMeshData SIDE_BACK = new CubeSideMeshData(
-            new float[]{SIDE, -SIDE, -SIDE, -SIDE, -SIDE, -SIDE, -SIDE, SIDE, -SIDE, SIDE, SIDE, -SIDE},
+            new float[]{1f, 0f, 0f, 0f, 0f, 0f, 0f, 1f, 0f, 1f, 1f, 0f},
             new float[]{0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1},
             new boolean[]{false, true, true, true, true, false, false, false},
             BlockSide.BACK
@@ -388,9 +383,9 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
         }
         for (int i = 0; i < VERTICES_PER_SIDE; i++) {
             int vIdx = i * VERTICES.getNumberPerVertex();
-            sideIndexData.getVertices().put(vIdx + sideIndexData.getVertexPos(), cubeSideMeshData.getVertices()[vIdx] + dx * BLOCK_PHYSICAL_SIZE);
-            sideIndexData.getVertices().put(vIdx + sideIndexData.getVertexPos() + 1, cubeSideMeshData.getVertices()[vIdx + 1] + dy * BLOCK_PHYSICAL_SIZE);
-            sideIndexData.getVertices().put(vIdx + sideIndexData.getVertexPos() + 2, cubeSideMeshData.getVertices()[vIdx + 2] + dz * BLOCK_PHYSICAL_SIZE);
+            sideIndexData.getVertices().put(vIdx + sideIndexData.getVertexPos(), cubeSideMeshData.getVertices()[vIdx] + dx);
+            sideIndexData.getVertices().put(vIdx + sideIndexData.getVertexPos() + 1, cubeSideMeshData.getVertices()[vIdx + 1] + dy);
+            sideIndexData.getVertices().put(vIdx + sideIndexData.getVertexPos() + 2, cubeSideMeshData.getVertices()[vIdx + 2] + dz);
 
             int cIdx = i * COLORS.getNumberPerVertex();
             sideIndexData.getColors().put(cIdx + sideIndexData.getColorPos(), 0f);
@@ -436,7 +431,7 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
     public Model loadModel() {
         return new Model(
                 new ArrayList<>(),
-                new Vector3f(SIDE),
+                new Vector3f(0),
                 new Vector3f(0),
                 new Vector3f(1)
         );
@@ -509,6 +504,7 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
 
             int meshPos = sideIndex / SIDES_PER_MESH;
             int sideOffset = sideIndex % SIDES_PER_MESH;
+            Utils.assertThat(model.getMeshes().size() > meshPos);
             Mesh mesh = model.getMeshes().get(meshPos);
             MeshAttributes meshAttributes = mesh.getMeshAttributes();
 
