@@ -40,7 +40,7 @@ public class EntityChunks extends Entity<EffigyChunks> {
         Vector3i newShift = getTargetShift(getTarget(), getViewDistanceChunks());
         if (!newShift.equals(getShift())) {
 
-            Vector3i oldShift = getShift();
+            Vector3i oldShift = new Vector3i(getShift());
             Vector3i oldEndExclusive = new Vector3i(oldShift).add(new Vector3i(getViewDistanceBlocks()));
             Vector3i newEndExclusive = new Vector3i(newShift).add(new Vector3i(getViewDistanceBlocks()));
 

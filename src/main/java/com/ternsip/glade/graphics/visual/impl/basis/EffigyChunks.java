@@ -254,7 +254,7 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
 
         });
 
-        updateSides(sidesToRemove, sidesToAdd);
+        updateSides(sidesToRemove.descendingSet(), sidesToAdd);
     }
 
     private boolean isTransitionImpossible(int x, int y, int z, int nx, int ny, int nz) {
@@ -266,7 +266,10 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
                 (z == cz && nz == cz - 1) || (z == cz - 1 && nz == cz);
     }
 
-    private void updateSides(TreeSet<Integer> sidesToRemove, List<SideData> sidesToAdd) {
+    private void updateSides(Collection<Integer> sidesToRemove, List<SideData> sidesToAdd) {
+        if (sidesToAdd.size() == 0 && sidesToRemove.size() == 0) {
+            return;
+        }
         Material material = new Material(getGraphics().getGraphicalRepository().getTexturePackRepository().getBlockAtlasTexture());
         int oldLength = getActiveSides().size();
         int newLength = oldLength + (sidesToAdd.size() - sidesToRemove.size());
@@ -285,21 +288,12 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
             mesh.setVertexCount(0);
             getModel().getMeshes().add(mesh);
         }
-        while (getModel().getMeshes().size() > meshesNumber) {
-            int currentSize = getModel().getMeshes().size();
-            getModel().getMeshes().get(currentSize - 1).finish();
-            getModel().getMeshes().remove(currentSize - 1);
-        }
-        int sizeOfTheLastMesh = newLength % SIDES_PER_MESH;
-        for (int i = 0; i < meshesNumber; ++i) {
-            getModel().getMeshes().get(i).setVertexCount((i == meshesNumber - 1) ? (sizeOfTheLastMesh * VERTICES_PER_SIDE + 1) : SIDES_PER_MESH * VERTICES_PER_SIDE);
-            getModel().getMeshes().get(i).setIndicesCount((i == meshesNumber - 1) ? (sizeOfTheLastMesh * SIDE_INDICES.length + 1) : SIDES_PER_MESH * SIDE_INDICES.length);
-        }
         Iterator<Integer> toRemove = sidesToRemove.iterator();
         for (SideData sideData : sidesToAdd) {
             if (toRemove.hasNext()) {
                 int sideIndex = toRemove.next();
                 fillSide(sideIndex, sideData);
+                Utils.assertThat(sideIndex < getActiveSides().size());
                 setSideIndex(getActiveSides().get(sideIndex), null);
                 setSideIndex(sideData.getSidePosition(), sideIndex);
                 getActiveSides().set(sideIndex, sideData.getSidePosition());
@@ -314,6 +308,7 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
             int sideIndexDst = toRemove.next();
             int sideIndexSrc = getActiveSides().size() - 1;
             relocateSide(sideIndexSrc, sideIndexDst);
+            Utils.assertThat(sideIndexDst < getActiveSides().size());
             SidePosition sidePositionDst = getActiveSides().get(sideIndexDst);
             SidePosition sidePositionSrc = getActiveSides().get(sideIndexSrc);
             setSideIndex(sidePositionDst, null);
@@ -321,10 +316,18 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
             getActiveSides().set(sideIndexDst, sidePositionSrc);
             getActiveSides().remove(sideIndexSrc);
         }
-        if (sidesToRemove.size() > 0 || sidesToAdd.size() > 0) {
-            for (Mesh mesh : getModel().getMeshes()) {
-                mesh.updateBuffers();
-            }
+        while (getModel().getMeshes().size() > meshesNumber) {
+            int currentSize = getModel().getMeshes().size();
+            getModel().getMeshes().get(currentSize - 1).finish();
+            getModel().getMeshes().remove(currentSize - 1);
+        }
+        int sizeOfTheLastMesh = newLength % SIDES_PER_MESH;
+        for (int i = 0; i < meshesNumber; ++i) {
+            getModel().getMeshes().get(i).setVertexCount((i == meshesNumber - 1) ? (sizeOfTheLastMesh * VERTICES_PER_SIDE + 1) : SIDES_PER_MESH * VERTICES_PER_SIDE);
+            getModel().getMeshes().get(i).setIndicesCount((i == meshesNumber - 1) ? (sizeOfTheLastMesh * SIDE_INDICES.length + 1) : SIDES_PER_MESH * SIDE_INDICES.length);
+        }
+        for (Mesh mesh : getModel().getMeshes()) {
+            mesh.updateBuffers();
         }
     }
 
@@ -333,6 +336,10 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
     }
 
     private void relocateSide(int sideIndexSrc, int sideIndexDst) {
+
+        if (sideIndexDst == sideIndexSrc) {
+            return;
+        }
 
         SideIndexData sideIndexDataSrc = new SideIndexData(sideIndexSrc, getModel());
         SideIndexData sideIndexDataDst = new SideIndexData(sideIndexDst, getModel());
