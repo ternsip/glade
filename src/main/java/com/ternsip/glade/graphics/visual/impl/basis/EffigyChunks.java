@@ -37,42 +37,42 @@ import static com.ternsip.glade.universe.parts.chunks.Chunks.MAX_LIGHT_LEVEL;
 public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
 
     private static final CubeSideMeshData SIDE_FRONT = new CubeSideMeshData(
-            new float[]{1f, 1f, 1f, 0f, 1f, 1f, 0f, 0f, 1f, 1f, 0f, 1f},
+            new float[]{1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1},
             new float[]{0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1},
             new boolean[]{true, false, false, false, false, true, true, true},
             BlockSide.FRONT
     );
 
     private static final CubeSideMeshData SIDE_RIGHT = new CubeSideMeshData(
-            new float[]{1f, 1f, 1f, 1f, 0f, 1f, 1f, 0f, 0f, 1f, 1f, 0f},
+            new float[]{1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0},
             new float[]{1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0},
             new boolean[]{false, false, false, true, true, true, true, false},
             BlockSide.RIGHT
     );
 
     private static final CubeSideMeshData SIDE_TOP = new CubeSideMeshData(
-            new float[]{1f, 1f, 1f, 1f, 1f, 0f, 0f, 1f, 0f, 0f, 1f, 1f},
+            new float[]{1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1},
             new float[]{0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0},
             new boolean[]{true, true, true, false, false, false, false, true},
             BlockSide.TOP
     );
 
     private static final CubeSideMeshData SIDE_LEFT = new CubeSideMeshData(
-            new float[]{0f, 1f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, 0f, 0f, 1f},
+            new float[]{0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1},
             new float[]{-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0},
             new boolean[]{true, false, false, false, false, true, true, true},
             BlockSide.LEFT
     );
 
     private static final CubeSideMeshData SIDE_BOTTOM = new CubeSideMeshData(
-            new float[]{0f, 0f, 0f, 1f, 0f, 0f, 1f, 0f, 1f, 0f, 0f, 1f},
+            new float[]{0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1},
             new float[]{0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0},
             new boolean[]{false, true, true, true, true, false, false, false},
             BlockSide.BOTTOM
     );
 
     private static final CubeSideMeshData SIDE_BACK = new CubeSideMeshData(
-            new float[]{1f, 0f, 0f, 0f, 0f, 0f, 0f, 1f, 0f, 1f, 1f, 0f},
+            new float[]{1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0},
             new float[]{0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1},
             new boolean[]{false, true, true, true, true, false, false, false},
             BlockSide.BACK
