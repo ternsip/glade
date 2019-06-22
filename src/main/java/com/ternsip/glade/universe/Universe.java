@@ -16,7 +16,6 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.joml.Vector3i;
 
 import java.io.File;
 
@@ -32,7 +31,6 @@ public class Universe {
 
     public void initialize() {
         spawnTestEntities();
-        generateChunks();
     }
 
     @SneakyThrows
@@ -120,11 +118,7 @@ public class Universe {
                 hagrid1.setScale(new Vector3f(15, 15, 15));
             }
         }
-    }
-
-    private void generateChunks() {
-        new EntityChunks().register();
-        getChunks().recalculateBlockRegion(new Vector3i(0, 0, 0), new Vector3i(16 * 16, 16 * 8, 16 * 16), true);
+        new EntityChunks(entityPlayer, 16).register();
     }
 
     private void update() {

@@ -107,7 +107,6 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
     }
 
     public void recalculateBlockRegion(BlocksUpdate blocksUpdate) {
-
         Vector3ic arraySize = new Vector3i(
                 blocksUpdate.getBlocks().length,
                 blocksUpdate.getBlocks()[0].length,
@@ -154,7 +153,9 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
             }
         }
 
-        // Add border blocks to engage light
+        // TODO reset MAX_LIGHT_LEVEL distance border to update light
+
+        // Add border blocks to engage neighbour side-recalculation
         ArrayList<Vector3i> borderPositions = new ArrayList<>();
         for (int y = realStart.y(); y < realEndExcluding.y(); ++y) {
             for (int z = realStart.z(); z < realEndExcluding.z(); ++z) {
@@ -175,10 +176,12 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
             }
         }
         borderPositions.forEach(pos -> {
-            if (getIndexer().isInside(pos.x(), pos.y(), pos.z())) {
-                int index = getIndexer().getIndex(pos.x(), pos.y(), pos.z());
-                queue.add(index);
-                changedBlocks.add(index);
+            if (pos.x() >= getShift().x() && pos.y() >= getShift().y() && pos.z() >= getShift().z() &&
+                    pos.x() < viewEndExcluding.x() && pos.y() < viewEndExcluding.y() && pos.z() < viewEndExcluding.z()) {
+                int rcx = Math.floorMod(pos.x(), getViewDistance());
+                int rcy = Math.floorMod(pos.y(), getViewDistance());
+                int rcz = Math.floorMod(pos.z(), getViewDistance());
+                changedBlocks.add(getIndexer().getIndex(rcx, rcy, rcz));
             }
         });
 
@@ -193,10 +196,10 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
             int z = getIndexer().getZ(top);
             byte lightLevel = getLight()[x][y][z];
             for (int k = 0; k < dx.length; ++k) {
-                int nx = x + dx[k];
-                int ny = y + dy[k];
-                int nz = z + dz[k];
-                if (!getIndexer().isInside(nx, ny, nz)) {
+                int nx = Math.floorMod(x + dx[k], getViewDistance());
+                int ny = Math.floorMod(y + dy[k], getViewDistance());
+                int nz = Math.floorMod(z + dz[k], getViewDistance());
+                if (isTransitionImpossible(x, y, z, nx, ny, nz)) {
                     continue;
                 }
                 byte dstLightOpacity = getBlocks()[nx][ny][nz] == null ? MAX_LIGHT_LEVEL : getBlocks()[nx][ny][nz].getLightOpacity();
@@ -235,11 +238,16 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
             for (int side = 0; side < ALL_SIDES.length; ++side) {
                 CubeSideMeshData meshDataSide = ALL_SIDES[side];
                 BlockSide blockSide = meshDataSide.getBlockSide();
-                int nx = x + blockSide.getAdjacentBlockOffset().x();
-                int ny = y + blockSide.getAdjacentBlockOffset().y();
-                int nz = z + blockSide.getAdjacentBlockOffset().z();
-                if (isSideVisible(x, y, z, nx, ny, nz)) {
-                    float sideLight = (float) getSideLight(nx, ny, nz) / MAX_LIGHT_LEVEL;
+                int nx = Math.floorMod(x + blockSide.getAdjacentBlockOffset().x(), getViewDistance());
+                int ny = Math.floorMod(y + blockSide.getAdjacentBlockOffset().y(), getViewDistance());
+                int nz = Math.floorMod(z + blockSide.getAdjacentBlockOffset().z(), getViewDistance());
+                if (isTransitionImpossible(x, y, z, nx, ny, nz)) {
+                    sidesToAdd.add(new SideData(new SidePosition(side, x, y, z), 0f, textureCubeMap, meshDataSide));;
+                    continue;
+                }
+                Block nextBlock = getBlocks()[nx][ny][nz];
+                if (nextBlock == null || (nextBlock.isSemiTransparent() && (block != nextBlock || !block.isCombineSides()))) {
+                    float sideLight = (float) getLight()[nx][ny][nz] / MAX_LIGHT_LEVEL;
                     sidesToAdd.add(new SideData(new SidePosition(side, x, y, z), sideLight, textureCubeMap, meshDataSide));
                 }
             }
@@ -247,6 +255,15 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
         });
 
         updateSides(sidesToRemove, sidesToAdd);
+    }
+
+    private boolean isTransitionImpossible(int x, int y, int z, int nx, int ny, int nz) {
+        int cx = Math.floorMod(getShift().x(), getViewDistance());
+        int cy = Math.floorMod(getShift().y(), getViewDistance());
+        int cz = Math.floorMod(getShift().z(), getViewDistance());
+        return (x == cx && nx == cx - 1) || (x == cx - 1 && nx == cx) ||
+                (y == cy && ny == cy - 1) || (y == cy - 1 && ny == cy) ||
+                (z == cz && nz == cz - 1) || (z == cz - 1 && nz == cz);
     }
 
     private void updateSides(TreeSet<Integer> sidesToRemove, List<SideData> sidesToAdd) {
@@ -315,22 +332,6 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
         getSidesIndex()[sidePosition.getSide()][sidePosition.getX()][sidePosition.getY()][sidePosition.getZ()] = index;
     }
 
-    private byte getSideLight(int x, int y, int z) {
-        if (!getIndexer().isInside(x, y, z)) {
-            return 0;
-        }
-        return getLight()[x][y][z];
-    }
-
-    private boolean isSideVisible(int x, int y, int z, int nx, int ny, int nz) {
-        if (!getIndexer().isInside(nx, ny, nz)) {
-            return true;
-        }
-        Block curBlock = getBlocks()[x][y][z];
-        Block nextBlock = getBlocks()[nx][ny][nz];
-        return nextBlock == null || (nextBlock.isSemiTransparent() && (curBlock != nextBlock || !curBlock.isCombineSides()));
-    }
-
     private void relocateSide(int sideIndexSrc, int sideIndexDst) {
 
         SideIndexData sideIndexDataSrc = new SideIndexData(sideIndexSrc, getModel());
@@ -370,9 +371,9 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
 
         SideIndexData sideIndexData = new SideIndexData(sideIndex, getModel());
         CubeSideMeshData cubeSideMeshData = sideData.getCubeSideMeshData();
-        int dx = sideData.getSidePosition().getX() + getShift().x();
-        int dy = sideData.getSidePosition().getY() + getShift().y();
-        int dz = sideData.getSidePosition().getZ() + getShift().z();
+        int dx = getShift().x() + (sideData.getSidePosition().getX() - getShift().x()) % getViewDistance();
+        int dy = getShift().y() + (sideData.getSidePosition().getY() - getShift().y()) % getViewDistance();
+        int dz = getShift().z() + (sideData.getSidePosition().getZ() - getShift().z()) % getViewDistance();
         TextureRepository.AtlasFragment atlasFragment = sideData.getTextureCubeMap().getByBlockSide(cubeSideMeshData.getBlockSide());
 
         for (int i = 0; i < SIDE_INDICES.length; ++i) {
