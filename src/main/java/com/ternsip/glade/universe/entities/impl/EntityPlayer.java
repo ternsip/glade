@@ -112,7 +112,6 @@ public class EntityPlayer extends Entity<EffigyBoy> {
         if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_B)) {
             if (getUniverse().getBlocks().isBlockExists(getBlockPositionStandingOn())) {
                 getUniverse().getBlocks().setBlock(getBlockPositionStandingOn(), Block.AIR);
-                getUniverse().getBlocks().updateRegionProcrastinating(getBlockPositionStandingOn());
             }
         }
 

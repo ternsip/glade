@@ -83,12 +83,27 @@ public class Blocks implements Universal {
         return blocks[x][y][z];
     }
 
-    public Block setBlock(Vector3ic pos, Block block) {
-        return blocks[pos.x()][pos.y()][pos.z()] = block;
+    public void setBlock(Vector3ic pos, Block block) {
+        blocks[pos.x()][pos.y()][pos.z()] = block;
+        updateRegionProcrastinating(pos);
     }
 
-    public Block setBlock(int x, int y, int z, Block block) {
-        return blocks[x][y][z] = block;
+    public void setBlock(int x, int y, int z, Block block) {
+        blocks[x][y][z] = block;
+        updateRegionProcrastinating(new Vector3i(x, y, z));
+    }
+
+    public void setBlocks(Vector3ic start, Block[][][] regionBlocks) {
+        Vector3ic size = new Vector3i(regionBlocks.length, regionBlocks[0].length, regionBlocks[0][0].length);
+        Vector3ic endExcluding = new Vector3i(start).add(size).min(SIZE);
+        for (int x = start.x(), dx = 0; x < endExcluding.x(); ++x, ++dx) {
+            for (int y = start.y(), dy = 0; y < endExcluding.y(); ++y, ++dy) {
+                for (int z = start.z(), dz = 0; z < endExcluding.z(); ++z, ++dz) {
+                    blocks[x][y][z] = regionBlocks[dx][dy][dz];
+                }
+            }
+        }
+        updateRegionProcrastinating(start, size);
     }
 
     public byte getSkyLight(Vector3ic pos) {
@@ -275,11 +290,11 @@ public class Blocks implements Universal {
         }
     }
 
-    public void updateRegionProcrastinating(Vector3ic pos) {
+    private void updateRegionProcrastinating(Vector3ic pos) {
         updateRegionProcrastinating(pos, new Vector3i(1));
     }
 
-    public void updateRegionProcrastinating(Vector3ic start, Vector3ic size) {
+    private void updateRegionProcrastinating(Vector3ic start, Vector3ic size) {
         visualUpdate(start, size);
         getLightUpdateRequests().add(new LightUpdateRequest(start, size));
     }
