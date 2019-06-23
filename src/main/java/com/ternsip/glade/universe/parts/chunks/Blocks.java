@@ -179,6 +179,33 @@ public class Blocks implements Universal {
             }
         }
 
+        // Add border blocks to engage outer light
+        ArrayList<Vector3i> borderPositions = new ArrayList<>();
+        for (int y = startLight.y(); y < endLightExcluding.y(); ++y) {
+            for (int z = startLight.z(); z < endLightExcluding.z(); ++z) {
+                borderPositions.add(new Vector3i(startLight.x() - 1, y, z));
+                borderPositions.add(new Vector3i(endLightExcluding.x(), y, z));
+            }
+        }
+        for (int x = startLight.x(); x < endLightExcluding.x(); ++x) {
+            for (int z = startLight.z(); z < endLightExcluding.z(); ++z) {
+                borderPositions.add(new Vector3i(x, startLight.y() - 1, z));
+                borderPositions.add(new Vector3i(x, endLightExcluding.y(), z));
+            }
+        }
+        for (int x = startLight.x(); x < endLightExcluding.x(); ++x) {
+            for (int y = startLight.y(); y < endLightExcluding.y(); ++y) {
+                borderPositions.add(new Vector3i(x, y, startLight.z() - 1));
+                borderPositions.add(new Vector3i(x, y, endLightExcluding.z()));
+            }
+        }
+        for (Vector3i borderPos : borderPositions) {
+            if (INDEXER.isInside(borderPos) && (skyLights[borderPos.x()][borderPos.y()][borderPos.z()] > 0 ||
+                    emitLights[borderPos.x()][borderPos.y()][borderPos.z()] > 0)) {
+                queue.add(INDEXER.getIndex(borderPos));
+            }
+        }
+
         // Start light propagation BFS
         int[] dx = {1, 0, 0, -1, 0, 0};
         int[] dy = {0, 1, 0, 0, -1, 0};
@@ -188,8 +215,8 @@ public class Blocks implements Universal {
             int x = INDEXER.getX(top);
             int y = INDEXER.getY(top);
             int z = INDEXER.getZ(top);
-            byte skyLightLevel = skyLights[x][y][z];
-            byte emitLightLevel = emitLights[x][y][z];
+            int skyLightLevel = skyLights[x][y][z];
+            int emitLightLevel = emitLights[x][y][z];
             for (int k = 0; k < dx.length; ++k) {
                 int nx = x + dx[k];
                 int ny = y + dy[k];
@@ -197,12 +224,12 @@ public class Blocks implements Universal {
                 if (!INDEXER.isInside(nx, ny, nz)) {
                     continue;
                 }
-                byte dstLightOpacity = blocks[nx][ny][nz].getLightOpacity();
-                byte dstSkyLight = (byte) (skyLightLevel - dstLightOpacity);
-                byte dstEmitLight = (byte) (emitLightLevel - dstLightOpacity);
+                int dstLightOpacity = blocks[nx][ny][nz].getLightOpacity();
+                int dstSkyLight = skyLightLevel - dstLightOpacity;
+                int dstEmitLight = emitLightLevel - dstLightOpacity;
                 if (skyLights[nx][ny][nz] < dstSkyLight || emitLights[nx][ny][nz] < dstEmitLight) {
                     skyLights[nx][ny][nz] = (byte) Math.max(dstSkyLight, skyLights[nx][ny][nz]);
-                    emitLights[nx][ny][nz] = (byte) Math.max(dstEmitLight,  emitLights[nx][ny][nz]);
+                    emitLights[nx][ny][nz] = (byte) Math.max(dstEmitLight, emitLights[nx][ny][nz]);
                     queue.add(INDEXER.getIndex(nx, ny, nz));
                 }
             }
