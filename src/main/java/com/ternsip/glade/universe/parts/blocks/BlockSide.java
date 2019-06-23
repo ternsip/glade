@@ -19,4 +19,16 @@ public enum BlockSide {
     private final String logicalName;
     private final Vector3ic adjacentBlockOffset;
 
+    public static BlockSide getSideByIndex(int index) {
+        return values()[index];
+    }
+
+    public static int getSize() {
+        return values().length;
+    }
+
+    public int getIndex() {
+        return ordinal();
+    }
+
 }

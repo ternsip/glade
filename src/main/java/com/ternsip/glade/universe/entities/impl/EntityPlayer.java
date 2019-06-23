@@ -110,8 +110,10 @@ public class EntityPlayer extends Entity<EffigyBoy> {
         }
 
         if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_B)) {
-            getUniverse().getChunks().setBlock(getBlockPositionStandingOn(), Block.AIR);
-            getUniverse().getChunks().recalculateBlockRegion(getBlockPositionStandingOn());
+            if (getUniverse().getBlocks().isBlockExists(getBlockPositionStandingOn())) {
+                getUniverse().getBlocks().setBlock(getBlockPositionStandingOn(), Block.AIR);
+                getUniverse().getBlocks().recalculateBlockRegion(getBlockPositionStandingOn());
+            }
         }
 
     }

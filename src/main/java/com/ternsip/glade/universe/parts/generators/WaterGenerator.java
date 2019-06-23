@@ -1,8 +1,7 @@
 package com.ternsip.glade.universe.parts.generators;
 
 import com.ternsip.glade.universe.parts.blocks.Block;
-import com.ternsip.glade.universe.parts.chunks.Chunk;
-import org.joml.Vector3ic;
+import com.ternsip.glade.universe.parts.chunks.Blocks;
 
 public class WaterGenerator implements ChunkGenerator {
 
@@ -14,12 +13,15 @@ public class WaterGenerator implements ChunkGenerator {
     }
 
     @Override
-    public void populate(Chunk chunk) {
-        chunk.forEach((Vector3ic pos, Block block) -> {
-            Vector3ic wPos = chunk.toWorldPos(pos);
-            if (wPos.y() <= waterHeight && block == Block.AIR) {
-                chunk.setBlock(pos, Block.WATER);
+    public void populate(Block[][][] blocks) {
+        for (int x = 0; x < Blocks.SIZE_X; ++x) {
+            for (int y = 0; y < Blocks.SIZE_Y; ++y) {
+                for (int z = 0; z < Blocks.SIZE_Z; ++z) {
+                    if (y <= waterHeight && blocks[x][y][z] == Block.AIR) {
+                        blocks[x][y][z] = Block.WATER;
+                    }
+                }
             }
-        });
+        }
     }
 }

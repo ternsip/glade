@@ -1,6 +1,6 @@
 package com.ternsip.glade.graphics.visual.impl.basis;
 
-import com.ternsip.glade.common.logic.Indexer;
+import com.google.common.collect.ImmutableMap;
 import com.ternsip.glade.common.logic.Maths;
 import com.ternsip.glade.common.logic.Utils;
 import com.ternsip.glade.graphics.general.Material;
@@ -13,15 +13,16 @@ import com.ternsip.glade.graphics.visual.repository.TexturePackRepository;
 import com.ternsip.glade.graphics.visual.repository.TextureRepository;
 import com.ternsip.glade.universe.common.Light;
 import com.ternsip.glade.universe.common.Universal;
-import com.ternsip.glade.universe.parts.blocks.Block;
 import com.ternsip.glade.universe.parts.blocks.BlockSide;
 import com.ternsip.glade.universe.parts.chunks.BlocksUpdate;
+import com.ternsip.glade.universe.parts.chunks.Side;
+import com.ternsip.glade.universe.parts.chunks.SidePosition;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.joml.*;
+import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
+import org.joml.Vector3f;
 
-import java.lang.Math;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.*;
@@ -30,243 +31,67 @@ import static com.ternsip.glade.graphics.shader.base.ShaderProgram.INDICES;
 import static com.ternsip.glade.graphics.shader.base.ShaderProgram.VERTICES;
 import static com.ternsip.glade.graphics.shader.impl.ChunkShader.*;
 import static com.ternsip.glade.graphics.visual.impl.basis.EffigyChunks.SideIndexData.*;
-import static com.ternsip.glade.universe.parts.chunks.Chunks.MAX_LIGHT_LEVEL;
+import static com.ternsip.glade.universe.parts.chunks.Blocks.MAX_LIGHT_LEVEL;
 
-@Getter
-@Setter
 public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
 
     private static final CubeSideMeshData SIDE_FRONT = new CubeSideMeshData(
             new float[]{1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1},
             new float[]{0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1},
-            new boolean[]{true, false, false, false, false, true, true, true},
-            BlockSide.FRONT
+            new boolean[]{true, false, false, false, false, true, true, true}
     );
 
     private static final CubeSideMeshData SIDE_RIGHT = new CubeSideMeshData(
             new float[]{1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0},
             new float[]{1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0},
-            new boolean[]{false, false, false, true, true, true, true, false},
-            BlockSide.RIGHT
+            new boolean[]{false, false, false, true, true, true, true, false}
     );
 
     private static final CubeSideMeshData SIDE_TOP = new CubeSideMeshData(
             new float[]{1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1},
             new float[]{0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0},
-            new boolean[]{true, true, true, false, false, false, false, true},
-            BlockSide.TOP
+            new boolean[]{true, true, true, false, false, false, false, true}
     );
 
     private static final CubeSideMeshData SIDE_LEFT = new CubeSideMeshData(
             new float[]{0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1},
             new float[]{-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0},
-            new boolean[]{true, false, false, false, false, true, true, true},
-            BlockSide.LEFT
+            new boolean[]{true, false, false, false, false, true, true, true}
     );
 
     private static final CubeSideMeshData SIDE_BOTTOM = new CubeSideMeshData(
             new float[]{0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1},
             new float[]{0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0},
-            new boolean[]{false, true, true, true, true, false, false, false},
-            BlockSide.BOTTOM
+            new boolean[]{false, true, true, true, true, false, false, false}
     );
 
     private static final CubeSideMeshData SIDE_BACK = new CubeSideMeshData(
             new float[]{1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0},
             new float[]{0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1},
-            new boolean[]{false, true, true, true, true, false, false, false},
-            BlockSide.BACK
+            new boolean[]{false, true, true, true, true, false, false, false}
     );
 
-    private static final CubeSideMeshData ALL_SIDES[] = new CubeSideMeshData[]{
-            SIDE_FRONT, SIDE_BACK, SIDE_LEFT, SIDE_RIGHT, SIDE_TOP, SIDE_BOTTOM
-    };
+    private static final Map<BlockSide, CubeSideMeshData> ALL_SIDES = ImmutableMap.<BlockSide, CubeSideMeshData>builder()
+            .put(BlockSide.BACK, SIDE_BACK)
+            .put(BlockSide.BOTTOM, SIDE_BOTTOM)
+            .put(BlockSide.LEFT, SIDE_LEFT)
+            .put(BlockSide.TOP, SIDE_TOP)
+            .put(BlockSide.RIGHT, SIDE_RIGHT)
+            .put(BlockSide.FRONT, SIDE_FRONT)
+            .build();
 
-    private final int viewDistance;
-    private final Vector3i shift;
-    private final Block[][][] blocks;
-    private final byte[][][] light;
-    private final int[][] heights;
-    private final Integer[][][][] sidesIndex;
-    private final Indexer indexer;
+    private final Map<SidePosition, Integer> sides = new HashMap<>();
     private ArrayList<SidePosition> activeSides = new ArrayList<>();
 
-    public EffigyChunks(int viewDistance) {
-        this.viewDistance = viewDistance;
-        this.shift = new Vector3i(0, 0, 0);
-        this.blocks = new Block[viewDistance][viewDistance][viewDistance];
-        this.light = new byte[viewDistance][viewDistance][viewDistance];
-        this.heights = new int[viewDistance][viewDistance];
-        this.sidesIndex = new Integer[ALL_SIDES.length][viewDistance][viewDistance][viewDistance];
-        this.indexer = new Indexer(new Vector3i(getViewDistance()));
-    }
-
     public void recalculateBlockRegion(BlocksUpdate blocksUpdate) {
-        Vector3ic arraySize = new Vector3i(
-                blocksUpdate.getBlocks().length,
-                blocksUpdate.getBlocks()[0].length,
-                blocksUpdate.getBlocks()[0][0].length
-        );
-        Vector3ic viewEndExcluding = new Vector3i(getShift()).add(new Vector3i(getViewDistance()));
-        Vector3ic realStart = new Vector3i(blocksUpdate.getStart()).max(getShift());
-        Vector3i realEndExcluding = new Vector3i(blocksUpdate.getStart()).add(arraySize).min(viewEndExcluding);
-        Vector3ic start = new Vector3i(realStart).sub(blocksUpdate.getStart());
-        Vector3ic endExcluding = new Vector3i(realEndExcluding).sub(blocksUpdate.getStart());
-        Vector3i size = new Vector3i(endExcluding).sub(start);
 
-        if (size.x() <= 0 || size.y() <= 0 || size.z() <= 0) {
-            return;
-        }
-
-        // Recalculate light maps
-        Queue<Integer> queue = new ArrayDeque<>();
-        Set<Integer> changedBlocks = new HashSet<>();
-
-        for (int x = start.x(), cx = realStart.x(); x < endExcluding.x(); ++x, ++cx) {
-            for (int z = start.z(), cz = realStart.z(); z < endExcluding.z(); ++z, ++cz) {
-                int rcx = Math.floorMod(cx, getViewDistance());
-                int rcz = Math.floorMod(cz, getViewDistance());
-                int height = blocksUpdate.getHeights()[x][z];
-                getHeights()[rcx][rcz] = height;
-                for (int y = start.y(), cy = realStart.y(); y < endExcluding.y(); ++y, ++cy) {
-                    int rcy = Math.floorMod(cy, getViewDistance());
-                    Block newBlock = blocksUpdate.getBlocks()[x][y][z];
-                    byte newLight = newBlock.getEmitLight();
-                    int posIndex = getIndexer().getIndex(rcx, rcy, rcz);
-                    if (height <= cy) {
-                        newLight = MAX_LIGHT_LEVEL;
-                    }
-                    if (newLight > 0 && height >= cy) {
-                        queue.add(posIndex);
-                    }
-                    if (blocksUpdate.isForceUpdate() || newBlock != getBlocks()[rcx][rcy][rcz] || newLight != getLight()[rcx][rcy][rcz]) {
-                        getBlocks()[rcx][rcy][rcz] = newBlock;
-                        getLight()[rcx][rcy][rcz] = newLight;
-                        changedBlocks.add(posIndex);
-                    }
-                }
-            }
-        }
-
-        // TODO reset MAX_LIGHT_LEVEL distance border to update light
-
-        // Add border blocks to engage neighbour side-recalculation
-        ArrayList<Vector3i> borderPositions = new ArrayList<>();
-        for (int y = realStart.y(); y < realEndExcluding.y(); ++y) {
-            for (int z = realStart.z(); z < realEndExcluding.z(); ++z) {
-                borderPositions.add(new Vector3i(realStart.x() - 1, y, z));
-                borderPositions.add(new Vector3i(realEndExcluding.x(), y, z));
-            }
-        }
-        for (int x = realStart.x(); x < realEndExcluding.x(); ++x) {
-            for (int z = realStart.z(); z < realEndExcluding.z(); ++z) {
-                borderPositions.add(new Vector3i(x, realStart.y() - 1, z));
-                borderPositions.add(new Vector3i(x, realEndExcluding.y(), z));
-            }
-        }
-        for (int x = realStart.x(); x < realEndExcluding.x(); ++x) {
-            for (int y = realStart.y(); y < realEndExcluding.y(); ++y) {
-                borderPositions.add(new Vector3i(x, y, realStart.z() - 1));
-                borderPositions.add(new Vector3i(x, y, realEndExcluding.z()));
-            }
-        }
-        borderPositions.forEach(pos -> {
-            if (pos.x() >= getShift().x() && pos.y() >= getShift().y() && pos.z() >= getShift().z() &&
-                    pos.x() < viewEndExcluding.x() && pos.y() < viewEndExcluding.y() && pos.z() < viewEndExcluding.z()) {
-                int rcx = Math.floorMod(pos.x(), getViewDistance());
-                int rcy = Math.floorMod(pos.y(), getViewDistance());
-                int rcz = Math.floorMod(pos.z(), getViewDistance());
-                changedBlocks.add(getIndexer().getIndex(rcx, rcy, rcz));
-            }
-        });
-
-        // Start light propagation BFS
-        int[] dx = {1, 0, 0, -1, 0, 0};
-        int[] dy = {0, 1, 0, 0, -1, 0};
-        int[] dz = {0, 0, 1, 0, 0, -1};
-        while (!queue.isEmpty()) {
-            Integer top = queue.poll();
-            int x = getIndexer().getX(top);
-            int y = getIndexer().getY(top);
-            int z = getIndexer().getZ(top);
-            byte lightLevel = getLight()[x][y][z];
-            for (int k = 0; k < dx.length; ++k) {
-                int nx = Math.floorMod(x + dx[k], getViewDistance());
-                int ny = Math.floorMod(y + dy[k], getViewDistance());
-                int nz = Math.floorMod(z + dz[k], getViewDistance());
-                if (isTransitionImpossible(x, y, z, nx, ny, nz)) {
-                    continue;
-                }
-                byte dstLightOpacity = getBlocks()[nx][ny][nz] == null ? MAX_LIGHT_LEVEL : getBlocks()[nx][ny][nz].getLightOpacity();
-                byte dstLight = (byte) (lightLevel - dstLightOpacity);
-                if (getLight()[nx][ny][nz] < dstLight) {
-                    getLight()[nx][ny][nz] = dstLight;
-                    int nIndex = getIndexer().getIndex(nx, ny, nz);
-                    queue.add(nIndex);
-                    changedBlocks.add(nIndex);
-                }
-            }
-        }
-
-        // Calculate which sides should be removed or added
         TexturePackRepository texturePackRepository = getGraphics().getGraphicalRepository().getTexturePackRepository();
-        TreeSet<Integer> sidesToRemove = new TreeSet<>();
-        List<SideData> sidesToAdd = new ArrayList<>();
-        changedBlocks.forEach(index -> {
+        List<SidePosition> sidesToRemove = blocksUpdate.getSidesToRemove();
+        List<Side> sidesToAdd = blocksUpdate.getSidesToAdd();
+        Utils.assertThat(sidesToAdd.size() > 0 || sidesToRemove.size() > 0);
 
-            int x = getIndexer().getX(index);
-            int y = getIndexer().getY(index);
-            int z = getIndexer().getZ(index);
-
-            for (int side = 0; side < ALL_SIDES.length; ++side) {
-                Integer sideToRemoveIndex = getSidesIndex()[side][x][y][z];
-                if (sideToRemoveIndex != null) {
-                    sidesToRemove.add(sideToRemoveIndex);
-                }
-            }
-            Block block = getBlocks()[x][y][z];
-            if (block == null || block == Block.AIR) {
-                return;
-            }
-            TexturePackRepository.TextureCubeMap textureCubeMap = texturePackRepository.getCubeMap(block);
-
-            for (int side = 0; side < ALL_SIDES.length; ++side) {
-                CubeSideMeshData meshDataSide = ALL_SIDES[side];
-                BlockSide blockSide = meshDataSide.getBlockSide();
-                int nx = Math.floorMod(x + blockSide.getAdjacentBlockOffset().x(), getViewDistance());
-                int ny = Math.floorMod(y + blockSide.getAdjacentBlockOffset().y(), getViewDistance());
-                int nz = Math.floorMod(z + blockSide.getAdjacentBlockOffset().z(), getViewDistance());
-                if (isTransitionImpossible(x, y, z, nx, ny, nz)) {
-                    sidesToAdd.add(new SideData(new SidePosition(side, x, y, z), 0f, textureCubeMap, meshDataSide));;
-                    continue;
-                }
-                Block nextBlock = getBlocks()[nx][ny][nz];
-                if (nextBlock == null || (nextBlock.isSemiTransparent() && (block != nextBlock || !block.isCombineSides()))) {
-                    float sideLight = (float) getLight()[nx][ny][nz] / MAX_LIGHT_LEVEL;
-                    sidesToAdd.add(new SideData(new SidePosition(side, x, y, z), sideLight, textureCubeMap, meshDataSide));
-                }
-            }
-
-        });
-
-        updateSides(sidesToRemove.descendingSet(), sidesToAdd);
-    }
-
-    private boolean isTransitionImpossible(int x, int y, int z, int nx, int ny, int nz) {
-        int cx = Math.floorMod(getShift().x(), getViewDistance());
-        int cy = Math.floorMod(getShift().y(), getViewDistance());
-        int cz = Math.floorMod(getShift().z(), getViewDistance());
-        return (x == cx && nx == cx - 1) || (x == cx - 1 && nx == cx) ||
-                (y == cy && ny == cy - 1) || (y == cy - 1 && ny == cy) ||
-                (z == cz && nz == cz - 1) || (z == cz - 1 && nz == cz);
-    }
-
-    private void updateSides(Collection<Integer> sidesToRemove, List<SideData> sidesToAdd) {
-        if (sidesToAdd.size() == 0 && sidesToRemove.size() == 0) {
-            return;
-        }
-        Material material = new Material(getGraphics().getGraphicalRepository().getTexturePackRepository().getBlockAtlasTexture());
-        int oldLength = getActiveSides().size();
+        Material material = new Material(texturePackRepository.getBlockAtlasTexture());
+        int oldLength = activeSides.size();
         int newLength = oldLength + (sidesToAdd.size() - sidesToRemove.size());
         int meshesNumber = newLength / SIDES_PER_MESH + (newLength % SIDES_PER_MESH > 0 ? 1 : 0);
         while (getModel().getMeshes().size() < meshesNumber) {
@@ -283,33 +108,39 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
             mesh.setVertexCount(0);
             getModel().getMeshes().add(mesh);
         }
-        Iterator<Integer> toRemove = sidesToRemove.iterator();
-        for (SideData sideData : sidesToAdd) {
-            if (toRemove.hasNext()) {
-                int sideIndex = toRemove.next();
-                fillSide(sideIndex, sideData);
-                Utils.assertThat(sideIndex < getActiveSides().size());
-                setSideIndex(getActiveSides().get(sideIndex), null);
-                setSideIndex(sideData.getSidePosition(), sideIndex);
-                getActiveSides().set(sideIndex, sideData.getSidePosition());
-            } else {
-                int sideIndex = getActiveSides().size();
-                fillSide(sideIndex, sideData);
-                setSideIndex(sideData.getSidePosition(), sideIndex);
-                getActiveSides().add(sideData.getSidePosition());
+        Iterator<SidePosition> toRemove = sidesToRemove.iterator();
+        for (Side side : sidesToAdd) {
+            SidePosition sidePositionSrc = side.getSidePosition();
+            Integer sideIndexSrc = sides.get(sidePositionSrc);
+            if (sideIndexSrc != null) {
+                fillSide(sideIndexSrc, side);
+                continue;
             }
+            if (toRemove.hasNext()) {
+                SidePosition sidePosition = toRemove.next();
+                int sideIndex = sides.get(sidePosition);
+                fillSide(sideIndex, side);
+                Utils.assertThat(sideIndex < activeSides.size());
+                sides.put(sidePositionSrc, sideIndex);
+                activeSides.set(sideIndex, sidePositionSrc);
+                continue;
+            }
+            int sideIndex = activeSides.size();
+            fillSide(sideIndex, side);
+            sides.put(sidePositionSrc, sideIndex);
+            activeSides.add(sidePositionSrc);
         }
         while (toRemove.hasNext()) {
-            int sideIndexDst = toRemove.next();
-            int sideIndexSrc = getActiveSides().size() - 1;
+            SidePosition sidePositionDst = toRemove.next();
+            int sideIndexDst = sides.get(sidePositionDst);
+            int sideIndexSrc = activeSides.size() - 1;
             relocateSide(sideIndexSrc, sideIndexDst);
-            Utils.assertThat(sideIndexDst < getActiveSides().size());
-            SidePosition sidePositionDst = getActiveSides().get(sideIndexDst);
-            SidePosition sidePositionSrc = getActiveSides().get(sideIndexSrc);
-            setSideIndex(sidePositionDst, null);
-            setSideIndex(sidePositionSrc, sideIndexDst);
-            getActiveSides().set(sideIndexDst, sidePositionSrc);
-            getActiveSides().remove(sideIndexSrc);
+            Utils.assertThat(sideIndexDst < activeSides.size());
+            SidePosition sidePositionSrc = activeSides.get(sideIndexSrc);
+            sides.put(sidePositionSrc, sideIndexDst);
+            sides.remove(sidePositionDst);
+            activeSides.set(sideIndexDst, sidePositionSrc);
+            activeSides.remove(sideIndexSrc);
         }
         while (getModel().getMeshes().size() > meshesNumber) {
             int currentSize = getModel().getMeshes().size();
@@ -324,10 +155,6 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
         for (Mesh mesh : getModel().getMeshes()) {
             mesh.updateBuffers();
         }
-    }
-
-    private void setSideIndex(SidePosition sidePosition, Integer index) {
-        getSidesIndex()[sidePosition.getSide()][sidePosition.getX()][sidePosition.getY()][sidePosition.getZ()] = index;
     }
 
     private void relocateSide(int sideIndexSrc, int sideIndexDst) {
@@ -369,14 +196,15 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
 
     }
 
-    private void fillSide(int sideIndex, SideData sideData) {
+    private void fillSide(int sideIndex, Side side) {
 
         SideIndexData sideIndexData = new SideIndexData(sideIndex, getModel());
-        CubeSideMeshData cubeSideMeshData = sideData.getCubeSideMeshData();
-        int dx = getShift().x() + (sideData.getSidePosition().getX() - getShift().x()) % getViewDistance();
-        int dy = getShift().y() + (sideData.getSidePosition().getY() - getShift().y()) % getViewDistance();
-        int dz = getShift().z() + (sideData.getSidePosition().getZ() - getShift().z()) % getViewDistance();
-        TextureRepository.AtlasFragment atlasFragment = sideData.getTextureCubeMap().getByBlockSide(cubeSideMeshData.getBlockSide());
+        BlockSide blockSide = side.getSidePosition().getSide();
+        CubeSideMeshData cubeSideMeshData = ALL_SIDES.get(blockSide);
+        int dx = side.getSidePosition().getX();
+        int dy = side.getSidePosition().getY();
+        int dz = side.getSidePosition().getZ();
+        TextureRepository.AtlasFragment atlasFragment = getGraphics().getGraphicalRepository().getTexturePackRepository().getCubeMap(side.getSideData().getBlock()).getByBlockSide(blockSide);
 
         for (int i = 0; i < SIDE_INDICES.length; ++i) {
             sideIndexData.getIndices().put(i + sideIndexData.getIndexPos(), SIDE_INDICES[i] + sideIndexData.getVertexStart());
@@ -391,7 +219,7 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
             sideIndexData.getColors().put(cIdx + sideIndexData.getColorPos(), 0f);
             sideIndexData.getColors().put(cIdx + sideIndexData.getColorPos() + 1, 0f);
             sideIndexData.getColors().put(cIdx + sideIndexData.getColorPos() + 2, 0f);
-            sideIndexData.getColors().put(cIdx + sideIndexData.getColorPos() + 3, sideData.getAmbientLight());
+            sideIndexData.getColors().put(cIdx + sideIndexData.getColorPos() + 3, (float) side.getSideData().getLight() / MAX_LIGHT_LEVEL);
 
             int nIdx = i * NORMALS.getNumberPerVertex();
             sideIndexData.getNormals().put(nIdx + sideIndexData.getNormalPos(), cubeSideMeshData.getNormals()[nIdx]);
@@ -469,7 +297,6 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
         private final float[] vertices;
         private final float[] normals;
         private final boolean[] textures;
-        private final BlockSide blockSide;
 
     }
 
@@ -522,28 +349,6 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
             this.textures = meshAttributes.getBuffer(TEXTURES);
 
         }
-    }
-
-    @RequiredArgsConstructor
-    @Getter
-    public static class SideData {
-
-        private final SidePosition sidePosition;
-        private final float ambientLight;
-        private final TexturePackRepository.TextureCubeMap textureCubeMap;
-        private final CubeSideMeshData cubeSideMeshData;
-
-    }
-
-    @RequiredArgsConstructor
-    @Getter
-    public static class SidePosition {
-
-        private final int side;
-        private final int x;
-        private final int y;
-        private final int z;
-
     }
 
 }

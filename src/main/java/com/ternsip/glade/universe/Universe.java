@@ -11,7 +11,7 @@ import com.ternsip.glade.universe.common.Balance;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.impl.*;
 import com.ternsip.glade.universe.entities.repository.EntityRepository;
-import com.ternsip.glade.universe.parts.chunks.Chunks;
+import com.ternsip.glade.universe.parts.chunks.Blocks;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.joml.Vector2f;
@@ -24,7 +24,9 @@ public class Universe {
 
     private final EventSnapReceiver eventSnapReceiver = new EventSnapReceiver();
     private final EntityRepository entityRepository = new EntityRepository();
-    private final Chunks chunks = new Chunks();
+
+    @Getter(lazy = true)
+    private final Blocks blocks = new Blocks();
     private final String name = "universe";
     private final Balance balance = new Balance();
     private final Collisions collisions = new Collisions();
@@ -47,7 +49,7 @@ public class Universe {
     }
 
     public void finish() {
-        getChunks().finish();
+        getBlocks().finish();
     }
 
     private void spawnTestEntities() {
@@ -118,7 +120,7 @@ public class Universe {
                 hagrid1.setScale(new Vector3f(15, 15, 15));
             }
         }
-        new EntityChunks(entityPlayer, 16).register();
+        new EntityChunks().register();
     }
 
     private void update() {

@@ -1,7 +1,7 @@
 package com.ternsip.glade.universe.parts.generators;
 
 import com.ternsip.glade.universe.parts.blocks.Block;
-import com.ternsip.glade.universe.parts.chunks.Chunk;
+import com.ternsip.glade.universe.parts.chunks.Blocks;
 import lombok.Getter;
 import org.joml.SimplexNoise;
 import org.joml.Vector3i;
@@ -18,28 +18,31 @@ public class SurfaceGenerator implements ChunkGenerator {
     }
 
     @Override
-    public void populate(Chunk chunk) {
-        int[][] heightMapStone = generateHeightMap(chunk, 11, 5, 50, 0.01f);
-        int[][] heightMapDirt = generateHeightMap(chunk, 60, 5, 20, 0.01f);
-        chunk.forEach((Vector3ic pos, Block block) -> {
-            Vector3ic wPos = chunk.toWorldPos(pos);
-            int stoneHeight = height + heightMapStone[pos.x()][pos.z()];
-            int dirtHeight = stoneHeight + heightMapDirt[pos.x()][pos.z()];
-            if (wPos.y() < stoneHeight) {
-                chunk.setBlock(pos, Block.STONE);
-            } else if (wPos.y() <= dirtHeight) {
-                chunk.setBlock(pos, wPos.y() == dirtHeight ? Block.LAWN : Block.DIRT);
+    public void populate(Block[][][] blocks) {
+        int[][] heightMapStone = generateHeightMap(11, 5, 50, 0.01f);
+        int[][] heightMapDirt = generateHeightMap(60, 5, 20, 0.01f);
+        for (int x = 0; x < Blocks.SIZE_X; ++x) {
+            for (int y = 0; y < Blocks.SIZE_Y; ++y) {
+                for (int z = 0; z < Blocks.SIZE_Z; ++z) {
+                    Vector3ic wPos = new Vector3i(x, y, z);
+                    int stoneHeight = height + heightMapStone[x][z];
+                    int dirtHeight = stoneHeight + heightMapDirt[x][z];
+                    if (wPos.y() < stoneHeight) {
+                        blocks[x][y][z] = Block.STONE;
+                    } else if (wPos.y() <= dirtHeight) {
+                        blocks[x][y][z] = wPos.y() == dirtHeight ? Block.LAWN : Block.DIRT;
+                    }
+                }
             }
-        });
+        }
     }
 
-    private int[][] generateHeightMap(Chunk chunk, float seed, long terraces, float deviation, float compress) {
-        int[][] heightMap = new int[Chunk.SIZE][Chunk.SIZE];
-        for (int x = 0; x < Chunk.SIZE; ++x) {
-            for (int z = 0; z < Chunk.SIZE; ++z) {
-                Vector3ic wPos = chunk.toWorldPos(new Vector3i(x, 0, z));
-                float noiseX = wPos.x() * compress;
-                float noiseZ = wPos.z() * compress;
+    private int[][] generateHeightMap(float seed, long terraces, float deviation, float compress) {
+        int[][] heightMap = new int[Blocks.SIZE_X][Blocks.SIZE_Z];
+        for (int x = 0; x < Blocks.SIZE_X; ++x) {
+            for (int z = 0; z < Blocks.SIZE_Z; ++z) {
+                float noiseX = x * compress;
+                float noiseZ = z * compress;
                 double noise1 = SimplexNoise.noise(noiseX, noiseZ, seed);
                 double noise2 = SimplexNoise.noise(noiseZ, noiseX, seed);
                 long diff = Math.round(Math.pow(noise1, Math.E) * terraces * deviation) / terraces;

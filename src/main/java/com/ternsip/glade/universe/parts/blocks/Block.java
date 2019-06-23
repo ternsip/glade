@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import static com.ternsip.glade.universe.parts.blocks.BlockMaterial.*;
-import static com.ternsip.glade.universe.parts.chunks.Chunks.MAX_LIGHT_LEVEL;
+import static com.ternsip.glade.universe.parts.chunks.Blocks.MAX_LIGHT_LEVEL;
 
 @RequiredArgsConstructor
 @Getter

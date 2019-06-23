@@ -10,6 +10,10 @@ public class Indexer {
 
     private final Vector3ic size;
 
+    public int getIndex(Vector3ic pos) {
+        return getIndex(pos.x(), pos.y(), pos.z());
+    }
+
     public int getIndex(int x, int y, int z) {
         return x + y * getSize().x() * getSize().z() + z * getSize().x();
     }
@@ -28,6 +32,10 @@ public class Indexer {
 
     public int getVolume() {
         return getSize().x() * getSize().y() * getSize().z();
+    }
+
+    public boolean isInside(Vector3ic pos) {
+        return isInside(pos.x(), pos.y(), pos.z());
     }
 
     public boolean isInside(int x, int y, int z) {

@@ -1,11 +1,11 @@
 package com.ternsip.glade.universe.parts.generators;
 
-import com.ternsip.glade.universe.parts.chunks.Chunk;
+import com.ternsip.glade.universe.parts.blocks.Block;
 
 public interface ChunkGenerator {
 
     int getPriority();
 
-    void populate(Chunk chunk);
+    void populate(Block[][][] blocks);
 
 }

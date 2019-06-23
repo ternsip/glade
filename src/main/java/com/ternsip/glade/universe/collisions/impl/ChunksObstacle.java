@@ -156,7 +156,7 @@ public class ChunksObstacle implements Obstacle, Universal {
     }
 
     private boolean checkVoxel(Vector3i pos, Function<Block, Boolean> condition) {
-        return getUniverse().getChunks().isBlockLoaded(pos) && condition.apply(getUniverse().getChunks().getBlock(pos));
+        return getUniverse().getBlocks().isBlockExists(pos) && condition.apply(getUniverse().getBlocks().getBlock(pos));
     }
 
 
