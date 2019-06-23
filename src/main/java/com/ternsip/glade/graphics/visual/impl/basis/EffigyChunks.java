@@ -121,6 +121,7 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
                 int sideIndex = sides.get(sidePosition);
                 fillSide(sideIndex, side);
                 Utils.assertThat(sideIndex < activeSides.size());
+                sides.remove(sidePosition);
                 sides.put(sidePositionSrc, sideIndex);
                 activeSides.set(sideIndex, sidePositionSrc);
                 continue;
