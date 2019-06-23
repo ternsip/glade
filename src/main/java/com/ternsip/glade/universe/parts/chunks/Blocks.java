@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
  */
 public class Blocks implements Universal {
 
-    public static final byte MAX_LIGHT_LEVEL = 16;
+    public static final byte MAX_LIGHT_LEVEL = 15;
     public static final int SIZE_X = 256;
     public static final int SIZE_Y = 256;
     public static final int SIZE_Z = 256;
@@ -163,8 +163,8 @@ public class Blocks implements Universal {
         Queue<Integer> queue = new ArrayDeque<>();
         Vector3ic newStart = new Vector3i(start.x(), Math.min(start.y(), minObservedHeight), start.z());
         Vector3ic newEndExcluding = new Vector3i(endExcluding);
-        Vector3ic startLight = new Vector3i(newStart).sub(new Vector3i(MAX_LIGHT_LEVEL)).max(new Vector3i(0));
-        Vector3ic endLightExcluding = new Vector3i(newEndExcluding).add(new Vector3i(MAX_LIGHT_LEVEL)).min(SIZE);
+        Vector3ic startLight = new Vector3i(newStart).sub(new Vector3i(MAX_LIGHT_LEVEL - 1)).max(new Vector3i(0));
+        Vector3ic endLightExcluding = new Vector3i(newEndExcluding).add(new Vector3i(MAX_LIGHT_LEVEL - 1)).min(SIZE);
 
         for (int x = startLight.x(); x < endLightExcluding.x(); ++x) {
             for (int z = startLight.z(); z < endLightExcluding.z(); ++z) {
@@ -172,9 +172,7 @@ public class Blocks implements Universal {
                     emitLights[x][y][z] = blocks[x][y][z].getEmitLight();
                     // TODO sky if all 8 around above exists -> exists too
                     skyLights[x][y][z] = y >= heights[x][z] ? MAX_LIGHT_LEVEL : 0;
-                    if ((emitLights[x][y][z] > 0 || skyLights[x][y][z] > 0) &&
-                            x >= newStart.x() && y >= newStart.y() && z >= newStart.z() &&
-                            x < newEndExcluding.x() && y < newEndExcluding.y() && z < newEndExcluding.z()) {
+                    if (emitLights[x][y][z] > 0 || skyLights[x][y][z] > 0) {
                         queue.add(INDEXER.getIndex(x, y, z));
                     }
                 }
