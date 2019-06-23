@@ -5,10 +5,12 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.io.Serializable;
+
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
-public class SidePosition {
+public class SidePosition implements Serializable {
 
     private final int x;
     private final int y;

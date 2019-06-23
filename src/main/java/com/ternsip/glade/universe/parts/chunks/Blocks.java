@@ -43,7 +43,7 @@ public class Blocks implements Universal {
     private final byte[][][] skyLights;
     private final byte[][][] emitLights;
     private final int[][] heights;
-    private final Map<SidePosition, SideData> sides;
+    private final Sides sides;
     private final Timer lightUpdateTimer = new Timer(1000L);
 
     @Getter(AccessLevel.PUBLIC)
@@ -58,13 +58,17 @@ public class Blocks implements Universal {
         skyLights = storage.isExists(SKY_LIGHTS_KEY) ? storage.load(SKY_LIGHTS_KEY) : new byte[SIZE_X][SIZE_Y][SIZE_Z];
         emitLights = storage.isExists(EMIT_LIGHTS_KEY) ? storage.load(EMIT_LIGHTS_KEY) : new byte[SIZE_X][SIZE_Y][SIZE_Z];
         heights = storage.isExists(HEIGHTS_KEY) ? storage.load(HEIGHTS_KEY) : new int[SIZE_X][SIZE_Z];
-        sides = storage.isExists(SIDES_KEY) ? storage.load(SIDES_KEY) : new HashMap<>();
+        sides = storage.isExists(SIDES_KEY) ? storage.load(SIDES_KEY) : new Sides();
         if (!storage.isExists(BLOCKS_KEY)) {
             for (ChunkGenerator chunkGenerator : CHUNK_GENERATORS) {
                 chunkGenerator.populate(blocks);
             }
             recalculateBlockRegion(new Vector3i(0), SIZE);
             save();
+        } else {
+            if (sides.getSides().size() > 0) {
+                getBlocksUpdates().add(sides.generateBlockUpdate());
+            }
         }
     }
 
@@ -151,6 +155,7 @@ public class Blocks implements Universal {
     }
 
     public void finish() {
+        save();
         storage.commit();
         storage.finish();
     }
@@ -316,7 +321,7 @@ public class Blocks implements Universal {
                     Block block = blocks[x][y][z];
                     for (BlockSide blockSide : BlockSide.values()) {
                         SidePosition sidePosition = new SidePosition(x, y, z, blockSide);
-                        SideData oldSideData = sides.get(sidePosition);
+                        SideData oldSideData = sides.getSides().get(sidePosition);
                         SideData newSideData = null;
                         if (block != Block.AIR) {
                             int nx = x + blockSide.getAdjacentBlockOffset().x();
@@ -333,11 +338,11 @@ public class Blocks implements Universal {
                         }
                         if (newSideData != null && !newSideData.equals(oldSideData)) {
                             sidesToAdd.add(new Side(sidePosition, newSideData));
-                            sides.put(sidePosition, newSideData);
+                            sides.getSides().put(sidePosition, newSideData);
                         }
                         if (newSideData == null && oldSideData != null) {
                             sidesToRemove.add(sidePosition);
-                            sides.remove(sidePosition);
+                            sides.getSides().remove(sidePosition);
                         }
                     }
 
@@ -356,6 +361,7 @@ public class Blocks implements Universal {
         storage.save(SKY_LIGHTS_KEY, skyLights);
         storage.save(EMIT_LIGHTS_KEY, emitLights);
         storage.save(HEIGHTS_KEY, heights);
+        storage.save(SIDES_KEY, sides);
     }
 
 }
