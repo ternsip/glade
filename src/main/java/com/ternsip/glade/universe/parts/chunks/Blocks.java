@@ -161,7 +161,7 @@ public class Blocks implements Universal {
 
         // Recalculate light maps
         Queue<Integer> queue = new ArrayDeque<>();
-        Vector3ic newStart = new Vector3i(start.x(), Math.min(start.y(), minObservedHeight), start.y());
+        Vector3ic newStart = new Vector3i(start.x(), Math.min(start.y(), minObservedHeight), start.z());
         Vector3ic newEndExcluding = new Vector3i(endExcluding);
         Vector3ic startLight = new Vector3i(newStart).sub(new Vector3i(MAX_LIGHT_LEVEL)).max(new Vector3i(0));
         Vector3ic endLightExcluding = new Vector3i(newEndExcluding).add(new Vector3i(MAX_LIGHT_LEVEL)).min(SIZE);
