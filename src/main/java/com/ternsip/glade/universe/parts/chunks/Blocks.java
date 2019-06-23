@@ -182,7 +182,7 @@ public class Blocks implements Universal {
         }
 
         // Recalculate light maps
-        Queue<Integer> queue = new ArrayDeque<>();
+        Queue<Long> queue = new ArrayDeque<>();
         Vector3ic newStart = new Vector3i(start.x(), Math.min(start.y(), minObservedHeight), start.z());
         Vector3ic newEndExcluding = new Vector3i(endExcluding);
         Vector3ic startLight = new Vector3i(newStart).sub(new Vector3i(MAX_LIGHT_LEVEL - 1)).max(new Vector3i(0));
@@ -234,7 +234,7 @@ public class Blocks implements Universal {
         int[] dy = {0, 1, 0, 0, -1, 0};
         int[] dz = {0, 0, 1, 0, 0, -1};
         while (!queue.isEmpty()) {
-            Integer top = queue.poll();
+            Long top = queue.poll();
             int x = INDEXER.getX(top);
             int y = INDEXER.getY(top);
             int z = INDEXER.getZ(top);
