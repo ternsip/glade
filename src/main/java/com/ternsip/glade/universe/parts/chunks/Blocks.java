@@ -7,6 +7,7 @@ import com.ternsip.glade.universe.common.Universal;
 import com.ternsip.glade.universe.parts.blocks.Block;
 import com.ternsip.glade.universe.parts.blocks.BlockSide;
 import com.ternsip.glade.universe.parts.generators.ChunkGenerator;
+import com.ternsip.glade.universe.storage.BlockStorage;
 import com.ternsip.glade.universe.storage.Storage;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -26,23 +27,17 @@ public class Blocks implements Universal {
     public static final int SIZE_X = 256;
     public static final int SIZE_Y = 256;
     public static final int SIZE_Z = 256;
-    public static final int VOLUME = SIZE_X * SIZE_Y * SIZE_Z;
+    public static final long VOLUME = (long)SIZE_X * SIZE_Y * SIZE_Z;
     public static final Vector3ic SIZE = new Vector3i(SIZE_X, SIZE_Y, SIZE_Z);
     public static final Indexer INDEXER = new Indexer(SIZE);
 
     private static final int LIGHT_UPDATE_COMBINE_DISTANCE = 4;
-    private static final String BLOCKS_KEY = "blocks";
-    private static final String SKY_LIGHTS_KEY = "skyLights";
-    private static final String EMIT_LIGHTS_KEY = "emitLights";
-    private static final String HEIGHTS_KEY = "heights";
+    private static final String POPULATED_KEY = "populated";
     private static final String SIDES_KEY = "sides";
     private static final List<ChunkGenerator> CHUNK_GENERATORS = constructChunkGenerators();
 
     private final Storage storage;
-    private final Block[][][] blocks;
-    private final byte[][][] skyLights;
-    private final byte[][][] emitLights;
-    private final int[][] heights;
+    private final BlockStorage blockStorage;
     private final Sides sides;
     private final Timer lightUpdateTimer = new Timer(1000L);
 
@@ -53,15 +48,12 @@ public class Blocks implements Universal {
     private final Deque<LightUpdateRequest> lightUpdateRequests = new ConcurrentLinkedDeque<>();
 
     public Blocks() {
-        this.storage = new Storage("chunks");
-        blocks = storage.isExists(BLOCKS_KEY) ? storage.load(BLOCKS_KEY) : new Block[SIZE_X][SIZE_Y][SIZE_Z];
-        skyLights = storage.isExists(SKY_LIGHTS_KEY) ? storage.load(SKY_LIGHTS_KEY) : new byte[SIZE_X][SIZE_Y][SIZE_Z];
-        emitLights = storage.isExists(EMIT_LIGHTS_KEY) ? storage.load(EMIT_LIGHTS_KEY) : new byte[SIZE_X][SIZE_Y][SIZE_Z];
-        heights = storage.isExists(HEIGHTS_KEY) ? storage.load(HEIGHTS_KEY) : new int[SIZE_X][SIZE_Z];
+        this.storage = new Storage("blocks_meta");
+        this.blockStorage = new BlockStorage("blocks_data");
         sides = storage.isExists(SIDES_KEY) ? storage.load(SIDES_KEY) : new Sides();
-        if (!storage.isExists(BLOCKS_KEY)) {
+        if (!storage.isExists(POPULATED_KEY)) {
             for (ChunkGenerator chunkGenerator : CHUNK_GENERATORS) {
-                chunkGenerator.populate(blocks);
+                chunkGenerator.populate(blockStorage);
             }
             recalculateBlockRegion(new Vector3i(0), SIZE);
             save();
@@ -80,20 +72,20 @@ public class Blocks implements Universal {
     }
 
     public Block getBlock(Vector3ic pos) {
-        return blocks[pos.x()][pos.y()][pos.z()];
+        return blockStorage.getBlock(pos.x(), pos.y(), pos.z());
     }
 
     public Block getBlock(int x, int y, int z) {
-        return blocks[x][y][z];
+        return blockStorage.getBlock(x, y, z);
     }
 
     public void setBlock(Vector3ic pos, Block block) {
-        blocks[pos.x()][pos.y()][pos.z()] = block;
+        blockStorage.setBlock(pos.x(), pos.y(), pos.z(), block);
         updateRegionProcrastinating(pos);
     }
 
     public void setBlock(int x, int y, int z, Block block) {
-        blocks[x][y][z] = block;
+        blockStorage.setBlock(x, y, z, block);
         updateRegionProcrastinating(new Vector3i(x, y, z));
     }
 
@@ -103,7 +95,7 @@ public class Blocks implements Universal {
         for (int x = start.x(), dx = 0; x < endExcluding.x(); ++x, ++dx) {
             for (int y = start.y(), dy = 0; y < endExcluding.y(); ++y, ++dy) {
                 for (int z = start.z(), dz = 0; z < endExcluding.z(); ++z, ++dz) {
-                    blocks[x][y][z] = regionBlocks[dx][dy][dz];
+                    blockStorage.setBlock(x, y, z, regionBlocks[dx][dy][dz]);
                 }
             }
         }
@@ -111,43 +103,27 @@ public class Blocks implements Universal {
     }
 
     public byte getSkyLight(Vector3ic pos) {
-        return skyLights[pos.x()][pos.y()][pos.z()];
+        return blockStorage.getSkyLight(pos.x(), pos.y(), pos.z());
     }
 
     public byte getSkyLight(int x, int y, int z) {
-        return skyLights[x][y][z];
-    }
-
-    public void setSkyLight(Vector3ic pos, byte light) {
-        skyLights[pos.x()][pos.y()][pos.z()] = light;
-    }
-
-    public void setSkyLight(int x, int y, int z, byte light) {
-        skyLights[x][y][z] = light;
+        return blockStorage.getSkyLight(x, y, z);
     }
 
     public byte getEmitLight(Vector3ic pos) {
-        return emitLights[pos.x()][pos.y()][pos.z()];
+        return blockStorage.getEmitLight(pos.x(), pos.y(), pos.z());
     }
 
     public byte getEmitLight(int x, int y, int z) {
-        return emitLights[x][y][z];
-    }
-
-    public void setEmitLight(Vector3ic pos, byte light) {
-        emitLights[pos.x()][pos.y()][pos.z()] = light;
-    }
-
-    public void setEmitLight(int x, int y, int z, byte light) {
-        emitLights[x][y][z] = light;
+        return blockStorage.getEmitLight(x, y, z);
     }
 
     public int getHeight(int x, int z) {
-        return heights[x][z];
+        return blockStorage.getHeight(x, z);
     }
 
     public void setHeight(int x, int z, int height) {
-        heights[x][z] = height;
+        blockStorage.setHeight(x, z, height);
     }
 
     public boolean isBlockExists(Vector3ic pos) {
@@ -156,8 +132,8 @@ public class Blocks implements Universal {
 
     public void finish() {
         save();
-        storage.commit();
         storage.finish();
+        blockStorage.finish();
     }
 
     private void recalculateBlockRegion(Vector3ic start, Vector3ic size) {
@@ -171,13 +147,13 @@ public class Blocks implements Universal {
             for (int z = start.z(); z < endExcluding.z(); ++z) {
                 int yAir = SIZE_Y - 1;
                 for (; yAir >= 0; --yAir) {
-                    if (blocks[x][yAir][z] != Block.AIR) {
+                    if (blockStorage.getBlock(x, yAir, z) != Block.AIR) {
                         break;
                     }
                 }
                 int height = yAir + 1;
-                minObservedHeight = Math.min(Math.min(minObservedHeight, heights[x][z]), height);
-                heights[x][z] = height;
+                minObservedHeight = Math.min(Math.min(minObservedHeight, blockStorage.getHeight(x, z)), height);
+                blockStorage.setHeight(x, z, height);
             }
         }
 
@@ -192,10 +168,12 @@ public class Blocks implements Universal {
         for (int x = startLight.x(); x < endLightExcluding.x(); ++x) {
             for (int z = startLight.z(); z < endLightExcluding.z(); ++z) {
                 for (int y = startLight.y(); y < endLightExcluding.y(); ++y) {
-                    emitLights[x][y][z] = blocks[x][y][z].getEmitLight();
+                    byte emitLight = blockStorage.getBlock(x, y, z).getEmitLight();
+                    byte skyLight = y >= blockStorage.getHeight(x, z) ? MAX_LIGHT_LEVEL : 0;
+                    blockStorage.setEmitLight(x, y, z, emitLight);
                     // TODO sky if all 8 around above exists -> exists too
-                    skyLights[x][y][z] = y >= heights[x][z] ? MAX_LIGHT_LEVEL : 0;
-                    if (emitLights[x][y][z] > 0 || skyLights[x][y][z] > 0) {
+                    blockStorage.setSkyLight(x, y, z, skyLight);
+                    if (emitLight > 0 || skyLight > 0) {
                         queue.add(INDEXER.getIndex(x, y, z));
                     }
                 }
@@ -223,8 +201,8 @@ public class Blocks implements Universal {
             }
         }
         for (Vector3i borderPos : borderPositions) {
-            if (INDEXER.isInside(borderPos) && (skyLights[borderPos.x()][borderPos.y()][borderPos.z()] > 0 ||
-                    emitLights[borderPos.x()][borderPos.y()][borderPos.z()] > 0)) {
+            if (INDEXER.isInside(borderPos) && (blockStorage.getSkyLight(borderPos.x(), borderPos.y(), borderPos.z()) > 0 ||
+                    blockStorage.getEmitLight(borderPos.x(), borderPos.y(), borderPos.z()) > 0)) {
                 queue.add(INDEXER.getIndex(borderPos));
             }
         }
@@ -238,8 +216,8 @@ public class Blocks implements Universal {
             int x = INDEXER.getX(top);
             int y = INDEXER.getY(top);
             int z = INDEXER.getZ(top);
-            int skyLightLevel = skyLights[x][y][z];
-            int emitLightLevel = emitLights[x][y][z];
+            int skyLightLevel = blockStorage.getSkyLight(x, y, z);
+            int emitLightLevel = blockStorage.getEmitLight(x, y, z);
             for (int k = 0; k < dx.length; ++k) {
                 int nx = x + dx[k];
                 int ny = y + dy[k];
@@ -247,12 +225,14 @@ public class Blocks implements Universal {
                 if (!INDEXER.isInside(nx, ny, nz)) {
                     continue;
                 }
-                int dstLightOpacity = blocks[nx][ny][nz].getLightOpacity();
+                int dstLightOpacity = blockStorage.getBlock(nx, ny, nz).getLightOpacity();
                 int dstSkyLight = skyLightLevel - dstLightOpacity;
                 int dstEmitLight = emitLightLevel - dstLightOpacity;
-                if (skyLights[nx][ny][nz] < dstSkyLight || emitLights[nx][ny][nz] < dstEmitLight) {
-                    skyLights[nx][ny][nz] = (byte) Math.max(dstSkyLight, skyLights[nx][ny][nz]);
-                    emitLights[nx][ny][nz] = (byte) Math.max(dstEmitLight, emitLights[nx][ny][nz]);
+                byte nSkyLight = blockStorage.getSkyLight(nx, ny, nz);
+                byte nEmitLight = blockStorage.getEmitLight(nx, ny, nz);
+                if (nSkyLight < dstSkyLight || nEmitLight < dstEmitLight) {
+                    blockStorage.setSkyLight(nx, ny, nz, (byte) Math.max(dstSkyLight, nSkyLight));
+                    blockStorage.setEmitLight(nx, ny, nz, (byte) Math.max(dstEmitLight, nEmitLight));
                     queue.add(INDEXER.getIndex(nx, ny, nz));
                 }
             }
@@ -318,7 +298,7 @@ public class Blocks implements Universal {
             for (int z = startChanges.z(); z < endChangesExcluding.z(); ++z) {
                 for (int y = startChanges.y(); y < endChangesExcluding.y(); ++y) {
 
-                    Block block = blocks[x][y][z];
+                    Block block = blockStorage.getBlock(x, y, z);
                     for (BlockSide blockSide : BlockSide.values()) {
                         SidePosition sidePosition = new SidePosition(x, y, z, blockSide);
                         SideData oldSideData = sides.getSides().get(sidePosition);
@@ -328,9 +308,11 @@ public class Blocks implements Universal {
                             int ny = y + blockSide.getAdjacentBlockOffset().y();
                             int nz = z + blockSide.getAdjacentBlockOffset().z();
                             if (INDEXER.isInside(nx, ny, nz)) {
-                                Block nextBlock = blocks[nx][ny][nz];
+                                Block nextBlock = blockStorage.getBlock(nx, ny, nz);
                                 if (nextBlock == null || (nextBlock.isSemiTransparent() && (block != nextBlock || !block.isCombineSides()))) {
-                                    newSideData = new SideData((byte) Math.min(MAX_LIGHT_LEVEL, skyLights[nx][ny][nz] + emitLights[nx][ny][nz]), block);
+                                    byte nSkyLight = blockStorage.getSkyLight(nx, ny, nz);
+                                    byte nEmitLight = blockStorage.getEmitLight(nx, ny, nz);
+                                    newSideData = new SideData((byte) Math.min(MAX_LIGHT_LEVEL, nSkyLight + nEmitLight), block);
                                 }
                             } else {
                                 newSideData = new SideData((byte) 0, block);
@@ -357,11 +339,9 @@ public class Blocks implements Universal {
     }
 
     private void save() {
-        storage.save(BLOCKS_KEY, blocks);
-        storage.save(SKY_LIGHTS_KEY, skyLights);
-        storage.save(EMIT_LIGHTS_KEY, emitLights);
-        storage.save(HEIGHTS_KEY, heights);
+        storage.save(POPULATED_KEY, true);
         storage.save(SIDES_KEY, sides);
+        blockStorage.save();
     }
 
 }

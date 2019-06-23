@@ -2,6 +2,7 @@ package com.ternsip.glade.universe.parts.generators;
 
 import com.ternsip.glade.universe.parts.blocks.Block;
 import com.ternsip.glade.universe.parts.chunks.Blocks;
+import com.ternsip.glade.universe.storage.BlockStorage;
 
 public class WaterGenerator implements ChunkGenerator {
 
@@ -13,12 +14,12 @@ public class WaterGenerator implements ChunkGenerator {
     }
 
     @Override
-    public void populate(Block[][][] blocks) {
+    public void populate(BlockStorage blockStorage) {
         for (int x = 0; x < Blocks.SIZE_X; ++x) {
             for (int y = 0; y < Blocks.SIZE_Y; ++y) {
                 for (int z = 0; z < Blocks.SIZE_Z; ++z) {
-                    if (y <= waterHeight && blocks[x][y][z] == Block.AIR) {
-                        blocks[x][y][z] = Block.WATER;
+                    if (y <= waterHeight && blockStorage.getBlock(x, y, z) == Block.AIR) {
+                        blockStorage.setBlock(x, y, z, Block.WATER);
                     }
                 }
             }

@@ -54,6 +54,7 @@ public class Storage implements Universal {
     }
 
     public void finish() {
+        commit();
         getDb().close();
     }
 

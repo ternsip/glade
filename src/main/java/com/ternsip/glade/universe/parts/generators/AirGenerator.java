@@ -1,7 +1,12 @@
 package com.ternsip.glade.universe.parts.generators;
 
 import com.ternsip.glade.universe.parts.blocks.Block;
+import com.ternsip.glade.universe.storage.BlockStorage;
 import lombok.Getter;
+
+import static com.ternsip.glade.universe.parts.chunks.Blocks.SIZE_X;
+import static com.ternsip.glade.universe.parts.chunks.Blocks.SIZE_Y;
+import static com.ternsip.glade.universe.parts.chunks.Blocks.SIZE_Z;
 
 @Getter
 public class AirGenerator implements ChunkGenerator {
@@ -13,11 +18,11 @@ public class AirGenerator implements ChunkGenerator {
     }
 
     @Override
-    public void populate(Block[][][] blocks) {
-        for (int x = 0; x < blocks.length; ++x) {
-            for (int y = 0; y < blocks[x].length; ++y) {
-                for (int z = 0; z < blocks[x][y].length; ++z) {
-                    blocks[x][y][z] = Block.AIR;
+    public void populate(BlockStorage blockStorage) {
+        for (int x = 0; x < SIZE_X; ++x) {
+            for (int y = 0; y < SIZE_Y; ++y) {
+                for (int z = 0; z < SIZE_Z; ++z) {
+                    blockStorage.setBlock(x, y, z, Block.AIR);
                 }
             }
         }
