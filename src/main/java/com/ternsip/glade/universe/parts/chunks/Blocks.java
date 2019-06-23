@@ -1,6 +1,7 @@
 package com.ternsip.glade.universe.parts.chunks;
 
 import com.ternsip.glade.common.logic.Indexer;
+import com.ternsip.glade.common.logic.Timer;
 import com.ternsip.glade.common.logic.Utils;
 import com.ternsip.glade.universe.common.Universal;
 import com.ternsip.glade.universe.parts.blocks.Block;
@@ -29,6 +30,7 @@ public class Blocks implements Universal {
     public static final Vector3ic SIZE = new Vector3i(SIZE_X, SIZE_Y, SIZE_Z);
     public static final Indexer INDEXER = new Indexer(SIZE);
 
+    private static final int LIGHT_UPDATE_COMBINE_DISTANCE = 4;
     private static final String BLOCKS_KEY = "blocks";
     private static final String SKY_LIGHTS_KEY = "skyLights";
     private static final String EMIT_LIGHTS_KEY = "emitLights";
@@ -42,9 +44,13 @@ public class Blocks implements Universal {
     private final byte[][][] emitLights;
     private final int[][] heights;
     private final Map<SidePosition, SideData> sides;
+    private final Timer lightUpdateTimer = new Timer(1000L);
 
     @Getter(AccessLevel.PUBLIC)
     private final Deque<BlocksUpdate> blocksUpdates = new ConcurrentLinkedDeque<>();
+
+    @Getter(AccessLevel.PUBLIC)
+    private final Deque<LightUpdateRequest> lightUpdateRequests = new ConcurrentLinkedDeque<>();
 
     public Blocks() {
         this.storage = new Storage("chunks");
@@ -134,11 +140,7 @@ public class Blocks implements Universal {
         storage.finish();
     }
 
-    public void recalculateBlockRegion(Vector3ic pos) {
-        recalculateBlockRegion(pos, new Vector3i(1));
-    }
-
-    public void recalculateBlockRegion(Vector3ic start, Vector3ic size) {
+    private void recalculateBlockRegion(Vector3ic start, Vector3ic size) {
 
         Utils.assertThat(size.x() > 0 || size.y() > 0 || size.z() > 0);
 
@@ -165,6 +167,7 @@ public class Blocks implements Universal {
         Vector3ic newEndExcluding = new Vector3i(endExcluding);
         Vector3ic startLight = new Vector3i(newStart).sub(new Vector3i(MAX_LIGHT_LEVEL - 1)).max(new Vector3i(0));
         Vector3ic endLightExcluding = new Vector3i(newEndExcluding).add(new Vector3i(MAX_LIGHT_LEVEL - 1)).min(SIZE);
+        Vector3ic lightSize = new Vector3i(endLightExcluding).sub(startLight);
 
         for (int x = startLight.x(); x < endLightExcluding.x(); ++x) {
             for (int z = startLight.z(); z < endLightExcluding.z(); ++z) {
@@ -235,9 +238,57 @@ public class Blocks implements Universal {
             }
         }
 
+        visualUpdate(startLight, lightSize);
+    }
+
+    public void update() {
+        if (lightUpdateTimer.isOver()) {
+            ArrayList<LightUpdateRequest> updateRequests = new ArrayList<>();
+            while (!getLightUpdateRequests().isEmpty()) {
+                updateRequests.add(getLightUpdateRequests().poll());
+            }
+            boolean[] used = new boolean[updateRequests.size()];
+            for (int i = 0; i < updateRequests.size(); ++i) {
+                if (used[i]) {
+                    continue;
+                }
+                Vector3i aMin = new Vector3i(updateRequests.get(i).getStart());
+                Vector3i aMax = new Vector3i(updateRequests.get(i).getEndExcluding());
+                for (int j = i + 1; j < updateRequests.size(); ++j) {
+                    if (!used[j]) {
+                        Vector3ic bMin = updateRequests.get(j).getStart();
+                        Vector3ic bMax = updateRequests.get(j).getEndExcluding();
+                        boolean isOverlapping =
+                                (aMin.x() < bMax.x() + LIGHT_UPDATE_COMBINE_DISTANCE && aMax.x() + LIGHT_UPDATE_COMBINE_DISTANCE > bMin.x()) &&
+                                        (aMin.y() < bMax.y() + LIGHT_UPDATE_COMBINE_DISTANCE && aMax.y() + LIGHT_UPDATE_COMBINE_DISTANCE > bMin.y()) &&
+                                        (aMin.z() < bMax.z() + LIGHT_UPDATE_COMBINE_DISTANCE && aMax.z() + LIGHT_UPDATE_COMBINE_DISTANCE > bMin.z());
+                        if (isOverlapping) {
+                            used[j] = true;
+                            aMin.min(bMin);
+                            aMax.max(bMax);
+                        }
+                    }
+                }
+                recalculateBlockRegion(aMin, new Vector3i(aMax).sub(aMin));
+            }
+            lightUpdateTimer.drop();
+        }
+    }
+
+    public void updateRegionProcrastinating(Vector3ic pos) {
+        updateRegionProcrastinating(pos, new Vector3i(1));
+    }
+
+    public void updateRegionProcrastinating(Vector3ic start, Vector3ic size) {
+        visualUpdate(start, size);
+        getLightUpdateRequests().add(new LightUpdateRequest(start, size));
+    }
+
+    private void visualUpdate(Vector3ic start, Vector3ic size) {
+
         // Add border blocks to engage neighbour side-recalculation
-        Vector3ic startChanges = new Vector3i(startLight).sub(new Vector3i(1)).max(new Vector3i(0));
-        Vector3ic endChangesExcluding = new Vector3i(endLightExcluding).add(new Vector3i(1)).min(SIZE);
+        Vector3ic startChanges = new Vector3i(start).sub(new Vector3i(1)).max(new Vector3i(0));
+        Vector3ic endChangesExcluding = new Vector3i(start).add(size).add(new Vector3i(1)).min(SIZE);
 
         // Calculate which sides should be removed or added
         List<Side> sidesToAdd = new ArrayList<>();
@@ -282,6 +333,7 @@ public class Blocks implements Universal {
         if (sidesToRemove.size() > 0 || sidesToAdd.size() > 0) {
             getBlocksUpdates().add(new BlocksUpdate(sidesToRemove, sidesToAdd));
         }
+
     }
 
     private void save() {

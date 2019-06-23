@@ -127,6 +127,7 @@ public class Universe {
         getEventSnapReceiver().update();
         getEntityRepository().update();
         getCollisions().update();
+        getBlocks().update();
     }
 
 }
