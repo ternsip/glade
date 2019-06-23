@@ -144,7 +144,7 @@ public class Blocks implements Universal {
 
         // Recalculate height maps
         Vector3ic endExcluding = new Vector3i(start).add(size);
-        int minObservedHeight = 0;
+        int minObservedHeight = SIZE_Y;
         for (int x = start.x(); x < endExcluding.x(); ++x) {
             for (int z = start.z(); z < endExcluding.z(); ++z) {
                 int yAir = SIZE_Y - 1;
