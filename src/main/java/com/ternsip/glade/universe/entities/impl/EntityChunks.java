@@ -18,6 +18,14 @@ public class EntityChunks extends Entity<EffigyChunks> {
     private final Deque<BlocksUpdate> blocksUpdates = new ConcurrentLinkedDeque<>();
 
     @Override
+    public void update(EffigyChunks effigy) {
+        super.update(effigy);
+        if (!getUniverse().getBlocks().getBlocksUpdates().isEmpty()) {
+            effigy.recalculateBlockRegion(getUniverse().getBlocks().getBlocksUpdates().poll());
+        }
+    }
+
+    @Override
     public EffigyChunks getEffigy() {
         return new EffigyChunks();
     }
@@ -25,14 +33,6 @@ public class EntityChunks extends Entity<EffigyChunks> {
     @Override
     public void update() {
         super.update();
-    }
-
-    @Override
-    public void update(EffigyChunks effigy) {
-        super.update(effigy);
-        if (!getUniverse().getBlocks().getBlocksUpdates().isEmpty()) {
-            effigy.recalculateBlockRegion(getUniverse().getBlocks().getBlocksUpdates().poll());
-        }
     }
 
 }

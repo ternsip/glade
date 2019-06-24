@@ -166,6 +166,49 @@ public class Blocks implements Universal {
         chunk.getSides().remove(sPos);
     }
 
+    public boolean isBlockExists(Vector3ic pos) {
+        return INDEXER.isInside(pos);
+    }
+
+    public void finish() {
+        chunks.values().forEach(this::saveChunk);
+        storage.finish();
+    }
+
+    public void update() {
+        if (lightUpdateTimer.isOver()) {
+            ArrayList<LightUpdateRequest> updateRequests = new ArrayList<>();
+            while (!lightUpdateRequests.isEmpty()) {
+                updateRequests.add(lightUpdateRequests.poll());
+            }
+            boolean[] used = new boolean[updateRequests.size()];
+            for (int i = 0; i < updateRequests.size(); ++i) {
+                if (used[i]) {
+                    continue;
+                }
+                Vector3i aMin = new Vector3i(updateRequests.get(i).getStart());
+                Vector3i aMax = new Vector3i(updateRequests.get(i).getEndExcluding());
+                for (int j = i + 1; j < updateRequests.size(); ++j) {
+                    if (!used[j]) {
+                        Vector3ic bMin = updateRequests.get(j).getStart();
+                        Vector3ic bMax = updateRequests.get(j).getEndExcluding();
+                        boolean isOverlapping =
+                                (aMin.x() < bMax.x() + LIGHT_UPDATE_COMBINE_DISTANCE && aMax.x() + LIGHT_UPDATE_COMBINE_DISTANCE > bMin.x()) &&
+                                        (aMin.y() < bMax.y() + LIGHT_UPDATE_COMBINE_DISTANCE && aMax.y() + LIGHT_UPDATE_COMBINE_DISTANCE > bMin.y()) &&
+                                        (aMin.z() < bMax.z() + LIGHT_UPDATE_COMBINE_DISTANCE && aMax.z() + LIGHT_UPDATE_COMBINE_DISTANCE > bMin.z());
+                        if (isOverlapping) {
+                            used[j] = true;
+                            aMin.min(bMin);
+                            aMax.max(bMax);
+                        }
+                    }
+                }
+                recalculateBlockRegion(aMin, new Vector3i(aMax).sub(aMin));
+            }
+            lightUpdateTimer.drop();
+        }
+    }
+
     private Chunk getChunk(int x, int z) {
         Vector2i pos = new Vector2i(x, z);
         return chunks.computeIfAbsent(pos, e -> {
@@ -190,15 +233,6 @@ public class Blocks implements Universal {
             });
             relaxationTimer.drop();
         }
-    }
-
-    public boolean isBlockExists(Vector3ic pos) {
-        return INDEXER.isInside(pos);
-    }
-
-    public void finish() {
-        chunks.values().forEach(this::saveChunk);
-        storage.finish();
     }
 
     private void saveChunk(Chunk chunk) {
@@ -311,40 +345,6 @@ public class Blocks implements Universal {
         }
 
         visualUpdate(startLight, lightSize);
-    }
-
-    public void update() {
-        if (lightUpdateTimer.isOver()) {
-            ArrayList<LightUpdateRequest> updateRequests = new ArrayList<>();
-            while (!lightUpdateRequests.isEmpty()) {
-                updateRequests.add(lightUpdateRequests.poll());
-            }
-            boolean[] used = new boolean[updateRequests.size()];
-            for (int i = 0; i < updateRequests.size(); ++i) {
-                if (used[i]) {
-                    continue;
-                }
-                Vector3i aMin = new Vector3i(updateRequests.get(i).getStart());
-                Vector3i aMax = new Vector3i(updateRequests.get(i).getEndExcluding());
-                for (int j = i + 1; j < updateRequests.size(); ++j) {
-                    if (!used[j]) {
-                        Vector3ic bMin = updateRequests.get(j).getStart();
-                        Vector3ic bMax = updateRequests.get(j).getEndExcluding();
-                        boolean isOverlapping =
-                                (aMin.x() < bMax.x() + LIGHT_UPDATE_COMBINE_DISTANCE && aMax.x() + LIGHT_UPDATE_COMBINE_DISTANCE > bMin.x()) &&
-                                        (aMin.y() < bMax.y() + LIGHT_UPDATE_COMBINE_DISTANCE && aMax.y() + LIGHT_UPDATE_COMBINE_DISTANCE > bMin.y()) &&
-                                        (aMin.z() < bMax.z() + LIGHT_UPDATE_COMBINE_DISTANCE && aMax.z() + LIGHT_UPDATE_COMBINE_DISTANCE > bMin.z());
-                        if (isOverlapping) {
-                            used[j] = true;
-                            aMin.min(bMin);
-                            aMax.max(bMax);
-                        }
-                    }
-                }
-                recalculateBlockRegion(aMin, new Vector3i(aMax).sub(aMin));
-            }
-            lightUpdateTimer.drop();
-        }
     }
 
     private void updateRegionProcrastinating(Vector3ic pos) {

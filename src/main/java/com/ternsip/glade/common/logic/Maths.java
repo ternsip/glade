@@ -117,7 +117,7 @@ public class Maths {
     }
 
     public static float log2(float d) {
-        return (float) (Math.log(d)/Math.log(2.0));
+        return (float) (Math.log(d) / Math.log(2.0));
     }
 
 }

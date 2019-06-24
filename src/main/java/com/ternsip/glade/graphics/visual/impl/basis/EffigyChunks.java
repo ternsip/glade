@@ -158,6 +158,63 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
         }
     }
 
+    @Override
+    public Matrix4f getTransformationMatrix() {
+        Matrix4fc rotMatrix = Maths.getRotationQuaternion(getAdjustedRotation()).get(new Matrix4f());
+        return new Matrix4f().translate(getAdjustedPosition()).mul(rotMatrix).scale(getAdjustedScale());
+    }
+
+    @Override
+    public void render(Set<Light> lights) {
+        getShader().start();
+        getShader().getProjectionMatrix().load(getProjectionMatrix());
+        getShader().getViewMatrix().load(getViewMatrix());
+        getShader().getTransformationMatrix().load(getTransformationMatrix());
+        for (Mesh mesh : getModel().getMeshes()) {
+            getShader().getDiffuseMap().load(mesh.getMaterial().getDiffuseMap());
+            getShader().getSpecularMap().load(mesh.getMaterial().getSpecularMap());
+            getShader().getAmbientMap().load(mesh.getMaterial().getAmbientMap());
+            getShader().getEmissiveMap().load(mesh.getMaterial().getEmissiveMap());
+            mesh.render();
+        }
+        getShader().stop();
+    }
+
+    @Override
+    public Model loadModel() {
+        return new Model(
+                new ArrayList<>(),
+                new Vector3f(0),
+                new Vector3f(0),
+                new Vector3f(1)
+        );
+    }
+
+    @Override
+    public int getPriority() {
+        return 1;
+    }
+
+    @Override
+    public boolean isGraphicalInsideFrustum() {
+        return true;
+    }
+
+    @Override
+    public float getSquaredDistanceToCamera() {
+        return 0;
+    }
+
+    @Override
+    public Class<ChunkShader> getShaderClass() {
+        return ChunkShader.class;
+    }
+
+    @Override
+    public Object getModelKey() {
+        return this;
+    }
+
     private void relocateSide(int sideIndexSrc, int sideIndexDst) {
 
         if (sideIndexDst == sideIndexSrc) {
@@ -232,63 +289,6 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
             sideIndexData.getTextures().put(tIdx + sideIndexData.getTexturePos() + 1, cubeSideMeshData.getTextures()[tIdx + 1] ? atlasFragment.getEndV() : atlasFragment.getStartV());
         }
 
-    }
-
-    @Override
-    public Matrix4f getTransformationMatrix() {
-        Matrix4fc rotMatrix = Maths.getRotationQuaternion(getAdjustedRotation()).get(new Matrix4f());
-        return new Matrix4f().translate(getAdjustedPosition()).mul(rotMatrix).scale(getAdjustedScale());
-    }
-
-    @Override
-    public void render(Set<Light> lights) {
-        getShader().start();
-        getShader().getProjectionMatrix().load(getProjectionMatrix());
-        getShader().getViewMatrix().load(getViewMatrix());
-        getShader().getTransformationMatrix().load(getTransformationMatrix());
-        for (Mesh mesh : getModel().getMeshes()) {
-            getShader().getDiffuseMap().load(mesh.getMaterial().getDiffuseMap());
-            getShader().getSpecularMap().load(mesh.getMaterial().getSpecularMap());
-            getShader().getAmbientMap().load(mesh.getMaterial().getAmbientMap());
-            getShader().getEmissiveMap().load(mesh.getMaterial().getEmissiveMap());
-            mesh.render();
-        }
-        getShader().stop();
-    }
-
-    @Override
-    public Model loadModel() {
-        return new Model(
-                new ArrayList<>(),
-                new Vector3f(0),
-                new Vector3f(0),
-                new Vector3f(1)
-        );
-    }
-
-    @Override
-    public int getPriority() {
-        return 1;
-    }
-
-    @Override
-    public boolean isGraphicalInsideFrustum() {
-        return true;
-    }
-
-    @Override
-    public float getSquaredDistanceToCamera() {
-        return 0;
-    }
-
-    @Override
-    public Class<ChunkShader> getShaderClass() {
-        return ChunkShader.class;
-    }
-
-    @Override
-    public Object getModelKey() {
-        return this;
     }
 
     @RequiredArgsConstructor

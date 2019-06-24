@@ -31,7 +31,7 @@ public class Indexer {
     }
 
     public long getVolume() {
-        return (long)getSize().x() * getSize().y() * getSize().z();
+        return (long) getSize().x() * getSize().y() * getSize().z();
     }
 
     public boolean isInside(Vector3ic pos) {
