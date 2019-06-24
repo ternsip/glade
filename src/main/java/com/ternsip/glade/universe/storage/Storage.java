@@ -18,6 +18,7 @@ public class Storage implements Universal {
     private final File file;
     private final DB db;
     private final ConcurrentMap map;
+    private final boolean exists;
 
     @SneakyThrows
     public Storage(String name) {
@@ -26,6 +27,7 @@ public class Storage implements Universal {
         if (!parent.exists()) {
             parent.mkdirs();
         }
+        this.exists = file.exists();
         this.db = DBMaker
                 .fileDB(file)
                 .transactionEnable()

@@ -22,8 +22,20 @@ public class Sides implements Serializable {
         return new BlocksUpdate(Collections.emptyList(), sides.entrySet().stream().map(enytry -> new Side(enytry.getKey(), enytry.getValue())).collect(Collectors.toList()));
     }
 
+    public SideData get(SidePosition sidePosition) {
+        return sides.get(sidePosition);
+    }
+
+    public void remove(SidePosition sidePosition) {
+        sides.remove(sidePosition);
+    }
+
+    public void put(SidePosition sidePosition, SideData sideData) {
+        sides.put(sidePosition, sideData);
+    }
+
     private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
-        sides = new HashMap<>();
+        this.sides = new HashMap<>();
         int size = ois.readInt();
         for (int i = 0; i < size; ++i) {
             int x = ois.readInt();
@@ -32,7 +44,9 @@ public class Sides implements Serializable {
             BlockSide blockSide = (BlockSide) ois.readObject();
             byte light = ois.readByte();
             Block block = (Block) ois.readObject();
-            sides.put(new SidePosition(x, y, z, blockSide), new SideData(light, block));
+            SidePosition sidePosition = new SidePosition(x, y, z, blockSide);
+            SideData sideData = new SideData(light, block);
+            this.sides.put(sidePosition, sideData);
         }
     }
 
