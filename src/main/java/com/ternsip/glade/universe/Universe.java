@@ -10,6 +10,7 @@ import com.ternsip.glade.universe.collisions.impl.GroundObstacle;
 import com.ternsip.glade.universe.common.Balance;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.impl.*;
+import com.ternsip.glade.universe.entities.impl.EntitySides;
 import com.ternsip.glade.universe.entities.repository.EntityRepository;
 import com.ternsip.glade.universe.parts.chunks.Blocks;
 import lombok.Getter;
@@ -120,7 +121,7 @@ public class Universe {
                 hagrid1.setScale(new Vector3f(15, 15, 15));
             }
         }
-        new EntityChunks().register();
+        new EntitySides().register();
     }
 
     private void update() {

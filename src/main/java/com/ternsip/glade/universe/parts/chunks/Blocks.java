@@ -64,7 +64,7 @@ public class Blocks implements Universal {
             // TODO use networking
             for (int x = 0, cx = 0; x < SIZE_X; x += Chunk.SIZE_X, ++cx) {
                 for (int z = 0, cz = 0; z < SIZE_Z; z += Chunk.SIZE_Z, ++cz) {
-                    blocksUpdates.add(getChunk(cx, cz).sides.generateBlockUpdate());
+                    blocksUpdates.add(new BlocksUpdate(getChunk(cx, cz).sides));
                 }
             }
         }
@@ -364,8 +364,7 @@ public class Blocks implements Universal {
         Vector3ic endChangesExcluding = new Vector3i(start).add(size).add(new Vector3i(1)).min(SIZE);
 
         // Calculate which sides should be removed or added
-        List<Side> sidesToAdd = new ArrayList<>();
-        List<SidePosition> sidesToRemove = new ArrayList<>();
+        BlocksUpdate blocksUpdate = new BlocksUpdate();
 
         for (int x = startChanges.x(); x < endChangesExcluding.x(); ++x) {
             for (int z = startChanges.z(); z < endChangesExcluding.z(); ++z) {
@@ -392,11 +391,11 @@ public class Blocks implements Universal {
                             }
                         }
                         if (newSideData != null && !newSideData.equals(oldSideData)) {
-                            sidesToAdd.add(new Side(sidePosition, newSideData));
+                            blocksUpdate.add(new Side(sidePosition, newSideData));
                             addSide(sidePosition, newSideData);
                         }
                         if (newSideData == null && oldSideData != null) {
-                            sidesToRemove.add(sidePosition);
+                            blocksUpdate.remove(oldSideData.getBlock(), sidePosition);
                             removeSide(sidePosition);
                         }
                     }
@@ -405,8 +404,8 @@ public class Blocks implements Universal {
             }
         }
 
-        if (sidesToRemove.size() > 0 || sidesToAdd.size() > 0) {
-            getBlocksUpdates().add(new BlocksUpdate(sidesToRemove, sidesToAdd));
+        if (!blocksUpdate.isEmpty()) {
+            getBlocksUpdates().add(blocksUpdate);
         }
 
     }

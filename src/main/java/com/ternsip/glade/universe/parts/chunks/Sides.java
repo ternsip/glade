@@ -8,19 +8,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Getter
 public class Sides implements Serializable {
 
     private Map<SidePosition, SideData> sides = new HashMap<>();
-
-    public BlocksUpdate generateBlockUpdate() {
-        return new BlocksUpdate(Collections.emptyList(), sides.entrySet().stream().map(enytry -> new Side(enytry.getKey(), enytry.getValue())).collect(Collectors.toList()));
-    }
 
     public SideData get(SidePosition sidePosition) {
         return sides.get(sidePosition);

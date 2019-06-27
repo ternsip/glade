@@ -1,27 +1,19 @@
-package com.ternsip.glade.graphics.visual.impl.basis;
+package com.ternsip.glade.graphics.visual.base;
 
 import com.google.common.collect.ImmutableMap;
-import com.ternsip.glade.common.logic.Maths;
 import com.ternsip.glade.common.logic.Utils;
+import com.ternsip.glade.graphics.display.Graphical;
 import com.ternsip.glade.graphics.general.Material;
 import com.ternsip.glade.graphics.general.Mesh;
-import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.shader.base.MeshAttributes;
-import com.ternsip.glade.graphics.shader.impl.ChunkShader;
-import com.ternsip.glade.graphics.visual.base.Effigy;
 import com.ternsip.glade.graphics.visual.repository.TexturePackRepository;
 import com.ternsip.glade.graphics.visual.repository.TextureRepository;
-import com.ternsip.glade.universe.common.Light;
-import com.ternsip.glade.universe.common.Universal;
 import com.ternsip.glade.universe.parts.blocks.BlockSide;
-import com.ternsip.glade.universe.parts.chunks.BlocksUpdate;
 import com.ternsip.glade.universe.parts.chunks.Side;
 import com.ternsip.glade.universe.parts.chunks.SidePosition;
+import com.ternsip.glade.universe.parts.chunks.BlockChanges;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.joml.Matrix4f;
-import org.joml.Matrix4fc;
-import org.joml.Vector3f;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -30,10 +22,10 @@ import java.util.*;
 import static com.ternsip.glade.graphics.shader.base.ShaderProgram.INDICES;
 import static com.ternsip.glade.graphics.shader.base.ShaderProgram.VERTICES;
 import static com.ternsip.glade.graphics.shader.impl.ChunkShader.*;
-import static com.ternsip.glade.graphics.visual.impl.basis.EffigyChunks.SideIndexData.*;
+import static com.ternsip.glade.graphics.visual.base.SideConstructor.SideIndexData.*;
 import static com.ternsip.glade.universe.parts.chunks.Blocks.MAX_LIGHT_LEVEL;
 
-public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
+public class SideConstructor implements Graphical {
 
     private static final CubeSideMeshData SIDE_FRONT = new CubeSideMeshData(
             new float[]{1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1},
@@ -83,18 +75,24 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
     private final Map<SidePosition, Integer> sides = new HashMap<>();
     private ArrayList<SidePosition> activeSides = new ArrayList<>();
 
-    public void recalculateBlockRegion(BlocksUpdate blocksUpdate) {
+    @Getter
+    private ArrayList<Mesh> meshes = new ArrayList<>();
+
+    public void applyChanges(BlockChanges changes) {
+
+        if (changes.isEmpty()) {
+            return;
+        }
 
         TexturePackRepository texturePackRepository = getGraphics().getGraphicalRepository().getTexturePackRepository();
-        List<SidePosition> sidesToRemove = blocksUpdate.getSidesToRemove();
-        List<Side> sidesToAdd = blocksUpdate.getSidesToAdd();
-        Utils.assertThat(sidesToAdd.size() > 0 || sidesToRemove.size() > 0);
+        List<SidePosition> sidesToRemove = changes.getSidesToRemove();
+        List<Side> sidesToAdd = changes.getSidesToAdd();
 
         Material material = new Material(texturePackRepository.getBlockAtlasTexture());
         int oldLength = activeSides.size();
         int newLength = oldLength + (sidesToAdd.size() - sidesToRemove.size());
         int meshesNumber = newLength / SIDES_PER_MESH + (newLength % SIDES_PER_MESH > 0 ? 1 : 0);
-        while (getModel().getMeshes().size() < meshesNumber) {
+        while (meshes.size() < meshesNumber) {
             Mesh mesh = new Mesh(
                     new MeshAttributes()
                             .add(INDICES, Utils.arrayToBuffer(new int[SIDES_PER_MESH * INDEX_SIDE_SIZE]))
@@ -106,10 +104,10 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
             );
             mesh.setIndicesCount(0);
             mesh.setVertexCount(0);
-            getModel().getMeshes().add(mesh);
+            meshes.add(mesh);
         }
         Iterator<SidePosition> toRemove = sidesToRemove.iterator();
-        boolean changedMeshes[] = new boolean[getModel().getMeshes().size()];
+        boolean changedMeshes[] = new boolean[meshes.size()];
         for (Side side : sidesToAdd) {
             SidePosition sidePositionSrc = side.getSidePosition();
             Integer sideIndexSrc = sides.get(sidePositionSrc);
@@ -153,76 +151,19 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
             activeSides.set(sideIndexDst, sidePositionSrc);
             activeSides.remove(sideIndexSrc);
         }
-        while (getModel().getMeshes().size() > meshesNumber) {
-            int currentSize = getModel().getMeshes().size();
-            getModel().getMeshes().get(currentSize - 1).finish();
-            getModel().getMeshes().remove(currentSize - 1);
+        while (meshes.size() > meshesNumber) {
+            int currentSize = meshes.size();
+            meshes.get(currentSize - 1).finish();
+            meshes.remove(currentSize - 1);
         }
         int sizeOfTheLastMesh = newLength % SIDES_PER_MESH;
         for (int i = 0; i < meshesNumber; ++i) {
             if (changedMeshes[i]) {
-                getModel().getMeshes().get(i).setVertexCount((i == meshesNumber - 1) ? (sizeOfTheLastMesh * VERTICES_PER_SIDE + 1) : SIDES_PER_MESH * VERTICES_PER_SIDE);
-                getModel().getMeshes().get(i).setIndicesCount((i == meshesNumber - 1) ? (sizeOfTheLastMesh * SIDE_INDICES.length + 1) : SIDES_PER_MESH * SIDE_INDICES.length);
-                getModel().getMeshes().get(i).updateBuffers();
+                meshes.get(i).setVertexCount((i == meshesNumber - 1) ? (sizeOfTheLastMesh * VERTICES_PER_SIDE + 1) : SIDES_PER_MESH * VERTICES_PER_SIDE);
+                meshes.get(i).setIndicesCount((i == meshesNumber - 1) ? (sizeOfTheLastMesh * SIDE_INDICES.length + 1) : SIDES_PER_MESH * SIDE_INDICES.length);
+                meshes.get(i).updateBuffers();
             }
         }
-    }
-
-    @Override
-    public Matrix4f getTransformationMatrix() {
-        Matrix4fc rotMatrix = Maths.getRotationQuaternion(getAdjustedRotation()).get(new Matrix4f());
-        return new Matrix4f().translate(getAdjustedPosition()).mul(rotMatrix).scale(getAdjustedScale());
-    }
-
-    @Override
-    public void render(Set<Light> lights) {
-        getShader().start();
-        getShader().getProjectionMatrix().load(getProjectionMatrix());
-        getShader().getViewMatrix().load(getViewMatrix());
-        getShader().getTransformationMatrix().load(getTransformationMatrix());
-        for (Mesh mesh : getModel().getMeshes()) {
-            getShader().getDiffuseMap().load(mesh.getMaterial().getDiffuseMap());
-            getShader().getSpecularMap().load(mesh.getMaterial().getSpecularMap());
-            getShader().getAmbientMap().load(mesh.getMaterial().getAmbientMap());
-            getShader().getEmissiveMap().load(mesh.getMaterial().getEmissiveMap());
-            mesh.render();
-        }
-        getShader().stop();
-    }
-
-    @Override
-    public Model loadModel() {
-        return new Model(
-                new ArrayList<>(),
-                new Vector3f(0),
-                new Vector3f(0),
-                new Vector3f(1)
-        );
-    }
-
-    @Override
-    public int getPriority() {
-        return 1;
-    }
-
-    @Override
-    public boolean isGraphicalInsideFrustum() {
-        return true;
-    }
-
-    @Override
-    public float getSquaredDistanceToCamera() {
-        return 0;
-    }
-
-    @Override
-    public Class<ChunkShader> getShaderClass() {
-        return ChunkShader.class;
-    }
-
-    @Override
-    public Object getModelKey() {
-        return this;
     }
 
     private void relocateSide(int sideIndexSrc, int sideIndexDst) {
@@ -231,8 +172,8 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
             return;
         }
 
-        SideIndexData sideIndexDataSrc = new SideIndexData(sideIndexSrc, getModel());
-        SideIndexData sideIndexDataDst = new SideIndexData(sideIndexDst, getModel());
+        SideIndexData sideIndexDataSrc = new SideIndexData(sideIndexSrc, meshes);
+        SideIndexData sideIndexDataDst = new SideIndexData(sideIndexDst, meshes);
 
         for (int i = 0; i < SIDE_INDICES.length; ++i) {
             sideIndexDataDst.getIndices().put(i + sideIndexDataDst.getIndexPos(), SIDE_INDICES[i] + sideIndexDataDst.getVertexStart());
@@ -266,7 +207,7 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
 
     private void fillSide(int sideIndex, Side side) {
 
-        SideIndexData sideIndexData = new SideIndexData(sideIndex, getModel());
+        SideIndexData sideIndexData = new SideIndexData(sideIndex, meshes);
         BlockSide blockSide = side.getSidePosition().getSide();
         CubeSideMeshData cubeSideMeshData = ALL_SIDES.get(blockSide);
         int dx = side.getSidePosition().getX();
@@ -338,12 +279,12 @@ public class EffigyChunks extends Effigy<ChunkShader> implements Universal {
         FloatBuffer normals;
         FloatBuffer textures;
 
-        public SideIndexData(int sideIndex, Model model) {
+        public SideIndexData(int sideIndex, ArrayList<Mesh> meshes) {
 
             int meshPos = sideIndex / SIDES_PER_MESH;
             int sideOffset = sideIndex % SIDES_PER_MESH;
-            Utils.assertThat(model.getMeshes().size() > meshPos);
-            Mesh mesh = model.getMeshes().get(meshPos);
+            Utils.assertThat(meshes.size() > meshPos);
+            Mesh mesh = meshes.get(meshPos);
             MeshAttributes meshAttributes = mesh.getMeshAttributes();
 
             this.vertexStart = sideOffset * VERTICES_PER_SIDE;
