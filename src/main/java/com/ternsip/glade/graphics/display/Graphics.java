@@ -18,7 +18,8 @@ import java.util.ArrayList;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL13.GL_MULTISAMPLE;
+import static org.lwjgl.opengl.GL13.GL_SAMPLE_ALPHA_TO_COVERAGE;
+import static org.lwjgl.opengl.GL13C.GL_MULTISAMPLE;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 @Getter
@@ -30,6 +31,7 @@ public class Graphics implements Universal {
     private final ArrayList<Callback> callbacks;
     private final EventSnapReceiver eventSnapReceiver;
     private final WindowData windowData;
+    private final FrameBuffers frameBuffers;
 
     @Getter(lazy = true)
     private final GraphicalRepository graphicalRepository = new GraphicalRepository();
@@ -73,19 +75,22 @@ public class Graphics implements Universal {
         // Disable vertical synchronization
         glfwSwapInterval(0);
 
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        //glEnable(GL_BLEND);
+        //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         OpenGlSettings.antialias(true);
         OpenGlSettings.enableDepthTesting(true);
         OpenGlSettings.goWireframe(false);
 
-        glEnable(GL_DEPTH_TEST);
-        //glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
+        //glEnable(GL_DEPTH_TEST);
+        glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
         glEnable(GL_MULTISAMPLE);
         //glEnable(GL_CULL_FACE);
         final Vector4fc BACKGROUND_COLOR = new Vector4f(1f, 0f, 0f, 1f);
         glClearColor(BACKGROUND_COLOR.x(), BACKGROUND_COLOR.y(), BACKGROUND_COLOR.z(), BACKGROUND_COLOR.w());
+
+        frameBuffers = new FrameBuffers(getWindowData().getWidth(), getWindowData().getHeight());
+        getEventSnapReceiver().registerCallback(ResizeEvent.class, (resizeEvent) -> getFrameBuffers().resizeFBOs(resizeEvent.getWidth(), resizeEvent.getHeight()));
 
         registerDisplayEvent(ResizeEvent.class, new ResizeEvent(getWindowData().getWidth(), getWindowData().getHeight()));
     }
@@ -100,11 +105,14 @@ public class Graphics implements Universal {
     }
 
     public void loop() {
+
         while (isActive()) {
+            getFrameBuffers().bindBuffer();
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             getEventSnapReceiver().update();
             getGraphicalRepository().render();
             getWindowData().update();
+            getFrameBuffers().resolveBuffer();
             glfwSwapBuffers(getWindowData().getWindow());
             glfwPollEvents();
         }
