@@ -2,8 +2,7 @@ package com.ternsip.glade.graphics.shader.impl;
 
 import com.ternsip.glade.graphics.shader.base.AttributeData;
 import com.ternsip.glade.graphics.shader.base.ShaderProgram;
-import com.ternsip.glade.graphics.shader.uniforms.UniformMatrix4;
-import com.ternsip.glade.graphics.shader.uniforms.UniformTextureAddress;
+import com.ternsip.glade.graphics.shader.uniforms.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,6 +25,10 @@ public final class ChunkShader extends ShaderProgram {
     private final UniformMatrix4 viewMatrix = new UniformMatrix4();
     private final UniformMatrix4 transformationMatrix = new UniformMatrix4();
 
+    private UniformBoolean water = new UniformBoolean();
+    private UniformFloat time = new UniformFloat();
+    private UniformVec2 waterTextureStart = new UniformVec2();
+    private UniformVec2 waterTextureEnd = new UniformVec2();
     private UniformTextureAddress diffuseMap = new UniformTextureAddress();
     private UniformTextureAddress specularMap = new UniformTextureAddress();
     private UniformTextureAddress ambientMap = new UniformTextureAddress();

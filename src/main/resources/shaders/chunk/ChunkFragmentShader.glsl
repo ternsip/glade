@@ -1,5 +1,7 @@
 #version 400 core
 
+#define M_PI 3.1415926535897932384626433832795
+
 struct TextureData {
     bool isTexturePresent;
     bool isColorPresent;
@@ -15,6 +17,10 @@ in vec3 pass_normal;
 
 out vec4 out_colour;
 
+uniform float time;
+uniform bool water;
+uniform vec2 waterTextureStart;
+uniform vec2 waterTextureEnd;
 uniform TextureData diffuseMap;
 uniform TextureData specularMap;
 uniform TextureData ambientMap;
@@ -30,6 +36,18 @@ vec4 getTextureColor(TextureData textureData, bool mainTexture) {
 }
 
 void main(void){
+
+    if (water) {
+        vec2 diff = waterTextureEnd - waterTextureStart;
+        vec2 cur = (pass_textureCoords - waterTextureStart) / diff;
+        float cc = 400;
+        vec2 cPos = -1.0 + 2.0 * gl_FragCoord.xy / cc;
+        float cLength = length(cPos);
+        vec2 uv = cur * (gl_FragCoord.xy / cc + (cPos / cLength) * cos(cLength * 12.0 - M_PI * 2 * time * 1) * 0.03);
+        uv = waterTextureStart + abs(vec2(mod(uv.x, 1.0), mod(uv.y, 1.0))) * diff;
+        out_colour = texture(diffuseMap.atlasNumber, vec3(uv * diffuseMap.maxUV, diffuseMap.layer));
+        return;
+    }
 
     vec3 base_ambient = vec3(pass_ambient, pass_ambient, pass_ambient);
     float ambient_multiplier = 0.5;

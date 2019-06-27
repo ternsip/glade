@@ -6,16 +6,23 @@ import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.shader.impl.ChunkShader;
 import com.ternsip.glade.graphics.visual.base.Effigy;
 import com.ternsip.glade.graphics.visual.base.SideConstructor;
+import com.ternsip.glade.graphics.visual.repository.TextureRepository;
 import com.ternsip.glade.universe.common.Light;
+import com.ternsip.glade.universe.parts.blocks.Block;
+import com.ternsip.glade.universe.parts.blocks.BlockSide;
 import com.ternsip.glade.universe.parts.chunks.BlocksUpdate;
 import lombok.Getter;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
+import org.joml.Vector2f;
 
 import java.util.Set;
 
 @Getter
 public class EffigySides extends Effigy<ChunkShader> {
+
+    public static final long TIME_PERIOD_MILLISECONDS = 60_000L;
+    public static final float TIME_PERIOD_DIVISOR = 1000f;
 
     private SideConstructor rigidSides = new SideConstructor();
     private SideConstructor translucentSides = new SideConstructor();
@@ -39,9 +46,15 @@ public class EffigySides extends Effigy<ChunkShader> {
         getShader().getProjectionMatrix().load(getProjectionMatrix());
         getShader().getViewMatrix().load(getViewMatrix());
         getShader().getTransformationMatrix().load(getTransformationMatrix());
+        getShader().getTime().load((System.currentTimeMillis() % TIME_PERIOD_MILLISECONDS) / TIME_PERIOD_DIVISOR);
+        TextureRepository.AtlasFragment atlasFragment = getGraphics().getGraphicalRepository().getTexturePackRepository().getCubeMap(Block.WATER).getByBlockSide(BlockSide.TOP);
+        getShader().getWaterTextureStart().load(new Vector2f(atlasFragment.getStartU(), atlasFragment.getStartV()));
+        getShader().getWaterTextureEnd().load(new Vector2f(atlasFragment.getEndU(), atlasFragment.getEndV()));
         loadMeshesToShader(getRigidSides());
         loadMeshesToShader(getTranslucentSides());
+        getShader().getWater().load(true);
         loadMeshesToShader(getWaterSides());
+        getShader().getWater().load(false);
         getShader().stop();
     }
 
