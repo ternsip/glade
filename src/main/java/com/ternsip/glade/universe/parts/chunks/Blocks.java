@@ -24,18 +24,18 @@ import java.util.stream.Collectors;
 public class Blocks implements Universal {
 
     public static final byte MAX_LIGHT_LEVEL = 15;
-    public static final int SIZE_X = 256;
+    public static final int SIZE_X = 1024;
     public static final int SIZE_Y = 256;
-    public static final int SIZE_Z = 256;
+    public static final int SIZE_Z = 1024;
     public static final Vector3ic SIZE = new Vector3i(SIZE_X, SIZE_Y, SIZE_Z);
     public static final Indexer INDEXER = new Indexer(SIZE);
 
-    private static final int GENERATOR_UPDATE_SIZE = 128;
     private static final int LIGHT_UPDATE_COMBINE_DISTANCE = 4;
     private static final List<ChunkGenerator> CHUNK_GENERATORS = constructChunkGenerators();
+    private static final int UPDATE_SIZE = 256;
 
     private final Storage storage;
-    private final Timer lightUpdateTimer = new Timer(1000);
+    private final Timer lightUpdateTimer = new Timer(200);
     private final Timer relaxationTimer = new Timer(200);
     private final Map<Vector2ic, Chunk> chunks = new HashMap<>(); // TODO Vector2ic -> ChunkPos class
     private final Deque<LightUpdateRequest> lightUpdateRequests = new ConcurrentLinkedDeque<>();
@@ -49,10 +49,10 @@ public class Blocks implements Universal {
             for (ChunkGenerator chunkGenerator : CHUNK_GENERATORS) {
                 chunkGenerator.populate(this);
             }
-            for (int x = 0; x < SIZE_X; x += GENERATOR_UPDATE_SIZE) {
-                for (int z = 0; z < SIZE_Z; z += GENERATOR_UPDATE_SIZE) {
-                    int sizeX = x + GENERATOR_UPDATE_SIZE > SIZE_X ? SIZE_X - x : GENERATOR_UPDATE_SIZE;
-                    int sizeZ = z + GENERATOR_UPDATE_SIZE > SIZE_Z ? SIZE_Z - z : GENERATOR_UPDATE_SIZE;
+            for (int x = 0; x < SIZE_X; x += UPDATE_SIZE) {
+                for (int z = 0; z < SIZE_Z; z += UPDATE_SIZE) {
+                    int sizeX = x + UPDATE_SIZE > SIZE_X ? SIZE_X - x : UPDATE_SIZE;
+                    int sizeZ = z + UPDATE_SIZE > SIZE_Z ? SIZE_Z - z : UPDATE_SIZE;
                     recalculateBlockRegion(new Vector3i(x, 0, z), new Vector3i(sizeX, SIZE_Y, sizeZ));
                     relaxChunks();
                 }
@@ -77,6 +77,7 @@ public class Blocks implements Universal {
 
     public void setBlock(Vector3ic pos, Block block) {
         setBlock(pos.x(), pos.y(), pos.z(), block);
+        setEmitLight(pos.x(), pos.y(), pos.z(), (byte) (MAX_LIGHT_LEVEL / 4));
         updateRegionProcrastinating(pos);
         relaxChunks();
     }
@@ -251,7 +252,10 @@ public class Blocks implements Universal {
         int minObservedHeight = SIZE_Y;
         for (int x = start.x(); x < endExcluding.x(); ++x) {
             for (int z = start.z(); z < endExcluding.z(); ++z) {
-                int yAir = SIZE_Y - 1;
+                if (getHeight(x, z) > endExcluding.y()) {
+                    continue;
+                }
+                int yAir = endExcluding.y() - 1;
                 for (; yAir >= 0; --yAir) {
                     if (getBlock(x, yAir, z) != Block.AIR) {
                         break;
