@@ -113,7 +113,6 @@ public class Blocks implements Universal {
     public void setBlock(int x, int y, int z, Block block) {
         Chunk chunk = getChunk(x / Chunk.SIZE_X, z / Chunk.SIZE_Z);
         chunk.blocks[x % Chunk.SIZE_X][y][z % Chunk.SIZE_Z] = block;
-        chunk.modified = true;
     }
 
     public Block getBlock(int x, int y, int z) {
@@ -124,7 +123,6 @@ public class Blocks implements Universal {
     public void setSkyLight(int x, int y, int z, byte light) {
         Chunk chunk = getChunk(x / Chunk.SIZE_X, z / Chunk.SIZE_Z);
         chunk.skyLights[x % Chunk.SIZE_X][y][z % Chunk.SIZE_Z] = light;
-        chunk.modified = true;
     }
 
     public byte getSkyLight(int x, int y, int z) {
@@ -135,7 +133,6 @@ public class Blocks implements Universal {
     public void setEmitLight(int x, int y, int z, byte light) {
         Chunk chunk = getChunk(x / Chunk.SIZE_X, z / Chunk.SIZE_Z);
         chunk.emitLights[x % Chunk.SIZE_X][y][z % Chunk.SIZE_Z] = light;
-        chunk.modified = true;
     }
 
     public byte getEmitLight(int x, int y, int z) {
@@ -146,7 +143,6 @@ public class Blocks implements Universal {
     public void setHeight(int x, int z, int height) {
         Chunk chunk = getChunk(x / Chunk.SIZE_X, z / Chunk.SIZE_Z);
         chunk.heights[x % Chunk.SIZE_X][z % Chunk.SIZE_Z] = height;
-        chunk.modified = true;
     }
 
     public int getHeight(int x, int z) {
@@ -223,6 +219,7 @@ public class Blocks implements Universal {
                 chunks[x][z] = new Chunk(x, z);
             }
         }
+        chunks[x][z].observed = true;
         return chunks[x][z];
     }
 
@@ -241,9 +238,9 @@ public class Blocks implements Universal {
     }
 
     private void saveChunk(Chunk chunk) {
-        if (chunk.modified) {
+        if (chunk.observed) {
             storage.save(new Vector2i(chunk.xPos, chunk.zPos), chunk);
-            chunk.modified = false;
+            chunk.observed = false;
         }
     }
 
