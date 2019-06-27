@@ -9,9 +9,9 @@ import com.ternsip.glade.graphics.shader.base.MeshAttributes;
 import com.ternsip.glade.graphics.visual.repository.TexturePackRepository;
 import com.ternsip.glade.graphics.visual.repository.TextureRepository;
 import com.ternsip.glade.universe.parts.blocks.BlockSide;
+import com.ternsip.glade.universe.parts.chunks.BlockChanges;
 import com.ternsip.glade.universe.parts.chunks.Side;
 import com.ternsip.glade.universe.parts.chunks.SidePosition;
-import com.ternsip.glade.universe.parts.chunks.BlockChanges;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

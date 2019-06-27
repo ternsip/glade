@@ -45,16 +45,6 @@ public class EffigySides extends Effigy<ChunkShader> {
         getShader().stop();
     }
 
-    private void loadMeshesToShader(SideConstructor sideConstructor) {
-        for (Mesh mesh : sideConstructor.getMeshes()) {
-            getShader().getDiffuseMap().load(mesh.getMaterial().getDiffuseMap());
-            getShader().getSpecularMap().load(mesh.getMaterial().getSpecularMap());
-            getShader().getAmbientMap().load(mesh.getMaterial().getAmbientMap());
-            getShader().getEmissiveMap().load(mesh.getMaterial().getEmissiveMap());
-            mesh.render();
-        }
-    }
-
     @Override
     public Model loadModel() {
         return new Model();
@@ -83,6 +73,16 @@ public class EffigySides extends Effigy<ChunkShader> {
     @Override
     public Object getModelKey() {
         return this;
+    }
+
+    private void loadMeshesToShader(SideConstructor sideConstructor) {
+        for (Mesh mesh : sideConstructor.getMeshes()) {
+            getShader().getDiffuseMap().load(mesh.getMaterial().getDiffuseMap());
+            getShader().getSpecularMap().load(mesh.getMaterial().getSpecularMap());
+            getShader().getAmbientMap().load(mesh.getMaterial().getAmbientMap());
+            getShader().getEmissiveMap().load(mesh.getMaterial().getEmissiveMap());
+            mesh.render();
+        }
     }
 
 }
