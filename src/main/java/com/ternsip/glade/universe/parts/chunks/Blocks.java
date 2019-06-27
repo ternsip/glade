@@ -22,8 +22,8 @@ import java.util.stream.Collectors;
  */
 public class Blocks implements Universal {
 
-    public static final int CHUNKS_X = 32;
-    public static final int CHUNKS_Z = 32;
+    public static final int CHUNKS_X = 8;
+    public static final int CHUNKS_Z = 8;
     public static final byte MAX_LIGHT_LEVEL = 15;
     public static final int SIZE_X = CHUNKS_X * Chunk.SIZE_X;
     public static final int SIZE_Y = 256;
@@ -113,6 +113,7 @@ public class Blocks implements Universal {
     public void setBlock(int x, int y, int z, Block block) {
         Chunk chunk = getChunk(x / Chunk.SIZE_X, z / Chunk.SIZE_Z);
         chunk.blocks[x % Chunk.SIZE_X][y][z % Chunk.SIZE_Z] = block;
+        chunk.modified = true;
     }
 
     public Block getBlock(int x, int y, int z) {
@@ -211,15 +212,10 @@ public class Blocks implements Universal {
     private Chunk getChunk(int x, int z) {
         if (chunks[x][z] == null) {
             Vector2i pos = new Vector2i(x, z);
-            if (storage.isExists(pos)) {
-                Chunk chunk = storage.load(pos);
-                chunks[x][z] = chunk;
-                loadedChunks.add(chunk);
-            } else {
-                chunks[x][z] = new Chunk(x, z);
-            }
+            chunks[x][z] = storage.isExists(pos) ? storage.load(pos) : new Chunk(x, z);
+            loadedChunks.add(chunks[x][z]);
         }
-        chunks[x][z].observed = true;
+        chunks[x][z].timer.drop();
         return chunks[x][z];
     }
 
@@ -238,9 +234,9 @@ public class Blocks implements Universal {
     }
 
     private void saveChunk(Chunk chunk) {
-        if (chunk.observed) {
+        if (chunk.modified) {
             storage.save(new Vector2i(chunk.xPos, chunk.zPos), chunk);
-            chunk.observed = false;
+            chunk.modified = false;
         }
     }
 
