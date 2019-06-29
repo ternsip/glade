@@ -6,6 +6,7 @@ import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.shader.impl.AnimationShader;
 import com.ternsip.glade.universe.common.Light;
 import lombok.Getter;
+import lombok.Setter;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.joml.Vector3fc;
@@ -13,15 +14,18 @@ import org.joml.Vector3fc;
 import java.util.Set;
 
 @Getter
+@Setter
 public abstract class EffigyAnimated extends Effigy<AnimationShader> {
 
     @Getter(lazy = true)
     private final Animation animation = new Animation(getModel());
 
+    private long lastUpdateMillis;
+
     @Override
     public void render(Set<Light> lights) {
         getShader().start();
-        getAnimation().update(getUpdateIntervalMilliseconds());
+        updateAnimation();
         Matrix4f[] boneTransforms = getAnimation().getBoneTransforms();
         Matrix4fc projection = getProjectionMatrix();
         Matrix4fc view = getViewMatrix();
@@ -53,12 +57,16 @@ public abstract class EffigyAnimated extends Effigy<AnimationShader> {
         return AnimationShader.class;
     }
 
-    private long getUpdateIntervalMilliseconds() {
+    private void updateAnimation() {
         Vector3fc scale = getAdjustedScale();
         float maxScale = Math.max(Math.max(scale.x(), scale.y()), scale.z());
         Camera camera = getGraphics().getGraphicalRepository().getCamera();
         double criterion = (camera.getPosition().distance(getAdjustedPosition()) / maxScale) / 10;
-        return (long) (criterion * criterion * criterion);
+        long updateIntervalMilliseconds = (long) (criterion * criterion * criterion);
+        if (getLastUpdateMillis() + updateIntervalMilliseconds < System.currentTimeMillis()) {
+            setLastUpdateMillis(System.currentTimeMillis());
+            getAnimation().update();
+        }
     }
 
 }

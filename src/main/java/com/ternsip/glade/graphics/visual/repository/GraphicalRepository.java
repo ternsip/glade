@@ -14,7 +14,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static com.ternsip.glade.universe.entities.repository.EntityRepository.NO_CAMERA_TARGET;
 
@@ -41,13 +40,13 @@ public class GraphicalRepository implements Universal, Graphical {
     public void render() {
         updateEntities();
         Set<Light> lights = getUniverse().getEntityRepository().getLights();
-        HashMap<Effigy, Float> graphicalToDistance = getEntityToEffigy().values().stream()
-                .filter(Effigy::isGraphicalInsideFrustum)
-                .collect(Collectors.toMap(e -> e, Effigy::getSquaredDistanceToCamera, (a, b) -> a, HashMap::new));
-        lastSeenNumberOfEntitiesInFrustum = graphicalToDistance.size();
-        graphicalToDistance.entrySet().stream()
-                .sorted(COMPARE_BY_PRIORITY.thenComparing(COMPARE_BY_DISTANCE_TO_CAMERA))
-                .forEach(k -> k.getKey().render(lights));
+        lastSeenNumberOfEntitiesInFrustum = 0;
+        getEntityToEffigy().values().forEach(effigy -> {
+            if (effigy.isGraphicalInsideFrustum()) {
+                effigy.render(lights);
+                ++lastSeenNumberOfEntitiesInFrustum;
+            }
+        });
     }
 
     public void finish() {

@@ -11,7 +11,6 @@ public class Animation {
     private final Model model;
     private AnimationTrack animationTrack;
     private Matrix4f[] boneTransforms;
-    private long lastUpdateMillis;
 
     public Animation(Model model) {
         this.model = model;
@@ -23,14 +22,11 @@ public class Animation {
         this.animationTrack = getModel().getAnimationData().getAnimationTrack(animationName);
     }
 
-    public void update(long updateIntervalMilliseconds) {
+    public void update() {
         if (getAnimationTrack() == null || getAnimationTrack().isEmpty()) {
             return;
         }
-        if (getLastUpdateMillis() + updateIntervalMilliseconds < System.currentTimeMillis()) {
-            setLastUpdateMillis(System.currentTimeMillis());
-            setBoneTransforms(getModel().getAnimationData().calcBoneTransforms(getAnimationTrack()));
-        }
+        setBoneTransforms(getModel().getAnimationData().calcBoneTransforms(getAnimationTrack()));
     }
 
     public boolean isAnimated() {
