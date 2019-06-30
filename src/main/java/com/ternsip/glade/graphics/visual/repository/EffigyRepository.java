@@ -10,8 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static com.ternsip.glade.universe.entities.repository.EntityRepository.NO_CAMERA_TARGET;
-
 @Getter
 public class EffigyRepository implements Universal, Graphical {
 
@@ -54,19 +52,13 @@ public class EffigyRepository implements Universal, Graphical {
                 entity.setVisualReloadRequired(false);
             }
         });
-        Entity target = getUniverse().getEntityRepository().getCameraTarget();
-        // TODO try to get rid of this
-        // That condition exists to prevent shuttering and dragging camera under asynchronous routines
-        if (target != NO_CAMERA_TARGET) {
-            Effigy targetVisual = getEntityToEffigy().get(target);
-            getEntityToEffigy().remove(target);
-            getEntityToEffigy().forEach(Entity::update);
-            target.update(targetVisual);
-            getGraphics().getCameraController().update(target);
-            getEntityToEffigy().put(target, targetVisual);
-        } else {
-            getEntityToEffigy().forEach(Entity::update);
-        }
+        Entity cameraTarget = getUniverse().getEntityRepository().getCameraTarget();
+        getEntityToEffigy().forEach((entity, effigy) -> {
+            entity.update(effigy);
+            if (entity == cameraTarget) {
+                getGraphics().getCameraController().update(cameraTarget);
+            }
+        });
     }
 
 }
