@@ -11,7 +11,7 @@ import org.joml.Vector3f;
 public class EntitySun extends Entity<EffigySky> implements Light {
 
     private float phase = 0;
-    private float delta = 0.005f;
+    private float delta = 0.001f;
     private Vector2f origin = new Vector2f(0, 0);
     private Vector2f size = new Vector2f(1, 1);
     private Vector3f color = new Vector3f(1, 1, 1);
@@ -19,6 +19,7 @@ public class EntitySun extends Entity<EffigySky> implements Light {
     @Override
     public void update(EffigySky effigy) {
         effigy.setSunPosition(getPosition());
+        effigy.setPhase(getPhase());
     }
 
     @Override
@@ -35,8 +36,8 @@ public class EntitySun extends Entity<EffigySky> implements Light {
     @Override
     public Vector3f getPosition() {
         return new Vector3f(
-                origin.x() + (float) Math.sin(phase * 2f * Math.PI) * size.x(),
-                origin.y() + (float) Math.cos(phase * 2f * Math.PI) * size.y(),
+                origin.x() + (float) Math.cos(phase * 2f * Math.PI) * size.x(),
+                origin.y() + (float) Math.sin(phase * 2f * Math.PI) * size.y(),
                 0
         );
     }

@@ -76,6 +76,7 @@ public class EffigySky extends Effigy<SkyboxShader> {
         getShader().getProjectionMatrix().load(getProjectionMatrix());
         getShader().getSunVector().load(getSunPosition());
         getShader().getViewMatrix().load(getViewMatrix());
+        getShader().getPhase().load(getPhase());
         getModel().getMeshes().get(0).render();
         getShader().stop();
     }

@@ -26,13 +26,13 @@ public final class ChunkShader extends ShaderProgram {
     private final UniformMatrix4 viewMatrix = new UniformMatrix4();
     private final UniformMatrix4 transformationMatrix = new UniformMatrix4();
 
-    private UniformBoolean water = new UniformBoolean();
-    private UniformFloat time = new UniformFloat();
-    private UniformVec2 waterTextureStart = new UniformVec2();
-    private UniformVec2 waterTextureEnd = new UniformVec2();
-    private UniformTextureAddress diffuseMap = new UniformTextureAddress();
-    private UniformTextureAddress specularMap = new UniformTextureAddress();
-    private UniformTextureAddress ambientMap = new UniformTextureAddress();
-    private UniformTextureAddress emissiveMap = new UniformTextureAddress();
+    private final UniformBoolean water = new UniformBoolean();
+    private final UniformFloat time = new UniformFloat();
+    private final UniformVec2 waterTextureStart = new UniformVec2();
+    private final UniformVec2 waterTextureEnd = new UniformVec2();
+    private final UniformTextureAddress diffuseMap = new UniformTextureAddress();
+    private final UniformTextureAddress specularMap = new UniformTextureAddress();
+    private final UniformTextureAddress ambientMap = new UniformTextureAddress();
+    private final UniformTextureAddress emissiveMap = new UniformTextureAddress();
 
 }

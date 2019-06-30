@@ -25,23 +25,23 @@ public final class AnimationShader extends ShaderProgram {
     public static final AttributeData BONE_INDICES = new AttributeData(5, "boneIndices", MAX_WEIGHTS, AttributeData.ArrayType.INT);
     public static final AttributeData WEIGHTS = new AttributeData(6, "weights", MAX_WEIGHTS, AttributeData.ArrayType.FLOAT);
 
-    private UniformBoolean animated = new UniformBoolean();
-    private UniformMatrix4 projectionMatrix = new UniformMatrix4();
-    private UniformMatrix4 viewMatrix = new UniformMatrix4();
-    private UniformMatrix4 transformationMatrix = new UniformMatrix4();
-    private UniformLight sun = new UniformLight();
-    private UniformMatrix4Array boneTransforms = new UniformMatrix4Array(MAX_BONES);
+    private final UniformBoolean animated = new UniformBoolean();
+    private final UniformMatrix4 projectionMatrix = new UniformMatrix4();
+    private final UniformMatrix4 viewMatrix = new UniformMatrix4();
+    private final UniformMatrix4 transformationMatrix = new UniformMatrix4();
+    private final UniformLight sun = new UniformLight();
+    private final UniformMatrix4Array boneTransforms = new UniformMatrix4Array(MAX_BONES);
 
-    private UniformTextureAddress diffuseMap = new UniformTextureAddress();
-    private UniformTextureAddress specularMap = new UniformTextureAddress();
-    private UniformTextureAddress ambientMap = new UniformTextureAddress();
-    private UniformTextureAddress emissiveMap = new UniformTextureAddress();
-    private UniformTextureAddress heightMap = new UniformTextureAddress();
-    private UniformTextureAddress normalsMap = new UniformTextureAddress();
-    private UniformTextureAddress shininessMap = new UniformTextureAddress();
-    private UniformTextureAddress opacityMap = new UniformTextureAddress();
-    private UniformTextureAddress displacementMap = new UniformTextureAddress();
-    private UniformTextureAddress lightMap = new UniformTextureAddress();
-    private UniformTextureAddress reflectionMap = new UniformTextureAddress();
+    private final UniformTextureAddress diffuseMap = new UniformTextureAddress();
+    private final UniformTextureAddress specularMap = new UniformTextureAddress();
+    private final UniformTextureAddress ambientMap = new UniformTextureAddress();
+    private final UniformTextureAddress emissiveMap = new UniformTextureAddress();
+    private final UniformTextureAddress heightMap = new UniformTextureAddress();
+    private final UniformTextureAddress normalsMap = new UniformTextureAddress();
+    private final UniformTextureAddress shininessMap = new UniformTextureAddress();
+    private final UniformTextureAddress opacityMap = new UniformTextureAddress();
+    private final UniformTextureAddress displacementMap = new UniformTextureAddress();
+    private final UniformTextureAddress lightMap = new UniformTextureAddress();
+    private final UniformTextureAddress reflectionMap = new UniformTextureAddress();
 
 }
