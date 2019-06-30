@@ -32,11 +32,6 @@ public class EffigyGlyph extends EffigyAnimated {
     }
 
     @Override
-    public int getPriority() {
-        return 1000;
-    }
-
-    @Override
     public boolean isGraphicalInsideFrustum() {
         return true;
     }

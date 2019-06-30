@@ -84,10 +84,6 @@ public abstract class Effigy<SHADER extends ShaderProgram> implements Transforma
         }
     }
 
-    public int getPriority() {
-        return 0;
-    }
-
     public boolean isGraphicalInsideFrustum() {
         Vector3fc scale = getAdjustedScale();
         float delta = Math.max(Math.max(scale.x(), scale.y()), scale.z()) * 1.5f;
@@ -99,10 +95,6 @@ public abstract class Effigy<SHADER extends ShaderProgram> implements Transforma
         Matrix4fc view = getGraphics().getCamera().getViewMatrix();
         Matrix4fc projectionViewMatrix = projection.mul(view, new Matrix4f());
         return new FrustumIntersection(projectionViewMatrix);
-    }
-
-    public float getSquaredDistanceToCamera() {
-        return getAdjustedPosition().distanceSquared(getGraphics().getCamera().getPosition());
     }
 
     public Object getShaderKey() {

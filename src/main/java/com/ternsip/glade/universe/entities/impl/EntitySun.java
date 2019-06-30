@@ -10,21 +10,11 @@ import org.joml.Vector3f;
 @Getter
 public class EntitySun extends Entity<EffigySky> implements Light {
 
-    // TODO supposed to run moon on the night
-    private float phase;
-    private float delta;
-    private Vector2f origin;
-    private Vector2f size;
-    private Vector3f colour;
-
-    public EntitySun(Vector2f origin, Vector2f size, Vector3f colour) {
-        super();
-        this.phase = 0;
-        this.delta = 0.005f;
-        this.origin = origin;
-        this.size = size;
-        this.colour = colour;
-    }
+    private float phase = 0;
+    private float delta = 0.005f;
+    private Vector2f origin = new Vector2f(0, 0);
+    private Vector2f size = new Vector2f(1, 1);
+    private Vector3f color = new Vector3f(1, 1, 1);
 
     @Override
     public void update(EffigySky effigy) {

@@ -61,18 +61,8 @@ public class EffigySides extends Effigy<ChunkShader> {
     }
 
     @Override
-    public int getPriority() {
-        return 1;
-    }
-
-    @Override
     public boolean isGraphicalInsideFrustum() {
         return true;
-    }
-
-    @Override
-    public float getSquaredDistanceToCamera() {
-        return 0;
     }
 
     @Override

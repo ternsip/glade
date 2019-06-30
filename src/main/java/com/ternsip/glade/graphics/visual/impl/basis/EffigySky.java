@@ -68,6 +68,7 @@ public class EffigySky extends Effigy<SkyboxShader> {
     };
 
     private Vector3fc sunPosition = new Vector3f(0);
+    private float phase = 0;
 
     @Override
     public void render() {
@@ -87,11 +88,6 @@ public class EffigySky extends Effigy<SkyboxShader> {
                 new Vector3f(0),
                 new Vector3f(2 * SIZE)
         );
-    }
-
-    @Override
-    public int getPriority() {
-        return -100;
     }
 
     @Override

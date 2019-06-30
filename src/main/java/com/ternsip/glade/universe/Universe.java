@@ -14,7 +14,6 @@ import com.ternsip.glade.universe.entities.repository.EntityRepository;
 import com.ternsip.glade.universe.parts.chunks.Blocks;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import java.io.File;
@@ -61,7 +60,7 @@ public class Universe {
         entityPlayer.setScale(new Vector3f(1, 1, 1));
         getEntityRepository().setCameraTarget(entityPlayer);
 
-        EntitySun sun = new EntitySun(new Vector2f(0, 0), new Vector2f(20000, 20000), new Vector3f(1, 1, 1));
+        EntitySun sun = new EntitySun();
         sun.register();
         getEntityRepository().setSun(sun);
 

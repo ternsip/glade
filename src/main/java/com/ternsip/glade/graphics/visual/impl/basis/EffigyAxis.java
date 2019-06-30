@@ -37,10 +37,6 @@ public class EffigyAxis extends EffigyAnimated {
         return new Model(Arrays.asList(meshX, meshY, meshZ), new Vector3f(0), new Vector3f(0), new Vector3f(0.075f));
     }
 
-    @Override
-    public int getPriority() {
-        return 100;
-    }
 
     @Override
     public boolean isGraphicalInsideFrustum() {
