@@ -21,9 +21,9 @@ public class EffigySides extends Effigy<ChunkShader> {
     public static final long TIME_PERIOD_MILLISECONDS = 60_000L;
     public static final float TIME_PERIOD_DIVISOR = 1000f;
 
-    private SideConstructor rigidSides = new SideConstructor();
-    private SideConstructor translucentSides = new SideConstructor();
-    private SideConstructor waterSides = new SideConstructor();
+    private final SideConstructor rigidSides = new SideConstructor();
+    private final SideConstructor translucentSides = new SideConstructor();
+    private final SideConstructor waterSides = new SideConstructor();
 
     public void applyBlockUpdate(BlocksUpdate blocksUpdate) {
         getRigidSides().applyChanges(blocksUpdate.getRigidSides());
