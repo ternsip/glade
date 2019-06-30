@@ -3,7 +3,8 @@
 in vec3 position;
 in vec2 textureCoordinates;
 in vec3 normal;
-in vec4 colors;
+in float skyLight;
+in float emitLight;
 
 out vec2 pass_textureCoords;
 out vec3 pass_normal;
@@ -17,7 +18,7 @@ void main(void) {
 
     gl_Position = projectionMatrix * viewMatrix * transformationMatrix * vec4(position, 1.0);
     pass_normal =  (projectionMatrix * transformationMatrix * vec4(normal, 0.0)).xyz;
-    pass_ambient = colors.w;
+    pass_ambient = min(1, skyLight + emitLight);
     pass_textureCoords = textureCoordinates;
 
 }

@@ -382,12 +382,10 @@ public class Blocks implements Universal {
                             if (INDEXER.isInside(nx, ny, nz)) {
                                 Block nextBlock = getBlock(nx, ny, nz);
                                 if (nextBlock == null || (nextBlock.isSemiTransparent() && (block != nextBlock || !block.isCombineSides()))) {
-                                    byte nSkyLight = getSkyLight(nx, ny, nz);
-                                    byte nEmitLight = getEmitLight(nx, ny, nz);
-                                    newSideData = new SideData((byte) Math.min(MAX_LIGHT_LEVEL, nSkyLight + nEmitLight), block);
+                                    newSideData = new SideData(getSkyLight(nx, ny, nz), getEmitLight(nx, ny, nz), block);
                                 }
                             } else {
-                                newSideData = new SideData((byte) 0, block);
+                                newSideData = new SideData((byte) 0, (byte) 0, block);
                             }
                         }
                         if (newSideData != null && !newSideData.equals(oldSideData)) {

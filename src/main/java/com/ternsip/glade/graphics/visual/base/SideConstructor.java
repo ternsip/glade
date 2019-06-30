@@ -97,7 +97,8 @@ public class SideConstructor implements Graphical {
                     new MeshAttributes()
                             .add(INDICES, Utils.arrayToBuffer(new int[SIDES_PER_MESH * INDEX_SIDE_SIZE]))
                             .add(VERTICES, Utils.arrayToBuffer(new float[SIDES_PER_MESH * VERTEX_SIDE_SIZE]))
-                            .add(COLORS, Utils.arrayToBuffer(new float[SIDES_PER_MESH * COLOR_SIDE_SIZE]))
+                            .add(SKY_LIGHT, Utils.arrayToBuffer(new float[SIDES_PER_MESH * SKY_LIGHT_SIDE_SIZE]))
+                            .add(EMIT_LIGHT, Utils.arrayToBuffer(new float[SIDES_PER_MESH * EMIT_LIGHT_SIDE_SIZE]))
                             .add(NORMALS, Utils.arrayToBuffer(new float[SIDES_PER_MESH * NORMAL_SIDE_SIZE]))
                             .add(TEXTURES, Utils.arrayToBuffer(new float[SIDES_PER_MESH * TEXTURE_SIDE_SIZE])),
                     material, true
@@ -185,11 +186,17 @@ public class SideConstructor implements Graphical {
         sideIndexDataSrc.getVertices().get(vertices);
         sideIndexDataDst.getVertices().put(vertices);
 
-        float[] colors = new float[COLOR_SIDE_SIZE];
-        sideIndexDataSrc.getColors().position(sideIndexDataSrc.getColorPos());
-        sideIndexDataDst.getColors().position(sideIndexDataDst.getColorPos());
-        sideIndexDataSrc.getColors().get(colors);
-        sideIndexDataDst.getColors().put(colors);
+        float[] skyLights = new float[SKY_LIGHT_SIDE_SIZE];
+        sideIndexDataSrc.getSkyLights().position(sideIndexDataSrc.getSkyLightPos());
+        sideIndexDataDst.getSkyLights().position(sideIndexDataDst.getSkyLightPos());
+        sideIndexDataSrc.getSkyLights().get(skyLights);
+        sideIndexDataDst.getSkyLights().put(skyLights);
+
+        float[] emitLights = new float[EMIT_LIGHT_SIDE_SIZE];
+        sideIndexDataSrc.getEmitLights().position(sideIndexDataSrc.getEmitLightPos());
+        sideIndexDataDst.getEmitLights().position(sideIndexDataDst.getEmitLightPos());
+        sideIndexDataSrc.getEmitLights().get(emitLights);
+        sideIndexDataDst.getEmitLights().put(emitLights);
 
         float[] normals = new float[NORMAL_SIDE_SIZE];
         sideIndexDataSrc.getNormals().position(sideIndexDataSrc.getNormalPos());
@@ -224,11 +231,8 @@ public class SideConstructor implements Graphical {
             sideIndexData.getVertices().put(vIdx + sideIndexData.getVertexPos() + 1, cubeSideMeshData.getVertices()[vIdx + 1] + dy);
             sideIndexData.getVertices().put(vIdx + sideIndexData.getVertexPos() + 2, cubeSideMeshData.getVertices()[vIdx + 2] + dz);
 
-            int cIdx = i * COLORS.getNumberPerVertex();
-            sideIndexData.getColors().put(cIdx + sideIndexData.getColorPos(), 0f);
-            sideIndexData.getColors().put(cIdx + sideIndexData.getColorPos() + 1, 0f);
-            sideIndexData.getColors().put(cIdx + sideIndexData.getColorPos() + 2, 0f);
-            sideIndexData.getColors().put(cIdx + sideIndexData.getColorPos() + 3, (float) side.getSideData().getLight() / MAX_LIGHT_LEVEL);
+            sideIndexData.getSkyLights().put(i * SKY_LIGHT.getNumberPerVertex() + sideIndexData.getSkyLightPos(), (float) side.getSideData().getSkyLight() / MAX_LIGHT_LEVEL);
+            sideIndexData.getEmitLights().put(i * EMIT_LIGHT.getNumberPerVertex() + sideIndexData.getEmitLightPos(), (float) side.getSideData().getEmitLight() / MAX_LIGHT_LEVEL);
 
             int nIdx = i * NORMALS.getNumberPerVertex();
             sideIndexData.getNormals().put(nIdx + sideIndexData.getNormalPos(), cubeSideMeshData.getNormals()[nIdx]);
@@ -264,18 +268,21 @@ public class SideConstructor implements Graphical {
         public static final int INDEX_SIDE_SIZE = SIDE_INDICES.length;
         public static final int NORMAL_SIDE_SIZE = VERTICES_PER_SIDE * NORMALS.getNumberPerVertex();
         public static final int TEXTURE_SIDE_SIZE = VERTICES_PER_SIDE * TEXTURES.getNumberPerVertex();
-        public static final int COLOR_SIDE_SIZE = VERTICES_PER_SIDE * COLORS.getNumberPerVertex();
+        public static final int SKY_LIGHT_SIDE_SIZE = VERTICES_PER_SIDE * SKY_LIGHT.getNumberPerVertex();
+        public static final int EMIT_LIGHT_SIDE_SIZE = VERTICES_PER_SIDE * EMIT_LIGHT.getNumberPerVertex();
 
         int vertexStart;
         int vertexPos;
         int indexPos;
         int normalPos;
         int texturePos;
-        int colorPos;
+        int skyLightPos;
+        int emitLightPos;
 
         IntBuffer indices;
         FloatBuffer vertices;
-        FloatBuffer colors;
+        FloatBuffer skyLights;
+        FloatBuffer emitLights;
         FloatBuffer normals;
         FloatBuffer textures;
 
@@ -292,11 +299,13 @@ public class SideConstructor implements Graphical {
             this.indexPos = sideOffset * INDEX_SIDE_SIZE;
             this.normalPos = sideOffset * NORMAL_SIDE_SIZE;
             this.texturePos = sideOffset * TEXTURE_SIDE_SIZE;
-            this.colorPos = sideOffset * COLOR_SIDE_SIZE;
+            this.skyLightPos = sideOffset * SKY_LIGHT_SIDE_SIZE;
+            this.emitLightPos = sideOffset * EMIT_LIGHT_SIDE_SIZE;
 
             this.indices = meshAttributes.getBuffer(INDICES);
             this.vertices = meshAttributes.getBuffer(VERTICES);
-            this.colors = meshAttributes.getBuffer(COLORS);
+            this.skyLights = meshAttributes.getBuffer(SKY_LIGHT);
+            this.emitLights = meshAttributes.getBuffer(EMIT_LIGHT);
             this.normals = meshAttributes.getBuffer(NORMALS);
             this.textures = meshAttributes.getBuffer(TEXTURES);
 

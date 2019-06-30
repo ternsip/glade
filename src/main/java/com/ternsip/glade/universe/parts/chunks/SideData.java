@@ -12,7 +12,8 @@ import java.io.Serializable;
 @EqualsAndHashCode
 public class SideData implements Serializable {
 
-    private final byte light;
+    private final byte skyLight;
+    private final byte emitLight;
     private final Block block;
 
 }
