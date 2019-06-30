@@ -17,11 +17,14 @@ public class FrameBuffers implements Graphical {
     private int colorRenderBufferSecond;
     private int depthRenderBuffer;
     private int fbo;
+    private int maxSamples;
     private int samples;
     private int width;
     private int height;
 
     public FrameBuffers() {
+        maxSamples = glGetInteger(GL_MAX_SAMPLES);
+        samples = 2;
         getGraphics().getEventSnapReceiver().registerCallback(ResizeEvent.class, (resizeEvent) -> resizeFBOs());
         createFBOs();
     }
@@ -53,7 +56,6 @@ public class FrameBuffers implements Graphical {
         width = getGraphics().getWindowData().getWidth();
         height = getGraphics().getWindowData().getHeight();
 
-        samples = glGetInteger(GL_MAX_SAMPLES);
         colorRenderBufferFirst = glGenRenderbuffers();
         colorRenderBufferSecond = glGenRenderbuffers();
         depthRenderBuffer = glGenRenderbuffers();
