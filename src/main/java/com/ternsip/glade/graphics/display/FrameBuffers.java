@@ -26,6 +26,28 @@ public class FrameBuffers implements Graphical {
         createFBOs();
     }
 
+    public void resizeFBOs() {
+        glDeleteRenderbuffers(depthRenderBuffer);
+        glDeleteRenderbuffers(colorRenderBufferFirst);
+        glDeleteRenderbuffers(colorRenderBufferSecond);
+        glDeleteFramebuffers(fbo);
+        createFBOs();
+    }
+
+    public void bindBuffer() {
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    }
+
+    public void resolveBuffer() {
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+        glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    }
+
     private void createFBOs() {
 
         width = getGraphics().getWindowData().getWidth();
@@ -57,28 +79,6 @@ public class FrameBuffers implements Graphical {
         }
 
         glBindRenderbuffer(GL_RENDERBUFFER, 0);
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-    }
-
-    public void resizeFBOs() {
-        glDeleteRenderbuffers(depthRenderBuffer);
-        glDeleteRenderbuffers(colorRenderBufferFirst);
-        glDeleteRenderbuffers(colorRenderBufferSecond);
-        glDeleteFramebuffers(fbo);
-        createFBOs();
-    }
-
-    public void bindBuffer() {
-        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-    }
-
-    public void resolveBuffer() {
-
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-        glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     }

@@ -8,7 +8,8 @@ import com.ternsip.glade.graphics.visual.repository.*;
 import com.ternsip.glade.universe.common.Universal;
 import lombok.Getter;
 
-import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFW.glfwPollEvents;
+import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
 import static org.lwjgl.opengl.GL11.*;
 
 public class Graphics implements Universal {

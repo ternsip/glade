@@ -16,10 +16,7 @@ import org.lwjgl.system.Callback;
 import java.util.ArrayList;
 
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.glfw.GLFW.glfwGetPrimaryMonitor;
-import static org.lwjgl.opengl.GL11.glClearColor;
-import static org.lwjgl.opengl.GL11.glEnable;
-import static org.lwjgl.opengl.GL11.glViewport;
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_SAMPLE_ALPHA_TO_COVERAGE;
 import static org.lwjgl.opengl.GL13C.GL_MULTISAMPLE;
 import static org.lwjgl.system.MemoryUtil.NULL;
@@ -99,11 +96,6 @@ public class WindowData implements Universal, Graphical {
         return getWindowSize().y();
     }
 
-    private Vector2i getMainDisplaySize() {
-        GLFWVidMode vidMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-        return new Vector2i(vidMode.width(), vidMode.height());
-    }
-
     public boolean isActive() {
         return !glfwWindowShouldClose(getWindow());
     }
@@ -118,6 +110,11 @@ public class WindowData implements Universal, Graphical {
             callback.free();
         }
         glfwTerminate();
+    }
+
+    private Vector2i getMainDisplaySize() {
+        GLFWVidMode vidMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+        return new Vector2i(vidMode.width(), vidMode.height());
     }
 
     private void registerErrorEvent() {
