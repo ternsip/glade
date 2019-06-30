@@ -24,12 +24,14 @@ public class Universe {
 
     private final EventSnapReceiver eventSnapReceiver = new EventSnapReceiver();
     private final EntityRepository entityRepository = new EntityRepository();
+    private final String name = "universe";
+    private final Balance balance = new Balance();
+
+    @Getter(lazy = true)
+    private final Collisions collisions = new Collisions();
 
     @Getter(lazy = true)
     private final Blocks blocks = new Blocks();
-    private final String name = "universe";
-    private final Balance balance = new Balance();
-    private final Collisions collisions = new Collisions();
 
     public void initialize() {
         spawnTestEntities();
