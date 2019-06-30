@@ -61,12 +61,15 @@ public class Universe {
         entityPlayer.setScale(new Vector3f(1, 1, 1));
         getEntityRepository().setCameraTarget(entityPlayer);
 
-        new EntitySun(new Vector2f(0, 0), new Vector2f(20000, 20000), new Vector3f(1, 1, 1)).register();
+        EntitySun sun = new EntitySun(new Vector2f(0, 0), new Vector2f(20000, 20000), new Vector3f(1, 1, 1));
+        sun.register();
+        getEntityRepository().setSun(sun);
 
         Entity cube = new EntityGeneric(() -> new EffigyCube());
         cube.register();
 
         Entity lamp = new EntityGeneric(() -> new EffigyLamp());
+        lamp.register();
         lamp.register();
         lamp.setPosition(new Vector3f(-60f, 0, -60));
         lamp.setScale(new Vector3f(40, 40, 40));

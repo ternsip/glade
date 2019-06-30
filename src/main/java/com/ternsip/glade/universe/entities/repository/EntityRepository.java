@@ -1,9 +1,11 @@
 package com.ternsip.glade.universe.entities.repository;
 
+import com.ternsip.glade.common.logic.Transformable;
 import com.ternsip.glade.universe.collisions.base.Obstacle;
 import com.ternsip.glade.universe.common.Universal;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.base.MultiEntity;
+import com.ternsip.glade.universe.entities.impl.EntitySun;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,11 +17,11 @@ import java.util.concurrent.ConcurrentHashMap;
 @Setter
 public class EntityRepository implements Universal {
 
-    public static final Entity NO_CAMERA_TARGET = null;
-
     private final Set<MultiEntity> multiEntities = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private final Set<Entity> entities = Collections.newSetFromMap(new ConcurrentHashMap<>());
-    private Entity cameraTarget = NO_CAMERA_TARGET;
+
+    private Transformable cameraTarget = null;
+    private EntitySun sun =  null;
 
     public void register(MultiEntity entity) {
         multiEntities.add(entity);

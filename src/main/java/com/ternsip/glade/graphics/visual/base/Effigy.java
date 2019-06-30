@@ -6,13 +6,14 @@ import com.ternsip.glade.common.logic.Utils;
 import com.ternsip.glade.graphics.display.Graphical;
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.shader.base.ShaderProgram;
+import com.ternsip.glade.universe.common.Universal;
 import lombok.Getter;
 import org.joml.*;
 
 import java.lang.Math;
 
 @Getter
-public abstract class Effigy<SHADER extends ShaderProgram> implements Transformable, Graphical {
+public abstract class Effigy<SHADER extends ShaderProgram> implements Transformable, Graphical, Universal {
 
     @Getter(lazy = true)
     private final Model model = getGraphics().getModelRepository().getEffigyModel(this);

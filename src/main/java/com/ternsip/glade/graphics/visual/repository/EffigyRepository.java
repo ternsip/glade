@@ -1,5 +1,6 @@
 package com.ternsip.glade.graphics.visual.repository;
 
+import com.ternsip.glade.common.logic.Transformable;
 import com.ternsip.glade.graphics.display.Graphical;
 import com.ternsip.glade.graphics.visual.base.Effigy;
 import com.ternsip.glade.universe.common.Universal;
@@ -52,7 +53,7 @@ public class EffigyRepository implements Universal, Graphical {
                 entity.setVisualReloadRequired(false);
             }
         });
-        Entity cameraTarget = getUniverse().getEntityRepository().getCameraTarget();
+        Transformable cameraTarget = getUniverse().getEntityRepository().getCameraTarget();
         getEntityToEffigy().forEach((entity, effigy) -> {
             entity.update(effigy);
             if (entity == cameraTarget) {
