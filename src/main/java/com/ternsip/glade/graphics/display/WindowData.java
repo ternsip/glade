@@ -28,8 +28,8 @@ public class WindowData implements Universal, Graphical {
     public static final Vector4fc BACKGROUND_COLOR = new Vector4f(1f, 0f, 0f, 1f);
 
     private final ArrayList<Callback> callbacks = new ArrayList<>();
-    private FpsCounter fpsCounter = new FpsCounter();
-    private long window;
+    private final FpsCounter fpsCounter = new FpsCounter();
+    private final long window;
     private Vector2i windowSize;
 
     public WindowData() {
@@ -110,6 +110,18 @@ public class WindowData implements Universal, Graphical {
             callback.free();
         }
         glfwTerminate();
+    }
+
+    public void swapBuffers() {
+        glfwSwapBuffers(getWindow());
+    }
+
+    public void pollEvents() {
+        glfwPollEvents();
+    }
+
+    public void clear() {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
     private Vector2i getMainDisplaySize() {

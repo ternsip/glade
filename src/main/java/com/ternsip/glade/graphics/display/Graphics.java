@@ -8,10 +8,6 @@ import com.ternsip.glade.graphics.visual.repository.*;
 import com.ternsip.glade.universe.common.Universal;
 import lombok.Getter;
 
-import static org.lwjgl.glfw.GLFW.glfwPollEvents;
-import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
-import static org.lwjgl.opengl.GL11.*;
-
 public class Graphics implements Universal {
 
     @Getter
@@ -48,18 +44,16 @@ public class Graphics implements Universal {
     private final TexturePackRepository texturePackRepository = new TexturePackRepository();
 
     public void loop() {
-
         while (getWindowData().isActive()) {
             getFrameBuffers().bindBuffer();
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            getWindowData().clear();
             getEventSnapReceiver().update();
             getEffigyRepository().render();
             getWindowData().getFpsCounter().updateFps();
             getFrameBuffers().resolveBuffer();
-            glfwSwapBuffers(getWindowData().getWindow());
-            glfwPollEvents();
+            getWindowData().swapBuffers();
+            getWindowData().pollEvents();
         }
-
     }
 
     public void finish() {
