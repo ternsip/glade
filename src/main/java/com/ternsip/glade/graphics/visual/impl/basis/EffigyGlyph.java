@@ -53,7 +53,7 @@ public class EffigyGlyph extends EffigyAnimated {
 
     @Override
     protected Matrix4fc getProjectionMatrix() {
-        return getGraphics().getGraphicalRepository().getCamera().getOrthoProjectionMatrix();
+        return getGraphics().getCamera().getOrthoProjectionMatrix();
     }
 
     @RequiredArgsConstructor

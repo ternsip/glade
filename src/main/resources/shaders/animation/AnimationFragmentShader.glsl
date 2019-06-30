@@ -34,7 +34,7 @@ uniform TextureData displacementMap;
 uniform TextureData lightMap;
 uniform TextureData reflectionMap;
 
-uniform Light lights[MAX_LIGHTS];
+uniform Light sun;
 
 vec4 getTextureColor(TextureData textureData, bool mainTexture) {
     bool force = !textureData.isColorPresent && !textureData.isTexturePresent && mainTexture;
@@ -58,10 +58,9 @@ void main(void){
     // Diffuse color
     vec4 texColor = getTextureColor(diffuseMap, true);
     vec3 diffuseColor = vec3(0, 0, 0);
-    for (int i = 0; i < MAX_LIGHTS; i++){
-        float surfaceLight = max(dot(normalize(lights[i].pos), unitNormal), 0.0);
-        diffuseColor += texColor.xyz * lights[i].color * lights[i].intensity * surfaceLight;
-    }
+
+    float surfaceLight = max(dot(normalize(sun.pos), unitNormal), 0.0);
+    diffuseColor += texColor.xyz * sun.color * sun.intensity * surfaceLight;
 
     if (texColor.a < 0.1){
         discard;

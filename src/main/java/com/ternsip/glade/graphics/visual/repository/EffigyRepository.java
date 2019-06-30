@@ -1,16 +1,11 @@
 package com.ternsip.glade.graphics.visual.repository;
 
-import com.ternsip.glade.graphics.camera.Camera;
-import com.ternsip.glade.graphics.camera.CameraController;
-import com.ternsip.glade.graphics.camera.ThirdPersonController;
 import com.ternsip.glade.graphics.display.Graphical;
 import com.ternsip.glade.graphics.visual.base.Effigy;
-import com.ternsip.glade.universe.common.Light;
 import com.ternsip.glade.universe.common.Universal;
 import com.ternsip.glade.universe.entities.base.Entity;
 import lombok.Getter;
 
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -18,41 +13,21 @@ import java.util.Set;
 import static com.ternsip.glade.universe.entities.repository.EntityRepository.NO_CAMERA_TARGET;
 
 @Getter
-public class GraphicalRepository implements Universal, Graphical {
+public class EffigyRepository implements Universal, Graphical {
 
-    private static final Comparator<Map.Entry<Effigy, Float>> COMPARE_BY_PRIORITY = Comparator.comparing(e -> e.getKey().getPriority());
-    private static final Comparator<Map.Entry<Effigy, Float>> COMPARE_BY_DISTANCE_TO_CAMERA = Comparator.comparing(Map.Entry::getValue, Comparator.reverseOrder());
-
-    private final TextureRepository textureRepository = new TextureRepository();
-
-    @Getter(lazy = true)
-    private final TexturePackRepository texturePackRepository = new TexturePackRepository();
-
-    private final ModelRepository modelRepository = new ModelRepository();
-    private final ShaderRepository shaderRepository = new ShaderRepository();
-
-    private final Camera camera = new Camera();
-    private final CameraController cameraController = new ThirdPersonController();
     private final Map<Entity, Effigy> entityToEffigy = new HashMap<>();
 
     private long lastSeenNumberOfEntitiesInFrustum = 0;
 
     public void render() {
         updateEntities();
-        Set<Light> lights = getUniverse().getEntityRepository().getLights();
         lastSeenNumberOfEntitiesInFrustum = 0;
         getEntityToEffigy().values().forEach(effigy -> {
             if (effigy.isGraphicalInsideFrustum()) {
-                effigy.render(lights);
+                effigy.render();
                 ++lastSeenNumberOfEntitiesInFrustum;
             }
         });
-    }
-
-    public void finish() {
-        getModelRepository().finish();
-        getShaderRepository().finish();
-        getTextureRepository().finish();
     }
 
     @SuppressWarnings("unchecked")
@@ -87,7 +62,7 @@ public class GraphicalRepository implements Universal, Graphical {
             getEntityToEffigy().remove(target);
             getEntityToEffigy().forEach(Entity::update);
             target.update(targetVisual);
-            getCameraController().update(target);
+            getGraphics().getCameraController().update(target);
             getEntityToEffigy().put(target, targetVisual);
         } else {
             getEntityToEffigy().forEach(Entity::update);

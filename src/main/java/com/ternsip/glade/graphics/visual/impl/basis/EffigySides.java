@@ -7,7 +7,6 @@ import com.ternsip.glade.graphics.shader.impl.ChunkShader;
 import com.ternsip.glade.graphics.visual.base.Effigy;
 import com.ternsip.glade.graphics.visual.base.SideConstructor;
 import com.ternsip.glade.graphics.visual.repository.TextureRepository;
-import com.ternsip.glade.universe.common.Light;
 import com.ternsip.glade.universe.parts.blocks.Block;
 import com.ternsip.glade.universe.parts.blocks.BlockSide;
 import com.ternsip.glade.universe.parts.chunks.BlocksUpdate;
@@ -15,8 +14,6 @@ import lombok.Getter;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.joml.Vector2f;
-
-import java.util.Set;
 
 @Getter
 public class EffigySides extends Effigy<ChunkShader> {
@@ -41,13 +38,13 @@ public class EffigySides extends Effigy<ChunkShader> {
     }
 
     @Override
-    public void render(Set<Light> lights) {
+    public void render() {
         getShader().start();
         getShader().getProjectionMatrix().load(getProjectionMatrix());
         getShader().getViewMatrix().load(getViewMatrix());
         getShader().getTransformationMatrix().load(getTransformationMatrix());
         getShader().getTime().load((System.currentTimeMillis() % TIME_PERIOD_MILLISECONDS) / TIME_PERIOD_DIVISOR);
-        TextureRepository.AtlasFragment atlasFragment = getGraphics().getGraphicalRepository().getTexturePackRepository().getCubeMap(Block.WATER).getByBlockSide(BlockSide.TOP);
+        TextureRepository.AtlasFragment atlasFragment = getGraphics().getTexturePackRepository().getCubeMap(Block.WATER).getByBlockSide(BlockSide.TOP);
         getShader().getWaterTextureStart().load(new Vector2f(atlasFragment.getStartU(), atlasFragment.getStartV()));
         getShader().getWaterTextureEnd().load(new Vector2f(atlasFragment.getEndU(), atlasFragment.getEndV()));
         loadMeshesToShader(getRigidSides());

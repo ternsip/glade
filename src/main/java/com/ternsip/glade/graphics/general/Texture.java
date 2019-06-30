@@ -29,7 +29,7 @@ public class Texture implements Graphical {
         this.texturePresent = file != null;
         this.colorPresent = color != null;
         this.color = colorPresent ? color : DEFAULT_COLOR;
-        this.atlasTexture = getGraphics().getGraphicalRepository().getTextureRepository().getTexture(this.texturePresent ? file : MISSING_TEXTURE);
+        this.atlasTexture = getGraphics().getTextureRepository().getTexture(this.texturePresent ? file : MISSING_TEXTURE);
     }
 
     public Texture(TextureRepository.AtlasDecoder atlasDecoder) {

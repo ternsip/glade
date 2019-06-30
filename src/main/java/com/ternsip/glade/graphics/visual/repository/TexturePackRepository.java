@@ -24,7 +24,7 @@ public class TexturePackRepository implements Graphical {
 
     public void reloadBlocksTextureAltas(File atlasDirectory) {
 
-        blocksAtlasDecoder = getGraphics().getGraphicalRepository().getTextureRepository().getAtlasDecoder(atlasDirectory);
+        blocksAtlasDecoder = getGraphics().getTextureRepository().getAtlasDecoder(atlasDirectory);
 
         for (int blockIndex = 0; blockIndex < blocksTextures.length; ++blockIndex) {
 

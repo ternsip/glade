@@ -1,7 +1,6 @@
 package com.ternsip.glade.universe.entities.repository;
 
 import com.ternsip.glade.universe.collisions.base.Obstacle;
-import com.ternsip.glade.universe.common.Light;
 import com.ternsip.glade.universe.common.Universal;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.base.MultiEntity;
@@ -20,7 +19,6 @@ public class EntityRepository implements Universal {
 
     private final Set<MultiEntity> multiEntities = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private final Set<Entity> entities = Collections.newSetFromMap(new ConcurrentHashMap<>());
-    private final Set<Light> lights = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private Entity cameraTarget = NO_CAMERA_TARGET;
 
     public void register(MultiEntity entity) {
@@ -33,9 +31,6 @@ public class EntityRepository implements Universal {
 
     public void register(Entity entity) {
         entities.add(entity);
-        if (entity instanceof Light) {
-            lights.add((Light) entity);
-        }
         if (entity instanceof Obstacle) {
             getUniverse().getCollisions().add((Obstacle) entity);
         }
@@ -43,9 +38,6 @@ public class EntityRepository implements Universal {
 
     public void unregister(Entity entity) {
         entities.remove(entity);
-        if (entity instanceof Light) {
-            lights.remove(entity);
-        }
         if (entity instanceof Obstacle) {
             getUniverse().getCollisions().remove((Obstacle) entity);
         }

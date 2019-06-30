@@ -84,7 +84,7 @@ public class SideConstructor implements Graphical {
             return;
         }
 
-        TexturePackRepository texturePackRepository = getGraphics().getGraphicalRepository().getTexturePackRepository();
+        TexturePackRepository texturePackRepository = getGraphics().getTexturePackRepository();
         List<SidePosition> sidesToRemove = changes.getSidesToRemove();
         List<Side> sidesToAdd = changes.getSidesToAdd();
 
@@ -213,7 +213,7 @@ public class SideConstructor implements Graphical {
         int dx = side.getSidePosition().getX();
         int dy = side.getSidePosition().getY();
         int dz = side.getSidePosition().getZ();
-        TextureRepository.AtlasFragment atlasFragment = getGraphics().getGraphicalRepository().getTexturePackRepository().getCubeMap(side.getSideData().getBlock()).getByBlockSide(blockSide);
+        TextureRepository.AtlasFragment atlasFragment = getGraphics().getTexturePackRepository().getCubeMap(side.getSideData().getBlock()).getByBlockSide(blockSide);
 
         for (int i = 0; i < SIDE_INDICES.length; ++i) {
             sideIndexData.getIndices().put(i + sideIndexData.getIndexPos(), SIDE_INDICES[i] + sideIndexData.getVertexStart());

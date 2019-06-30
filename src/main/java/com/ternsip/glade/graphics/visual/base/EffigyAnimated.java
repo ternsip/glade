@@ -9,9 +9,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
+import org.joml.Vector3f;
 import org.joml.Vector3fc;
-
-import java.util.Set;
 
 @Getter
 @Setter
@@ -21,9 +20,10 @@ public abstract class EffigyAnimated extends Effigy<AnimationShader> {
     private final Animation animation = new Animation(getModel());
 
     private long lastUpdateMillis;
+    private Light sun = new LightSource(new Vector3f(0), 0, new Vector3f(0));
 
     @Override
-    public void render(Set<Light> lights) {
+    public void render() {
         getShader().start();
         updateAnimation();
         Matrix4f[] boneTransforms = getAnimation().getBoneTransforms();
@@ -32,7 +32,7 @@ public abstract class EffigyAnimated extends Effigy<AnimationShader> {
         getShader().getAnimated().load(getAnimation().isAnimated());
         getShader().getProjectionMatrix().load(projection);
         getShader().getViewMatrix().load(view);
-        getShader().getLights().load(lights);
+        getShader().getSun().load(getSun());
         getShader().getBoneTransforms().load(boneTransforms);
         getShader().getTransformationMatrix().load(getTransformationMatrix());
         for (Mesh mesh : getAnimation().getModel().getMeshes()) {
@@ -60,7 +60,7 @@ public abstract class EffigyAnimated extends Effigy<AnimationShader> {
     private void updateAnimation() {
         Vector3fc scale = getAdjustedScale();
         float maxScale = Math.max(Math.max(scale.x(), scale.y()), scale.z());
-        Camera camera = getGraphics().getGraphicalRepository().getCamera();
+        Camera camera = getGraphics().getCamera();
         double criterion = (camera.getPosition().distance(getAdjustedPosition()) / maxScale) / 10;
         long updateIntervalMilliseconds = (long) (criterion * criterion * criterion);
         if (getLastUpdateMillis() + updateIntervalMilliseconds < System.currentTimeMillis()) {

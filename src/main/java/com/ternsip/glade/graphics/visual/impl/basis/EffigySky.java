@@ -6,7 +6,6 @@ import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.shader.base.MeshAttributes;
 import com.ternsip.glade.graphics.shader.impl.SkyboxShader;
 import com.ternsip.glade.graphics.visual.base.Effigy;
-import com.ternsip.glade.universe.common.Light;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.Matrix4f;
@@ -15,7 +14,6 @@ import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
 import java.util.Collections;
-import java.util.Set;
 
 import static com.ternsip.glade.graphics.shader.base.ShaderProgram.VERTICES;
 
@@ -72,7 +70,7 @@ public class EffigySky extends Effigy<SkyboxShader> {
     private Vector3fc sunPosition = new Vector3f(0);
 
     @Override
-    public void render(Set<Light> lights) {
+    public void render() {
         getShader().start();
         getShader().getProjectionMatrix().load(getProjectionMatrix());
         getShader().getSunVector().load(getSunPosition());
@@ -108,13 +106,13 @@ public class EffigySky extends Effigy<SkyboxShader> {
 
     @Override
     protected Matrix4fc getViewMatrix() {
-        Matrix4fc viewMatrix = getGraphics().getGraphicalRepository().getCamera().getViewMatrix();
+        Matrix4fc viewMatrix = getGraphics().getCamera().getViewMatrix();
         return new Matrix4f(viewMatrix).m30(0).m31(0).m32(0);
     }
 
     @Override
     protected Matrix4fc getProjectionMatrix() {
-        return getGraphics().getGraphicalRepository().getCamera().getFarProjectionMatrix();
+        return getGraphics().getCamera().getFarProjectionMatrix();
     }
 
 }

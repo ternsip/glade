@@ -1,5 +1,6 @@
 package com.ternsip.glade.graphics.display;
 
+import com.ternsip.glade.common.events.display.ResizeEvent;
 import lombok.Getter;
 
 import static org.lwjgl.opengl.ARBFramebufferObject.GL_RENDERBUFFER;
@@ -20,14 +21,15 @@ public class FrameBuffers implements Graphical {
     private int width;
     private int height;
 
-    public FrameBuffers(int width, int height) {
-        createFBOs(width, height);
+    public FrameBuffers() {
+        getGraphics().getEventSnapReceiver().registerCallback(ResizeEvent.class, (resizeEvent) -> resizeFBOs());
+        createFBOs();
     }
 
-    private void  createFBOs(int width, int height) {
+    private void createFBOs() {
 
-        this.width = width;
-        this.height = height;
+        width = getGraphics().getWindowData().getWidth();
+        height = getGraphics().getWindowData().getHeight();
 
         samples = glGetInteger(GL_MAX_SAMPLES);
         colorRenderBufferFirst = glGenRenderbuffers();
@@ -59,12 +61,12 @@ public class FrameBuffers implements Graphical {
 
     }
 
-    public void resizeFBOs(int width, int height) {
+    public void resizeFBOs() {
         glDeleteRenderbuffers(depthRenderBuffer);
         glDeleteRenderbuffers(colorRenderBufferFirst);
         glDeleteRenderbuffers(colorRenderBufferSecond);
         glDeleteFramebuffers(fbo);
-        createFBOs(width, height);
+        createFBOs();
     }
 
     public void bindBuffer() {

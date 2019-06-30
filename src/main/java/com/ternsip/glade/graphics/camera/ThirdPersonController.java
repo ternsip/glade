@@ -43,7 +43,7 @@ public class ThirdPersonController implements Graphical, CameraController {
 
     public void update(Transformable transformable) {
         setTarget(transformable.getPosition());
-        Camera camera = getGraphics().getGraphicalRepository().getCamera();
+        Camera camera = getGraphics().getCamera();
         camera.setPosition(getEyePosition());
         camera.setViewMatrix(getViewMatrix());
 
@@ -72,7 +72,7 @@ public class ThirdPersonController implements Graphical, CameraController {
     }
 
     private void recalculateRotation(CursorPosEvent event) {
-        if (getGraphics().isMouseDown(GLFW_MOUSE_BUTTON_1)) {
+        if (getGraphics().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_1)) {
             float nx = limitAngle(getRotation().x() + (float) (event.getDy() * ROTATION_MULTIPLIER_X), MAX_ROTATION_DELTA_X);
             float ny = limitAngle(getRotation().y() + (float) (event.getDx() * ROTATION_MULTIPLIER_Y), MAX_ROTATION_DELTA_Y);
             setRotation(new Vector2f(nx, ny));

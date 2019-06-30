@@ -6,21 +6,19 @@ import com.ternsip.glade.common.logic.Utils;
 import com.ternsip.glade.graphics.display.Graphical;
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.shader.base.ShaderProgram;
-import com.ternsip.glade.universe.common.Light;
 import lombok.Getter;
 import org.joml.*;
 
 import java.lang.Math;
-import java.util.Set;
 
 @Getter
 public abstract class Effigy<SHADER extends ShaderProgram> implements Transformable, Graphical {
 
     @Getter(lazy = true)
-    private final Model model = getGraphics().getGraphicalRepository().getModelRepository().getEffigyModel(this);
+    private final Model model = getGraphics().getModelRepository().getEffigyModel(this);
 
     @Getter(lazy = true)
-    private final SHADER shader = getGraphics().getGraphicalRepository().getShaderRepository().getShader(this);
+    private final SHADER shader = getGraphics().getShaderRepository().getShader(this);
 
     private final Vector3f position = new Vector3f(0);
     private final Vector3f scale = new Vector3f(1);
@@ -64,7 +62,7 @@ public abstract class Effigy<SHADER extends ShaderProgram> implements Transforma
         rotation.add(delta);
     }
 
-    public abstract void render(Set<Light> lights);
+    public abstract void render();
 
     public abstract Model loadModel();
 
@@ -78,10 +76,10 @@ public abstract class Effigy<SHADER extends ShaderProgram> implements Transforma
 
     public void finish() {
         if (deleteModelOnFinish()) {
-            getGraphics().getGraphicalRepository().getModelRepository().removeEffigyModel(this);
+            getGraphics().getModelRepository().removeEffigyModel(this);
         }
         if (deleteShaderOnFinish()) {
-            getGraphics().getGraphicalRepository().getShaderRepository().removeShader(this);
+            getGraphics().getShaderRepository().removeShader(this);
         }
     }
 
@@ -96,14 +94,14 @@ public abstract class Effigy<SHADER extends ShaderProgram> implements Transforma
     }
 
     public FrustumIntersection getFrustumIntersection() {
-        Matrix4fc projection = getGraphics().getGraphicalRepository().getCamera().getNormalProjectionMatrix();
-        Matrix4fc view = getGraphics().getGraphicalRepository().getCamera().getViewMatrix();
+        Matrix4fc projection = getGraphics().getCamera().getNormalProjectionMatrix();
+        Matrix4fc view = getGraphics().getCamera().getViewMatrix();
         Matrix4fc projectionViewMatrix = projection.mul(view, new Matrix4f());
         return new FrustumIntersection(projectionViewMatrix);
     }
 
     public float getSquaredDistanceToCamera() {
-        return getAdjustedPosition().distanceSquared(getGraphics().getGraphicalRepository().getCamera().getPosition());
+        return getAdjustedPosition().distanceSquared(getGraphics().getCamera().getPosition());
     }
 
     public Object getShaderKey() {
@@ -117,11 +115,11 @@ public abstract class Effigy<SHADER extends ShaderProgram> implements Transforma
     }
 
     protected Matrix4fc getViewMatrix() {
-        return getGraphics().getGraphicalRepository().getCamera().getViewMatrix();
+        return getGraphics().getCamera().getViewMatrix();
     }
 
     protected Matrix4fc getProjectionMatrix() {
-        return getGraphics().getGraphicalRepository().getCamera().getNormalProjectionMatrix();
+        return getGraphics().getCamera().getNormalProjectionMatrix();
     }
 
 }
