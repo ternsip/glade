@@ -4,11 +4,19 @@ import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.general.ModelLoader;
 import com.ternsip.glade.graphics.general.Settings;
 import com.ternsip.glade.graphics.visual.base.EffigyAnimated;
+import com.ternsip.glade.graphics.visual.base.LightSource;
+import com.ternsip.glade.universe.common.Light;
+import lombok.Getter;
+import lombok.Setter;
 import org.joml.Vector3f;
 
 import java.io.File;
 
+@Getter
+@Setter
 public class EffigyBoy extends EffigyAnimated {
+
+    public float skyIntensity = 0;
 
     public Model loadModel() {
         return ModelLoader.loadModel(Settings
@@ -19,4 +27,9 @@ public class EffigyBoy extends EffigyAnimated {
         );
     }
 
+    @Override
+    public Light getSun() {
+        Light sun = super.getSun();
+        return new LightSource(sun.getPosition(), sun.getIntensity() * getSkyIntensity(), sun.getColor());
+    }
 }

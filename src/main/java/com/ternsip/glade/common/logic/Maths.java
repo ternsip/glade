@@ -120,4 +120,7 @@ public class Maths {
         return (float) (Math.log(d) / Math.log(2.0));
     }
 
+    public static Vector3i round(Vector3fc vec) {
+        return new Vector3i((int)vec.x(), (int)vec.y(), (int)vec.z());
+    }
 }

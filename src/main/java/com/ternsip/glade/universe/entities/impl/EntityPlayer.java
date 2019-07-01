@@ -7,14 +7,13 @@ import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.parts.blocks.Block;
 import lombok.Getter;
 import lombok.Setter;
-import org.joml.LineSegmentf;
-import org.joml.Vector3f;
-import org.joml.Vector3fc;
-import org.joml.Vector3i;
+import org.joml.*;
 
+import java.lang.Math;
 import java.util.List;
 
 import static com.ternsip.glade.common.logic.Maths.*;
+import static com.ternsip.glade.universe.parts.chunks.Blocks.MAX_LIGHT_LEVEL;
 import static org.lwjgl.glfw.GLFW.*;
 
 @Getter
@@ -36,6 +35,7 @@ public class EntityPlayer extends Entity<EffigyBoy> {
     @Override
     public void update(EffigyBoy effigy) {
         super.update(effigy);
+        effigy.setSkyIntensity(getSkyIntensity());
     }
 
     @Override
@@ -68,6 +68,11 @@ public class EntityPlayer extends Entity<EffigyBoy> {
                 (int) Math.floor(getPosition().y()) - 1,
                 (int) Math.floor(getPosition().z())
         );
+    }
+
+    private float getSkyIntensity() {
+        Vector3ic blockPos = round(getPosition());
+        return getUniverse().getBlocks().isBlockExists(blockPos) ? getUniverse().getBlocks().getSkyLight(blockPos) / (float)MAX_LIGHT_LEVEL : 1;
     }
 
     private Vector3fc tryToMove(Vector3fc startPosition, Vector3fc endPosition) {

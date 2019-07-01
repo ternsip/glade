@@ -7,6 +7,8 @@ import lombok.Getter;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
+import static java.lang.Math.abs;
+
 @Getter
 public class EntitySun extends Entity<EffigySky> implements Light {
 
@@ -44,7 +46,7 @@ public class EntitySun extends Entity<EffigySky> implements Light {
 
     @Override
     public float getIntensity() {
-        return 1;
+        return (float) Math.max(0.2, 1 - abs(1/3.0 - phase) * 3);
     }
 
     @Override

@@ -47,6 +47,7 @@ public class EffigySides extends Effigy<ChunkShader> {
         TextureRepository.AtlasFragment atlasFragment = getGraphics().getTexturePackRepository().getCubeMap(Block.WATER).getByBlockSide(BlockSide.TOP);
         getShader().getWaterTextureStart().load(new Vector2f(atlasFragment.getStartU(), atlasFragment.getStartV()));
         getShader().getWaterTextureEnd().load(new Vector2f(atlasFragment.getEndU(), atlasFragment.getEndV()));
+        getShader().getSun().load(getUniverse().getEntityRepository().getSun());
         loadMeshesToShader(getRigidSides());
         loadMeshesToShader(getTranslucentSides());
         getShader().getWater().load(true);

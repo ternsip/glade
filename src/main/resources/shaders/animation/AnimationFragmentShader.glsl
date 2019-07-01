@@ -49,7 +49,8 @@ vec4 getTextureColor(TextureData textureData, bool mainTexture) {
 //https://github.com/lwjglgamedev/lwjglbook/blob/master/chapter28/src/main/resources/shaders/point_light_fragment.fs
 void main(void){
 
-    vec3 base_ambient = vec3(0.5, 0.5, 0.5);
+    vec3 skyLight = sun.color * sun.intensity;
+    vec3 base_ambient = skyLight * vec3(0.5, 0.5, 0.5);
     float ambient_multiplier = 0.5;
     float diffuseFactor = 0.6;
 
@@ -60,7 +61,7 @@ void main(void){
     vec3 diffuseColor = vec3(0, 0, 0);
 
     float surfaceLight = max(dot(normalize(sun.pos), unitNormal), 0.0);
-    diffuseColor += texColor.xyz * sun.color * sun.intensity * surfaceLight;
+    diffuseColor += skyLight * texColor.xyz * surfaceLight;
 
     if (texColor.a < 0.1){
         discard;

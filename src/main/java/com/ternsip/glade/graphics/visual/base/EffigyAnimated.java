@@ -4,6 +4,7 @@ import com.ternsip.glade.graphics.camera.Camera;
 import com.ternsip.glade.graphics.general.Animation;
 import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.shader.impl.AnimationShader;
+import com.ternsip.glade.universe.common.Light;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.Matrix4f;
@@ -29,7 +30,7 @@ public abstract class EffigyAnimated extends Effigy<AnimationShader> {
         getShader().getAnimated().load(getAnimation().isAnimated());
         getShader().getProjectionMatrix().load(projection);
         getShader().getViewMatrix().load(view);
-        getShader().getSun().load(getUniverse().getEntityRepository().getSun());
+        getShader().getSun().load(getSun());
         getShader().getBoneTransforms().load(boneTransforms);
         getShader().getTransformationMatrix().load(getTransformationMatrix());
         for (Mesh mesh : getAnimation().getModel().getMeshes()) {
@@ -49,9 +50,17 @@ public abstract class EffigyAnimated extends Effigy<AnimationShader> {
         getShader().stop();
     }
 
+    public Light getSun() {
+        return getUniverse().getEntityRepository().getSun();
+    }
+
     @Override
     public Class<AnimationShader> getShaderClass() {
         return AnimationShader.class;
+    }
+
+    public float getSkyIntensity() {
+        return 1;
     }
 
     private void updateAnimation() {

@@ -26,6 +26,7 @@ public final class ChunkShader extends ShaderProgram {
     private final UniformMatrix4 viewMatrix = new UniformMatrix4();
     private final UniformMatrix4 transformationMatrix = new UniformMatrix4();
 
+    private final UniformLight sun = new UniformLight();
     private final UniformBoolean water = new UniformBoolean();
     private final UniformFloat time = new UniformFloat();
     private final UniformVec2 waterTextureStart = new UniformVec2();

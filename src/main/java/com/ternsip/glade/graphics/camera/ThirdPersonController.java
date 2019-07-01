@@ -29,7 +29,7 @@ public class ThirdPersonController implements Graphical, CameraController {
     private static final float ROTATION_MULTIPLIER_Y = -0.005f;
     private static final float SCROLL_MULTIPLIER = 1;
 
-    private Vector3f target = new Vector3f(0);
+    private Vector3fc target = new Vector3f(0);
     private float distanceFromTarget = (MAX_DISTANCE_FROM_TARGET + MIN_DISTANCE_FROM_TARGET) * 0.05f;
     private Vector2fc rotation = new Vector2f();
 
