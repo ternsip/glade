@@ -2,8 +2,8 @@ package com.ternsip.glade.graphics.shader.impl;
 
 import com.ternsip.glade.graphics.shader.base.ShaderProgram;
 import com.ternsip.glade.graphics.shader.uniforms.UniformFloat;
+import com.ternsip.glade.graphics.shader.uniforms.UniformLight;
 import com.ternsip.glade.graphics.shader.uniforms.UniformMatrix4;
-import com.ternsip.glade.graphics.shader.uniforms.UniformVec3;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,6 +21,6 @@ public final class SkyboxShader extends ShaderProgram {
     private final UniformFloat phase = new UniformFloat();
     private final UniformMatrix4 projectionMatrix = new UniformMatrix4();
     private final UniformMatrix4 viewMatrix = new UniformMatrix4();
-    private final UniformVec3 sunVector = new UniformVec3();
+    private final UniformLight sun = new UniformLight();
 
 }

@@ -11,7 +11,6 @@ import lombok.Setter;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.joml.Vector3f;
-import org.joml.Vector3fc;
 
 import java.util.Collections;
 
@@ -67,16 +66,12 @@ public class EffigySky extends Effigy<SkyboxShader> {
             SIZE, -SIZE, SIZE
     };
 
-    private Vector3fc sunPosition = new Vector3f(0);
-    private float phase = 0;
-
     @Override
     public void render() {
         getShader().start();
         getShader().getProjectionMatrix().load(getProjectionMatrix());
-        getShader().getSunVector().load(getSunPosition());
+        getShader().getSun().load(getUniverse().getEntityRepository().getSun());
         getShader().getViewMatrix().load(getViewMatrix());
-        getShader().getPhase().load(getPhase());
         getModel().getMeshes().get(0).render();
         getShader().stop();
     }

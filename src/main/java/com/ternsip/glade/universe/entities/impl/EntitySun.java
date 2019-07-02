@@ -20,8 +20,6 @@ public class EntitySun extends Entity<EffigySky> implements Light {
 
     @Override
     public void update(EffigySky effigy) {
-        effigy.setSunPosition(getPosition());
-        effigy.setPhase(getPhase());
     }
 
     @Override
