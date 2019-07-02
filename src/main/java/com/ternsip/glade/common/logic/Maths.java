@@ -121,6 +121,6 @@ public class Maths {
     }
 
     public static Vector3i round(Vector3fc vec) {
-        return new Vector3i((int)vec.x(), (int)vec.y(), (int)vec.z());
+        return new Vector3i((int) vec.x(), (int) vec.y(), (int) vec.z());
     }
 }

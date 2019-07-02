@@ -44,7 +44,7 @@ public class EntitySun extends Entity<EffigySky> implements Light {
 
     @Override
     public float getIntensity() {
-        return (float) Math.max(0.2, 1 - abs(1/3.0 - phase) * 3);
+        return (float) Math.max(0.2, 1 - abs(1 / 3.0 - phase) * 3);
     }
 
     @Override

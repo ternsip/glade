@@ -50,13 +50,13 @@ public abstract class EffigyAnimated extends Effigy<AnimationShader> {
         getShader().stop();
     }
 
-    public Light getSun() {
-        return getUniverse().getEntityRepository().getSun();
-    }
-
     @Override
     public Class<AnimationShader> getShaderClass() {
         return AnimationShader.class;
+    }
+
+    public Light getSun() {
+        return getUniverse().getEntityRepository().getSun();
     }
 
     public float getSkyIntensity() {

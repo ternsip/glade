@@ -21,7 +21,7 @@ public class EntityRepository implements Universal {
     private final Set<Entity> entities = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     private Transformable cameraTarget = null;
-    private EntitySun sun =  null;
+    private EntitySun sun = null;
 
     public void register(MultiEntity entity) {
         multiEntities.add(entity);

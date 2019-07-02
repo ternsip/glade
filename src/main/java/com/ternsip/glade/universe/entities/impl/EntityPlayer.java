@@ -72,7 +72,7 @@ public class EntityPlayer extends Entity<EffigyBoy> {
 
     private float getSkyIntensity() {
         Vector3ic blockPos = round(getPosition());
-        return getUniverse().getBlocks().isBlockExists(blockPos) ? getUniverse().getBlocks().getSkyLight(blockPos) / (float)MAX_LIGHT_LEVEL : 1;
+        return getUniverse().getBlocks().isBlockExists(blockPos) ? getUniverse().getBlocks().getSkyLight(blockPos) / (float) MAX_LIGHT_LEVEL : 1;
     }
 
     private Vector3fc tryToMove(Vector3fc startPosition, Vector3fc endPosition) {
