@@ -11,10 +11,12 @@ in vec2 textureCoordinates;
 in vec3 normal;
 in float skyLight;
 in float emitLight;
+in float blockType;
 
 out vec2 pass_textureCoords;
 out vec3 pass_normal;
 out float pass_ambient;
+out float blockTypeValue;
 
 uniform Light sun;
 uniform mat4 projectionMatrix;
@@ -27,5 +29,6 @@ void main(void) {
     pass_normal =  (projectionMatrix * transformationMatrix * vec4(normal, 0.0)).xyz;
     pass_ambient = min(1, sun.intensity * skyLight + emitLight);
     pass_textureCoords = textureCoordinates;
+    blockTypeValue = blockType;
 
 }

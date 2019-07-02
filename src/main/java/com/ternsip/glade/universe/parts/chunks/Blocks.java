@@ -393,7 +393,7 @@ public class Blocks implements Universal {
                             addSide(sidePosition, newSideData);
                         }
                         if (newSideData == null && oldSideData != null) {
-                            blocksUpdate.remove(oldSideData.getBlock(), sidePosition);
+                            blocksUpdate.remove(sidePosition);
                             removeSide(sidePosition);
                         }
                     }

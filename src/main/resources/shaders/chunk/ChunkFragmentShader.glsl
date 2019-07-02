@@ -1,6 +1,7 @@
 #version 400 core
 
 #define M_PI 3.1415926535897932384626433832795
+const int BLOCK_TYPE_WATER = 1;
 
 struct TextureData {
     bool isTexturePresent;
@@ -14,6 +15,7 @@ struct TextureData {
 in vec2 pass_textureCoords;
 in float pass_ambient;
 in vec3 pass_normal;
+in float blockTypeValue;
 
 out vec4 out_colour;
 
@@ -35,9 +37,13 @@ vec4 getTextureColor(TextureData textureData, bool mainTexture) {
     return textureData.isColorPresent ? textureData.color : vec4(0, 0, 0, 0);
 }
 
+bool isBlockOfType(int type) {
+    return abs(blockTypeValue - type) < 1e-3;
+}
+
 void main(void){
 
-    if (water) {
+    if (isBlockOfType(BLOCK_TYPE_WATER)) {
         vec2 diff = waterTextureEnd - waterTextureStart;
         vec2 cur = (pass_textureCoords - waterTextureStart) / diff;
         float cc = 400;

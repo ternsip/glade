@@ -21,13 +21,13 @@ public final class ChunkShader extends ShaderProgram {
     public static final AttributeData SKY_LIGHT = new AttributeData(3, "skyLight", 1, AttributeData.ArrayType.FLOAT);
     public static final AttributeData EMIT_LIGHT = new AttributeData(4, "emitLight", 1, AttributeData.ArrayType.FLOAT);
     public static final AttributeData NORMALS = new AttributeData(5, "normal", 3, AttributeData.ArrayType.FLOAT);
+    public static final AttributeData BLOCK_TYPE = new AttributeData(6, "blockType", 1, AttributeData.ArrayType.FLOAT);
 
     private final UniformMatrix4 projectionMatrix = new UniformMatrix4();
     private final UniformMatrix4 viewMatrix = new UniformMatrix4();
     private final UniformMatrix4 transformationMatrix = new UniformMatrix4();
 
     private final UniformLight sun = new UniformLight();
-    private final UniformBoolean water = new UniformBoolean();
     private final UniformFloat time = new UniformFloat();
     private final UniformVec2 waterTextureStart = new UniformVec2();
     private final UniformVec2 waterTextureEnd = new UniformVec2();

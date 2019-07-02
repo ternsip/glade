@@ -21,14 +21,10 @@ public class EffigySides extends Effigy<ChunkShader> {
     public static final long TIME_PERIOD_MILLISECONDS = 60_000L;
     public static final float TIME_PERIOD_DIVISOR = 1000f;
 
-    private final SideConstructor rigidSides = new SideConstructor();
-    private final SideConstructor translucentSides = new SideConstructor();
-    private final SideConstructor waterSides = new SideConstructor();
+    private final SideConstructor sideConstructor = new SideConstructor();
 
     public void applyBlockUpdate(BlocksUpdate blocksUpdate) {
-        getRigidSides().applyChanges(blocksUpdate.getRigidSides());
-        getTranslucentSides().applyChanges(blocksUpdate.getTranslucentSides());
-        getWaterSides().applyChanges(blocksUpdate.getWaterSides());
+        getSideConstructor().applyChanges(blocksUpdate);
     }
 
     @Override
@@ -48,11 +44,13 @@ public class EffigySides extends Effigy<ChunkShader> {
         getShader().getWaterTextureStart().load(new Vector2f(atlasFragment.getStartU(), atlasFragment.getStartV()));
         getShader().getWaterTextureEnd().load(new Vector2f(atlasFragment.getEndU(), atlasFragment.getEndV()));
         getShader().getSun().load(getUniverse().getEntityRepository().getSun());
-        loadMeshesToShader(getRigidSides());
-        loadMeshesToShader(getTranslucentSides());
-        getShader().getWater().load(true);
-        loadMeshesToShader(getWaterSides());
-        getShader().getWater().load(false);
+        for (Mesh mesh : getSideConstructor().getMeshes()) {
+            getShader().getDiffuseMap().load(mesh.getMaterial().getDiffuseMap());
+            getShader().getSpecularMap().load(mesh.getMaterial().getSpecularMap());
+            getShader().getAmbientMap().load(mesh.getMaterial().getAmbientMap());
+            getShader().getEmissiveMap().load(mesh.getMaterial().getEmissiveMap());
+            mesh.render();
+        }
         getShader().stop();
     }
 
@@ -74,16 +72,6 @@ public class EffigySides extends Effigy<ChunkShader> {
     @Override
     public Object getModelKey() {
         return this;
-    }
-
-    private void loadMeshesToShader(SideConstructor sideConstructor) {
-        for (Mesh mesh : sideConstructor.getMeshes()) {
-            getShader().getDiffuseMap().load(mesh.getMaterial().getDiffuseMap());
-            getShader().getSpecularMap().load(mesh.getMaterial().getSpecularMap());
-            getShader().getAmbientMap().load(mesh.getMaterial().getAmbientMap());
-            getShader().getEmissiveMap().load(mesh.getMaterial().getEmissiveMap());
-            mesh.render();
-        }
     }
 
 }

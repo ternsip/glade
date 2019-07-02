@@ -8,8 +8,9 @@ import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.shader.base.MeshAttributes;
 import com.ternsip.glade.graphics.visual.repository.TexturePackRepository;
 import com.ternsip.glade.graphics.visual.repository.TextureRepository;
+import com.ternsip.glade.universe.parts.blocks.Block;
 import com.ternsip.glade.universe.parts.blocks.BlockSide;
-import com.ternsip.glade.universe.parts.chunks.BlockChanges;
+import com.ternsip.glade.universe.parts.chunks.BlocksUpdate;
 import com.ternsip.glade.universe.parts.chunks.Side;
 import com.ternsip.glade.universe.parts.chunks.SidePosition;
 import lombok.Getter;
@@ -26,6 +27,9 @@ import static com.ternsip.glade.graphics.visual.base.SideConstructor.SideIndexDa
 import static com.ternsip.glade.universe.parts.chunks.Blocks.MAX_LIGHT_LEVEL;
 
 public class SideConstructor implements Graphical {
+
+    private static final int BLOCK_TYPE_NORMAL = 0;
+    private static final int BLOCK_TYPE_WATER = 1;
 
     private static final CubeSideMeshData SIDE_FRONT = new CubeSideMeshData(
             new float[]{1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1},
@@ -78,7 +82,7 @@ public class SideConstructor implements Graphical {
     @Getter
     private ArrayList<Mesh> meshes = new ArrayList<>();
 
-    public void applyChanges(BlockChanges changes) {
+    public void applyChanges(BlocksUpdate changes) {
 
         if (changes.isEmpty()) {
             return;
@@ -100,7 +104,8 @@ public class SideConstructor implements Graphical {
                             .add(SKY_LIGHT, Utils.arrayToBuffer(new float[SIDES_PER_MESH * SKY_LIGHT_SIDE_SIZE]))
                             .add(EMIT_LIGHT, Utils.arrayToBuffer(new float[SIDES_PER_MESH * EMIT_LIGHT_SIDE_SIZE]))
                             .add(NORMALS, Utils.arrayToBuffer(new float[SIDES_PER_MESH * NORMAL_SIDE_SIZE]))
-                            .add(TEXTURES, Utils.arrayToBuffer(new float[SIDES_PER_MESH * TEXTURE_SIDE_SIZE])),
+                            .add(TEXTURES, Utils.arrayToBuffer(new float[SIDES_PER_MESH * TEXTURE_SIDE_SIZE]))
+                            .add(BLOCK_TYPE, Utils.arrayToBuffer(new float[SIDES_PER_MESH * BLOCK_TYPE_SIDE_SIZE])),
                     material, true
             );
             mesh.setIndicesCount(0);
@@ -198,6 +203,12 @@ public class SideConstructor implements Graphical {
         sideIndexDataSrc.getEmitLights().get(emitLights);
         sideIndexDataDst.getEmitLights().put(emitLights);
 
+        float[] blockTypes = new float[BLOCK_TYPE_SIDE_SIZE];
+        sideIndexDataSrc.getBlockTypes().position(sideIndexDataSrc.getBlockTypePos());
+        sideIndexDataDst.getBlockTypes().position(sideIndexDataDst.getBlockTypePos());
+        sideIndexDataSrc.getBlockTypes().get(blockTypes);
+        sideIndexDataDst.getBlockTypes().put(blockTypes);
+
         float[] normals = new float[NORMAL_SIDE_SIZE];
         sideIndexDataSrc.getNormals().position(sideIndexDataSrc.getNormalPos());
         sideIndexDataDst.getNormals().position(sideIndexDataDst.getNormalPos());
@@ -225,6 +236,9 @@ public class SideConstructor implements Graphical {
         for (int i = 0; i < SIDE_INDICES.length; ++i) {
             sideIndexData.getIndices().put(i + sideIndexData.getIndexPos(), SIDE_INDICES[i] + sideIndexData.getVertexStart());
         }
+
+        int blockType = side.getSideData().getBlock() == Block.WATER ? BLOCK_TYPE_WATER : BLOCK_TYPE_NORMAL;
+
         for (int i = 0; i < VERTICES_PER_SIDE; i++) {
             int vIdx = i * VERTICES.getNumberPerVertex();
             sideIndexData.getVertices().put(vIdx + sideIndexData.getVertexPos(), cubeSideMeshData.getVertices()[vIdx] + dx);
@@ -233,6 +247,7 @@ public class SideConstructor implements Graphical {
 
             sideIndexData.getSkyLights().put(i * SKY_LIGHT.getNumberPerVertex() + sideIndexData.getSkyLightPos(), (float) side.getSideData().getSkyLight() / MAX_LIGHT_LEVEL);
             sideIndexData.getEmitLights().put(i * EMIT_LIGHT.getNumberPerVertex() + sideIndexData.getEmitLightPos(), (float) side.getSideData().getEmitLight() / MAX_LIGHT_LEVEL);
+            sideIndexData.getBlockTypes().put(i * BLOCK_TYPE.getNumberPerVertex() + sideIndexData.getBlockTypePos(), blockType);
 
             int nIdx = i * NORMALS.getNumberPerVertex();
             sideIndexData.getNormals().put(nIdx + sideIndexData.getNormalPos(), cubeSideMeshData.getNormals()[nIdx]);
@@ -270,6 +285,7 @@ public class SideConstructor implements Graphical {
         public static final int TEXTURE_SIDE_SIZE = VERTICES_PER_SIDE * TEXTURES.getNumberPerVertex();
         public static final int SKY_LIGHT_SIDE_SIZE = VERTICES_PER_SIDE * SKY_LIGHT.getNumberPerVertex();
         public static final int EMIT_LIGHT_SIDE_SIZE = VERTICES_PER_SIDE * EMIT_LIGHT.getNumberPerVertex();
+        public static final int BLOCK_TYPE_SIDE_SIZE = VERTICES_PER_SIDE * BLOCK_TYPE.getNumberPerVertex();
 
         int vertexStart;
         int vertexPos;
@@ -278,6 +294,7 @@ public class SideConstructor implements Graphical {
         int texturePos;
         int skyLightPos;
         int emitLightPos;
+        int blockTypePos;
 
         IntBuffer indices;
         FloatBuffer vertices;
@@ -285,6 +302,7 @@ public class SideConstructor implements Graphical {
         FloatBuffer emitLights;
         FloatBuffer normals;
         FloatBuffer textures;
+        FloatBuffer blockTypes;
 
         public SideIndexData(int sideIndex, ArrayList<Mesh> meshes) {
 
@@ -301,6 +319,7 @@ public class SideConstructor implements Graphical {
             this.texturePos = sideOffset * TEXTURE_SIDE_SIZE;
             this.skyLightPos = sideOffset * SKY_LIGHT_SIDE_SIZE;
             this.emitLightPos = sideOffset * EMIT_LIGHT_SIDE_SIZE;
+            this.blockTypePos = sideOffset * BLOCK_TYPE_SIDE_SIZE;
 
             this.indices = meshAttributes.getBuffer(INDICES);
             this.vertices = meshAttributes.getBuffer(VERTICES);
@@ -308,6 +327,7 @@ public class SideConstructor implements Graphical {
             this.emitLights = meshAttributes.getBuffer(EMIT_LIGHT);
             this.normals = meshAttributes.getBuffer(NORMALS);
             this.textures = meshAttributes.getBuffer(TEXTURES);
+            this.blockTypes = meshAttributes.getBuffer(BLOCK_TYPE);
 
         }
     }
