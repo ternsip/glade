@@ -1,6 +1,5 @@
 package com.ternsip.glade.universe.entities.repository;
 
-import com.ternsip.glade.common.logic.Transformable;
 import com.ternsip.glade.universe.collisions.base.Obstacle;
 import com.ternsip.glade.universe.common.Universal;
 import com.ternsip.glade.universe.entities.base.Entity;
@@ -20,7 +19,7 @@ public class EntityRepository implements Universal {
     private final Set<MultiEntity> multiEntities = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private final Set<Entity> entities = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
-    private Transformable cameraTarget = null;
+    private Entity cameraTarget = null;
     private EntitySun sun = null;
 
     public void register(MultiEntity entity) {

@@ -3,8 +3,8 @@ package com.ternsip.glade.graphics.camera;
 import com.ternsip.glade.common.events.base.Callback;
 import com.ternsip.glade.common.events.display.CursorPosEvent;
 import com.ternsip.glade.common.events.display.ScrollEvent;
-import com.ternsip.glade.common.logic.Transformable;
 import com.ternsip.glade.graphics.display.Graphical;
+import com.ternsip.glade.universe.entities.base.Entity;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.*;
@@ -14,7 +14,6 @@ import java.lang.Math;
 import static com.ternsip.glade.common.logic.Maths.FRONT_DIRECTION;
 import static com.ternsip.glade.common.logic.Maths.UP_DIRECTION;
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1;
-import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_2;
 
 @Setter
 @Getter
@@ -41,16 +40,13 @@ public class ThirdPersonController implements Graphical, CameraController {
         getGraphics().getEventSnapReceiver().registerCallback(CursorPosEvent.class, cursorPosCallback);
     }
 
-    public void update(Transformable transformable) {
-        setTarget(transformable.getPosition());
+    public void update(Entity entity) {
+        setTarget(entity.getPosition());
         Camera camera = getGraphics().getCamera();
         camera.setPosition(getEyePosition());
         camera.setViewMatrix(getViewMatrix());
 
-        if (getGraphics().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_1) &&
-                getGraphics().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_2)) {
-            transformable.setRotation(new Vector3f(0, getRotation().y(), 0));
-        }
+        entity.setRotation(new Vector3f(0, getRotation().y(), 0));
 
     }
 

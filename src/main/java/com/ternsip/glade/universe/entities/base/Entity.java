@@ -1,6 +1,5 @@
 package com.ternsip.glade.universe.entities.base;
 
-import com.ternsip.glade.common.logic.Transformable;
 import com.ternsip.glade.graphics.visual.base.Effigy;
 import com.ternsip.glade.universe.common.Universal;
 import lombok.Getter;
@@ -13,7 +12,7 @@ import org.joml.Vector3fc;
  */
 @Getter
 @Setter
-public abstract class Entity<T extends Effigy> implements Universal, Transformable {
+public abstract class Entity<T extends Effigy> implements Universal {
 
     private final Vector3f position = new Vector3f(0, 0, 0);
     private final Vector3f scale = new Vector3f(1, 1, 1);
