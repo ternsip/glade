@@ -4,7 +4,6 @@ import com.ternsip.glade.graphics.visual.base.Effigy;
 import com.ternsip.glade.universe.common.Universal;
 import lombok.Getter;
 import lombok.Setter;
-import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
 /**
@@ -12,36 +11,12 @@ import org.joml.Vector3fc;
  */
 @Getter
 @Setter
-public abstract class Entity<T extends Effigy> implements Universal {
-
-    private final Vector3f position = new Vector3f(0, 0, 0);
-    private final Vector3f scale = new Vector3f(1, 1, 1);
-    private final Vector3f rotation = new Vector3f(0, 0, 0);
+public abstract class Entity<T extends Effigy> extends Volumetric implements Universal {
 
     private boolean visualReloadRequired = false;
 
     public void register() {
         getUniverse().getEntityRepository().register(this);
-    }
-
-    public void setPosition(Vector3fc position) {
-        this.position.set(position);
-    }
-
-    public void setScale(Vector3fc scale) {
-        this.scale.set(scale);
-    }
-
-    public void setRotation(Vector3fc rotation) {
-        this.rotation.set(rotation);
-    }
-
-    public void increasePosition(Vector3fc delta) {
-        position.add(delta);
-    }
-
-    public void increaseRotation(Vector3fc delta) {
-        rotation.add(delta);
     }
 
     public void finish() {
@@ -52,12 +27,17 @@ public abstract class Entity<T extends Effigy> implements Universal {
         effigy.setPosition(getPosition());
         effigy.setRotation(getRotation());
         effigy.setScale(getScale());
+        effigy.setVisible(isVisible());
     }
 
     // This method can be called only in graphics, it should be supplied
     public abstract T getEffigy();
 
     public void update() {
+    }
+
+    public Vector3fc getCameraAttachmentPoint() {
+        return getPosition();
     }
 
 }

@@ -14,10 +14,11 @@ import java.lang.Math;
 import static com.ternsip.glade.common.logic.Maths.FRONT_DIRECTION;
 import static com.ternsip.glade.common.logic.Maths.UP_DIRECTION;
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1;
+import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_2;
 
 @Setter
 @Getter
-public class ThirdPersonController implements Graphical, CameraController {
+public class UniversalCameraController implements Graphical, CameraController {
 
     private static final float MIN_DISTANCE_FROM_TARGET = 0.1f;
     private static final float MAX_DISTANCE_FROM_TARGET = 320;
@@ -27,6 +28,7 @@ public class ThirdPersonController implements Graphical, CameraController {
     private static final float ROTATION_MULTIPLIER_X = 0.005f;
     private static final float ROTATION_MULTIPLIER_Y = -0.005f;
     private static final float SCROLL_MULTIPLIER = 1;
+    private static final float FIRST_PERSON_DISTANCE = 1;
 
     private Vector3fc target = new Vector3f(0);
     private float distanceFromTarget = (MAX_DISTANCE_FROM_TARGET + MIN_DISTANCE_FROM_TARGET) * 0.05f;
@@ -35,19 +37,32 @@ public class ThirdPersonController implements Graphical, CameraController {
     private Callback<ScrollEvent> scrollCallback = this::recalculateZoom;
     private Callback<CursorPosEvent> cursorPosCallback = this::recalculateRotation;
 
-    public ThirdPersonController() {
+    public UniversalCameraController() {
         getGraphics().getEventSnapReceiver().registerCallback(ScrollEvent.class, scrollCallback);
         getGraphics().getEventSnapReceiver().registerCallback(CursorPosEvent.class, cursorPosCallback);
     }
 
     public void update(Entity entity) {
-        setTarget(entity.getPosition());
+        setTarget(entity.getCameraAttachmentPoint());
         Camera camera = getGraphics().getCamera();
         camera.setPosition(getEyePosition());
         camera.setViewMatrix(getViewMatrix());
 
-        entity.setRotation(new Vector3f(0, getRotation().y(), 0));
+        if (isThirdPerson()) {
+            getGraphics().getWindowData().enableCursor();
+        } else {
+            getGraphics().getWindowData().disableCursor();
+        }
 
+        if (!isThirdPerson() || (getGraphics().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_1) &&
+                getGraphics().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_2))) {
+            entity.setRotation(new Vector3f(0, getRotation().y(), 0));
+        }
+        entity.setVisible(isThirdPerson());
+    }
+
+    public boolean isThirdPerson() {
+        return getDistanceFromTarget() > FIRST_PERSON_DISTANCE;
     }
 
     public Vector3fc getEyePosition() {
@@ -68,7 +83,7 @@ public class ThirdPersonController implements Graphical, CameraController {
     }
 
     private void recalculateRotation(CursorPosEvent event) {
-        if (getGraphics().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_1)) {
+        if (!isThirdPerson() || getGraphics().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_1)) {
             float nx = limitAngle(getRotation().x() + (float) (event.getDy() * ROTATION_MULTIPLIER_X), MAX_ROTATION_DELTA_X);
             float ny = limitAngle(getRotation().y() + (float) (event.getDx() * ROTATION_MULTIPLIER_Y), MAX_ROTATION_DELTA_Y);
             setRotation(new Vector2f(nx, ny));

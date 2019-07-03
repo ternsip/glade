@@ -21,7 +21,7 @@ public class EffigyRepository implements Universal, Graphical {
         updateEntities();
         lastSeenNumberOfEntitiesInFrustum = 0;
         getEntityToEffigy().values().forEach(effigy -> {
-            if (effigy.isGraphicalInsideFrustum()) {
+            if (effigy.isVisible() && effigy.isGraphicalInsideFrustum()) {
                 effigy.render();
                 ++lastSeenNumberOfEntitiesInFrustum;
             }

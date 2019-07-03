@@ -6,23 +6,20 @@ import com.ternsip.glade.graphics.display.Graphical;
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.shader.base.ShaderProgram;
 import com.ternsip.glade.universe.common.Universal;
+import com.ternsip.glade.universe.entities.base.Volumetric;
 import lombok.Getter;
 import org.joml.*;
 
 import java.lang.Math;
 
 @Getter
-public abstract class Effigy<SHADER extends ShaderProgram> implements Graphical, Universal {
+public abstract class Effigy<SHADER extends ShaderProgram> extends Volumetric implements Graphical, Universal {
 
     @Getter(lazy = true)
     private final Model model = getGraphics().getModelRepository().getEffigyModel(this);
 
     @Getter(lazy = true)
     private final SHADER shader = getGraphics().getShaderRepository().getShader(this);
-
-    private final Vector3f position = new Vector3f(0);
-    private final Vector3f scale = new Vector3f(1);
-    private final Vector3f rotation = new Vector3f(0);
 
     public Matrix4f getTransformationMatrix() {
         Vector3fc totalScale = getAdjustedScale().mul(getModel().getNormalizingScale());
@@ -40,26 +37,6 @@ public abstract class Effigy<SHADER extends ShaderProgram> implements Graphical,
 
     public Vector3f getAdjustedPosition() {
         return new Vector3f(getPosition()).add(getModel().getBaseOffset());
-    }
-
-    public void setPosition(Vector3fc position) {
-        this.position.set(position);
-    }
-
-    public void setScale(Vector3fc scale) {
-        this.scale.set(scale);
-    }
-
-    public void setRotation(Vector3fc rotation) {
-        this.rotation.set(rotation);
-    }
-
-    public void increasePosition(Vector3fc delta) {
-        position.add(delta);
-    }
-
-    public void increaseRotation(Vector3fc delta) {
-        rotation.add(delta);
     }
 
     public abstract void render();

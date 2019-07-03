@@ -26,6 +26,7 @@ public class EntityPlayer extends Entity<EffigyBoy> {
     private float velocity = 0.1f;
     private float jumpPower = 0.3f;
     private boolean onTheGround = false;
+    private float height = 2;
 
     @Override
     public void finish() {
@@ -122,5 +123,8 @@ public class EntityPlayer extends Entity<EffigyBoy> {
 
     }
 
-
+    @Override
+    public Vector3f getCameraAttachmentPoint() {
+        return super.getCameraAttachmentPoint().add(0, getHeight(), 0, new Vector3f());
+    }
 }

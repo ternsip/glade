@@ -24,7 +24,7 @@ public class Maths {
         return matrix;
     }
 
-    public static Quaternionfc getRotationQuaternion(Vector3f rotation) {
+    public static Quaternionfc getRotationQuaternion(Vector3fc rotation) {
         float roll = rotation.x();
         float pitch = rotation.y();
         float yaw = rotation.z();
@@ -48,7 +48,7 @@ public class Maths {
         return v.lengthSquared() <= EPS ? v : v.normalize(new Vector3f());
     }
 
-    public static Matrix4f createTransformationMatrix(Vector3f translation, Vector3f rot, float scale) {
+    public static Matrix4f createTransformationMatrix(Vector3fc translation, Vector3f rot, float scale) {
         Matrix4f matrix = new Matrix4f();
 
         Quaternionf roll = new Quaternionf();

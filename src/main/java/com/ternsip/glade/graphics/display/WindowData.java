@@ -124,6 +124,14 @@ public class WindowData implements Universal, Graphical {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
+    public void enableCursor() {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    }
+
+    public void disableCursor() {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    }
+
     private Vector2i getMainDisplaySize() {
         GLFWVidMode vidMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
         return new Vector2i(vidMode.width(), vidMode.height());
