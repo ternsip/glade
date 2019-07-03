@@ -4,6 +4,7 @@ import com.ternsip.glade.common.events.base.Callback;
 import com.ternsip.glade.common.events.display.CursorPosEvent;
 import com.ternsip.glade.common.events.display.ScrollEvent;
 import com.ternsip.glade.graphics.display.Graphical;
+import com.ternsip.glade.universe.common.Universal;
 import com.ternsip.glade.universe.entities.base.Entity;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +19,7 @@ import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_2;
 
 @Setter
 @Getter
-public class UniversalCameraController implements Graphical, CameraController {
+public class UniversalCameraController implements Graphical, Universal, CameraController {
 
     private static final float MIN_DISTANCE_FROM_TARGET = 0.1f;
     private static final float MAX_DISTANCE_FROM_TARGET = 320;
@@ -50,8 +51,10 @@ public class UniversalCameraController implements Graphical, CameraController {
 
         if (isThirdPerson()) {
             getGraphics().getWindowData().enableCursor();
+            getUniverse().getEntityRepository().getAim().setVisible(false);
         } else {
             getGraphics().getWindowData().disableCursor();
+            getUniverse().getEntityRepository().getAim().setVisible(true);
         }
 
         if (!isThirdPerson() || (getGraphics().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_1) &&
