@@ -21,6 +21,7 @@ import static com.ternsip.glade.graphics.shader.impl.AnimationShader.TEXTURES;
 
 @RequiredArgsConstructor
 @Getter
+// TODO combine with glyph
 public class EffigySprite extends EffigyAnimated {
 
     private static final Matrix4fc EMPTY_MATRIX = new Matrix4f();
