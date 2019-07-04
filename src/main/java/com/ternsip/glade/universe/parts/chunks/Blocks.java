@@ -61,10 +61,10 @@ public class Blocks implements Universal {
             }
             loadedChunks.forEach(this::saveChunk);
         } else {
-            // TODO use networking
-            for (int x = 0, cx = 0; x < SIZE_X; x += Chunk.SIZE_X, ++cx) {
-                for (int z = 0, cz = 0; z < SIZE_Z; z += Chunk.SIZE_Z, ++cz) {
-                    blocksUpdates.add(new BlocksUpdate(getChunk(cx, cz).sides));
+            // TODO use networking, do this for observing area
+            for (int x = 0; x < CHUNKS_X; x++) {
+                for (int z = 0; z < CHUNKS_Z; z++) {
+                    blocksUpdates.add(new BlocksUpdate(getChunk(x, z).sides));
                 }
             }
         }
@@ -124,6 +124,7 @@ public class Blocks implements Universal {
     public void setSkyLight(int x, int y, int z, byte light) {
         Chunk chunk = getChunk(x / Chunk.SIZE_X, z / Chunk.SIZE_Z);
         chunk.skyLights[x % Chunk.SIZE_X][y][z % Chunk.SIZE_Z] = light;
+        chunk.modified = true;
     }
 
     public byte getSkyLight(int x, int y, int z) {
@@ -134,6 +135,7 @@ public class Blocks implements Universal {
     public void setEmitLight(int x, int y, int z, byte light) {
         Chunk chunk = getChunk(x / Chunk.SIZE_X, z / Chunk.SIZE_Z);
         chunk.emitLights[x % Chunk.SIZE_X][y][z % Chunk.SIZE_Z] = light;
+        chunk.modified = true;
     }
 
     public byte getEmitLight(int x, int y, int z) {
@@ -144,6 +146,7 @@ public class Blocks implements Universal {
     public void setHeight(int x, int z, int height) {
         Chunk chunk = getChunk(x / Chunk.SIZE_X, z / Chunk.SIZE_Z);
         chunk.heights[x % Chunk.SIZE_X][z % Chunk.SIZE_Z] = height;
+        chunk.modified = true;
     }
 
     public int getHeight(int x, int z) {
@@ -159,11 +162,13 @@ public class Blocks implements Universal {
     public void addSide(SidePosition sPos, SideData sideData) {
         Chunk chunk = getChunk(sPos.getX() / Chunk.SIZE_X, sPos.getZ() / Chunk.SIZE_Z);
         chunk.sides.put(sPos, sideData);
+        chunk.modified = true;
     }
 
     public void removeSide(SidePosition sPos) {
         Chunk chunk = getChunk(sPos.getX() / Chunk.SIZE_X, sPos.getZ() / Chunk.SIZE_Z);
         chunk.sides.remove(sPos);
+        chunk.modified = true;
     }
 
     public boolean isBlockExists(Vector3ic pos) {
