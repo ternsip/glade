@@ -63,6 +63,11 @@ public class EntityPlayer extends Entity<EffigyBoy> {
         setPosition(tryZ);
     }
 
+    @Override
+    public Vector3f getCameraAttachmentPoint() {
+        return super.getCameraAttachmentPoint().add(0, getHeight(), 0, new Vector3f());
+    }
+
     public Vector3i getBlockPositionStandingOn() {
         return new Vector3i(
                 (int) Math.floor(getPosition().x()),
@@ -121,10 +126,5 @@ public class EntityPlayer extends Entity<EffigyBoy> {
             }
         }
 
-    }
-
-    @Override
-    public Vector3f getCameraAttachmentPoint() {
-        return super.getCameraAttachmentPoint().add(0, getHeight(), 0, new Vector3f());
     }
 }

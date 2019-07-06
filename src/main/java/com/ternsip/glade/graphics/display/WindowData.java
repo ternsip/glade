@@ -97,7 +97,7 @@ public class WindowData implements Universal, Graphical {
     }
 
     public float getRatio() {
-        return getWidth() / (float)getHeight();
+        return getWidth() / (float) getHeight();
     }
 
     public boolean isActive() {

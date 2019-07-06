@@ -58,13 +58,13 @@ public class EffigySprite extends Effigy<SpriteShader> {
     }
 
     @Override
-    public Object getModelKey() {
-        return new SpriteKey(getFile());
+    public Class<SpriteShader> getShaderClass() {
+        return SpriteShader.class;
     }
 
     @Override
-    public Class<SpriteShader> getShaderClass() {
-        return SpriteShader.class;
+    public Object getModelKey() {
+        return new SpriteKey(getFile());
     }
 
     @Override

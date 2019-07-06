@@ -12,18 +12,6 @@ public class Volumetric {
     private final Vector3f rotation = new Vector3f(0, 0, 0);
     private final AtomicBoolean visible = new AtomicBoolean(true);
 
-    public void setPosition(Vector3fc position) {
-        this.position.set(position);
-    }
-
-    public void setScale(Vector3fc scale) {
-        this.scale.set(scale);
-    }
-
-    public void setRotation(Vector3fc rotation) {
-        this.rotation.set(rotation);
-    }
-
     public void increasePosition(Vector3fc delta) {
         position.add(delta);
     }
@@ -36,20 +24,32 @@ public class Volumetric {
         return position;
     }
 
+    public void setPosition(Vector3fc position) {
+        this.position.set(position);
+    }
+
     public Vector3fc getScale() {
         return scale;
+    }
+
+    public void setScale(Vector3fc scale) {
+        this.scale.set(scale);
     }
 
     public Vector3fc getRotation() {
         return rotation;
     }
 
-    public void setVisible(boolean visible) {
-        this.visible.set(visible);
+    public void setRotation(Vector3fc rotation) {
+        this.rotation.set(rotation);
     }
 
     public boolean isVisible() {
         return visible.get();
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible.set(visible);
     }
 
 }

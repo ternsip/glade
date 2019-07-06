@@ -13,14 +13,14 @@ public class BlocksUpdate {
     private final List<SidePosition> sidesToRemove = new ArrayList<>();
     private final List<Side> sidesToAdd = new ArrayList<>();
 
-    public boolean isEmpty() {
-        return getSidesToAdd().isEmpty() && getSidesToRemove().isEmpty();
-    }
-
     public BlocksUpdate(Sides sides) {
         sides.getSides().forEach((pos, data) -> {
             add(new Side(pos, data));
         });
+    }
+
+    public boolean isEmpty() {
+        return getSidesToAdd().isEmpty() && getSidesToRemove().isEmpty();
     }
 
     public void add(Side side) {

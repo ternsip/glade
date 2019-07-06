@@ -60,6 +60,16 @@ public class EffigySides extends Effigy<ChunkShader> {
     }
 
     @Override
+    public boolean deleteModelOnFinish() {
+        return true;
+    }
+
+    @Override
+    public boolean deleteShaderOnFinish() {
+        return true;
+    }
+
+    @Override
     public boolean isGraphicalInsideFrustum() {
         return true;
     }
@@ -72,16 +82,6 @@ public class EffigySides extends Effigy<ChunkShader> {
     @Override
     public Object getModelKey() {
         return this;
-    }
-
-    @Override
-    public boolean deleteModelOnFinish() {
-        return true;
-    }
-
-    @Override
-    public boolean deleteShaderOnFinish() {
-        return true;
     }
 
 }

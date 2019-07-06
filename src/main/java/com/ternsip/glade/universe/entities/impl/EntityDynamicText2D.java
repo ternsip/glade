@@ -10,7 +10,7 @@ import java.io.File;
 
 @Getter
 @Setter
-public class EntityDynamicText2D extends Entity<EffigyDynamicText>  {
+public class EntityDynamicText2D extends Entity<EffigyDynamicText> {
 
     private static final float TEXT_COMPRESSION = 0.8f;
 
@@ -25,13 +25,13 @@ public class EntityDynamicText2D extends Entity<EffigyDynamicText>  {
     }
 
     @Override
-    public EffigyDynamicText getEffigy() {
-        return new EffigyDynamicText(getFile(), true, getColor(), getText());
-    }
-
-    @Override
     public void update(EffigyDynamicText effigy) {
         super.update(effigy);
         effigy.setText(getText());
+    }
+
+    @Override
+    public EffigyDynamicText getEffigy() {
+        return new EffigyDynamicText(getFile(), true, getColor(), getText());
     }
 }

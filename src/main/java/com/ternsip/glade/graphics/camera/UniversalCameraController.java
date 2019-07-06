@@ -64,10 +64,6 @@ public class UniversalCameraController implements Graphical, Universal, CameraCo
         entity.setVisible(isThirdPerson());
     }
 
-    public boolean isThirdPerson() {
-        return getDistanceFromTarget() > FIRST_PERSON_DISTANCE;
-    }
-
     public Vector3fc getEyePosition() {
         return getLookDirection()
                 .mul(getDistanceFromTarget(), new Vector3f())
@@ -83,6 +79,10 @@ public class UniversalCameraController implements Graphical, Universal, CameraCo
     public void finish() {
         getGraphics().getEventSnapReceiver().unregisterCallback(ScrollEvent.class, scrollCallback);
         getGraphics().getEventSnapReceiver().unregisterCallback(CursorPosEvent.class, cursorPosCallback);
+    }
+
+    public boolean isThirdPerson() {
+        return getDistanceFromTarget() > FIRST_PERSON_DISTANCE;
     }
 
     private void recalculateRotation(CursorPosEvent event) {

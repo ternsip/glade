@@ -34,6 +34,26 @@ public class EffigyDynamicText extends EffigySprite {
         this.color = color;
     }
 
+    private static Mesh generateGlyphMesh(File file, char symbol, Vector4fc color) {
+        int quad = 4;
+        int power4 = 16;
+        float unitSize = 1f / power4;
+        float u = (symbol % power4) * unitSize;
+        @SuppressWarnings("IntegerDivisionInFloatingPointContext")
+        float v = (symbol / power4) * unitSize;
+        float[] textures = new float[TEXTURES_DATA.length];
+        for (int j = 0; j < quad; ++j) {
+            textures[j * 2] = u + TEXTURES_DATA[j * 2] * unitSize;
+            textures[j * 2 + 1] = v + TEXTURES_DATA[j * 2 + 1] * unitSize;
+        }
+        return new Mesh(new MeshAttributes()
+                .add(VERTICES, VERTICES_DATA)
+                .add(TEXTURES, textures)
+                .add(INDICES, INDICES_DATA),
+                new Material(new Texture(color, file))
+        );
+    }
+
     @Override
     public void render() {
         getShader().start();
@@ -62,6 +82,11 @@ public class EffigyDynamicText extends EffigySprite {
     }
 
     @Override
+    public Object getModelKey() {
+        return new TextKey(getFile(), getColor());
+    }
+
+    @Override
     public boolean isGraphicalInsideFrustum() {
         Vector3fc scale = getAdjustedScale();
         float delta = Math.max(Math.max(scale.x(), scale.y()), scale.z()) * getText().length() * 1.5f;
@@ -77,32 +102,6 @@ public class EffigyDynamicText extends EffigySprite {
         );
         setScale(newScale);
         setPosition(newPosition);
-    }
-
-    private static Mesh generateGlyphMesh(File file, char symbol, Vector4fc color) {
-        int quad = 4;
-        int power4 = 16;
-        float unitSize = 1f / power4;
-        float u = (symbol % power4) * unitSize;
-        @SuppressWarnings("IntegerDivisionInFloatingPointContext")
-        float v = (symbol / power4) * unitSize;
-        float[] textures = new float[TEXTURES_DATA.length];
-        for (int j = 0; j < quad; ++j) {
-            textures[j * 2] = u + TEXTURES_DATA[j * 2] * unitSize;
-            textures[j * 2 + 1] = v + TEXTURES_DATA[j * 2 + 1] * unitSize;
-        }
-        return new Mesh(new MeshAttributes()
-                .add(VERTICES, VERTICES_DATA)
-                .add(TEXTURES, textures)
-                .add(INDICES, INDICES_DATA),
-                new Material(new Texture(color, file))
-        );
-    }
-
-
-    @Override
-    public Object getModelKey() {
-        return new TextKey(getFile(), getColor());
     }
 
     @RequiredArgsConstructor
