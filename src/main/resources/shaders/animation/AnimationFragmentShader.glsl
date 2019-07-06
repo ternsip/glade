@@ -1,7 +1,5 @@
 #version 400 core
 
-const int MAX_LIGHTS = 16;
-
 struct TextureData {
     bool isTexturePresent;
     bool isColorPresent;

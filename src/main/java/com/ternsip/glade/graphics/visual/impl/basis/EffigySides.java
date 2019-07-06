@@ -28,7 +28,7 @@ public class EffigySides extends Effigy<ChunkShader> {
     }
 
     @Override
-    public Matrix4f getTransformationMatrix() {
+    public Matrix4fc getTransformationMatrix() {
         Matrix4fc rotMatrix = Maths.getRotationQuaternion(getAdjustedRotation()).get(new Matrix4f());
         return new Matrix4f().translate(getAdjustedPosition()).mul(rotMatrix).scale(getAdjustedScale());
     }
@@ -72,6 +72,16 @@ public class EffigySides extends Effigy<ChunkShader> {
     @Override
     public Object getModelKey() {
         return this;
+    }
+
+    @Override
+    public boolean deleteModelOnFinish() {
+        return true;
+    }
+
+    @Override
+    public boolean deleteShaderOnFinish() {
+        return true;
     }
 
 }

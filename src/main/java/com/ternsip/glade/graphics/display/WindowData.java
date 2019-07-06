@@ -96,6 +96,10 @@ public class WindowData implements Universal, Graphical {
         return getWindowSize().y();
     }
 
+    public float getRatio() {
+        return getWidth() / (float)getHeight();
+    }
+
     public boolean isActive() {
         return !glfwWindowShouldClose(getWindow());
     }

@@ -21,7 +21,7 @@ public abstract class Effigy<SHADER extends ShaderProgram> extends Volumetric im
     @Getter(lazy = true)
     private final SHADER shader = getGraphics().getShaderRepository().getShader(this);
 
-    public Matrix4f getTransformationMatrix() {
+    public Matrix4fc getTransformationMatrix() {
         Vector3fc totalScale = getAdjustedScale().mul(getModel().getNormalizingScale());
         Matrix4fc rotMatrix = Maths.getRotationQuaternion(getAdjustedRotation()).get(new Matrix4f());
         return new Matrix4f().translate(getAdjustedPosition()).mul(rotMatrix).scale(totalScale);
@@ -67,10 +67,7 @@ public abstract class Effigy<SHADER extends ShaderProgram> extends Volumetric im
     }
 
     public FrustumIntersection getFrustumIntersection() {
-        Matrix4fc projection = getGraphics().getCamera().getNormalProjectionMatrix();
-        Matrix4fc view = getGraphics().getCamera().getViewMatrix();
-        Matrix4fc projectionViewMatrix = projection.mul(view, new Matrix4f());
-        return new FrustumIntersection(projectionViewMatrix);
+        return new FrustumIntersection(getProjectionMatrix().mul(getViewMatrix(), new Matrix4f()));
     }
 
     public Object getShaderKey() {

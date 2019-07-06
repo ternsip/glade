@@ -20,7 +20,6 @@ public class Camera implements Graphical {
 
     private Matrix4fc normalProjectionMatrix;
     private Matrix4fc farProjectionMatrix;
-    private Matrix4fc orthoProjectionMatrix;
 
     private Vector3fc position = new Vector3f(0);
     private Matrix4fc viewMatrix = new Matrix4f();
@@ -34,15 +33,10 @@ public class Camera implements Graphical {
         return new Matrix4f().perspective(FOV, aspectRatio, NEAR_PLANE, viewDistance);
     }
 
-    public static Matrix4fc createOrthoProjectionMatrix(float viewDistance, float width, float height) {
-        return new Matrix4f();
-    }
-
     private void recalculateProjectionMatrices(int width, int height) {
         float ratio = (float) width / height;
         normalProjectionMatrix = createProjectionMatrix(NORMAL_DISTANCE, ratio);
         farProjectionMatrix = createProjectionMatrix(FAR_DISTANCE, ratio);
-        orthoProjectionMatrix = createOrthoProjectionMatrix(FAR_DISTANCE, width, height);
     }
 
 }

@@ -1,8 +1,8 @@
 package com.ternsip.glade.universe;
 
 import com.ternsip.glade.common.events.base.EventSnapReceiver;
-import com.ternsip.glade.graphics.visual.impl.basis.Effigy3DText;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigyAxis;
+import com.ternsip.glade.graphics.visual.impl.basis.EffigyDynamicText;
 import com.ternsip.glade.graphics.visual.impl.test.*;
 import com.ternsip.glade.universe.collisions.base.Collisions;
 import com.ternsip.glade.universe.collisions.impl.ChunksObstacle;
@@ -15,6 +15,7 @@ import com.ternsip.glade.universe.parts.chunks.Blocks;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 import java.io.File;
 
@@ -111,10 +112,10 @@ public class Universe {
         dude.setPosition(new Vector3f(-20f, 0, -20));
         dude.setScale(new Vector3f(10f, 10f, 10f));
 
-        new EntityGenericRotating(() -> new Effigy3DText(new File("fonts/default.png"), "Hello world!"), new Vector3f(0, 0.1f, 0)).register();
+        new EntityGenericRotating(() -> new EffigyDynamicText(new File("fonts/default.png"), false, new Vector4f(0, 0, 1, 1), "Hello world!"), new Vector3f(0, 0.1f, 0)).register();
         new EntityGeneric(() -> new EffigyAxis()).register();
 
-        new EntityStatistics().register();
+        new EntityStatistics2D(new File("fonts/default.png"), new Vector4f(1, 1, 0, 1)).register();
 
         getCollisions().add(new GroundObstacle());
         getCollisions().add(new ChunksObstacle());

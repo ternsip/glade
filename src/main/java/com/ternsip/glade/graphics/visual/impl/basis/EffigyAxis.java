@@ -13,7 +13,7 @@ import java.util.Arrays;
 public class EffigyAxis extends EffigyAnimated {
 
     @Override
-    public Matrix4f getTransformationMatrix() {
+    public Matrix4fc getTransformationMatrix() {
         Vector3fc totalScale = getAdjustedScale().mul(getAnimation().getModel().getNormalizingScale());
         Matrix4fc view = getGraphics().getCamera().getViewMatrix();
         Quaternionfc rotQuaternion = view.getNormalizedRotation(new Quaternionf());

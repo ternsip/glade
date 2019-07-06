@@ -30,7 +30,6 @@ public class EffigyRepository implements Universal, Graphical {
 
     @SuppressWarnings("unchecked")
     private void updateEntities() {
-        getUniverse().getEntityRepository().getMultiEntities().forEach(e -> e.graphicalUpdate(getGraphics()));
         Set<Entity> entities = getUniverse().getEntityRepository().getEntities();
         entities.forEach(e -> getEntityToEffigy().computeIfAbsent(e, x -> e.getEffigy()));
         getEntityToEffigy().entrySet().removeIf(entry -> {

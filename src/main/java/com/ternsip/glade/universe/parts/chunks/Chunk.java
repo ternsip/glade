@@ -20,7 +20,6 @@ public class Chunk implements Serializable {
     public byte[][][] skyLights = new byte[SIZE_X][Blocks.SIZE_Y][SIZE_Z];
     public byte[][][] emitLights = new byte[SIZE_X][Blocks.SIZE_Y][SIZE_Z];
     public int[][] heights = new int[SIZE_X][SIZE_Z];
-
     public Sides sides = new Sides();
     public int xPos;
     public int zPos;

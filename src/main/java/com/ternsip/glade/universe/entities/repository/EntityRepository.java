@@ -3,7 +3,6 @@ package com.ternsip.glade.universe.entities.repository;
 import com.ternsip.glade.universe.collisions.base.Obstacle;
 import com.ternsip.glade.universe.common.Universal;
 import com.ternsip.glade.universe.entities.base.Entity;
-import com.ternsip.glade.universe.entities.base.MultiEntity;
 import com.ternsip.glade.universe.entities.impl.EntitySun;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,20 +15,11 @@ import java.util.concurrent.ConcurrentHashMap;
 @Setter
 public class EntityRepository implements Universal {
 
-    private final Set<MultiEntity> multiEntities = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private final Set<Entity> entities = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     private Entity aim = null;
     private Entity cameraTarget = null;
     private EntitySun sun = null;
-
-    public void register(MultiEntity entity) {
-        multiEntities.add(entity);
-    }
-
-    public void unregister(MultiEntity entity) {
-        multiEntities.remove(entity);
-    }
 
     public void register(Entity entity) {
         entities.add(entity);
@@ -46,7 +36,6 @@ public class EntityRepository implements Universal {
     }
 
     public void update() {
-        getMultiEntities().forEach(MultiEntity::update);
         getEntities().forEach(Entity::update);
     }
 
