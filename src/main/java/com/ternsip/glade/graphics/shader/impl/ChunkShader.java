@@ -32,8 +32,5 @@ public final class ChunkShader extends ShaderProgram {
     private final UniformVec2 waterTextureStart = new UniformVec2();
     private final UniformVec2 waterTextureEnd = new UniformVec2();
     private final UniformTextureAddress diffuseMap = new UniformTextureAddress();
-    private final UniformTextureAddress specularMap = new UniformTextureAddress();
-    private final UniformTextureAddress ambientMap = new UniformTextureAddress();
-    private final UniformTextureAddress emissiveMap = new UniformTextureAddress();
 
 }

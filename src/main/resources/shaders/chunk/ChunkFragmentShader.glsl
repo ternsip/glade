@@ -24,18 +24,6 @@ uniform bool water;
 uniform vec2 waterTextureStart;
 uniform vec2 waterTextureEnd;
 uniform TextureData diffuseMap;
-uniform TextureData specularMap;
-uniform TextureData ambientMap;
-uniform TextureData emissiveMap;
-
-vec4 getTextureColor(TextureData textureData, bool mainTexture) {
-    bool force = !textureData.isColorPresent && !textureData.isTexturePresent && mainTexture;
-    if (force || textureData.isTexturePresent) {
-        vec4 texel = texture(textureData.atlasNumber, vec3(pass_textureCoords * textureData.maxUV, textureData.layer));
-        return (force || textureData.isColorPresent) ? (texel * textureData.color) : texel;
-    }
-    return textureData.isColorPresent ? textureData.color : vec4(0, 0, 0, 0);
-}
 
 bool isBlockOfType(int type) {
     return abs(blockTypeValue - type) < 1e-3;
@@ -51,31 +39,12 @@ void main(void){
         float cLength = length(cPos);
         vec2 uv = cur * (gl_FragCoord.xy / cc + (cPos / cLength) * cos(cLength * 12.0 - M_PI * 2 * time * 1) * 0.03);
         uv = waterTextureStart + abs(vec2(mod(uv.x, 1.0), mod(uv.y, 1.0))) * diff;
-        out_colour = vec4(pass_ambient * texture(diffuseMap.atlasNumber, vec3(uv * diffuseMap.maxUV, diffuseMap.layer)).xyz, 0.8);
+        out_colour = vec4(pass_ambient * textureLod(diffuseMap.atlasNumber, vec3(uv * diffuseMap.maxUV, diffuseMap.layer), 0).xyz, 0.8);
         return;
     }
 
     vec3 base_ambient = vec3(pass_ambient, pass_ambient, pass_ambient);
-    float ambient_multiplier = 0.5;
-    float diffuseFactor = 0.6;
-
-    vec3 unitNormal = normalize(pass_normal);
-
-    // Diffuse color
-    vec4 texColor = getTextureColor(diffuseMap, true);
-
-    // Ambient color
-    vec4 ambientTexColor = getTextureColor(ambientMap, false);
-    vec3 ambientColor = ambientTexColor.xyz * ambient_multiplier + base_ambient;
-
-    // Emissive light
-    vec4 emmissiveTexColor = getTextureColor(emissiveMap, false);
-    vec3 emmissiveColor = emmissiveTexColor.xyz;
-
-    // Specular Light
-    vec4 specularTexColor = getTextureColor(specularMap, false);
-    vec3 specColour = specularTexColor.xyz;
-
-    out_colour = vec4((ambientColor + emmissiveColor + specColour) * texColor.xyz, texColor.a);
+    vec4 tex = textureLod(diffuseMap.atlasNumber, vec3(pass_textureCoords * diffuseMap.maxUV, diffuseMap.layer), 0);
+    out_colour = vec4(tex.xyz * base_ambient, tex.a);
 
 }

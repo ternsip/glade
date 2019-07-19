@@ -46,9 +46,6 @@ public class EffigySides extends Effigy<ChunkShader> {
         getShader().getSun().load(getUniverse().getEntityRepository().getSun());
         for (Mesh mesh : getSideConstructor().getMeshes()) {
             getShader().getDiffuseMap().load(mesh.getMaterial().getDiffuseMap());
-            getShader().getSpecularMap().load(mesh.getMaterial().getSpecularMap());
-            getShader().getAmbientMap().load(mesh.getMaterial().getAmbientMap());
-            getShader().getEmissiveMap().load(mesh.getMaterial().getEmissiveMap());
             mesh.render();
         }
         getShader().stop();
