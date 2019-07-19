@@ -72,7 +72,7 @@ public class FrameBuffers implements Graphical {
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_RENDERBUFFER, colorRenderBufferSecond);
 
         glBindRenderbuffer(GL_RENDERBUFFER, depthRenderBuffer);
-        glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GL_DEPTH24_STENCIL8, width, height);
+        glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GL_DEPTH_COMPONENT32F, width, height);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderBuffer);
 
         int fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);

@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_SAMPLE_ALPHA_TO_COVERAGE;
-import static org.lwjgl.opengl.GL13C.GL_MULTISAMPLE;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 @Getter
@@ -71,11 +70,9 @@ public class WindowData implements Universal, Graphical {
         OpenGlSettings.enableDepthTesting(true);
         OpenGlSettings.goWireframe(false);
 
-        glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LESS);
         glDepthRange(0, 1);
         glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
-        glEnable(GL_MULTISAMPLE);
         //glEnable(GL_CULL_FACE);
         glClearColor(BACKGROUND_COLOR.x(), BACKGROUND_COLOR.y(), BACKGROUND_COLOR.z(), BACKGROUND_COLOR.w());
 

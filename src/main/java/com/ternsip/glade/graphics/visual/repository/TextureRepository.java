@@ -218,6 +218,8 @@ public class TextureRepository {
             int imageNumber = 0;
             float fragmentWidthNormalized = 1f / rowImages;
             float fragmentHeightNormalized = 1f / columnImages;
+            float texelHalfSizeW = 0.5f / maxWidth;
+            float texelHalfSizeH = 0.5f / maxHeight;
             for (Image image : images) {
                 int imageRow = imageNumber % rowImages;
                 int imageColumn = imageNumber / rowImages;
@@ -230,8 +232,10 @@ public class TextureRepository {
                 float widthNormalized = (float) image.getWidth() / finalWidth;
                 float heightNormalized = (float) image.getHeight() / finalHeight;
                 AtlasFragment atlasFragment = new AtlasFragment(
-                        fragmentWidthNormalized * imageRow, fragmentHeightNormalized * imageColumn,
-                        fragmentWidthNormalized * imageRow + widthNormalized, fragmentHeightNormalized * imageColumn + heightNormalized
+                        fragmentWidthNormalized * imageRow + texelHalfSizeW,
+                        fragmentHeightNormalized * imageColumn + texelHalfSizeH,
+                        fragmentWidthNormalized * imageRow + widthNormalized - texelHalfSizeW,
+                        fragmentHeightNormalized * imageColumn + heightNormalized - texelHalfSizeH
                 );
                 fileToAtlasFragment.put(image.getFile(), atlasFragment);
                 imageNumber++;
