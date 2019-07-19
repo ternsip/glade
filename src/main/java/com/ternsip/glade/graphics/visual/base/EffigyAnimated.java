@@ -1,6 +1,5 @@
 package com.ternsip.glade.graphics.visual.base;
 
-import com.ternsip.glade.graphics.camera.Camera;
 import com.ternsip.glade.graphics.general.Animation;
 import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.shader.impl.AnimationShader;
@@ -9,7 +8,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
-import org.joml.Vector3fc;
 
 @Getter
 @Setter
@@ -64,15 +62,7 @@ public abstract class EffigyAnimated extends Effigy<AnimationShader> {
     }
 
     private void updateAnimation() {
-        Vector3fc scale = getAdjustedScale();
-        float maxScale = Math.max(Math.max(scale.x(), scale.y()), scale.z());
-        Camera camera = getGraphics().getCamera();
-        double criterion = (camera.getPosition().distance(getAdjustedPosition()) / maxScale) / 10;
-        long updateIntervalMilliseconds = (long) (criterion * criterion * criterion);
-        if (getLastUpdateMillis() + updateIntervalMilliseconds < System.currentTimeMillis()) {
-            setLastUpdateMillis(System.currentTimeMillis());
-            getAnimation().update();
-        }
+        getAnimation().update();
     }
 
 }
