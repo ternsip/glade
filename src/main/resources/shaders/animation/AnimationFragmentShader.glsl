@@ -61,10 +61,6 @@ void main(void){
     float surfaceLight = max(dot(normalize(sun.pos), unitNormal), 0.0);
     diffuseColor += skyLight * texColor.xyz * surfaceLight;
 
-    if (texColor.a < 0.1){
-        discard;
-    }
-
     // Ambient color
     vec4 ambientTexColor = getTextureColor(ambientMap, false);
     vec3 ambientColor = ambientTexColor.xyz * ambient_multiplier + base_ambient;

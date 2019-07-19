@@ -24,7 +24,7 @@ public class FrameBuffers implements Graphical {
 
     public FrameBuffers() {
         maxSamples = glGetInteger(GL_MAX_SAMPLES);
-        samples = 2;
+        samples = 4;
         getGraphics().getEventSnapReceiver().registerCallback(ResizeEvent.class, (resizeEvent) -> resizeFBOs());
         createFBOs();
     }

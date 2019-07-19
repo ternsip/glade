@@ -64,10 +64,6 @@ void main(void){
     // Diffuse color
     vec4 texColor = getTextureColor(diffuseMap, true);
 
-    if (texColor.a < 0.1){
-        discard;
-    }
-
     // Ambient color
     vec4 ambientTexColor = getTextureColor(ambientMap, false);
     vec3 ambientColor = ambientTexColor.xyz * ambient_multiplier + base_ambient;

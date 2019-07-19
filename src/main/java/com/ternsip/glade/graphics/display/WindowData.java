@@ -71,7 +71,9 @@ public class WindowData implements Universal, Graphical {
         OpenGlSettings.enableDepthTesting(true);
         OpenGlSettings.goWireframe(false);
 
-        //glEnable(GL_DEPTH_TEST);
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LESS);
+        glDepthRange(0, 1);
         glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
         glEnable(GL_MULTISAMPLE);
         //glEnable(GL_CULL_FACE);
@@ -125,7 +127,7 @@ public class WindowData implements Universal, Graphical {
     }
 
     public void clear() {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     }
 
     public void enableCursor() {
