@@ -12,5 +12,7 @@ public class CursorPosEvent implements Event {
     private final double y;
     private final double dx;
     private final double dy;
+    private final double normalX;
+    private final double normalY;
 
 }

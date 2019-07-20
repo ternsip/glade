@@ -3,6 +3,7 @@ package com.ternsip.glade.graphics.visual.impl.basis;
 
 import com.ternsip.glade.common.events.base.Callback;
 import com.ternsip.glade.common.events.display.CursorPosEvent;
+import com.ternsip.glade.common.events.display.CursorVisibilityEvent;
 import com.ternsip.glade.common.events.display.MouseButtonEvent;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,6 +20,7 @@ public class EffigyUIButton extends EffigySprite {
 
     private final Callback<CursorPosEvent> cursorPosCallback = this::trackCursor;
     private final Callback<MouseButtonEvent> mouseButtonCallback = this::handleMouseButton;
+    private final Callback<CursorVisibilityEvent> cursorVisibilityCallback = this::handleCursorVisibility;
 
     private Vector2fc uiCenter = new Vector2f(0);
     private Vector2fc uiSize = new Vector2f(1);
@@ -52,18 +54,27 @@ public class EffigyUIButton extends EffigySprite {
 
     private void registerCallbacks() {
         getGraphics().getEventSnapReceiver().registerCallback(CursorPosEvent.class, getCursorPosCallback());
+        getGraphics().getEventSnapReceiver().registerCallback(MouseButtonEvent.class, getMouseButtonCallback());
+        getGraphics().getEventSnapReceiver().registerCallback(CursorVisibilityEvent.class, getCursorVisibilityCallback());
     }
 
     private void unregisterCallbacks() {
         getGraphics().getEventSnapReceiver().unregisterCallback(CursorPosEvent.class, getCursorPosCallback());
+        getGraphics().getEventSnapReceiver().unregisterCallback(MouseButtonEvent.class, getMouseButtonCallback());
+        getGraphics().getEventSnapReceiver().unregisterCallback(CursorVisibilityEvent.class, getCursorVisibilityCallback());
     }
 
     private void trackCursor(CursorPosEvent event) {
-        float width = getGraphics().getWindowData().getWidth();
-        float height = getGraphics().getWindowData().getHeight();
-        float normalizedX = 2f * ((float) event.getX() / width - 0.5f);
-        float normalizedY = -2f * ((float) event.getY() / height - 0.5f);
-        setCursorInside(isInside(normalizedX, normalizedY));
+        setCursorInside(
+                getGraphics().getWindowData().isCursorEnabled() &&
+                isInside((float) event.getNormalX(), (float) event.getNormalY())
+        );
+    }
+
+    private void handleCursorVisibility(CursorVisibilityEvent event) {
+        if (!event.isVisible()) {
+            setCursorInside(false);
+        }
     }
 
     private void handleMouseButton(MouseButtonEvent event) {

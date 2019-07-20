@@ -30,6 +30,7 @@ public class WindowData implements Universal, Graphical {
     private final FpsCounter fpsCounter = new FpsCounter();
     private final long window;
     private Vector2i windowSize;
+    private boolean cursorEnabled;
 
     public WindowData() {
 
@@ -75,6 +76,8 @@ public class WindowData implements Universal, Graphical {
         glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
         //glEnable(GL_CULL_FACE);
         glClearColor(BACKGROUND_COLOR.x(), BACKGROUND_COLOR.y(), BACKGROUND_COLOR.z(), BACKGROUND_COLOR.w());
+
+        enableCursor();
 
         registerDisplayEvent(ResizeEvent.class, new ResizeEvent(getWidth(), getHeight()));
 
@@ -129,10 +132,14 @@ public class WindowData implements Universal, Graphical {
 
     public void enableCursor() {
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        setCursorEnabled(true);
+        registerDisplayEvent(CursorVisibilityEvent.class, new CursorVisibilityEvent(true));
     }
 
     public void disableCursor() {
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        setCursorEnabled(false);
+        registerDisplayEvent(CursorVisibilityEvent.class, new CursorVisibilityEvent(false));
     }
 
     private Vector2i getMainDisplaySize() {
@@ -158,18 +165,18 @@ public class WindowData implements Universal, Graphical {
 
     private void registerCursorPosEvent() {
         GLFWCursorPosCallback posCallback = GLFWCursorPosCallback.create((new GLFWCursorPosCallbackI() {
-            private float dx;
-            private float dy;
-            private float prevX;
-            private float prevY;
+            private double prevX;
+            private double prevY;
 
             @Override
             public void invoke(long window, double xPos, double yPos) {
-                dx = (float) (xPos - prevX);
-                dy = (float) (yPos - prevY);
-                prevX = (float) xPos;
-                prevY = (float) yPos;
-                registerDisplayEvent(CursorPosEvent.class, new CursorPosEvent(xPos, yPos, dx, dy));
+                double dx = xPos - prevX;
+                double dy = yPos - prevY;
+                prevX = xPos;
+                prevY = yPos;
+                double normalX = 2f * (xPos / getWidth() - 0.5f);
+                double normalY = -2f * (yPos / getHeight() - 0.5f);
+                registerDisplayEvent(CursorPosEvent.class, new CursorPosEvent(xPos, yPos, dx, dy, normalX, normalY));
             }
         }));
         getCallbacks().add(posCallback);
