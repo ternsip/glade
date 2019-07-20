@@ -22,7 +22,8 @@ import static org.lwjgl.glfw.GLFW.*;
 @Setter
 public class EntityUIButton extends EntityUI {
 
-    private static final long ANIMATION_TIME_MILLISECONDS = 1000;
+    private static final long ANIMATION_SCALE_TIME_MILLISECONDS = 1000;
+    private static final long ANIMATION_ROTATE_TIME_MILLISECONDS = 200;
 
     private final Callback<CursorPosEvent> cursorPosCallback = this::trackCursor;
     private final Callback<CursorVisibilityEvent> cursorVisibilityCallback = this::handleCursorVisibility;
@@ -32,7 +33,6 @@ public class EntityUIButton extends EntityUI {
 
     private final ArrayList<ButtonCallback> onClick = new ArrayList<>();
     private final ArrayList<ButtonCallback> onPress = new ArrayList<>();
-    private final ArrayList<ButtonCallback> onRelease = new ArrayList<>();
     private final ArrayList<ButtonCallback> onCursorJoin = new ArrayList<>();
     private final ArrayList<ButtonCallback> onCursorLeave = new ArrayList<>();
 
@@ -41,7 +41,7 @@ public class EntityUIButton extends EntityUI {
     private long cursorJoinTime = 0;
     private boolean pressed = false;
 
-    public EntityUIButton(File background, File font, Vector4fc textColor, boolean useAspect, String text) {
+    public EntityUIButton(File background, File font, Vector4fc textColor, String text, boolean useAspect) {
         super(useAspect);
         this.picture = new EntitySprite(background, true, useAspect);
         this.picture.register();
@@ -80,13 +80,19 @@ public class EntityUIButton extends EntityUI {
         if (!isCursorInside()) {
             return getScale();
         }
-        float phase = getPhase();
+        float phase = ((System.currentTimeMillis() - getCursorJoinTime()) % ANIMATION_SCALE_TIME_MILLISECONDS) / (float) ANIMATION_SCALE_TIME_MILLISECONDS;
         float scaleCriteria = 0.75f + (float) Math.abs(Math.cos(2 * Math.PI * phase)) * 0.25f;
         return new Vector3f(getScale().x() * scaleCriteria, getScale().y() * scaleCriteria, getScale().z());
     }
 
-    public float getPhase() {
-        return ((System.currentTimeMillis() - getCursorJoinTime()) % ANIMATION_TIME_MILLISECONDS) / (float) ANIMATION_TIME_MILLISECONDS;
+    @Override
+    public Vector3fc getVisualRotation() {
+        if (!isPressed() || !isCursorInside()) {
+            return getRotation();
+        }
+        float phase = ((System.currentTimeMillis() - getCursorJoinTime()) % ANIMATION_ROTATE_TIME_MILLISECONDS) / (float) ANIMATION_ROTATE_TIME_MILLISECONDS;
+        float rotateCriteria = (float) (Math.PI * 0.25 * Math.sin(phase * Math.PI));
+        return new Vector3f(getRotation().x(), getRotation().y(), getRotation().z() + rotateCriteria);
     }
 
     public void enable() {
@@ -124,6 +130,10 @@ public class EntityUIButton extends EntityUI {
             getOnCursorJoin().forEach(ButtonCallback::execute);
             setCursorJoinTime(System.currentTimeMillis());
         }
+        if (isCursorInside() && !cursorInside) {
+            getOnCursorLeave().forEach(ButtonCallback::execute);
+            setPressed(false);
+        }
         setCursorInside(cursorInside);
     }
 
@@ -132,21 +142,19 @@ public class EntityUIButton extends EntityUI {
         if (!event.isVisible()) {
             getOnCursorLeave().forEach(ButtonCallback::execute);
             setCursorInside(false);
+            setPressed(false);
         }
     }
 
     private void handleMouseButton(MouseButtonEvent event) {
-        if (event.getButton() == GLFW_MOUSE_BUTTON_1) {
-            if (event.getAction() == GLFW_PRESS && isCursorInside()) {
+        if (event.getButton() == GLFW_MOUSE_BUTTON_1 && isCursorInside()) {
+            if (event.getAction() == GLFW_PRESS) {
                 setPressed(true);
                 getOnPress().forEach(ButtonCallback::execute);
             }
-            if (event.getAction() == GLFW_RELEASE) {
-                getOnRelease().forEach(ButtonCallback::execute);
-                if (isPressed()) {
-                    getOnClick().forEach(ButtonCallback::execute);
-                    setPressed(false);
-                }
+            if (event.getAction() == GLFW_RELEASE && isPressed()) {
+                getOnClick().forEach(ButtonCallback::execute);
+                setPressed(false);
             }
         }
     }

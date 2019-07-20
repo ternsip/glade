@@ -121,9 +121,9 @@ public class Universe {
         new EntityGenericRotating(() -> new EffigyDynamicText(new File("fonts/default.png"), false, false, new Vector4f(0, 0, 1, 1), "Hello world!"), new Vector3f(0, 0.1f, 0)).register();
         new EntityGeneric(() -> new EffigyAxis()).register();
 
-        EntityUIButton button = new EntityUIButton(new File("tools/button.png"), new File("fonts/default.png"), new Vector4f(1, 1, 1, 1), true, "Exit");
+        EntityUIButton button = new EntityUIButton(new File("tools/button.png"), new File("fonts/default.png"), new Vector4f(1, 1, 1, 1), "Exit", true);
         button.setScale(new Vector3f(0.1f, 0.05f, 1));
-        button.setPosition(new Vector3f(0, 0.5f, 0));
+        button.setPosition(new Vector3f(0, -0.5f, 0));
         button.getOnClick().add(() -> setActive(false));
         button.register();
 
