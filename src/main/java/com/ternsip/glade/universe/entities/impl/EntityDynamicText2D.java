@@ -12,8 +12,6 @@ import java.io.File;
 @Setter
 public class EntityDynamicText2D extends Entity<EffigyDynamicText> {
 
-    private static final float TEXT_COMPRESSION = 0.8f;
-
     private final File file;
     private final Vector4fc color;
     private String text;
