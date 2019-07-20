@@ -60,7 +60,7 @@ public class EffigyDynamicText extends EffigySprite {
         getShader().getProjectionMatrix().load(getProjectionMatrix());
         getShader().getViewMatrix().load(getViewMatrix());
         Matrix4f transform = new Matrix4f(getTransformationMatrix());
-        transform.translate(-TEXT_COMPRESSION * 0.5f * getText().length(), 0, 0);
+        transform.translate(-TEXT_COMPRESSION * 0.5f * (getText().length() - 1), 0, 0);
         for (int i = 0; i < getText().length(); ++i) {
             char symbol = getText().charAt(i);
             Mesh symbolMesh = getModel().getMeshes().get(symbol);
