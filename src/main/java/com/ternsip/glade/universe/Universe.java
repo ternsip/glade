@@ -61,7 +61,8 @@ public class Universe {
         entityPlayer.setPosition(new Vector3f(50, 90, 50));
         entityPlayer.setScale(new Vector3f(1, 1, 1));
         getEntityRepository().setCameraTarget(entityPlayer);
-        Entity aim = new EntityAim();
+        Entity aim = new EntitySprite(new File("tools/aim.png"), true, true);
+        aim.setScale(new Vector3f(0.01f));
         aim.register();
         getEntityRepository().setAim(aim);
 
@@ -121,7 +122,7 @@ public class Universe {
         button.setPosition(new Vector3f(0, 0.5f, 0));
         button.register();
 
-        new EntityStatistics2D(new File("fonts/default.png"), new Vector4f(1, 1, 0, 1)).register();
+        new EntityStatistics2D(new File("fonts/default.png"), new Vector4f(1, 1, 0, 1), true).register();
 
         getCollisions().add(new GroundObstacle());
         getCollisions().add(new ChunksObstacle());

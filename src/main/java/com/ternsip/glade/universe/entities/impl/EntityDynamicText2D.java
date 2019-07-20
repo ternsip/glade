@@ -15,11 +15,13 @@ public class EntityDynamicText2D extends Entity<EffigyDynamicText> {
     private final File file;
     private final Vector4fc color;
     private String text;
+    private boolean useAspect;
 
-    public EntityDynamicText2D(File file, String text, Vector4fc color) {
+    public EntityDynamicText2D(File file, String text, Vector4fc color, boolean useAspect) {
         this.file = file;
         this.text = text;
         this.color = color;
+        this.useAspect = useAspect;
     }
 
     @Override
@@ -30,6 +32,6 @@ public class EntityDynamicText2D extends Entity<EffigyDynamicText> {
 
     @Override
     public EffigyDynamicText getEffigy() {
-        return new EffigyDynamicText(getFile(), true, true, getColor(), getText());
+        return new EffigyDynamicText(getFile(), true, isUseAspect(), getColor(), getText());
     }
 }

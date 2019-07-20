@@ -4,20 +4,21 @@ import com.ternsip.glade.graphics.visual.base.Effigy;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigySprite;
 import com.ternsip.glade.universe.entities.base.Entity;
 import lombok.Getter;
-import org.joml.Vector3f;
+import lombok.RequiredArgsConstructor;
 
 import java.io.File;
 
+@RequiredArgsConstructor
 @Getter
-public class EntityAim extends Entity {
+public class EntitySprite extends Entity {
 
-    public EntityAim() {
-        setScale(new Vector3f(0.01f));
-    }
+    private final File file;
+    private final boolean ortho;
+    private final boolean useAspect;
 
     @Override
     public Effigy getEffigy() {
-        return new EffigySprite(new File("tools/aim.png"), true, true);
+        return new EffigySprite(getFile(), isOrtho(), isUseAspect());
     }
 
 }

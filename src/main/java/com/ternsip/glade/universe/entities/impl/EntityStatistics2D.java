@@ -9,8 +9,8 @@ import java.io.File;
 
 public class EntityStatistics2D extends EntityDynamicText2D {
 
-    public EntityStatistics2D(File file, Vector4fc color) {
-        super(file, "NO DATA CALCULATED", color);
+    public EntityStatistics2D(File file, Vector4fc color, boolean useAspect) {
+        super(file, "NO DATA CALCULATED", color, useAspect);
     }
 
     @Override

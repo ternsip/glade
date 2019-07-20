@@ -12,14 +12,6 @@ public class Volumetric {
     private final Vector3f rotation = new Vector3f(0, 0, 0);
     private final AtomicBoolean visible = new AtomicBoolean(true);
 
-    public void increasePosition(Vector3fc delta) {
-        position.add(delta);
-    }
-
-    public void increaseRotation(Vector3fc delta) {
-        rotation.add(delta);
-    }
-
     public Vector3fc getPosition() {
         return position;
     }
