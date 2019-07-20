@@ -97,7 +97,7 @@ public class EffigyDynamicText extends EffigySprite {
         Vector3f newScale = new Vector3f(2f / maxChars.x(), 2f / maxChars.y(), 1);
         Vector3f newPosition = new Vector3f(
                 -1f + newScale.x() * (getText().length() + 1) * 0.5f * TEXT_COMPRESSION + pos.x() * newScale.x(),
-                -(-1f + newScale.y() + pos.y() * newScale.y()),
+                -(-1f + newScale.y() * getRatio() + pos.y() * newScale.y() * getRatio()),
                 0
         );
         setScale(newScale);
