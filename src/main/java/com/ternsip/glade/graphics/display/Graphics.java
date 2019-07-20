@@ -44,7 +44,7 @@ public class Graphics implements Universal {
     private final TexturePackRepository texturePackRepository = new TexturePackRepository();
 
     public void loop() {
-        while (getWindowData().isActive()) {
+        while (getWindowData().isActive() && getUniverse().isActive()) {
             getFrameBuffers().bindBuffer();
             getWindowData().clear();
             getEventSnapReceiver().update();

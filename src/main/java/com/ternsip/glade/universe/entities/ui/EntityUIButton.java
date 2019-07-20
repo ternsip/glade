@@ -3,19 +3,18 @@ package com.ternsip.glade.universe.entities.ui;
 import com.ternsip.glade.common.events.base.Callback;
 import com.ternsip.glade.common.events.display.CursorPosEvent;
 import com.ternsip.glade.common.events.display.CursorVisibilityEvent;
-import com.ternsip.glade.common.events.display.KeyEvent;
 import com.ternsip.glade.common.events.display.MouseButtonEvent;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigySprite;
 import com.ternsip.glade.universe.entities.impl.EntityDynamicText2D;
 import com.ternsip.glade.universe.entities.impl.EntitySprite;
 import lombok.Getter;
 import lombok.Setter;
-import org.joml.*;
+import org.joml.Vector3f;
+import org.joml.Vector3fc;
+import org.joml.Vector4fc;
 
 import java.io.File;
-import java.lang.Math;
-import java.util.Deque;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.ArrayList;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -28,17 +27,19 @@ public class EntityUIButton extends EntityUI {
     private final Callback<CursorPosEvent> cursorPosCallback = this::trackCursor;
     private final Callback<CursorVisibilityEvent> cursorVisibilityCallback = this::handleCursorVisibility;
     private final Callback<MouseButtonEvent> mouseButtonCallback = this::handleMouseButton;
-    private final Callback<KeyEvent> keyEventCallback = this::handleKeyEvent;
-
     private final EntitySprite picture;
     private final EntityDynamicText2D sign;
+
+    private final ArrayList<ButtonCallback> onClick = new ArrayList<>();
+    private final ArrayList<ButtonCallback> onPress = new ArrayList<>();
+    private final ArrayList<ButtonCallback> onRelease = new ArrayList<>();
+    private final ArrayList<ButtonCallback> onCursorJoin = new ArrayList<>();
+    private final ArrayList<ButtonCallback> onCursorLeave = new ArrayList<>();
 
     private boolean cursorVisible = false;
     private boolean cursorInside = false;
     private long cursorJoinTime = 0;
-    private int pressed = 0;
-    private int unpressed = 0;
-    private Deque<Integer> keys = new ConcurrentLinkedDeque<>();
+    private boolean pressed = false;
 
     public EntityUIButton(File background, File font, Vector4fc textColor, boolean useAspect, String text) {
         super(useAspect);
@@ -101,53 +102,60 @@ public class EntityUIButton extends EntityUI {
     }
 
     private void resetState() {
-        cursorInside = false;
-        pressed = 0;
-        unpressed = 0;
+        setCursorInside(false);
+        setPressed(false);
     }
 
     private void registerCallbacks() {
         getUniverse().getEventSnapReceiver().registerCallback(CursorPosEvent.class, getCursorPosCallback());
         getUniverse().getEventSnapReceiver().registerCallback(MouseButtonEvent.class, getMouseButtonCallback());
         getUniverse().getEventSnapReceiver().registerCallback(CursorVisibilityEvent.class, getCursorVisibilityCallback());
-        getUniverse().getEventSnapReceiver().registerCallback(KeyEvent.class, getKeyEventCallback());
     }
 
     private void unregisterCallbacks() {
         getUniverse().getEventSnapReceiver().unregisterCallback(CursorPosEvent.class, getCursorPosCallback());
         getUniverse().getEventSnapReceiver().unregisterCallback(MouseButtonEvent.class, getMouseButtonCallback());
         getUniverse().getEventSnapReceiver().unregisterCallback(CursorVisibilityEvent.class, getCursorVisibilityCallback());
-        getUniverse().getEventSnapReceiver().unregisterCallback(KeyEvent.class, getKeyEventCallback());
     }
 
     private void trackCursor(CursorPosEvent event) {
         boolean cursorInside = isCursorVisible() && isInside((float) event.getNormalX(), (float) event.getNormalY());
         if (!isCursorInside() && cursorInside) {
+            getOnCursorJoin().forEach(ButtonCallback::execute);
             setCursorJoinTime(System.currentTimeMillis());
         }
         setCursorInside(cursorInside);
     }
 
-    private void handleKeyEvent(KeyEvent event) {
-
-    }
-
     private void handleCursorVisibility(CursorVisibilityEvent event) {
         setCursorVisible(event.isVisible());
         if (!event.isVisible()) {
+            getOnCursorLeave().forEach(ButtonCallback::execute);
             setCursorInside(false);
         }
     }
 
     private void handleMouseButton(MouseButtonEvent event) {
         if (event.getButton() == GLFW_MOUSE_BUTTON_1) {
-            if (isCursorInside()) {
-                pressed += event.getAction() == GLFW_PRESS ? 1 : 0;
+            if (event.getAction() == GLFW_PRESS && isCursorInside()) {
+                setPressed(true);
+                getOnPress().forEach(ButtonCallback::execute);
             }
-            if (pressed > unpressed) {
-                unpressed += event.getAction() == GLFW_RELEASE ? 1 : 0;
+            if (event.getAction() == GLFW_RELEASE) {
+                getOnRelease().forEach(ButtonCallback::execute);
+                if (isPressed()) {
+                    getOnClick().forEach(ButtonCallback::execute);
+                    setPressed(false);
+                }
             }
         }
+    }
+
+    @FunctionalInterface
+    public interface ButtonCallback {
+
+        void execute();
+
     }
 
 }

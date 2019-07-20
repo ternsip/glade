@@ -14,6 +14,7 @@ import com.ternsip.glade.universe.entities.repository.EntityRepository;
 import com.ternsip.glade.universe.entities.ui.EntityUIButton;
 import com.ternsip.glade.universe.parts.chunks.Blocks;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -21,12 +22,15 @@ import org.joml.Vector4f;
 import java.io.File;
 
 @Getter
+@Setter
 public class Universe {
 
     private final EventSnapReceiver eventSnapReceiver = new EventSnapReceiver();
     private final EntityRepository entityRepository = new EntityRepository();
     private final String name = "universe";
     private final Balance balance = new Balance();
+
+    private boolean active = true;
 
     @Getter(lazy = true)
     private final Collisions collisions = new Collisions();
@@ -40,7 +44,7 @@ public class Universe {
 
     @SneakyThrows
     public void loop() {
-        while (getEventSnapReceiver().isApplicationActive()) {
+        while (getEventSnapReceiver().isApplicationActive() && isActive()) {
             long startTime = System.currentTimeMillis();
             update();
             long pastTime = System.currentTimeMillis() - startTime;
@@ -120,6 +124,7 @@ public class Universe {
         EntityUIButton button = new EntityUIButton(new File("tools/button.png"), new File("fonts/default.png"), new Vector4f(1, 1, 1, 1), true, "Exit");
         button.setScale(new Vector3f(0.1f, 0.05f, 1));
         button.setPosition(new Vector3f(0, 0.5f, 0));
+        button.getOnClick().add(() -> setActive(false));
         button.register();
 
         new EntityStatistics2D(new File("fonts/default.png"), new Vector4f(1, 1, 0, 1), true).register();
