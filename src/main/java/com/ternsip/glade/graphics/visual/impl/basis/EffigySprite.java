@@ -36,6 +36,27 @@ public class EffigySprite extends Effigy<SpriteShader> {
     private final boolean ortho;
     private final boolean useAspect;
 
+    public float getRatioX() {
+        if (!isUseAspect()) {
+            return 1;
+        }
+        float gRatio = getGraphics().getWindowData().getRatio();
+        return gRatio < 1 ? 1f / gRatio : 1;
+    }
+
+    public float getRatioY() {
+        if (!isUseAspect()) {
+            return 1;
+        }
+        float gRatio = getGraphics().getWindowData().getRatio();
+        return gRatio > 1 ? gRatio : 1;
+    }
+
+    @Override
+    public Vector3f getAdjustedScale() {
+        return new Vector3f(super.getAdjustedScale()).mul(new Vector3f(getRatioX(), getRatioY(), 1));
+    }
+
     @Override
     public void render() {
         getShader().start();
@@ -59,22 +80,6 @@ public class EffigySprite extends Effigy<SpriteShader> {
         ));
     }
 
-    public float getRatioX() {
-        if (!isUseAspect()) {
-            return 1;
-        }
-        float gRatio = getGraphics().getWindowData().getRatio();
-        return gRatio < 1 ? 1f / gRatio : 1;
-    }
-
-    public float getRatioY() {
-        if (!isUseAspect()) {
-            return 1;
-        }
-        float gRatio = getGraphics().getWindowData().getRatio();
-        return gRatio > 1 ? gRatio : 1;
-    }
-
     @Override
     public Class<SpriteShader> getShaderClass() {
         return SpriteShader.class;
@@ -93,11 +98,6 @@ public class EffigySprite extends Effigy<SpriteShader> {
     @Override
     protected Matrix4fc getProjectionMatrix() {
         return isOrtho() ? ORTHO_MATRIX : super.getProjectionMatrix();
-    }
-
-    @Override
-    public Vector3f getAdjustedScale() {
-        return new Vector3f(super.getAdjustedScale()).mul(new Vector3f(getRatioX(), getRatioY(), 1));
     }
 
     @RequiredArgsConstructor

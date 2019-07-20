@@ -19,8 +19,8 @@
                 <AND>
                   <FIELD>true</FIELD>
                   <FINAL>true</FINAL>
-                  <PUBLIC>true</PUBLIC>
                   <STATIC>true</STATIC>
+                  <visibility />
                 </AND>
               </match>
             </rule>
@@ -30,77 +30,8 @@
               <match>
                 <AND>
                   <FIELD>true</FIELD>
-                  <FINAL>true</FINAL>
-                  <PROTECTED>true</PROTECTED>
                   <STATIC>true</STATIC>
-                </AND>
-              </match>
-            </rule>
-          </section>
-          <section>
-            <rule>
-              <match>
-                <AND>
-                  <FIELD>true</FIELD>
-                  <FINAL>true</FINAL>
-                  <PACKAGE_PRIVATE>true</PACKAGE_PRIVATE>
-                  <STATIC>true</STATIC>
-                </AND>
-              </match>
-            </rule>
-          </section>
-          <section>
-            <rule>
-              <match>
-                <AND>
-                  <FIELD>true</FIELD>
-                  <FINAL>true</FINAL>
-                  <PRIVATE>true</PRIVATE>
-                  <STATIC>true</STATIC>
-                </AND>
-              </match>
-            </rule>
-          </section>
-          <section>
-            <rule>
-              <match>
-                <AND>
-                  <FIELD>true</FIELD>
-                  <PUBLIC>true</PUBLIC>
-                  <STATIC>true</STATIC>
-                </AND>
-              </match>
-            </rule>
-          </section>
-          <section>
-            <rule>
-              <match>
-                <AND>
-                  <FIELD>true</FIELD>
-                  <PROTECTED>true</PROTECTED>
-                  <STATIC>true</STATIC>
-                </AND>
-              </match>
-            </rule>
-          </section>
-          <section>
-            <rule>
-              <match>
-                <AND>
-                  <FIELD>true</FIELD>
-                  <PACKAGE_PRIVATE>true</PACKAGE_PRIVATE>
-                  <STATIC>true</STATIC>
-                </AND>
-              </match>
-            </rule>
-          </section>
-          <section>
-            <rule>
-              <match>
-                <AND>
-                  <FIELD>true</FIELD>
-                  <PRIVATE>true</PRIVATE>
-                  <STATIC>true</STATIC>
+                  <visibility />
                 </AND>
               </match>
             </rule>
@@ -121,7 +52,7 @@
                 <AND>
                   <FIELD>true</FIELD>
                   <FINAL>true</FINAL>
-                  <PUBLIC>true</PUBLIC>
+                  <visibility />
                 </AND>
               </match>
             </rule>
@@ -131,78 +62,8 @@
               <match>
                 <AND>
                   <FIELD>true</FIELD>
-                  <FINAL>true</FINAL>
-                  <PROTECTED>true</PROTECTED>
+                  <visibility />
                 </AND>
-              </match>
-            </rule>
-          </section>
-          <section>
-            <rule>
-              <match>
-                <AND>
-                  <FIELD>true</FIELD>
-                  <FINAL>true</FINAL>
-                  <PACKAGE_PRIVATE>true</PACKAGE_PRIVATE>
-                </AND>
-              </match>
-            </rule>
-          </section>
-          <section>
-            <rule>
-              <match>
-                <AND>
-                  <FIELD>true</FIELD>
-                  <FINAL>true</FINAL>
-                  <PRIVATE>true</PRIVATE>
-                </AND>
-              </match>
-            </rule>
-          </section>
-          <section>
-            <rule>
-              <match>
-                <AND>
-                  <FIELD>true</FIELD>
-                  <PUBLIC>true</PUBLIC>
-                </AND>
-              </match>
-            </rule>
-          </section>
-          <section>
-            <rule>
-              <match>
-                <AND>
-                  <FIELD>true</FIELD>
-                  <PROTECTED>true</PROTECTED>
-                </AND>
-              </match>
-            </rule>
-          </section>
-          <section>
-            <rule>
-              <match>
-                <AND>
-                  <FIELD>true</FIELD>
-                  <PACKAGE_PRIVATE>true</PACKAGE_PRIVATE>
-                </AND>
-              </match>
-            </rule>
-          </section>
-          <section>
-            <rule>
-              <match>
-                <AND>
-                  <FIELD>true</FIELD>
-                  <PRIVATE>true</PRIVATE>
-                </AND>
-              </match>
-            </rule>
-          </section>
-          <section>
-            <rule>
-              <match>
-                <FIELD>true</FIELD>
               </match>
             </rule>
           </section>

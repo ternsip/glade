@@ -19,9 +19,8 @@ import static org.lwjgl.glfw.GLFW.*;
 public class EffigyUIButton extends EffigySprite {
 
     private final Callback<CursorPosEvent> cursorPosCallback = this::trackCursor;
-    private final Callback<MouseButtonEvent> mouseButtonCallback = this::handleMouseButton;
     private final Callback<CursorVisibilityEvent> cursorVisibilityCallback = this::handleCursorVisibility;
-
+    private final Callback<MouseButtonEvent> mouseButtonCallback = this::handleMouseButton;
     private Vector2fc uiCenter = new Vector2f(0);
     private Vector2fc uiSize = new Vector2f(1);
     private boolean enabled = true;
@@ -46,6 +45,12 @@ public class EffigyUIButton extends EffigySprite {
         resetState();
     }
 
+    @Override
+    public void finish() {
+        super.finish();
+        unregisterCallbacks();
+    }
+
     private void resetState() {
         cursorInside = false;
         pressed = 0;
@@ -65,10 +70,7 @@ public class EffigyUIButton extends EffigySprite {
     }
 
     private void trackCursor(CursorPosEvent event) {
-        setCursorInside(
-                getGraphics().getWindowData().isCursorEnabled() &&
-                isInside((float) event.getNormalX(), (float) event.getNormalY())
-        );
+        setCursorInside(getGraphics().getWindowData().isCursorEnabled() && isInside((float) event.getNormalX(), (float) event.getNormalY()));
     }
 
     private void handleCursorVisibility(CursorVisibilityEvent event) {
@@ -94,11 +96,5 @@ public class EffigyUIButton extends EffigySprite {
         float ex = getUiCenter().x() + getUiSize().x() * getRatioX();
         float ey = getUiCenter().y() + getUiSize().y() * getRatioY();
         return sx <= x && sy <= y && ex >= x && ey >= y;
-    }
-
-    @Override
-    public void finish() {
-        super.finish();
-        unregisterCallbacks();
     }
 }

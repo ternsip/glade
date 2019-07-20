@@ -28,8 +28,9 @@ public class EntityUIButton extends Entity<EffigyUIButton> {
     }
 
     @Override
-    public EffigyUIButton getEffigy() {
-        return new EffigyUIButton(getFile(), isUseAspect());
+    public void finish() {
+        super.finish();
+        getSign().finish();
     }
 
     @Override
@@ -49,16 +50,15 @@ public class EntityUIButton extends Entity<EffigyUIButton> {
     }
 
     @Override
-    public void finish() {
-        super.finish();
-        getSign().finish();
+    public EffigyUIButton getEffigy() {
+        return new EffigyUIButton(getFile(), isUseAspect());
     }
 
     private Vector3fc getVisualScale(EffigyUIButton effigy) {
         if (!effigy.isCursorInside()) {
             return getScale();
         }
-        float phase = (System.currentTimeMillis() % ANIMATION_TIME_MILLISECONDS) / (float)ANIMATION_TIME_MILLISECONDS;
+        float phase = (System.currentTimeMillis() % ANIMATION_TIME_MILLISECONDS) / (float) ANIMATION_TIME_MILLISECONDS;
         float scaleCriteria = (float) (1 + Math.abs(Math.cos(2 * Math.PI * phase))) * 0.5f;
         return new Vector3f(getScale().x() * scaleCriteria, getScale().y() * scaleCriteria, getScale().z());
     }
