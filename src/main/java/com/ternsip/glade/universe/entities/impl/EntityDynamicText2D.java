@@ -32,6 +32,6 @@ public class EntityDynamicText2D extends Entity<EffigyDynamicText> {
 
     @Override
     public EffigyDynamicText getEffigy() {
-        return new EffigyDynamicText(getFile(), true, getColor(), getText());
+        return new EffigyDynamicText(getFile(), true, true, getColor(), getText());
     }
 }

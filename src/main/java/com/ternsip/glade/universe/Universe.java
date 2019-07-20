@@ -112,7 +112,7 @@ public class Universe {
         dude.setPosition(new Vector3f(-20f, 0, -20));
         dude.setScale(new Vector3f(10f, 10f, 10f));
 
-        new EntityGenericRotating(() -> new EffigyDynamicText(new File("fonts/default.png"), false, new Vector4f(0, 0, 1, 1), "Hello world!"), new Vector3f(0, 0.1f, 0)).register();
+        new EntityGenericRotating(() -> new EffigyDynamicText(new File("fonts/default.png"), false, false, new Vector4f(0, 0, 1, 1), "Hello world!"), new Vector3f(0, 0.1f, 0)).register();
         new EntityGeneric(() -> new EffigyAxis()).register();
 
         new EntityStatistics2D(new File("fonts/default.png"), new Vector4f(1, 1, 0, 1)).register();
