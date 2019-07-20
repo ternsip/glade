@@ -39,12 +39,12 @@ void main(void){
         float cLength = length(cPos);
         vec2 uv = cur * (gl_FragCoord.xy / cc + (cPos / cLength) * cos(cLength * 12.0 - M_PI * 2 * time * 1) * 0.03);
         uv = waterTextureStart + abs(vec2(mod(uv.x, 1.0), mod(uv.y, 1.0))) * diff;
-        out_colour = vec4(pass_ambient * textureLod(diffuseMap.atlasNumber, vec3(uv * diffuseMap.maxUV, diffuseMap.layer), 0).xyz, 0.8);
+        out_colour = vec4(pass_ambient * texture(diffuseMap.atlasNumber, vec3(uv * diffuseMap.maxUV, diffuseMap.layer)).xyz, 0.8);
         return;
     }
 
     vec3 base_ambient = vec3(pass_ambient, pass_ambient, pass_ambient);
-    vec4 tex = textureLod(diffuseMap.atlasNumber, vec3(pass_textureCoords * diffuseMap.maxUV, diffuseMap.layer), 0);
+    vec4 tex = texture(diffuseMap.atlasNumber, vec3(pass_textureCoords * diffuseMap.maxUV, diffuseMap.layer));
     out_colour = vec4(tex.xyz * base_ambient, tex.a);
 
 }
