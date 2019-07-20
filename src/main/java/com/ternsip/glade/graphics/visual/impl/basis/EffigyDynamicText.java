@@ -95,9 +95,10 @@ public class EffigyDynamicText extends EffigySprite {
 
     public void alignOnScreen(Vector2ic pos, Vector2ic maxChars) {
         Vector3f newScale = new Vector3f(2f / maxChars.x(), 2f / maxChars.y(), 1);
+        Vector3f newScaleRatio = new Vector3f(newScale).mul(getRatioX(), getRatioY(), 1);
         Vector3f newPosition = new Vector3f(
-                -1f + newScale.x() * (getText().length() + 1) * 0.5f * TEXT_COMPRESSION + pos.x() * newScale.x(),
-                -(-1f + newScale.y() * getRatio() + pos.y() * newScale.y() * getRatio()),
+                -1f + newScaleRatio.x() * (getText().length() + 1) * 0.5f * TEXT_COMPRESSION + pos.x() * newScaleRatio.x(),
+                -(-1f + newScaleRatio.y() + pos.y() * newScaleRatio.y()),
                 0
         );
         setScale(newScale);

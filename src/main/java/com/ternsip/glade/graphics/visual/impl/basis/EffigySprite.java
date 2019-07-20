@@ -59,8 +59,20 @@ public class EffigySprite extends Effigy<SpriteShader> {
         ));
     }
 
-    public float getRatio() {
-        return getGraphics().getWindowData().getRatio();
+    public float getRatioX() {
+        if (!isUseAspect()) {
+            return 1;
+        }
+        float gRatio = getGraphics().getWindowData().getRatio();
+        return gRatio < 1 ? 1f / gRatio : 1;
+    }
+
+    public float getRatioY() {
+        if (!isUseAspect()) {
+            return 1;
+        }
+        float gRatio = getGraphics().getWindowData().getRatio();
+        return gRatio > 1 ? gRatio : 1;
     }
 
     @Override
@@ -85,11 +97,7 @@ public class EffigySprite extends Effigy<SpriteShader> {
 
     @Override
     public Vector3f getAdjustedScale() {
-        if (isUseAspect()) {
-            return new Vector3f(super.getAdjustedScale()).mul(new Vector3f(1, getRatio(), 1));
-        } else {
-            return super.getAdjustedScale();
-        }
+        return new Vector3f(super.getAdjustedScale()).mul(new Vector3f(getRatioX(), getRatioY(), 1));
     }
 
     @RequiredArgsConstructor
