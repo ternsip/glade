@@ -17,7 +17,7 @@ public class EntityAim extends Entity {
 
     @Override
     public Effigy getEffigy() {
-        return new EffigySprite(new File("tools/aim.png"), true);
+        return new EffigySprite(new File("tools/aim.png"), true, true);
     }
 
 }

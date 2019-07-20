@@ -13,6 +13,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
+import org.joml.Vector3f;
 
 import java.io.File;
 
@@ -33,6 +34,7 @@ public class EffigySprite extends Effigy<SpriteShader> {
 
     private final File file;
     private final boolean ortho;
+    private final boolean useAspect;
 
     @Override
     public void render() {
@@ -75,6 +77,15 @@ public class EffigySprite extends Effigy<SpriteShader> {
     @Override
     protected Matrix4fc getProjectionMatrix() {
         return isOrtho() ? ORTHO_MATRIX : super.getProjectionMatrix();
+    }
+
+    @Override
+    public Vector3f getAdjustedScale() {
+        if (isUseAspect()) {
+            return new Vector3f(super.getAdjustedScale()).mul(new Vector3f(1, getGraphics().getWindowData().getRatio(), 1));
+        } else {
+            return super.getAdjustedScale();
+        }
     }
 
     @RequiredArgsConstructor

@@ -29,7 +29,7 @@ public class EffigyDynamicText extends EffigySprite {
     private String text;
 
     public EffigyDynamicText(File file, boolean ortho, Vector4fc color, String text) {
-        super(file, ortho);
+        super(file, ortho, true);
         this.text = text;
         this.color = color;
     }
