@@ -40,4 +40,8 @@ public class SoundRepository implements Universal {
         getSounds().remove(sound);
     }
 
+    public void clear() {
+        getSounds().clear();
+    }
+
 }
