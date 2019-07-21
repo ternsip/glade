@@ -6,6 +6,8 @@ import com.ternsip.glade.universe.common.Universal;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.joml.Vector3fc;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL;
 import org.lwjgl.openal.ALC;
 import org.lwjgl.openal.ALCCapabilities;
@@ -13,6 +15,7 @@ import org.lwjgl.openal.ALCapabilities;
 import org.lwjgl.system.MemoryStack;
 
 import java.io.File;
+import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.HashMap;
@@ -26,6 +29,8 @@ import static org.lwjgl.system.libc.LibCStdlib.free;
 
 @Getter
 public class AudioRepository implements Universal {
+
+    private static FloatBuffer ORIENTATION_BUFFER = BufferUtils.createFloatBuffer(6);
 
     private final long device;
     private final long context;
@@ -48,7 +53,7 @@ public class AudioRepository implements Universal {
     public void playSound(Sound sound) {
         SoundData soundData = getFileToSoundPointer().computeIfAbsent(sound.getFile(), this::loadSound);
         alSourcef(soundData.getSourcePointer(), AL_GAIN, sound.getMagnitude());
-        alSource3f(soundData.getSourcePointer(), AL_POSITION, sound.getPosition().x(),  sound.getPosition().y(),  sound.getPosition().z());
+        alSource3f(soundData.getSourcePointer(), AL_POSITION, sound.getPosition().x(), sound.getPosition().y(), sound.getPosition().z());
         alSourcePlay(soundData.getSourcePointer());
     }
 
@@ -57,6 +62,22 @@ public class AudioRepository implements Universal {
             playSound(sound);
             return true;
         });
+
+        // Orient listener in 3d space
+        Vector3fc pos = getUniverse().getSoundRepository().getListenerPosition();
+        Vector3fc orientFront = getUniverse().getSoundRepository().getOrientationFront();
+        Vector3fc orientUp = getUniverse().getSoundRepository().getOrientationUp();
+        ORIENTATION_BUFFER.clear();
+        ORIENTATION_BUFFER.put(orientFront.x());
+        ORIENTATION_BUFFER.put(orientFront.y());
+        ORIENTATION_BUFFER.put(orientFront.z());
+        ORIENTATION_BUFFER.put(orientUp.x());
+        ORIENTATION_BUFFER.put(orientUp.y());
+        ORIENTATION_BUFFER.put(orientUp.z());
+        ORIENTATION_BUFFER.rewind();
+        alListener3f(AL_POSITION, pos.x(), pos.y(), pos.z());
+        alListenerfv(AL_ORIENTATION, ORIENTATION_BUFFER);
+
     }
 
 

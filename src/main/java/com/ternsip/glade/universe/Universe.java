@@ -128,7 +128,7 @@ public class Universe {
         EntityUIButton button = new EntityUIButton(new File("tools/button.png"), new File("fonts/default.png"), new Vector4f(1, 1, 1, 1), "Exit", true);
         button.setScale(new Vector3f(0.1f, 0.05f, 1));
         button.setPosition(new Vector3f(0, -0.5f, 0));
-        button.getOnPress().add(() -> new Sound(new File("sounds/click.ogg"), new Vector3f(-10, 0, 0), 0.4f).register());
+        button.getOnPress().add(() -> new Sound(new File("sounds/click2.ogg"), new Vector3f(0, 0, 0), 2f).register());
         //button.getOnClick().add(() -> setActive(false));
         //button.disable();
         button.register();

@@ -62,6 +62,9 @@ public class UniversalCameraController implements Graphical, Universal, CameraCo
             entity.setRotation(new Vector3f(0, getRotation().y(), 0));
         }
         entity.setVisible(isThirdPerson());
+        getUniverse().getSoundRepository().setListenerPosition(getEyePosition());
+        getUniverse().getSoundRepository().setListenerOrientationFront(getLookDirection());
+        getUniverse().getSoundRepository().setListenerOrientationUp(getUpDirection());
     }
 
     public Vector3fc getEyePosition() {
@@ -109,6 +112,10 @@ public class UniversalCameraController implements Graphical, Universal, CameraCo
 
     private Vector3fc getLookDirection() {
         return FRONT_DIRECTION.rotateX(getRotation().x(), new Vector3f()).rotateY(getRotation().y());
+    }
+
+    private Vector3fc getUpDirection() {
+        return UP_DIRECTION.rotateX(getRotation().x(), new Vector3f()).rotateY(getRotation().y());
     }
 
 }
