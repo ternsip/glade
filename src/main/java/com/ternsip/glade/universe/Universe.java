@@ -12,6 +12,7 @@ import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.impl.*;
 import com.ternsip.glade.universe.entities.repository.EntityRepository;
 import com.ternsip.glade.universe.entities.ui.EntityUIButton;
+import com.ternsip.glade.universe.entities.ui.EntityUIEditBox;
 import com.ternsip.glade.universe.parts.chunks.Blocks;
 import lombok.Getter;
 import lombok.Setter;
@@ -126,6 +127,11 @@ public class Universe {
         button.setPosition(new Vector3f(0, -0.5f, 0));
         button.getOnClick().add(() -> setActive(false));
         button.register();
+
+        EntityUIEditBox editBox = new EntityUIEditBox(new File("tools/button.png"), new File("tools/editbox_frame.png"), new File("tools/editbox_pointer.png"), new File("fonts/default.png"), new Vector4f(1, 1, 1, 1), true);
+        editBox.setScale(new Vector3f(0.2f, 0.05f, 1));
+        editBox.setPosition(new Vector3f(0, 0.5f, 0));
+        editBox.register();
 
         new EntityStatistics2D(new File("fonts/default.png"), new Vector4f(1, 1, 0, 1), true).register();
 

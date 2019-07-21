@@ -26,7 +26,6 @@ public class EntityUI extends Entity<EffigySprite> {
     public void update(EffigySprite effigy) {
         setRatioX(effigy.getRatioX());
         setRatioY(effigy.getRatioY());
-        effigy.setVisible(isVisible());
     }
 
     @Override

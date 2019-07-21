@@ -23,10 +23,11 @@ import static com.ternsip.glade.graphics.shader.impl.AnimationShader.TEXTURES;
 @Setter
 public class EffigyDynamicText extends EffigySprite {
 
-    private static final float TEXT_COMPRESSION = 0.8f;
-
     private final Vector4fc color;
     private String text;
+    private boolean shiftX = false;
+    private boolean shiftY = false;
+    private float textCompression = 1f;
 
     public EffigyDynamicText(File file, boolean ortho, boolean useAspect, Vector4fc color, String text) {
         super(file, ortho, useAspect);
@@ -60,14 +61,18 @@ public class EffigyDynamicText extends EffigySprite {
         getShader().getProjectionMatrix().load(getProjectionMatrix());
         getShader().getViewMatrix().load(getViewMatrix());
         Matrix4f transform = new Matrix4f(getTransformationMatrix());
-        transform.translate(-TEXT_COMPRESSION * 0.5f * (getText().length() - 1), 0, 0);
+        transform.translate(
+                isShiftX() ? 0.5f : (-getTextCompression() * 0.5f * (getText().length() - 1)),
+                isShiftY() ? -0.5f : 0,
+                0
+        );
         for (int i = 0; i < getText().length(); ++i) {
             char symbol = getText().charAt(i);
             Mesh symbolMesh = getModel().getMeshes().get(symbol);
             getShader().getTransformationMatrix().load(transform);
             getShader().getDiffuseMap().load(symbolMesh.getMaterial().getDiffuseMap());
             symbolMesh.render();
-            transform.translate(TEXT_COMPRESSION, 0, 0);
+            transform.translate(getTextCompression(), 0, 0);
         }
         getShader().stop();
     }
@@ -96,11 +101,7 @@ public class EffigyDynamicText extends EffigySprite {
     public void alignOnScreen(Vector2ic pos, Vector2ic maxChars) {
         Vector3f newScale = new Vector3f(2f / maxChars.x(), 2f / maxChars.y(), 1);
         Vector3f newScaleRatio = new Vector3f(newScale).mul(getRatioX(), getRatioY(), 1);
-        Vector3f newPosition = new Vector3f(
-                -1f + newScaleRatio.x() * (getText().length() + 1) * 0.5f * TEXT_COMPRESSION + pos.x() * newScaleRatio.x(),
-                -(-1f + newScaleRatio.y() + pos.y() * newScaleRatio.y()),
-                0
-        );
+        Vector3f newPosition = new Vector3f(-1f + pos.x() * newScaleRatio.x(), -(-1f + pos.y() * newScaleRatio.y()), 0);
         setScale(newScale);
         setPosition(newPosition);
     }

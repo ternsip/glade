@@ -1,5 +1,6 @@
 package com.ternsip.glade.graphics.display;
 
+import com.ternsip.glade.common.events.base.CharEvent;
 import com.ternsip.glade.common.events.base.ErrorEvent;
 import com.ternsip.glade.common.events.base.Event;
 import com.ternsip.glade.common.events.display.*;
@@ -54,6 +55,7 @@ public class WindowData implements Universal, Graphical {
         registerKeyEvent();
         registerFrameBufferSizeEvent();
         registerMouseButtonEvent();
+        registerCharEvent();
 
         glfwSetWindowPos(window, (int) (mainDisplaySize.x() * 0.1), (int) (mainDisplaySize.y() * 0.1));
 
@@ -145,6 +147,14 @@ public class WindowData implements Universal, Graphical {
     private Vector2i getMainDisplaySize() {
         GLFWVidMode vidMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
         return new Vector2i(vidMode.width(), vidMode.height());
+    }
+
+    private void registerCharEvent() {
+        GLFWCharCallback charCallback = GLFWCharCallback.create(
+                (window, unicodePoint) -> registerDisplayEvent(CharEvent.class, new CharEvent(unicodePoint))
+        );
+        getCallbacks().add(charCallback);
+        glfwSetCharCallback(getWindow(), charCallback);
     }
 
     private void registerErrorEvent() {

@@ -1,5 +1,6 @@
 package com.ternsip.glade.universe.entities.ui;
 
+import com.ternsip.glade.graphics.visual.impl.basis.EffigySprite;
 import com.ternsip.glade.universe.entities.impl.EntityDynamicText2D;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,12 +27,11 @@ public class EntityUILabel extends EntityUI {
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void update(EffigySprite effigy) {
+        super.update(effigy);
         getSign().setScale(getVisualScale());
         getSign().setRotation(getVisualRotation());
         getSign().setPosition(getVisualPosition());
         getSign().setVisible(isVisible());
     }
-
 }

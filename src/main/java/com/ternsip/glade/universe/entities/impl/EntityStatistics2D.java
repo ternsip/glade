@@ -11,6 +11,8 @@ public class EntityStatistics2D extends EntityDynamicText2D {
 
     public EntityStatistics2D(File file, Vector4fc color, boolean useAspect) {
         super(file, "NO DATA CALCULATED", color, useAspect);
+        setShiftX(true);
+        setShiftY(true);
     }
 
     @Override

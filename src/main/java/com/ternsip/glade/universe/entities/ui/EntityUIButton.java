@@ -31,12 +31,12 @@ public class EntityUIButton extends EntityUI {
     private final EntitySprite picture;
     private final EntityDynamicText2D sign;
 
-    private final ArrayList<ButtonCallback> onClick = new ArrayList<>();
-    private final ArrayList<ButtonCallback> onPress = new ArrayList<>();
-    private final ArrayList<ButtonCallback> onCursorJoin = new ArrayList<>();
-    private final ArrayList<ButtonCallback> onCursorLeave = new ArrayList<>();
+    private final ArrayList<UICallback> onClick = new ArrayList<>();
+    private final ArrayList<UICallback> onPress = new ArrayList<>();
+    private final ArrayList<UICallback> onCursorJoin = new ArrayList<>();
+    private final ArrayList<UICallback> onCursorLeave = new ArrayList<>();
 
-    private boolean cursorVisible = false;
+    private boolean available = false;
     private boolean cursorInside = false;
     private long cursorJoinTime = 0;
     private boolean pressed = false;
@@ -60,22 +60,19 @@ public class EntityUIButton extends EntityUI {
 
     @Override
     public void update(EffigySprite effigy) {
-        setRatioX(effigy.getRatioX());
-        setRatioY(effigy.getRatioY());
-
+        super.update(effigy);
         float textScale = 2f / Math.max(1, getSign().getText().length());
         getSign().setScale(new Vector3f(getVisualScale()).mul(textScale, textScale, 1));
         getSign().setRotation(getVisualRotation());
-        getSign().setPosition(new Vector3f(getVisualPosition()).add(0, 0, -0.01f));
+        getSign().setPosition(new Vector3f(getPosition()).add(0, 0, -0.01f));
         getSign().setVisible(isVisible());
 
         getPicture().setScale(getVisualScale());
         getPicture().setRotation(getVisualRotation());
-        getPicture().setPosition(getVisualPosition());
+        getPicture().setPosition(getPosition());
         getPicture().setVisible(isVisible());
     }
 
-    @Override
     public Vector3fc getVisualScale() {
         if (!isCursorInside()) {
             return getScale();
@@ -85,14 +82,13 @@ public class EntityUIButton extends EntityUI {
         return new Vector3f(getScale().x() * scaleCriteria, getScale().y() * scaleCriteria, getScale().z());
     }
 
-    @Override
     public Vector3fc getVisualRotation() {
         if (!isPressed() || !isCursorInside()) {
             return getRotation();
         }
         float phase = ((System.currentTimeMillis() - getCursorJoinTime()) % ANIMATION_ROTATE_TIME_MILLISECONDS) / (float) ANIMATION_ROTATE_TIME_MILLISECONDS;
         float rotateCriteria = (float) (Math.PI * 0.25 * Math.sin(phase * Math.PI));
-        return new Vector3f(getRotation().x(), getRotation().y(), getRotation().z() + rotateCriteria);
+        return new Vector3f(getRotation().x(), getRotation().y() + rotateCriteria, getRotation().z());
     }
 
     public void enable() {
@@ -125,24 +121,23 @@ public class EntityUIButton extends EntityUI {
     }
 
     private void trackCursor(CursorPosEvent event) {
-        boolean cursorInside = isCursorVisible() && isInside((float) event.getNormalX(), (float) event.getNormalY());
+        boolean cursorInside = isAvailable() && isInside((float) event.getNormalX(), (float) event.getNormalY());
         if (!isCursorInside() && cursorInside) {
-            getOnCursorJoin().forEach(ButtonCallback::execute);
+            getOnCursorJoin().forEach(UICallback::execute);
             setCursorJoinTime(System.currentTimeMillis());
         }
         if (isCursorInside() && !cursorInside) {
-            getOnCursorLeave().forEach(ButtonCallback::execute);
+            getOnCursorLeave().forEach(UICallback::execute);
             setPressed(false);
         }
         setCursorInside(cursorInside);
     }
 
     private void handleCursorVisibility(CursorVisibilityEvent event) {
-        setCursorVisible(event.isVisible());
+        setAvailable(event.isVisible());
         if (!event.isVisible()) {
-            getOnCursorLeave().forEach(ButtonCallback::execute);
-            setCursorInside(false);
-            setPressed(false);
+            getOnCursorLeave().forEach(UICallback::execute);
+            resetState();
         }
     }
 
@@ -150,20 +145,13 @@ public class EntityUIButton extends EntityUI {
         if (event.getButton() == GLFW_MOUSE_BUTTON_1 && isCursorInside()) {
             if (event.getAction() == GLFW_PRESS) {
                 setPressed(true);
-                getOnPress().forEach(ButtonCallback::execute);
+                getOnPress().forEach(UICallback::execute);
             }
             if (event.getAction() == GLFW_RELEASE && isPressed()) {
-                getOnClick().forEach(ButtonCallback::execute);
+                getOnClick().forEach(UICallback::execute);
                 setPressed(false);
             }
         }
-    }
-
-    @FunctionalInterface
-    public interface ButtonCallback {
-
-        void execute();
-
     }
 
 }

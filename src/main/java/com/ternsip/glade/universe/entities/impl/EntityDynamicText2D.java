@@ -16,6 +16,9 @@ public class EntityDynamicText2D extends Entity<EffigyDynamicText> {
     private final Vector4fc color;
     private String text;
     private boolean useAspect;
+    private boolean shiftX = false;
+    private boolean shiftY = false;
+    private float textCompression = 0.8f;
 
     public EntityDynamicText2D(File file, String text, Vector4fc color, boolean useAspect) {
         this.file = file;
@@ -27,6 +30,9 @@ public class EntityDynamicText2D extends Entity<EffigyDynamicText> {
     @Override
     public void update(EffigyDynamicText effigy) {
         super.update(effigy);
+        effigy.setShiftX(isShiftX());
+        effigy.setShiftY(isShiftY());
+        effigy.setTextCompression(getTextCompression());
         effigy.setText(getText());
     }
 
