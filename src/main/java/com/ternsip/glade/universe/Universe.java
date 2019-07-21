@@ -4,6 +4,8 @@ import com.ternsip.glade.common.events.base.EventSnapReceiver;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigyAxis;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigyDynamicText;
 import com.ternsip.glade.graphics.visual.impl.test.*;
+import com.ternsip.glade.universe.audio.Sound;
+import com.ternsip.glade.universe.audio.SoundRepository;
 import com.ternsip.glade.universe.collisions.base.Collisions;
 import com.ternsip.glade.universe.collisions.impl.ChunksObstacle;
 import com.ternsip.glade.universe.collisions.impl.GroundObstacle;
@@ -28,6 +30,7 @@ public class Universe {
 
     private final EventSnapReceiver eventSnapReceiver = new EventSnapReceiver();
     private final EntityRepository entityRepository = new EntityRepository();
+    private final SoundRepository soundRepository = new SoundRepository();
     private final String name = "universe";
     private final Balance balance = new Balance();
 
@@ -125,8 +128,9 @@ public class Universe {
         EntityUIButton button = new EntityUIButton(new File("tools/button.png"), new File("fonts/default.png"), new Vector4f(1, 1, 1, 1), "Exit", true);
         button.setScale(new Vector3f(0.1f, 0.05f, 1));
         button.setPosition(new Vector3f(0, -0.5f, 0));
-        button.getOnClick().add(() -> setActive(false));
-        button.disable();
+        button.getOnPress().add(() -> new Sound(new File("sounds/click.ogg"), new Vector3f(-10, 0, 0), 0.4f).register());
+        //button.getOnClick().add(() -> setActive(false));
+        //button.disable();
         button.register();
 
         EntityUIEditBox editBox = new EntityUIEditBox(new File("tools/button.png"), new File("tools/editbox_frame.png"), new File("tools/editbox_pointer.png"), new File("fonts/default.png"), new Vector4f(1, 1, 1, 1), true);

@@ -43,6 +43,9 @@ public class Graphics implements Universal {
     @Getter(lazy = true)
     private final TexturePackRepository texturePackRepository = new TexturePackRepository();
 
+    @Getter(lazy = true)
+    private final AudioRepository audioRepository = new AudioRepository();
+
     public void loop() {
         while (getWindowData().isActive() && getUniverse().isActive()) {
             getFrameBuffers().bindBuffer();
@@ -53,6 +56,7 @@ public class Graphics implements Universal {
             getFrameBuffers().resolveBuffer();
             getWindowData().swapBuffers();
             getWindowData().pollEvents();
+            getAudioRepository().update();
         }
     }
 
@@ -62,6 +66,7 @@ public class Graphics implements Universal {
         getShaderRepository().finish();
         getTextureRepository().finish();
         getWindowData().finish();
+        getAudioRepository().finish();
     }
 
     public void checkThreadSafety() {
