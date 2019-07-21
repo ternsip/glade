@@ -36,6 +36,7 @@ public class EntityUIButton extends EntityUI {
     private final ArrayList<UICallback> onCursorJoin = new ArrayList<>();
     private final ArrayList<UICallback> onCursorLeave = new ArrayList<>();
 
+    private float textCompression = 0.8f;
     private boolean available = false;
     private boolean cursorInside = false;
     private long cursorJoinTime = 0;
@@ -66,6 +67,7 @@ public class EntityUIButton extends EntityUI {
         getSign().setRotation(getVisualRotation());
         getSign().setPosition(new Vector3f(getPosition()).add(0, 0, -0.01f));
         getSign().setVisible(isVisible());
+        getSign().setTextCompression(getTextCompression());
 
         getPicture().setScale(getVisualScale());
         getPicture().setRotation(getVisualRotation());

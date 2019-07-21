@@ -24,8 +24,11 @@ import static org.lwjgl.glfw.GLFW.*;
 @Setter
 public class EntityUIEditBox extends EntityUI {
 
-    private static final float INNER_FRAME_SCALE = 0.75f;
-    private static final float TEXT_VERTICAL_SCALE = 0.5f;
+    private static final float INNER_FRAME_SCALE_X = 0.9f;
+    private static final float INNER_FRAME_SCALE_Y = 0.75f;
+    private static final float TEXT_VERTICAL_SCALE = 0.75f;
+    private static final long CURSOR_BLINK_TIME_MILLISECONDS = 500L;
+    private static final long CURSOR_REST_TIME_MILLISECONDS = 500L;
 
     private final Callback<CursorPosEvent> cursorPosCallback = this::trackCursor;
     private final Callback<CursorVisibilityEvent> cursorVisibilityCallback = this::handleCursorVisibility;
@@ -44,7 +47,7 @@ public class EntityUIEditBox extends EntityUI {
     private final ArrayList<ButtonCallback> onCursorLeave = new ArrayList<>();
     private final ArrayList<ButtonCallback> onTextChange = new ArrayList<>();
 
-    private float textCompression = 1;
+    private float textCompression = 0.8f;
     private boolean available = false;
     private boolean cursorInside = false;
     private long cursorJoinTime = 0;
@@ -52,6 +55,7 @@ public class EntityUIEditBox extends EntityUI {
     private int sliderPosition = 0;
     private int visibleChars = 1;
     private StringBuilder textBuilder = new StringBuilder();
+    private long lastPointerActionTime = 0; // TODO use timer class
 
     public EntityUIEditBox(File background, File frame, File pointer, File font, Vector4fc textColor, boolean useAspect) {
         super(useAspect);
@@ -89,9 +93,12 @@ public class EntityUIEditBox extends EntityUI {
         Vector3fc rotation = getVisualRotation();
         boolean isVisible = isVisible();
 
+        boolean pointerVisible = (System.currentTimeMillis() - getLastPointerActionTime()) < CURSOR_REST_TIME_MILLISECONDS ||
+                (System.currentTimeMillis() % (2 * CURSOR_BLINK_TIME_MILLISECONDS)) > CURSOR_BLINK_TIME_MILLISECONDS;
+
         float textScale = scale.y() * TEXT_VERTICAL_SCALE;
-        setVisibleChars(Math.max(1, (int) (scale.x() * INNER_FRAME_SCALE / (getTextCompression() * textScale)) * 2));
-        float signOffsetX = -scale.x() * INNER_FRAME_SCALE * getRatioX();
+        setVisibleChars(Math.max(1, (int) (2 * scale.x() * INNER_FRAME_SCALE_X / (getTextCompression() * textScale))));
+        float signOffsetX = -scale.x() * INNER_FRAME_SCALE_X * getRatioX();
         int pointerBegin = getPointerPosition() - getSliderPosition();
         float pointerOffsetX = signOffsetX + (0.5f + pointerBegin) * getTextCompression() * textScale * getRatioX();
         String text = getTextBuilder().toString();
@@ -101,7 +108,7 @@ public class EntityUIEditBox extends EntityUI {
         getBackground().setPosition(position);
         getBackground().setVisible(isVisible);
 
-        getFrame().setScale(new Vector3f(scale).mul(INNER_FRAME_SCALE, INNER_FRAME_SCALE, 1));
+        getFrame().setScale(new Vector3f(scale).mul(INNER_FRAME_SCALE_X, INNER_FRAME_SCALE_Y, 1));
         getFrame().setRotation(rotation);
         getFrame().setPosition(new Vector3f(position).add(0, 0, -0.01f));
         getFrame().setVisible(isVisible);
@@ -118,7 +125,7 @@ public class EntityUIEditBox extends EntityUI {
         getPointer().setScale(new Vector3f(textScale, textScale, 1));
         getPointer().setRotation(rotation);
         getPointer().setPosition(new Vector3f(position).add(pointerOffsetX, 0, -0.03f));
-        getPointer().setVisible(isPointerValid());
+        getPointer().setVisible(pointerVisible && isPointerValid());
     }
 
     public void insertSymbol(char symbol) {
@@ -215,6 +222,7 @@ public class EntityUIEditBox extends EntityUI {
         if (diff > 0) {
             setSliderPosition(getSliderPosition() + diff);
         }
+        setLastPointerActionTime(System.currentTimeMillis());
     }
 
     private void trackCursor(CursorPosEvent event) {
