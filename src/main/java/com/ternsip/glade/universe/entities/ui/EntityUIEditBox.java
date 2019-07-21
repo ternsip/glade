@@ -93,7 +93,7 @@ public class EntityUIEditBox extends EntityUI {
         setVisibleChars(Math.max(1, (int) (scale.x() * INNER_FRAME_SCALE / (getTextCompression() * textScale)) * 2));
         float signOffsetX = -scale.x() * INNER_FRAME_SCALE * getRatioX();
         int pointerBegin = getPointerPosition() - getSliderPosition();
-        float pointerOffsetX = signOffsetX + (0.5f + pointerBegin) * getTextCompression() *  textScale * getRatioX();
+        float pointerOffsetX = signOffsetX + (0.5f + pointerBegin) * getTextCompression() * textScale * getRatioX();
         String text = getTextBuilder().toString();
 
         getBackground().setScale(scale);
@@ -118,7 +118,7 @@ public class EntityUIEditBox extends EntityUI {
         getPointer().setScale(new Vector3f(textScale, textScale, 1));
         getPointer().setRotation(rotation);
         getPointer().setPosition(new Vector3f(position).add(pointerOffsetX, 0, -0.03f));
-        getPointer().setVisible(getPointerPosition() >= 0);
+        getPointer().setVisible(isPointerValid());
     }
 
     public void insertSymbol(char symbol) {
@@ -167,7 +167,7 @@ public class EntityUIEditBox extends EntityUI {
     }
 
     private void handleKeyEvent(KeyEvent event) {
-        if (getPointerPosition() < 0 || event.getAction() == GLFW_PRESS) {
+        if (!isPointerValid() || event.getAction() == GLFW_PRESS) {
             return;
         }
         if (event.getKey() == GLFW_KEY_RIGHT) {
@@ -181,8 +181,15 @@ public class EntityUIEditBox extends EntityUI {
     }
 
     private void handleCharEvent(CharEvent charEvent) {
+        if (!isPointerValid()) {
+            return;
+        }
         insertSymbol(Character.toChars(charEvent.getUnicodePoint())[0]);
         movePointer(getPointerPosition() + 1);
+    }
+
+    private boolean isPointerValid() {
+        return getPointerPosition() >= 0;
     }
 
     private void invalidatePointer() {
