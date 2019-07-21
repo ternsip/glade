@@ -126,11 +126,13 @@ public class Universe {
         button.setScale(new Vector3f(0.1f, 0.05f, 1));
         button.setPosition(new Vector3f(0, -0.5f, 0));
         button.getOnClick().add(() -> setActive(false));
+        button.disable();
         button.register();
 
         EntityUIEditBox editBox = new EntityUIEditBox(new File("tools/button.png"), new File("tools/editbox_frame.png"), new File("tools/editbox_pointer.png"), new File("fonts/default.png"), new Vector4f(1, 1, 1, 1), true);
         editBox.setScale(new Vector3f(0.2f, 0.05f, 1));
         editBox.setPosition(new Vector3f(0, 0.5f, 0));
+        editBox.disable();
         editBox.register();
 
         new EntityStatistics2D(new File("fonts/default.png"), new Vector4f(1, 1, 0, 1), true).register();
