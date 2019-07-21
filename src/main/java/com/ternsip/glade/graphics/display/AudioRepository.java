@@ -4,14 +4,11 @@ import com.ternsip.glade.common.logic.Utils;
 import com.ternsip.glade.universe.audio.Sound;
 import com.ternsip.glade.universe.common.Universal;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import org.joml.Vector3fc;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.openal.AL;
-import org.lwjgl.openal.ALC;
-import org.lwjgl.openal.ALCCapabilities;
-import org.lwjgl.openal.ALCapabilities;
+import org.lwjgl.openal.*;
 import org.lwjgl.system.MemoryStack;
 
 import java.io.File;
@@ -20,6 +17,7 @@ import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import static org.lwjgl.openal.AL10.*;
 import static org.lwjgl.openal.ALC10.*;
@@ -34,7 +32,8 @@ public class AudioRepository implements Universal {
 
     private final long device;
     private final long context;
-    private final Map<File, SoundData> fileToSoundPointer = new HashMap<>();
+    private final Map<File, Integer> fileToBufferPointer = new HashMap<>();
+    private final Map<Sound, SoundPlayer> soundToMetaInformation = new HashMap<>();
 
     public AudioRepository() {
 
@@ -50,16 +49,35 @@ public class AudioRepository implements Universal {
 
     }
 
-    public void playSound(Sound sound) {
-        SoundData soundData = getFileToSoundPointer().computeIfAbsent(sound.getFile(), this::loadSound);
-        alSourcef(soundData.getSourcePointer(), AL_GAIN, sound.getMagnitude());
-        alSource3f(soundData.getSourcePointer(), AL_POSITION, sound.getPosition().x(), sound.getPosition().y(), sound.getPosition().z());
-        alSourcePlay(soundData.getSourcePointer());
-    }
-
     public void update() {
-        getUniverse().getSoundRepository().getSounds().removeIf(sound -> {
-            playSound(sound);
+
+        Set<Sound> soundsSet = getUniverse().getSoundRepository().getSounds();
+
+        soundsSet.removeIf(sound -> {
+
+            SoundPlayer soundPlayer = getSoundToMetaInformation().computeIfAbsent(sound, s -> {
+                Integer bufferPointer = getFileToBufferPointer().computeIfAbsent(s.getFile(), this::loadSound);
+                return new SoundPlayer(s, bufferPointer);
+            });
+
+            if (!soundPlayer.isPlaying()) {
+                if (soundPlayer.getPlayedTimes() >= sound.getPlayTimes()) {
+                    soundPlayer.finish();
+                    getSoundToMetaInformation().remove(sound);
+                    return true;
+                }
+                soundPlayer.play();
+            }
+
+            return false;
+
+        });
+
+        getSoundToMetaInformation().entrySet().removeIf(entry -> {
+            if (soundsSet.contains(entry.getKey())) {
+                return false;
+            }
+            entry.getValue().finish();
             return true;
         });
 
@@ -82,17 +100,14 @@ public class AudioRepository implements Universal {
 
 
     public void finish() {
-        getFileToSoundPointer().values().forEach(soundData -> {
-            alDeleteBuffers(soundData.getBufferPointer());
-            alDeleteSources(soundData.getSourcePointer());
-        });
+        getFileToBufferPointer().values().forEach(AL10::alDeleteBuffers);
+        getSoundToMetaInformation().values().forEach(SoundPlayer::finish);
         alcDestroyContext(getContext());
         alcCloseDevice(getDevice());
     }
 
     @SneakyThrows
-    public SoundData loadSound(File file) {
-
+    public Integer loadSound(File file) {
         ShortBuffer rawAudioBuffer;
         int channels;
         int sampleRate;
@@ -122,18 +137,37 @@ public class AudioRepository implements Universal {
 
         free(rawAudioBuffer);
 
-        int sourcePointer = alGenSources();
-        alSourcei(sourcePointer, AL_BUFFER, bufferPointer);
-
-        return new SoundData(bufferPointer, sourcePointer);
+        return bufferPointer;
     }
 
-    @RequiredArgsConstructor
     @Getter
-    public static class SoundData {
+    @Setter
+    public static class SoundPlayer {
 
-        private final int bufferPointer;
         private final int sourcePointer;
+        private int playedTimes = 0;
+
+        public SoundPlayer(Sound sound, int bufferPointer) {
+            sourcePointer = alGenSources();
+            alSourcei(sourcePointer, AL_BUFFER, bufferPointer);
+            alSourcef(sourcePointer, AL_GAIN, sound.getMagnitude());
+            alSourcef(sourcePointer, AL_PITCH, sound.getPitch());
+            alSource3f(sourcePointer, AL_POSITION, sound.getPosition().x(), sound.getPosition().y(), sound.getPosition().z());
+        }
+
+        public void finish() {
+            alDeleteSources(getSourcePointer());
+        }
+
+        public boolean isPlaying() {
+            int sourceState = alGetSourcei(getSourcePointer(), AL_SOURCE_STATE);
+            return sourceState == AL_PLAYING;
+        }
+
+        public void play() {
+            alSourcePlay(getSourcePointer());
+            setPlayedTimes(getPlayedTimes() + 1);
+        }
 
     }
 
