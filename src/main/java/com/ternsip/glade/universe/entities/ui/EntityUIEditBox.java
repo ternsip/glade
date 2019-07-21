@@ -178,6 +178,15 @@ public class EntityUIEditBox extends EntityUI {
             movePointer(getPointerPosition() - 1);
             return;
         }
+        if (event.getKey() == GLFW_KEY_DELETE && getTextBuilder().length() > getPointerPosition()) {
+            getTextBuilder().deleteCharAt(getPointerPosition());
+            return;
+        }
+        if (event.getKey() == GLFW_KEY_BACKSPACE && getTextBuilder().length() > 0) {
+            getTextBuilder().deleteCharAt(getPointerPosition() - 1);
+            movePointer(getPointerPosition() - 1);
+            return;
+        }
     }
 
     private void handleCharEvent(CharEvent charEvent) {
