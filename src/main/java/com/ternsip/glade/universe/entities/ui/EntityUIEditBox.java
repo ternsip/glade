@@ -41,11 +41,11 @@ public class EntityUIEditBox extends EntityUI {
     private final EntitySprite pointer;
     private final EntityDynamicText2D sign;
 
-    private final ArrayList<ButtonCallback> onClick = new ArrayList<>();
-    private final ArrayList<ButtonCallback> onPress = new ArrayList<>();
-    private final ArrayList<ButtonCallback> onCursorJoin = new ArrayList<>();
-    private final ArrayList<ButtonCallback> onCursorLeave = new ArrayList<>();
-    private final ArrayList<ButtonCallback> onTextChange = new ArrayList<>();
+    private final ArrayList<UICallback> onClick = new ArrayList<>();
+    private final ArrayList<UICallback> onPress = new ArrayList<>();
+    private final ArrayList<UICallback> onCursorJoin = new ArrayList<>();
+    private final ArrayList<UICallback> onCursorLeave = new ArrayList<>();
+    private final ArrayList<UICallback> onTextChange = new ArrayList<>();
 
     private float textCompression = 0.8f;
     private boolean available = false;
@@ -228,11 +228,11 @@ public class EntityUIEditBox extends EntityUI {
     private void trackCursor(CursorPosEvent event) {
         boolean cursorInside = isAvailable() && isInside((float) event.getNormalX(), (float) event.getNormalY());
         if (!isCursorInside() && cursorInside) {
-            getOnCursorJoin().forEach(ButtonCallback::execute);
+            getOnCursorJoin().forEach(UICallback::execute);
             setCursorJoinTime(System.currentTimeMillis());
         }
         if (isCursorInside() && !cursorInside) {
-            getOnCursorLeave().forEach(ButtonCallback::execute);
+            getOnCursorLeave().forEach(UICallback::execute);
         }
         setCursorInside(cursorInside);
     }
@@ -240,7 +240,7 @@ public class EntityUIEditBox extends EntityUI {
     private void handleCursorVisibility(CursorVisibilityEvent event) {
         setAvailable(event.isVisible());
         if (!event.isVisible()) {
-            getOnCursorLeave().forEach(ButtonCallback::execute);
+            getOnCursorLeave().forEach(UICallback::execute);
             resetState();
         }
     }
@@ -253,13 +253,6 @@ public class EntityUIEditBox extends EntityUI {
                 invalidatePointer();
             }
         }
-    }
-
-    @FunctionalInterface
-    public interface ButtonCallback {
-
-        void execute();
-
     }
 
 }
