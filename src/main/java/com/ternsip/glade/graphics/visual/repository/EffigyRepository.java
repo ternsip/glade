@@ -36,7 +36,7 @@ public class EffigyRepository implements Universal, Graphical {
             Entity entity = entry.getKey();
             Effigy effigy = entry.getValue();
             if (!entities.contains(entity)) {
-                entity.finish();
+                entity.unregister();
                 effigy.finish();
                 return true;
             }

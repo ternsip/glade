@@ -29,8 +29,8 @@ public class EntityPlayer extends Entity<EffigyBoy> {
     private float height = 2;
 
     @Override
-    public void finish() {
-        super.finish();
+    public void unregister() {
+        super.unregister();
     }
 
     @Override

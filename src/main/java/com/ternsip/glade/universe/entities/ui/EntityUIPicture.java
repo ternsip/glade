@@ -16,13 +16,18 @@ public class EntityUIPicture extends EntityUI {
     public EntityUIPicture(File file, boolean useAspect) {
         super(useAspect);
         this.picture = new EntitySprite(file, true, useAspect);
-        this.picture.register();
     }
 
     @Override
-    public void finish() {
-        super.finish();
-        getPicture().finish();
+    public void register() {
+        super.register();
+        getPicture().register();
+    }
+
+    @Override
+    public void unregister() {
+        super.unregister();
+        getPicture().unregister();
     }
 
     @Override

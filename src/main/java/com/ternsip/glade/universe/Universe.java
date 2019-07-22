@@ -15,6 +15,7 @@ import com.ternsip.glade.universe.entities.impl.*;
 import com.ternsip.glade.universe.entities.repository.EntityRepository;
 import com.ternsip.glade.universe.entities.ui.EntityUIButton;
 import com.ternsip.glade.universe.entities.ui.EntityUIEditBox;
+import com.ternsip.glade.universe.entities.ui.EntityUITextButton;
 import com.ternsip.glade.universe.parts.chunks.Blocks;
 import lombok.Getter;
 import lombok.Setter;
@@ -125,7 +126,7 @@ public class Universe {
         new EntityGenericRotating(() -> new EffigyDynamicText(new File("fonts/default.png"), false, false, new Vector4f(0, 0, 1, 1), "Hello world!"), new Vector3f(0, 0.1f, 0)).register();
         new EntityGeneric(() -> new EffigyAxis()).register();
 
-        EntityUIButton button = new EntityUIButton(new File("tools/button.png"), new File("fonts/default.png"), new Vector4f(1, 1, 1, 1), "Exit", true);
+        EntityUIButton button = new EntityUITextButton(new File("tools/button.png"), new File("fonts/default.png"), new Vector4f(1, 1, 1, 1), "Exit", true);
         button.setScale(new Vector3f(0.1f, 0.05f, 1));
         button.setPosition(new Vector3f(0, -0.5f, 0));
         button.getOnPress().add(() -> new Sound(new File("sounds/click2.ogg"), new Vector3f(0, 0, 0), 2f, 1, 2).register());

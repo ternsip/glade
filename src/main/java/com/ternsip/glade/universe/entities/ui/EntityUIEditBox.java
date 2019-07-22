@@ -59,28 +59,29 @@ public class EntityUIEditBox extends EntityUI {
 
     public EntityUIEditBox(File background, File frame, File pointer, File font, Vector4fc textColor, boolean useAspect) {
         super(useAspect);
-
         this.background = new EntitySprite(background, true, useAspect);
-        this.background.register();
-
         this.frame = new EntitySprite(frame, true, useAspect);
-        this.frame.register();
-
         this.pointer = new EntitySprite(pointer, true, useAspect);
-        this.pointer.register();
-
         this.sign = new EntityDynamicText2D(font, "", textColor, useAspect);
-        this.sign.register();
+    }
 
+    @Override
+    public void register() {
+        super.register();
+        getBackground().register();
+        getFrame().register();
+        getPointer().register();
+        getSign().register();
         registerCallbacks();
     }
 
     @Override
-    public void finish() {
-        super.finish();
-        getBackground().finish();
-        getFrame().finish();
-        getSign().finish();
+    public void unregister() {
+        super.unregister();
+        getBackground().unregister();
+        getFrame().unregister();
+        getPointer().unregister();
+        getSign().unregister();
         unregisterCallbacks();
     }
 

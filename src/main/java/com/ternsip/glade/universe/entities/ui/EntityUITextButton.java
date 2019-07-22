@@ -4,18 +4,21 @@ import com.ternsip.glade.graphics.visual.impl.basis.EffigySprite;
 import com.ternsip.glade.universe.entities.impl.EntityDynamicText2D;
 import lombok.Getter;
 import lombok.Setter;
+import org.joml.Vector3f;
 import org.joml.Vector4fc;
 
 import java.io.File;
 
 @Getter
 @Setter
-public class EntityUILabel extends EntityUI {
+public class EntityUITextButton extends EntityUIButton {
 
     private final EntityDynamicText2D sign;
 
-    public EntityUILabel(File font, Vector4fc textColor, String text, boolean useAspect) {
-        super(useAspect);
+    private float textCompression = 0.8f;
+
+    public EntityUITextButton(File background, File font, Vector4fc textColor, String text, boolean useAspect) {
+        super(background, useAspect);
         this.sign = new EntityDynamicText2D(font, text, textColor, useAspect);
     }
 
@@ -34,9 +37,12 @@ public class EntityUILabel extends EntityUI {
     @Override
     public void update(EffigySprite effigy) {
         super.update(effigy);
-        getSign().setScale(getVisualScale());
+        float textScale = 2f / Math.max(1, getSign().getText().length());
+        getSign().setScale(new Vector3f(getVisualScale()).mul(textScale, textScale, 1));
         getSign().setRotation(getVisualRotation());
-        getSign().setPosition(getVisualPosition());
+        getSign().setPosition(new Vector3f(getPosition()).add(0, 0, -0.01f));
         getSign().setVisible(isVisible());
+        getSign().setTextCompression(getTextCompression());
     }
+
 }

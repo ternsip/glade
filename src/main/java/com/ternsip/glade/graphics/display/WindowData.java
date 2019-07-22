@@ -81,7 +81,7 @@ public class WindowData implements Universal, Graphical {
 
         enableCursor();
 
-        registerDisplayEvent(ResizeEvent.class, new ResizeEvent(getWidth(), getHeight()));
+        registerEvent(ResizeEvent.class, new ResizeEvent(getWidth(), getHeight()));
 
         getGraphics().getEventSnapReceiver().registerCallback(ResizeEvent.class, this::handleResize);
         // TODO MOVE IN HOTKEY CLASS
@@ -135,13 +135,13 @@ public class WindowData implements Universal, Graphical {
     public void enableCursor() {
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         setCursorEnabled(true);
-        registerDisplayEvent(CursorVisibilityEvent.class, new CursorVisibilityEvent(true));
+        registerEvent(CursorVisibilityEvent.class, new CursorVisibilityEvent(true));
     }
 
     public void disableCursor() {
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         setCursorEnabled(false);
-        registerDisplayEvent(CursorVisibilityEvent.class, new CursorVisibilityEvent(false));
+        registerEvent(CursorVisibilityEvent.class, new CursorVisibilityEvent(false));
     }
 
     private Vector2i getMainDisplaySize() {
@@ -151,7 +151,7 @@ public class WindowData implements Universal, Graphical {
 
     private void registerCharEvent() {
         GLFWCharCallback charCallback = GLFWCharCallback.create(
-                (window, unicodePoint) -> registerDisplayEvent(CharEvent.class, new CharEvent(unicodePoint))
+                (window, unicodePoint) -> registerEvent(CharEvent.class, new CharEvent(unicodePoint))
         );
         getCallbacks().add(charCallback);
         glfwSetCharCallback(getWindow(), charCallback);
@@ -159,7 +159,7 @@ public class WindowData implements Universal, Graphical {
 
     private void registerErrorEvent() {
         GLFWErrorCallback errorCallback = GLFWErrorCallback.create(
-                (error, description) -> registerDisplayEvent(ErrorEvent.class, new ErrorEvent(error, description))
+                (error, description) -> registerEvent(ErrorEvent.class, new ErrorEvent(error, description))
         );
         getCallbacks().add(errorCallback);
         glfwSetErrorCallback(errorCallback);
@@ -167,7 +167,7 @@ public class WindowData implements Universal, Graphical {
 
     private void registerScrollEvent() {
         GLFWScrollCallback scrollCallback = GLFWScrollCallback.create(
-                (window, xOffset, yOffset) -> registerDisplayEvent(ScrollEvent.class, new ScrollEvent(xOffset, yOffset))
+                (window, xOffset, yOffset) -> registerEvent(ScrollEvent.class, new ScrollEvent(xOffset, yOffset))
         );
         getCallbacks().add(scrollCallback);
         glfwSetScrollCallback(getWindow(), scrollCallback);
@@ -186,7 +186,7 @@ public class WindowData implements Universal, Graphical {
                 prevY = yPos;
                 double normalX = 2f * (xPos / getWidth() - 0.5f);
                 double normalY = -2f * (yPos / getHeight() - 0.5f);
-                registerDisplayEvent(CursorPosEvent.class, new CursorPosEvent(xPos, yPos, dx, dy, normalX, normalY));
+                registerEvent(CursorPosEvent.class, new CursorPosEvent(xPos, yPos, dx, dy, normalX, normalY));
             }
         }));
         getCallbacks().add(posCallback);
@@ -195,7 +195,7 @@ public class WindowData implements Universal, Graphical {
 
     private void registerKeyEvent() {
         GLFWKeyCallback keyCallback = GLFWKeyCallback.create(
-                (window, key, scanCode, action, mods) -> registerDisplayEvent(KeyEvent.class, new KeyEvent(key, scanCode, action, mods))
+                (window, key, scanCode, action, mods) -> registerEvent(KeyEvent.class, new KeyEvent(key, scanCode, action, mods))
         );
         getCallbacks().add(keyCallback);
         glfwSetKeyCallback(getWindow(), keyCallback);
@@ -203,7 +203,7 @@ public class WindowData implements Universal, Graphical {
 
     private void registerFrameBufferSizeEvent() {
         GLFWFramebufferSizeCallback framebufferSizeCallback = GLFWFramebufferSizeCallback.create(
-                (window, width, height) -> registerDisplayEvent(ResizeEvent.class, new ResizeEvent(width, height))
+                (window, width, height) -> registerEvent(ResizeEvent.class, new ResizeEvent(width, height))
         );
         getCallbacks().add(framebufferSizeCallback);
         glfwSetFramebufferSizeCallback(getWindow(), framebufferSizeCallback);
@@ -211,13 +211,13 @@ public class WindowData implements Universal, Graphical {
 
     private void registerMouseButtonEvent() {
         GLFWMouseButtonCallback mouseButtonCallback = GLFWMouseButtonCallback.create(
-                (window, button, action, mods) -> registerDisplayEvent(MouseButtonEvent.class, new MouseButtonEvent(button, action, mods))
+                (window, button, action, mods) -> registerEvent(MouseButtonEvent.class, new MouseButtonEvent(button, action, mods))
         );
         getCallbacks().add(mouseButtonCallback);
         glfwSetMouseButtonCallback(getWindow(), mouseButtonCallback);
     }
 
-    private <T extends Event> void registerDisplayEvent(Class<T> clazz, T event) {
+    private <T extends Event> void registerEvent(Class<T> clazz, T event) {
         getGraphics().getEventSnapReceiver().registerEvent(clazz, event);
         getUniverse().getEventSnapReceiver().registerEvent(clazz, event);
     }

@@ -19,7 +19,7 @@ public abstract class Entity<T extends Effigy> extends Volumetric implements Uni
         getUniverse().getEntityRepository().register(this);
     }
 
-    public void finish() {
+    public void unregister() {
         getUniverse().getEntityRepository().unregister(this);
     }
 

@@ -5,13 +5,11 @@ import com.ternsip.glade.common.events.display.CursorPosEvent;
 import com.ternsip.glade.common.events.display.CursorVisibilityEvent;
 import com.ternsip.glade.common.events.display.MouseButtonEvent;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigySprite;
-import com.ternsip.glade.universe.entities.impl.EntityDynamicText2D;
 import com.ternsip.glade.universe.entities.impl.EntitySprite;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
-import org.joml.Vector4fc;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -29,45 +27,39 @@ public class EntityUIButton extends EntityUI {
     private final Callback<CursorVisibilityEvent> cursorVisibilityCallback = this::handleCursorVisibility;
     private final Callback<MouseButtonEvent> mouseButtonCallback = this::handleMouseButton;
     private final EntitySprite picture;
-    private final EntityDynamicText2D sign;
 
     private final ArrayList<UICallback> onClick = new ArrayList<>();
     private final ArrayList<UICallback> onPress = new ArrayList<>();
     private final ArrayList<UICallback> onCursorJoin = new ArrayList<>();
     private final ArrayList<UICallback> onCursorLeave = new ArrayList<>();
 
-    private float textCompression = 0.8f;
     private boolean available = false;
     private boolean cursorInside = false;
     private long cursorJoinTime = 0;
     private boolean pressed = false;
 
-    public EntityUIButton(File background, File font, Vector4fc textColor, String text, boolean useAspect) {
+    public EntityUIButton(File background, boolean useAspect) {
         super(useAspect);
         this.picture = new EntitySprite(background, true, useAspect);
-        this.picture.register();
-        this.sign = new EntityDynamicText2D(font, text, textColor, useAspect);
-        this.sign.register();
+    }
+
+    @Override
+    public void register() {
+        super.register();
+        getPicture().register();
         registerCallbacks();
     }
 
     @Override
-    public void finish() {
-        super.finish();
-        getPicture().finish();
-        getSign().finish();
+    public void unregister() {
+        super.unregister();
+        getPicture().unregister();
         unregisterCallbacks();
     }
 
     @Override
     public void update(EffigySprite effigy) {
         super.update(effigy);
-        float textScale = 2f / Math.max(1, getSign().getText().length());
-        getSign().setScale(new Vector3f(getVisualScale()).mul(textScale, textScale, 1));
-        getSign().setRotation(getVisualRotation());
-        getSign().setPosition(new Vector3f(getPosition()).add(0, 0, -0.01f));
-        getSign().setVisible(isVisible());
-        getSign().setTextCompression(getTextCompression());
 
         getPicture().setScale(getVisualScale());
         getPicture().setRotation(getVisualRotation());
