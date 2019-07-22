@@ -47,7 +47,6 @@ public class EntityUIEditBox extends EntityUI {
     private final ArrayList<UICallback> onCursorLeave = new ArrayList<>();
     private final ArrayList<UICallback> onTextChange = new ArrayList<>();
 
-    private float textCompression = 0.8f;
     private boolean available = false;
     private boolean cursorInside = false;
     private long cursorJoinTime = 0;
@@ -98,10 +97,11 @@ public class EntityUIEditBox extends EntityUI {
                 (System.currentTimeMillis() % (2 * CURSOR_BLINK_TIME_MILLISECONDS)) > CURSOR_BLINK_TIME_MILLISECONDS;
 
         float textScale = scale.y() * TEXT_VERTICAL_SCALE;
-        setVisibleChars(Math.max(1, (int) (2 * scale.x() * INNER_FRAME_SCALE_X / (getTextCompression() * textScale))));
+        float textCompression = getSign().getTextCompression();
+        setVisibleChars(Math.max(1, (int) (2 * scale.x() * INNER_FRAME_SCALE_X / (textCompression * textScale))));
         float signOffsetX = -scale.x() * INNER_FRAME_SCALE_X * getRatioX();
         int pointerBegin = getPointerPosition() - getSliderPosition();
-        float pointerOffsetX = signOffsetX + (0.5f + pointerBegin) * getTextCompression() * textScale * getRatioX();
+        float pointerOffsetX = signOffsetX + (0.5f + pointerBegin) * textCompression * textScale * getRatioX();
         String text = getTextBuilder().toString();
 
         getBackground().setScale(scale);
@@ -120,7 +120,6 @@ public class EntityUIEditBox extends EntityUI {
         getSign().setVisible(isVisible);
         getSign().setShiftX(true);
         getSign().setShiftY(false);
-        getSign().setTextCompression(getTextCompression());
         getSign().setText(text.substring(getSliderPosition(), Math.min(text.length(), getSliderPosition() + getVisibleChars())));
 
         getPointer().setScale(new Vector3f(textScale, textScale, 1));

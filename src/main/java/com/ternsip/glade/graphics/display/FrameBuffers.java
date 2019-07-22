@@ -34,7 +34,7 @@ public class FrameBuffers implements Graphical {
         glDeleteRenderbuffers(colorRenderBufferFirst);
         glDeleteRenderbuffers(colorRenderBufferSecond);
         glDeleteFramebuffers(fbo);
-        createFBOs();
+        createFBOs(); // TODO Sometimes causes bug due to big queue of eventResize
     }
 
     public void bindBuffer() {

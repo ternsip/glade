@@ -15,8 +15,6 @@ public class EntityUITextButton extends EntityUIButton {
 
     private final EntityDynamicText2D sign;
 
-    private float textCompression = 0.8f;
-
     public EntityUITextButton(File background, File font, Vector4fc textColor, String text, boolean useAspect) {
         super(background, useAspect);
         this.sign = new EntityDynamicText2D(font, text, textColor, useAspect);
@@ -42,7 +40,6 @@ public class EntityUITextButton extends EntityUIButton {
         getSign().setRotation(getVisualRotation());
         getSign().setPosition(new Vector3f(getPosition()).add(0, 0, -0.01f));
         getSign().setVisible(isVisible());
-        getSign().setTextCompression(getTextCompression());
     }
 
 }

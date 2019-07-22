@@ -14,6 +14,7 @@ import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.impl.*;
 import com.ternsip.glade.universe.entities.repository.EntityRepository;
 import com.ternsip.glade.universe.entities.ui.EntityUIButton;
+import com.ternsip.glade.universe.entities.ui.EntityUICheckbox;
 import com.ternsip.glade.universe.entities.ui.EntityUIEditBox;
 import com.ternsip.glade.universe.entities.ui.EntityUITextButton;
 import com.ternsip.glade.universe.parts.chunks.Blocks;
@@ -24,6 +25,7 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.io.File;
+import java.util.Arrays;
 
 @Getter
 @Setter
@@ -139,6 +141,22 @@ public class Universe {
         editBox.setPosition(new Vector3f(0, 0.5f, 0));
         //editBox.disable();
         editBox.register();
+
+        EntityUICheckbox checkbox = new EntityUICheckbox(
+                new File("tools/ui_background.png"),
+                new File("tools/checkbox_on.png"),
+                new File("tools/checkbox_off.png"),
+                new File("fonts/default.png"),
+                new Vector4f(1, 1, 1, 1),
+                Arrays.asList("trulala", "abc", "", "test"),
+                true
+        );
+        checkbox.setScale(new Vector3f(0.2f, 0.2f, 1));
+        checkbox.setPosition(new Vector3f(0, 0, 0));
+        //checkbox.getOnPress().add(() -> new Sound(new File("sounds/click2.ogg"), new Vector3f(0, 0, 0), 2f, 1, 2).register());
+        //button.getOnClick().add(() -> setActive(false));
+        //button.disable();
+        checkbox.register();
 
         new EntityStatistics2D(new File("fonts/default.png"), new Vector4f(1, 1, 0, 1), true).register();
 
