@@ -37,7 +37,7 @@ public class EntityUICheckbox extends EntityUI {
         this.bars = signs.stream().map(sign -> {
             EntityDynamicText2D text2D = new EntityDynamicText2D(font, sign.getText(), textColor, useAspect);
             EntityUISwitcher switcher = new EntityUISwitcher(uncheckedImage, browseOverlay, pressOverlay, checkedImage, useAspect);
-            switcher.getOnClick().add(() -> sign.getConsumer().accept(switcher.isSwitched()));
+            switcher.getOnClick().add(() -> sign.getOnSwitch().accept(switcher.isSwitched()));
             return new Bar(text2D, switcher);
         }).collect(Collectors.toCollection(ArrayList::new));
         this.background = new EntitySprite(background, true, useAspect);
@@ -110,7 +110,7 @@ public class EntityUICheckbox extends EntityUI {
     public static class Sign {
 
         private final String text;
-        private final Consumer<Boolean> consumer;
+        private final Consumer<Boolean> onSwitch;
 
     }
 
