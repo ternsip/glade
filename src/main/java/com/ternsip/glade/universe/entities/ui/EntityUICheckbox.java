@@ -23,6 +23,8 @@ public class EntityUICheckbox extends EntityUI {
 
     public EntityUICheckbox(
             File background,
+            File browseOverlay,
+            File pressOverlay,
             File checkedImage,
             File uncheckedImage,
             File font,
@@ -33,7 +35,7 @@ public class EntityUICheckbox extends EntityUI {
         super(useAspect);
         this.bars = signs.stream().map(sign -> new Bar(
                 new EntityDynamicText2D(font, sign, textColor, useAspect),
-                new EntityUIButton(uncheckedImage, useAspect)
+                new EntityUIButton(uncheckedImage, browseOverlay, pressOverlay, useAspect)
         )).collect(Collectors.toCollection(ArrayList::new));
         this.background = new EntitySprite(background, true, useAspect);
     }

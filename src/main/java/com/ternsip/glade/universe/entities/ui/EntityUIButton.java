@@ -26,7 +26,9 @@ public class EntityUIButton extends EntityUI {
     private final Callback<CursorPosEvent> cursorPosCallback = this::trackCursor;
     private final Callback<CursorVisibilityEvent> cursorVisibilityCallback = this::handleCursorVisibility;
     private final Callback<MouseButtonEvent> mouseButtonCallback = this::handleMouseButton;
-    private final EntitySprite picture;
+    private final EntitySprite background;
+    private final EntitySprite browseOverlay;
+    private final EntitySprite pressOverlay;
 
     private final ArrayList<UICallback> onClick = new ArrayList<>();
     private final ArrayList<UICallback> onPress = new ArrayList<>();
@@ -38,22 +40,28 @@ public class EntityUIButton extends EntityUI {
     private long cursorJoinTime = 0;
     private boolean pressed = false;
 
-    public EntityUIButton(File background, boolean useAspect) {
+    public EntityUIButton(File background, File browseOverlay, File pressOverlay, boolean useAspect) {
         super(useAspect);
-        this.picture = new EntitySprite(background, true, useAspect);
+        this.background = new EntitySprite(background, true, useAspect);
+        this.browseOverlay = new EntitySprite(browseOverlay, true, useAspect);
+        this.pressOverlay = new EntitySprite(pressOverlay, true, useAspect);
     }
 
     @Override
     public void register() {
         super.register();
-        getPicture().register();
+        getBackground().register();
+        getBrowseOverlay().register();
+        getPressOverlay().register();
         registerCallbacks();
     }
 
     @Override
     public void unregister() {
         super.unregister();
-        getPicture().unregister();
+        getBackground().unregister();
+        getBrowseOverlay().unregister();
+        getPressOverlay().unregister();
         unregisterCallbacks();
     }
 
@@ -61,10 +69,20 @@ public class EntityUIButton extends EntityUI {
     public void update(EffigySprite effigy) {
         super.update(effigy);
 
-        getPicture().setScale(getVisualScale());
-        getPicture().setRotation(getVisualRotation());
-        getPicture().setPosition(getPosition());
-        getPicture().setVisible(isVisible());
+        getBackground().setScale(getVisualScale());
+        getBackground().setRotation(getVisualRotation());
+        getBackground().setPosition(getPosition());
+        getBackground().setVisible(isVisible());
+
+        getBrowseOverlay().setScale(getVisualScale());
+        getBrowseOverlay().setRotation(getVisualRotation());
+        getBrowseOverlay().setPosition(new Vector3f(getPosition()).add(new Vector3f(0, 0, -0.01f)));
+        getBrowseOverlay().setVisible(isCursorInside());
+
+        getPressOverlay().setScale(getVisualScale());
+        getPressOverlay().setRotation(getVisualRotation());
+        getPressOverlay().setPosition(new Vector3f(getPosition()).add(new Vector3f(0, 0, -0.02f)));
+        getPressOverlay().setVisible(isPressed());
     }
 
     public Vector3fc getVisualScale() {

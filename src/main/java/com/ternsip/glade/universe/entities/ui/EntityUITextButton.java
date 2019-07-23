@@ -15,8 +15,8 @@ public class EntityUITextButton extends EntityUIButton {
 
     private final EntityDynamicText2D sign;
 
-    public EntityUITextButton(File background, File font, Vector4fc textColor, String text, boolean useAspect) {
-        super(background, useAspect);
+    public EntityUITextButton(File background, File browseOverlay, File pressOverlay, File font, Vector4fc textColor, String text, boolean useAspect) {
+        super(background, browseOverlay, pressOverlay, useAspect);
         this.sign = new EntityDynamicText2D(font, text, textColor, useAspect);
     }
 
