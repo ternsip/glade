@@ -13,8 +13,9 @@ import com.ternsip.glade.universe.common.Balance;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.impl.*;
 import com.ternsip.glade.universe.entities.repository.EntityRepository;
-import com.ternsip.glade.universe.entities.ui.EntityUICheckbox;
+import com.ternsip.glade.universe.entities.ui.EntityUICheckBox;
 import com.ternsip.glade.universe.entities.ui.EntityUIEditBox;
+import com.ternsip.glade.universe.entities.ui.EntityUIRadioBox;
 import com.ternsip.glade.universe.entities.ui.EntityUITextButton;
 import com.ternsip.glade.universe.parts.chunks.Blocks;
 import lombok.Getter;
@@ -138,7 +139,7 @@ public class Universe {
         editBox.setPosition(new Vector3f(0, 0.5f, 0));
         editBox.register();
 
-        EntityUICheckbox checkbox = new EntityUICheckbox(
+        EntityUIRadioBox radioBox = new EntityUIRadioBox(
                 new File("tools/ui_background.png"),
                 new File("tools/browse_overlay.png"),
                 new File("tools/press_overlay.png"),
@@ -147,16 +148,16 @@ public class Universe {
                 new File("fonts/default.png"),
                 new Vector4f(1, 1, 1, 1),
                 Arrays.asList(
-                        new EntityUICheckbox.Sign("trulala", state -> {}),
-                        new EntityUICheckbox.Sign("abc", state -> {}),
-                        new EntityUICheckbox.Sign("", state -> {}),
-                        new EntityUICheckbox.Sign("test", state -> {})
+                        new EntityUICheckBox.Sign("trulala", state -> {}),
+                        new EntityUICheckBox.Sign("abc", state -> {}),
+                        new EntityUICheckBox.Sign("", state -> {}),
+                        new EntityUICheckBox.Sign("test", state -> {})
                 ),
                 true
         );
-        checkbox.setScale(new Vector3f(0.2f, 0.2f, 1));
-        checkbox.setPosition(new Vector3f(0, 0, 0));
-        //checkbox.register();
+        radioBox.setScale(new Vector3f(0.2f, 0.2f, 1));
+        radioBox.setPosition(new Vector3f(0, 0, 0));
+        radioBox.register();
 
         new EntityStatistics2D(new File("fonts/default.png"), new Vector4f(1, 1, 0, 1), true).register();
 

@@ -17,12 +17,12 @@ import java.util.stream.Collectors;
 
 @Getter
 @Setter
-public class EntityUICheckbox extends EntityUI {
+public class EntityUICheckBox extends EntityUI {
 
     private final EntitySprite background;
     private final ArrayList<Bar> bars;
 
-    public EntityUICheckbox(
+    public EntityUICheckBox(
             File background,
             File browseOverlay,
             File pressOverlay,
@@ -98,7 +98,7 @@ public class EntityUICheckbox extends EntityUI {
 
     @RequiredArgsConstructor
     @Getter
-    private static class Bar {
+    public static class Bar {
 
         private final EntityDynamicText2D sign;
         private final EntityUISwitcher switcher;
