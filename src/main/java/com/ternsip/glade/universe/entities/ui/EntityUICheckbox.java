@@ -35,7 +35,7 @@ public class EntityUICheckbox extends EntityUI {
         super(useAspect);
         this.bars = signs.stream().map(sign -> new Bar(
                 new EntityDynamicText2D(font, sign, textColor, useAspect),
-                new EntityUIButton(uncheckedImage, browseOverlay, pressOverlay, useAspect)
+                new EntityUISwitcher(uncheckedImage, browseOverlay, pressOverlay, checkedImage, useAspect)
         )).collect(Collectors.toCollection(ArrayList::new));
         this.background = new EntitySprite(background, true, useAspect);
     }
@@ -44,7 +44,7 @@ public class EntityUICheckbox extends EntityUI {
     public void register() {
         super.register();
         getBars().forEach(bar -> {
-            bar.getButton().register();
+            bar.getSwitcher().register();
             bar.getSign().register();
         });
         getBackground().register();
@@ -54,7 +54,7 @@ public class EntityUICheckbox extends EntityUI {
     public void unregister() {
         super.unregister();
         getBars().forEach(bar -> {
-            bar.getButton().unregister();
+            bar.getSwitcher().unregister();
             bar.getSign().unregister();
         });
         getBackground().unregister();
@@ -77,7 +77,7 @@ public class EntityUICheckbox extends EntityUI {
 
             float rowOffsetY = -textScaleY + (getBars().size() - i - 2) * textScaleY * 2;
             EntityDynamicText2D sign = getBars().get(i).getSign();
-            EntityUIButton button = getBars().get(i).getButton();
+            EntityUIButton button = getBars().get(i).getSwitcher();
 
             button.setScale(new Vector3f(textScaleX, textScaleY, 1));
             button.setRotation(getVisualRotation());
@@ -98,7 +98,7 @@ public class EntityUICheckbox extends EntityUI {
     private static class Bar {
 
         private final EntityDynamicText2D sign;
-        private final EntityUIButton button;
+        private final EntityUISwitcher switcher;
 
     }
 
