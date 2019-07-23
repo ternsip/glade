@@ -27,6 +27,7 @@ public class EntityUIEditBox extends EntityUI {
     private static final float INNER_FRAME_SCALE_X = 0.9f;
     private static final float INNER_FRAME_SCALE_Y = 0.75f;
     private static final float TEXT_VERTICAL_SCALE = 0.75f;
+    private static final float POINTER_SCALE = 0.7f;
     private static final long CURSOR_BLINK_TIME_MILLISECONDS = 500L;
     private static final long CURSOR_REST_TIME_MILLISECONDS = 500L;
 
@@ -122,7 +123,7 @@ public class EntityUIEditBox extends EntityUI {
         getSign().setShiftY(false);
         getSign().setText(text.substring(getSliderPosition(), Math.min(text.length(), getSliderPosition() + getVisibleChars())));
 
-        getPointer().setScale(new Vector3f(textScale, textScale, 1));
+        getPointer().setScale(new Vector3f(textScale * POINTER_SCALE, textScale * POINTER_SCALE, 1));
         getPointer().setRotation(rotation);
         getPointer().setPosition(new Vector3f(position).add(pointerOffsetX, 0, -0.03f));
         getPointer().setVisible(pointerVisible && isPointerValid());
