@@ -29,14 +29,16 @@ public class EntityUICheckbox extends EntityUI {
             File uncheckedImage,
             File font,
             Vector4fc textColor,
-            List<String> signs,
+            List<Sign> signs,
             boolean useAspect
     ) {
         super(useAspect);
-        this.bars = signs.stream().map(sign -> new Bar(
-                new EntityDynamicText2D(font, sign, textColor, useAspect),
-                new EntityUISwitcher(uncheckedImage, browseOverlay, pressOverlay, checkedImage, useAspect)
-        )).collect(Collectors.toCollection(ArrayList::new));
+        this.bars = signs.stream().map(sign -> {
+            EntityDynamicText2D text2D = new EntityDynamicText2D(font, sign.getText(), textColor, useAspect);
+            EntityUISwitcher switcher = new EntityUISwitcher(uncheckedImage, browseOverlay, pressOverlay, checkedImage, useAspect);
+            switcher.getOnClick().add(sign.getCallback());
+            return new Bar(text2D, switcher);
+        }).collect(Collectors.toCollection(ArrayList::new));
         this.background = new EntitySprite(background, true, useAspect);
     }
 
@@ -99,6 +101,15 @@ public class EntityUICheckbox extends EntityUI {
 
         private final EntityDynamicText2D sign;
         private final EntityUISwitcher switcher;
+
+    }
+
+    @RequiredArgsConstructor
+    @Getter
+    public static class Sign {
+
+        private final String text;
+        private final UICallback callback;
 
     }
 

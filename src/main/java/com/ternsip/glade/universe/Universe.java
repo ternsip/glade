@@ -150,7 +150,12 @@ public class Universe {
                 new File("tools/checkbox_off.png"),
                 new File("fonts/default.png"),
                 new Vector4f(1, 1, 1, 1),
-                Arrays.asList("trulala", "abc", "", "test"),
+                Arrays.asList(
+                        new EntityUICheckbox.Sign("trulala", () -> {}),
+                        new EntityUICheckbox.Sign("abc", () -> {}),
+                        new EntityUICheckbox.Sign("", () -> {}),
+                        new EntityUICheckbox.Sign("test", () -> {})
+                ),
                 true
         );
         checkbox.setScale(new Vector3f(0.2f, 0.2f, 1));
