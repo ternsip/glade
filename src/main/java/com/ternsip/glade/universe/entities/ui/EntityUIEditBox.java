@@ -140,18 +140,6 @@ public class EntityUIEditBox extends EntityUI {
         setTextBuilder(new StringBuilder(text));
     }
 
-    public void enable() {
-        registerCallbacks();
-        setVisible(true);
-        resetState();
-    }
-
-    public void disable() {
-        unregisterCallbacks();
-        setVisible(false);
-        resetState();
-    }
-
     private void resetState() {
         setCursorInside(false);
         invalidatePointer();
@@ -189,7 +177,7 @@ public class EntityUIEditBox extends EntityUI {
             getTextBuilder().deleteCharAt(getPointerPosition());
             return;
         }
-        if (event.getKey() == GLFW_KEY_BACKSPACE && getTextBuilder().length() > 0) {
+        if (event.getKey() == GLFW_KEY_BACKSPACE && getTextBuilder().length() > 0 && getPointerPosition() > 0) {
             getTextBuilder().deleteCharAt(getPointerPosition() - 1);
             movePointer(getPointerPosition() - 1);
             return;

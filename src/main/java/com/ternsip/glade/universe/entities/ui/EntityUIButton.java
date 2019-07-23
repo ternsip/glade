@@ -103,18 +103,6 @@ public class EntityUIButton extends EntityUI {
         return new Vector3f(getRotation().x(), getRotation().y() + rotateCriteria, getRotation().z());
     }
 
-    public void enable() {
-        registerCallbacks();
-        setVisible(true);
-        resetState();
-    }
-
-    public void disable() {
-        unregisterCallbacks();
-        setVisible(false);
-        resetState();
-    }
-
     private void resetState() {
         setCursorInside(false);
         setPressed(false);
