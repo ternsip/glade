@@ -132,12 +132,12 @@ public class EntityUIEditBox extends EntityUI {
         getTextBuilder().insert(getPointerPosition(), symbol);
     }
 
-    public void setText(String text) {
-        setTextBuilder(new StringBuilder(text));
-    }
-
     public String getText() {
         return getTextBuilder().toString();
+    }
+
+    public void setText(String text) {
+        setTextBuilder(new StringBuilder(text));
     }
 
     public void enable() {

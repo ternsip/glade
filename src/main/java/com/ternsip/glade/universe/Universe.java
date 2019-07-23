@@ -35,14 +35,11 @@ public class Universe {
     private final SoundRepository soundRepository = new SoundRepository();
     private final String name = "universe";
     private final Balance balance = new Balance();
-
-    private boolean active = true;
-
     @Getter(lazy = true)
     private final Collisions collisions = new Collisions();
-
     @Getter(lazy = true)
     private final Blocks blocks = new Blocks();
+    private boolean active = true;
 
     public void initialize() {
         spawnTestEntities();

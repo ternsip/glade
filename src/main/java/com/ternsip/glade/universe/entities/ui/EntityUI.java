@@ -29,6 +29,13 @@ public class EntityUI extends Entity<EffigySprite> {
     }
 
     @Override
+    public EffigySprite getEffigy() {
+        EffigySprite effigySprite = new EffigySprite(null, true, true);
+        effigySprite.setVisible(false);
+        return effigySprite;
+    }
+
+    @Override
     public void setPosition(Vector3fc position) {
         super.setPosition(position);
         setUiCenter(new Vector2f(getPosition().x(), getPosition().y()));
@@ -38,13 +45,6 @@ public class EntityUI extends Entity<EffigySprite> {
     public void setScale(Vector3fc scale) {
         super.setScale(scale);
         setUiSize(new Vector2f(getScale().x(), getScale().y()));
-    }
-
-    @Override
-    public EffigySprite getEffigy() {
-        EffigySprite effigySprite = new EffigySprite(null, true, true);
-        effigySprite.setVisible(false);
-        return effigySprite;
     }
 
     public Vector3fc getVisualScale() {
