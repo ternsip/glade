@@ -12,6 +12,7 @@ import org.joml.Vector4fc;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Getter
@@ -36,7 +37,7 @@ public class EntityUICheckbox extends EntityUI {
         this.bars = signs.stream().map(sign -> {
             EntityDynamicText2D text2D = new EntityDynamicText2D(font, sign.getText(), textColor, useAspect);
             EntityUISwitcher switcher = new EntityUISwitcher(uncheckedImage, browseOverlay, pressOverlay, checkedImage, useAspect);
-            switcher.getOnClick().add(sign.getCallback());
+            switcher.getOnClick().add(() -> sign.getConsumer().accept(switcher.isSwitched()));
             return new Bar(text2D, switcher);
         }).collect(Collectors.toCollection(ArrayList::new));
         this.background = new EntitySprite(background, true, useAspect);
@@ -109,7 +110,7 @@ public class EntityUICheckbox extends EntityUI {
     public static class Sign {
 
         private final String text;
-        private final UICallback callback;
+        private final Consumer<Boolean> consumer;
 
     }
 

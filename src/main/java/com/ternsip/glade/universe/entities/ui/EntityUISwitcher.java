@@ -21,6 +21,10 @@ public class EntityUISwitcher extends EntityUIButton {
         this.switchedOverlay = new EntitySprite(switchedOverlay, true, useAspect);
     }
 
+    public void addSwitcherCallback(UISwitcherCallback switcherCallback) {
+        getOnClick().add(() -> switcherCallback.execute(isSwitched()));
+    }
+
     @Override
     public void register() {
         super.register();

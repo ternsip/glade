@@ -13,7 +13,6 @@ import com.ternsip.glade.universe.common.Balance;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.impl.*;
 import com.ternsip.glade.universe.entities.repository.EntityRepository;
-import com.ternsip.glade.universe.entities.ui.EntityUIButton;
 import com.ternsip.glade.universe.entities.ui.EntityUICheckbox;
 import com.ternsip.glade.universe.entities.ui.EntityUIEditBox;
 import com.ternsip.glade.universe.entities.ui.EntityUITextButton;
@@ -128,7 +127,7 @@ public class Universe {
         new EntityGenericRotating(() -> new EffigyDynamicText(new File("fonts/default.png"), false, false, new Vector4f(0, 0, 1, 1), "Hello world!"), new Vector3f(0, 0.1f, 0)).register();
         new EntityGeneric(() -> new EffigyAxis()).register();
 
-        EntityUIButton button = new EntityUITextButton(new File("tools/button.png"), new File("tools/browse_overlay.png"), new File("tools/press_overlay.png"), new File("fonts/default.png"), new Vector4f(1, 1, 1, 1), "Exit", true);
+        EntityUITextButton button = new EntityUITextButton(new File("tools/button.png"), new File("tools/browse_overlay.png"), new File("tools/press_overlay.png"), new File("fonts/default.png"), new Vector4f(1, 1, 1, 1), "Exit", true);
         button.setScale(new Vector3f(0.1f, 0.05f, 1));
         button.setPosition(new Vector3f(0, -0.5f, 0));
         button.getOnPress().add(() -> new Sound(new File("sounds/click2.ogg"), new Vector3f(0, 0, 0), 2f, 1, 2).register());
@@ -151,10 +150,10 @@ public class Universe {
                 new File("fonts/default.png"),
                 new Vector4f(1, 1, 1, 1),
                 Arrays.asList(
-                        new EntityUICheckbox.Sign("trulala", () -> {}),
-                        new EntityUICheckbox.Sign("abc", () -> {}),
-                        new EntityUICheckbox.Sign("", () -> {}),
-                        new EntityUICheckbox.Sign("test", () -> {})
+                        new EntityUICheckbox.Sign("trulala", state -> {}),
+                        new EntityUICheckbox.Sign("abc", state -> {}),
+                        new EntityUICheckbox.Sign("", state -> {}),
+                        new EntityUICheckbox.Sign("test", state -> {})
                 ),
                 true
         );
