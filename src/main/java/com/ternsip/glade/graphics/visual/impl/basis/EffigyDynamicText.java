@@ -67,7 +67,7 @@ public class EffigyDynamicText extends EffigySprite {
                 0
         );
         for (int i = 0; i < getText().length(); ++i) {
-            char symbol = getText().charAt(i);
+            int symbol = Math.max(0, Math.min(255, getText().charAt(i)));
             Mesh symbolMesh = getModel().getMeshes().get(symbol);
             getShader().getTransformationMatrix().load(transform);
             getShader().getDiffuseMap().load(symbolMesh.getMaterial().getDiffuseMap());

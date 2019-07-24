@@ -13,10 +13,7 @@ import com.ternsip.glade.universe.common.Balance;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.impl.*;
 import com.ternsip.glade.universe.entities.repository.EntityRepository;
-import com.ternsip.glade.universe.entities.ui.EntityUICheckBox;
-import com.ternsip.glade.universe.entities.ui.EntityUIEditBox;
-import com.ternsip.glade.universe.entities.ui.EntityUIRadioBox;
-import com.ternsip.glade.universe.entities.ui.EntityUITextButton;
+import com.ternsip.glade.universe.entities.ui.*;
 import com.ternsip.glade.universe.parts.chunks.Blocks;
 import lombok.Getter;
 import lombok.Setter;
@@ -157,7 +154,21 @@ public class Universe {
         );
         radioBox.setScale(new Vector3f(0.2f, 0.2f, 1));
         radioBox.setPosition(new Vector3f(0, 0, 0));
-        radioBox.register();
+        //radioBox.register();
+
+        EntityUIScrollbar scrollbar = new EntityUIScrollbar(
+                new File("tools/scrollbar_background.jpg"),
+                new File("tools/scrollbar_bar.png"),
+                new File("tools/browse_overlay.png"),
+                new File("tools/press_overlay.png"),
+                new File("tools/scrollbar_up.png"),
+                new File("tools/browse_overlay.png"),
+                new File("tools/press_overlay.png"),
+                true
+        );
+        scrollbar.setScale(new Vector3f(0.025f, 0.2f, 1));
+        scrollbar.setPosition(new Vector3f(0, 0, 0));
+        scrollbar.register();
 
         new EntityStatistics2D(new File("fonts/default.png"), new Vector4f(1, 1, 0, 1), true).register();
 

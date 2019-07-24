@@ -32,6 +32,7 @@ public class EntityUIButton extends EntityUI {
 
     private final ArrayList<UICallback> onClick = new ArrayList<>();
     private final ArrayList<UICallback> onPress = new ArrayList<>();
+    private final ArrayList<UICallback> onRelease = new ArrayList<>();
     private final ArrayList<UICallback> onCursorJoin = new ArrayList<>();
     private final ArrayList<UICallback> onCursorLeave = new ArrayList<>();
 
@@ -53,7 +54,9 @@ public class EntityUIButton extends EntityUI {
         getBackground().register();
         getBrowseOverlay().register();
         getPressOverlay().register();
-        registerCallbacks();
+        getUniverse().getEventSnapReceiver().registerCallback(CursorPosEvent.class, getCursorPosCallback());
+        getUniverse().getEventSnapReceiver().registerCallback(MouseButtonEvent.class, getMouseButtonCallback());
+        getUniverse().getEventSnapReceiver().registerCallback(CursorVisibilityEvent.class, getCursorVisibilityCallback());
     }
 
     @Override
@@ -62,7 +65,9 @@ public class EntityUIButton extends EntityUI {
         getBackground().unregister();
         getBrowseOverlay().unregister();
         getPressOverlay().unregister();
-        unregisterCallbacks();
+        getUniverse().getEventSnapReceiver().unregisterCallback(CursorPosEvent.class, getCursorPosCallback());
+        getUniverse().getEventSnapReceiver().unregisterCallback(MouseButtonEvent.class, getMouseButtonCallback());
+        getUniverse().getEventSnapReceiver().unregisterCallback(CursorVisibilityEvent.class, getCursorVisibilityCallback());
     }
 
     @Override
@@ -103,23 +108,6 @@ public class EntityUIButton extends EntityUI {
         return new Vector3f(getRotation().x(), getRotation().y() + rotateCriteria, getRotation().z());
     }
 
-    private void resetState() {
-        setCursorInside(false);
-        setPressed(false);
-    }
-
-    private void registerCallbacks() {
-        getUniverse().getEventSnapReceiver().registerCallback(CursorPosEvent.class, getCursorPosCallback());
-        getUniverse().getEventSnapReceiver().registerCallback(MouseButtonEvent.class, getMouseButtonCallback());
-        getUniverse().getEventSnapReceiver().registerCallback(CursorVisibilityEvent.class, getCursorVisibilityCallback());
-    }
-
-    private void unregisterCallbacks() {
-        getUniverse().getEventSnapReceiver().unregisterCallback(CursorPosEvent.class, getCursorPosCallback());
-        getUniverse().getEventSnapReceiver().unregisterCallback(MouseButtonEvent.class, getMouseButtonCallback());
-        getUniverse().getEventSnapReceiver().unregisterCallback(CursorVisibilityEvent.class, getCursorVisibilityCallback());
-    }
-
     private void trackCursor(CursorPosEvent event) {
         boolean cursorInside = isAvailable() && isInside((float) event.getNormalX(), (float) event.getNormalY());
         if (!isCursorInside() && cursorInside) {
@@ -128,7 +116,6 @@ public class EntityUIButton extends EntityUI {
         }
         if (isCursorInside() && !cursorInside) {
             getOnCursorLeave().forEach(UICallback::execute);
-            setPressed(false);
         }
         setCursorInside(cursorInside);
     }
@@ -137,19 +124,26 @@ public class EntityUIButton extends EntityUI {
         setAvailable(event.isVisible());
         if (!event.isVisible()) {
             getOnCursorLeave().forEach(UICallback::execute);
-            resetState();
+            setCursorInside(false);
+            if (isPressed()) {
+                getOnRelease().forEach(UICallback::execute);
+            }
+            setPressed(false);
         }
     }
 
     private void handleMouseButton(MouseButtonEvent event) {
-        if (event.getButton() == GLFW_MOUSE_BUTTON_1 && isCursorInside()) {
-            if (event.getAction() == GLFW_PRESS) {
+        if (event.getButton() == GLFW_MOUSE_BUTTON_1) {
+            if (event.getAction() == GLFW_PRESS && isCursorInside()) {
                 setPressed(true);
                 getOnPress().forEach(UICallback::execute);
             }
             if (event.getAction() == GLFW_RELEASE && isPressed()) {
-                getOnClick().forEach(UICallback::execute);
+                getOnRelease().forEach(UICallback::execute);
                 setPressed(false);
+                if (isCursorInside()) {
+                    getOnClick().forEach(UICallback::execute);
+                }
             }
         }
     }
