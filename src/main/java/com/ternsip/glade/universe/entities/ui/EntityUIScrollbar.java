@@ -9,6 +9,7 @@ import lombok.Setter;
 import org.joml.Vector3f;
 
 import java.io.File;
+import java.util.function.Consumer;
 
 @Getter
 @Setter
@@ -23,6 +24,7 @@ public class EntityUIScrollbar extends EntityUI {
     private final EntityUIButton slider;
     private final EntityUIButton buttonUp;
     private final EntityUIButton buttonDown;
+    private final Consumer<Float> onSlide;
 
     private float spaceFactor = 0.5f;
     private float positionFactor = 0.5f;
@@ -37,6 +39,7 @@ public class EntityUIScrollbar extends EntityUI {
             File buttonUpBackground,
             File buttonUpBrowseOverlay,
             File buttonUpPressOverlay,
+            Consumer<Float> onSlide,
             boolean useAspect
     ) {
         super(useAspect);
@@ -44,6 +47,7 @@ public class EntityUIScrollbar extends EntityUI {
         this.slider = new EntityUIButton(sliderBackground, sliderBrowseOverlay, sliderPressOverlay, useAspect);
         this.buttonUp = new EntityUIButton(buttonUpBackground, buttonUpBrowseOverlay, buttonUpPressOverlay, useAspect);
         this.buttonDown = new EntityUIButton(buttonUpBackground, buttonUpBrowseOverlay, buttonUpPressOverlay, useAspect);
+        this.onSlide = onSlide;
         this.slider.getOnPress().add(() -> setHolding(true));
         this.slider.getOnRelease().add(() -> setHolding(false));
         this.buttonUp.getOnPress().add(() -> {
@@ -86,6 +90,7 @@ public class EntityUIScrollbar extends EntityUI {
         float sliderDiffScale = sliderScaleY - sliderTrueScaleY;
         if (isHolding()) {
             setPositionFactor(Math.min(1, Math.max(0, (1 + (getPosition().y() - getLastCursorY()) / (getRatioY() * sliderDiffScale)) * 0.5f)));
+            getOnSlide().accept(getPositionFactor());
         }
         float sliderOffset = sliderDiffScale * (1 - 2 * getPositionFactor());
         float buttonUpScaleY = getScale().y() * BUTTON_SCALE_FACTOR_Y;

@@ -164,6 +164,7 @@ public class Universe {
                 new File("tools/scrollbar_up.png"),
                 new File("tools/browse_overlay.png"),
                 new File("tools/press_overlay.png"),
+                state -> {},
                 true
         );
         scrollbar.setScale(new Vector3f(0.025f, 0.2f, 1));
