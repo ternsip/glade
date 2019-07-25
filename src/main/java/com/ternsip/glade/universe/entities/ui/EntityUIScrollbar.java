@@ -118,12 +118,12 @@ public class EntityUIScrollbar extends EntityUI {
 
         getButtonDown().setScale(new Vector3f(scale.x(), buttonUpScaleY, scale.z()));
         getButtonDown().setPosition(new Vector3f(position.x(), position.y() - buttonUpOffsetY * getRatioY(), position.z() - 0.01f));
-        getButtonDown().setRotation(new Vector3f(rotation.x(), rotation.y(), rotation.z() + (float)Math.PI));
+        getButtonDown().setRotation(new Vector3f(rotation.x(), rotation.y(), rotation.z() + (float) Math.PI));
         getButtonDown().setVisible(isVisible());
     }
 
     private void trackCursor(CursorPosEvent event) {
-        setLastCursorY((float)event.getNormalY());
+        setLastCursorY((float) event.getNormalY());
     }
 
 }

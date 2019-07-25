@@ -25,7 +25,7 @@ public class EntityUIRadioBox extends EntityUICheckBox {
     ) {
         super(background, browseOverlay, pressOverlay, checkedImage, uncheckedImage, font, textColor, signs, useAspect);
         getBars().forEach(bar -> {
-            bar.getSwitcher().getOnClick().add(() ->  {
+            bar.getSwitcher().getOnClick().add(() -> {
                 getBars().forEach(anotherBar -> anotherBar.getSwitcher().setSwitched(false));
                 bar.getSwitcher().setSwitched(true);
             });
