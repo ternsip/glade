@@ -11,7 +11,6 @@ import java.util.List;
 @Setter
 public class EntityUIRadioBox extends EntityUICheckBox {
 
-
     public EntityUIRadioBox(
             File background,
             File browseOverlay,

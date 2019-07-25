@@ -1,6 +1,5 @@
 package com.ternsip.glade.universe.entities.ui;
 
-import com.ternsip.glade.graphics.visual.impl.basis.EffigySprite;
 import com.ternsip.glade.universe.entities.impl.EntityDynamicText2D;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,8 +32,8 @@ public class EntityUITextButton extends EntityUIButton {
     }
 
     @Override
-    public void update(EffigySprite effigy) {
-        super.update(effigy);
+    public void update() {
+        super.update();
         float textScale = 2f / Math.max(1, getSign().getText().length());
         getSign().setScale(new Vector3f(getVisualScale()).mul(textScale, textScale, 1));
         getSign().setRotation(getVisualRotation());

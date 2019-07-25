@@ -1,6 +1,5 @@
 package com.ternsip.glade.universe.entities.ui;
 
-import com.ternsip.glade.graphics.visual.impl.basis.EffigySprite;
 import com.ternsip.glade.universe.entities.impl.EntityDynamicText2D;
 import com.ternsip.glade.universe.entities.impl.EntitySprite;
 import lombok.Getter;
@@ -65,8 +64,8 @@ public class EntityUICheckBox extends EntityUI {
     }
 
     @Override
-    public void update(EffigySprite effigy) {
-        super.update(effigy);
+    public void update() {
+        super.update();
 
         Vector3fc scale = getVisualScale();
         Vector3fc position = getVisualPosition();

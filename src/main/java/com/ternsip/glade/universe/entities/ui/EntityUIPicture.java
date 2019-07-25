@@ -1,6 +1,5 @@
 package com.ternsip.glade.universe.entities.ui;
 
-import com.ternsip.glade.graphics.visual.impl.basis.EffigySprite;
 import com.ternsip.glade.universe.entities.impl.EntitySprite;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,8 +30,8 @@ public class EntityUIPicture extends EntityUI {
     }
 
     @Override
-    public void update(EffigySprite effigy) {
-        super.update(effigy);
+    public void update() {
+        super.update();
         getPicture().setScale(getVisualScale());
         getPicture().setRotation(getVisualRotation());
         getPicture().setPosition(getVisualPosition());

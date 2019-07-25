@@ -2,7 +2,6 @@ package com.ternsip.glade.universe.entities.ui;
 
 import com.ternsip.glade.common.events.base.Callback;
 import com.ternsip.glade.common.events.display.CursorPosEvent;
-import com.ternsip.glade.graphics.visual.impl.basis.EffigySprite;
 import com.ternsip.glade.universe.entities.impl.EntitySprite;
 import lombok.Getter;
 import lombok.Setter;
@@ -82,8 +81,8 @@ public class EntityUIScrollbar extends EntityUI {
     }
 
     @Override
-    public void update(EffigySprite effigy) {
-        super.update(effigy);
+    public void update() {
+        super.update();
 
         Vector3fc scale = getVisualScale();
         Vector3fc position = getVisualPosition();
