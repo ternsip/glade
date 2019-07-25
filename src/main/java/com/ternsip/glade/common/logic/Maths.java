@@ -44,6 +44,10 @@ public class Maths {
         );
     }
 
+    public static boolean isFloatsEqual(float x, float y) {
+        return Math.abs(x - y) < EPS;
+    }
+
     public static Vector3fc normalizeOrEmpty(Vector3fc v) {
         return v.lengthSquared() <= EPS ? v : v.normalize(new Vector3f());
     }

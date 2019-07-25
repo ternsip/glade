@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 import org.joml.Vector4fc;
 
 import java.io.File;
@@ -67,13 +68,16 @@ public class EntityUICheckBox extends EntityUI {
     public void update(EffigySprite effigy) {
         super.update(effigy);
 
+        Vector3fc scale = getVisualScale();
+        Vector3fc position = getVisualPosition();
+        Vector3fc rotation = getVisualRotation();
         Integer biggestTextLength = getBars().stream().mapToInt(v -> v.getSign().getText().length()).max().orElse(1);
-        float textScaleX = getScale().x() / Math.max(1, biggestTextLength + 1);
-        float textScaleY = getScale().y() / Math.max(1, getBars().size());
+        float textScaleX = scale.x() / Math.max(1, biggestTextLength + 1);
+        float textScaleY = scale.y() / Math.max(1, getBars().size());
 
-        getBackground().setScale(getScale());
-        getBackground().setPosition(getPosition());
-        getBackground().setRotation(getRotation());
+        getBackground().setScale(scale);
+        getBackground().setPosition(position);
+        getBackground().setRotation(rotation);
         getBackground().setVisible(isVisible());
 
         for (int i = 0; i < getBars().size(); ++i) {
@@ -83,13 +87,13 @@ public class EntityUICheckBox extends EntityUI {
             EntityUIButton button = getBars().get(i).getSwitcher();
 
             button.setScale(new Vector3f(textScaleX, textScaleY, 1));
-            button.setRotation(getVisualRotation());
-            button.setPosition(new Vector3f(getPosition()).add((-getScale().x() + textScaleX) * getRatioX(), rowOffsetY * getRatioY(), -0.01f));
+            button.setRotation(rotation);
+            button.setPosition(new Vector3f(position).add((-scale.x() + textScaleX) * getRatioX(), rowOffsetY * getRatioY(), -0.01f));
             button.setVisible(isVisible());
 
             sign.setScale(new Vector3f(textScaleX, textScaleY, 1));
-            sign.setRotation(getVisualRotation());
-            sign.setPosition(new Vector3f(getPosition()).add((-getScale().x() + 2 * textScaleX) * getRatioX(), rowOffsetY * getRatioY(), -0.01f));
+            sign.setRotation(rotation);
+            sign.setPosition(new Vector3f(position).add((-scale.x() + 2 * textScaleX) * getRatioX(), rowOffsetY * getRatioY(), -0.01f));
             sign.setVisible(isVisible());
             sign.setShiftX(true);
         }

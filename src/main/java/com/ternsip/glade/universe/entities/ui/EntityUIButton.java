@@ -74,20 +74,24 @@ public class EntityUIButton extends EntityUI {
     public void update(EffigySprite effigy) {
         super.update(effigy);
 
-        getBackground().setScale(getVisualScale());
-        getBackground().setRotation(getVisualRotation());
-        getBackground().setPosition(getPosition());
+        Vector3fc scale = getVisualScale();
+        Vector3fc position = getVisualPosition();
+        Vector3fc rotation = getVisualRotation();
+
+        getBackground().setScale(scale);
+        getBackground().setRotation(rotation);
+        getBackground().setPosition(position);
         getBackground().setVisible(isVisible());
 
-        getBrowseOverlay().setScale(getVisualScale());
-        getBrowseOverlay().setRotation(getVisualRotation());
-        getBrowseOverlay().setPosition(new Vector3f(getPosition()).add(new Vector3f(0, 0, -0.01f)));
-        getBrowseOverlay().setVisible(isCursorInside());
+        getBrowseOverlay().setScale(scale);
+        getBrowseOverlay().setRotation(rotation);
+        getBrowseOverlay().setPosition(new Vector3f(position).add(new Vector3f(0, 0, -0.01f)));
+        getBrowseOverlay().setVisible(isVisible() && isCursorInside());
 
-        getPressOverlay().setScale(getVisualScale());
-        getPressOverlay().setRotation(getVisualRotation());
-        getPressOverlay().setPosition(new Vector3f(getPosition()).add(new Vector3f(0, 0, -0.02f)));
-        getPressOverlay().setVisible(isPressed());
+        getPressOverlay().setScale(scale);
+        getPressOverlay().setRotation(rotation);
+        getPressOverlay().setPosition(new Vector3f(position).add(new Vector3f(0, 0, -0.02f)));
+        getPressOverlay().setVisible(isVisible() && isPressed());
     }
 
     public Vector3fc getVisualScale() {

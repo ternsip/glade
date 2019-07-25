@@ -7,6 +7,7 @@ import com.ternsip.glade.universe.entities.impl.EntitySprite;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 import java.io.File;
 import java.util.function.Consumer;
@@ -84,36 +85,40 @@ public class EntityUIScrollbar extends EntityUI {
     public void update(EffigySprite effigy) {
         super.update(effigy);
 
+        Vector3fc scale = getVisualScale();
+        Vector3fc position = getVisualPosition();
+        Vector3fc rotation = getVisualRotation();
+
         float sliderSpace = 1 - BUTTON_SCALE_FACTOR_Y * 2;
-        float sliderScaleY = getScale().y() * sliderSpace;
+        float sliderScaleY = scale.y() * sliderSpace;
         float sliderTrueScaleY = sliderScaleY * getSpaceFactor();
         float sliderDiffScale = sliderScaleY - sliderTrueScaleY;
         if (isHolding()) {
-            setPositionFactor(Math.min(1, Math.max(0, (1 + (getPosition().y() - getLastCursorY()) / (getRatioY() * sliderDiffScale)) * 0.5f)));
+            setPositionFactor(Math.min(1, Math.max(0, (1 + (position.y() - getLastCursorY()) / (getRatioY() * sliderDiffScale)) * 0.5f)));
             getOnSlide().accept(getPositionFactor());
         }
         float sliderOffset = sliderDiffScale * (1 - 2 * getPositionFactor());
-        float buttonUpScaleY = getScale().y() * BUTTON_SCALE_FACTOR_Y;
+        float buttonUpScaleY = scale.y() * BUTTON_SCALE_FACTOR_Y;
         float buttonUpOffsetY = sliderScaleY + buttonUpScaleY;
 
-        getBackground().setScale(getScale());
-        getBackground().setPosition(getPosition());
-        getBackground().setRotation(getRotation());
+        getBackground().setScale(scale);
+        getBackground().setPosition(position);
+        getBackground().setRotation(rotation);
         getBackground().setVisible(isVisible());
 
-        getSlider().setScale(new Vector3f(getScale().x(), sliderTrueScaleY, getScale().z()));
-        getSlider().setPosition(new Vector3f(getPosition().x(), getPosition().y() + sliderOffset * getRatioY(), getPosition().z() - 0.01f));
-        getSlider().setRotation(getRotation());
+        getSlider().setScale(new Vector3f(scale.x(), sliderTrueScaleY, scale.z()));
+        getSlider().setPosition(new Vector3f(position.x(), position.y() + sliderOffset * getRatioY(), position.z() - 0.01f));
+        getSlider().setRotation(rotation);
         getSlider().setVisible(isVisible());
 
-        getButtonUp().setScale(new Vector3f(getScale().x(), buttonUpScaleY, getScale().z()));
-        getButtonUp().setPosition(new Vector3f(getPosition().x(), getPosition().y() + buttonUpOffsetY * getRatioY(), getPosition().z() - 0.01f));
-        getButtonUp().setRotation(getRotation());
+        getButtonUp().setScale(new Vector3f(scale.x(), buttonUpScaleY, scale.z()));
+        getButtonUp().setPosition(new Vector3f(position.x(), position.y() + buttonUpOffsetY * getRatioY(), position.z() - 0.01f));
+        getButtonUp().setRotation(rotation);
         getButtonUp().setVisible(isVisible());
 
-        getButtonDown().setScale(new Vector3f(getScale().x(), buttonUpScaleY, getScale().z()));
-        getButtonDown().setPosition(new Vector3f(getPosition().x(), getPosition().y() - buttonUpOffsetY * getRatioY(), getPosition().z() - 0.01f));
-        getButtonDown().setRotation(new Vector3f(getRotation().x(), getRotation().y(), getRotation().z() + (float)Math.PI));
+        getButtonDown().setScale(new Vector3f(scale.x(), buttonUpScaleY, scale.z()));
+        getButtonDown().setPosition(new Vector3f(position.x(), position.y() - buttonUpOffsetY * getRatioY(), position.z() - 0.01f));
+        getButtonDown().setRotation(new Vector3f(rotation.x(), rotation.y(), rotation.z() + (float)Math.PI));
         getButtonDown().setVisible(isVisible());
     }
 

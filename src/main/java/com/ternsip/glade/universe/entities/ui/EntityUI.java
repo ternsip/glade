@@ -67,5 +67,4 @@ public class EntityUI extends Entity<EffigySprite> {
         return sx <= normalizedX && sy <= normalizedY && ex >= normalizedX && ey >= normalizedY;
     }
 
-
 }
