@@ -203,8 +203,8 @@ public class EntityUIEditBox extends EntityUI {
     private void movePointer(int position) {
         int fixedPosition = Math.max(0, Math.min(getTextBuilder().length(), position));
         setPointerPosition(fixedPosition);
-        if (getPointerPosition() < getSliderPosition()) {
-            setSliderPosition(getPointerPosition());
+        if (getPointerPosition() - 1 < getSliderPosition()) {
+            setSliderPosition(Math.max(0, getPointerPosition() - 1));
         }
         int diff = getPointerPosition() - getSliderPosition() - getVisibleChars() + 1;
         if (diff > 0) {
