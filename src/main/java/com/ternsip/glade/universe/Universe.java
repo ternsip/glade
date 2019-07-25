@@ -154,7 +154,7 @@ public class Universe {
         );
         radioBox.setScale(new Vector3f(0.2f, 0.2f, 1));
         radioBox.setPosition(new Vector3f(0, 0, 0));
-        radioBox.register();
+        //radioBox.register();
 
         EntityUIScrollbar scrollbar = new EntityUIScrollbar(
                 new File("tools/scrollbar_background.jpg"),
@@ -169,7 +169,7 @@ public class Universe {
         );
         scrollbar.setScale(new Vector3f(0.025f, 0.2f, 1));
         scrollbar.setPosition(new Vector3f(0, 0, 0));
-        //scrollbar.register();
+        scrollbar.register();
 
         new EntityStatistics2D(new File("fonts/default.png"), new Vector4f(1, 1, 0, 1), true).register();
 

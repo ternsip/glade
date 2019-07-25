@@ -50,6 +50,9 @@ public class EntityUIScrollbar extends EntityUI {
         this.onSlide = onSlide;
         this.slider.getOnPress().add(() -> setHolding(true));
         this.slider.getOnRelease().add(() -> setHolding(false));
+        this.slider.setAnimated(false);
+        this.buttonUp.setAnimated(false);
+        this.buttonDown.setAnimated(false);
         this.buttonUp.getOnPress().add(() -> {
             setPositionFactor(Math.min(1, Math.max(0, getPositionFactor() - BUTTON_POSITION_STEP)));
         });

@@ -38,6 +38,7 @@ public class EntityUICheckBox extends EntityUI {
             EntityDynamicText2D text2D = new EntityDynamicText2D(font, sign.getText(), textColor, useAspect);
             EntityUISwitcher switcher = new EntityUISwitcher(uncheckedImage, browseOverlay, pressOverlay, checkedImage, useAspect);
             switcher.getOnClick().add(() -> sign.getOnSwitch().accept(switcher.isSwitched()));
+            switcher.setAnimated(false);
             return new Bar(text2D, switcher);
         }).collect(Collectors.toCollection(ArrayList::new));
         this.background = new EntitySprite(background, true, useAspect);

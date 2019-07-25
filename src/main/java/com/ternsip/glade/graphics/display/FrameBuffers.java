@@ -26,15 +26,20 @@ public class FrameBuffers implements Graphical {
         maxSamples = glGetInteger(GL_MAX_SAMPLES);
         samples = 4;
         getGraphics().getEventSnapReceiver().registerCallback(ResizeEvent.class, (resizeEvent) -> resizeFBOs());
+        resetSize();
         createFBOs();
     }
 
     public void resizeFBOs() {
+        resetSize();
+        if (getWidth() * getHeight() == 0) {
+            return;
+        }
         glDeleteRenderbuffers(depthRenderBuffer);
         glDeleteRenderbuffers(colorRenderBufferFirst);
         glDeleteRenderbuffers(colorRenderBufferSecond);
         glDeleteFramebuffers(fbo);
-        createFBOs(); // TODO Sometimes causes bug due to big queue of eventResize
+        createFBOs();
     }
 
     public void bindBuffer() {
@@ -42,7 +47,6 @@ public class FrameBuffers implements Graphical {
     }
 
     public void resolveBuffer() {
-
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
@@ -51,10 +55,12 @@ public class FrameBuffers implements Graphical {
 
     }
 
-    private void createFBOs() {
-
+    private void resetSize() {
         width = getGraphics().getWindowData().getWidth();
         height = getGraphics().getWindowData().getHeight();
+    }
+
+    private void createFBOs() {
 
         colorRenderBufferFirst = glGenRenderbuffers();
         colorRenderBufferSecond = glGenRenderbuffers();

@@ -19,8 +19,7 @@ import static org.lwjgl.glfw.GLFW.*;
 @Setter
 public class EntityUIButton extends EntityUI {
 
-    private static final long ANIMATION_SCALE_TIME_MILLISECONDS = 1000;
-    private static final long ANIMATION_ROTATE_TIME_MILLISECONDS = 200;
+    private static final long ANIMATION_TIME_MILLISECONDS = 1000;
 
     private final Callback<CursorPosEvent> cursorPosCallback = this::trackCursor;
     private final Callback<CursorVisibilityEvent> cursorVisibilityCallback = this::handleCursorVisibility;
@@ -39,6 +38,7 @@ public class EntityUIButton extends EntityUI {
     private boolean cursorInside = false;
     private long cursorJoinTime = 0;
     private boolean pressed = false;
+    private boolean animated = true;
 
     public EntityUIButton(File background, File browseOverlay, File pressOverlay, boolean useAspect) {
         super(useAspect);
@@ -94,21 +94,12 @@ public class EntityUIButton extends EntityUI {
     }
 
     public Vector3fc getVisualScale() {
-        if (!isCursorInside()) {
+        if (!isCursorInside() || !isAnimated()) {
             return getScale();
         }
-        float phase = ((System.currentTimeMillis() - getCursorJoinTime()) % ANIMATION_SCALE_TIME_MILLISECONDS) / (float) ANIMATION_SCALE_TIME_MILLISECONDS;
-        float scaleCriteria = 0.75f + (float) Math.abs(Math.cos(2 * Math.PI * phase)) * 0.25f;
+        float phase = ((System.currentTimeMillis() - getCursorJoinTime()) % ANIMATION_TIME_MILLISECONDS) / (float) ANIMATION_TIME_MILLISECONDS;
+        float scaleCriteria = 0.8f + (float) Math.abs(Math.cos(2 * Math.PI * phase)) * 0.20f;
         return new Vector3f(getScale().x() * scaleCriteria, getScale().y() * scaleCriteria, getScale().z());
-    }
-
-    public Vector3fc getVisualRotation() {
-        if (!isPressed() || !isCursorInside()) {
-            return getRotation();
-        }
-        float phase = ((System.currentTimeMillis() - getCursorJoinTime()) % ANIMATION_ROTATE_TIME_MILLISECONDS) / (float) ANIMATION_ROTATE_TIME_MILLISECONDS;
-        float rotateCriteria = (float) (Math.PI * 0.25 * Math.sin(phase * Math.PI));
-        return new Vector3f(getRotation().x(), getRotation().y() + rotateCriteria, getRotation().z());
     }
 
     private void trackCursor(CursorPosEvent event) {
