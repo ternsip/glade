@@ -156,6 +156,26 @@ public class Universe {
         radioBox.setPosition(new Vector3f(0, 0, 0));
         //radioBox.register();
 
+        EntityUIComboBox comboBox = new EntityUIComboBox(
+                new File("tools/combo_drop.png"),
+                new File("tools/browse_overlay.png"),
+                new File("tools/press_overlay.png"),
+                new File("tools/combo_background.jpg"),
+                new File("tools/browse_overlay.png"),
+                new File("tools/press_overlay.png"),
+                new File("fonts/default.png"),
+                new Vector4f(1, 1, 1, 1),
+                Arrays.asList(
+                        "abc",
+                        "abc2",
+                        "abc3"
+                ),
+                true
+        );
+        comboBox.setScale(new Vector3f(0.2f, 0.025f, 1));
+        comboBox.setPosition(new Vector3f(0, 0, 0));
+        comboBox.register();
+
         EntityUIScrollbar scrollbar = new EntityUIScrollbar(
                 new File("tools/scrollbar_background.jpg"),
                 new File("tools/scrollbar_bar.png"),
@@ -169,7 +189,7 @@ public class Universe {
         );
         scrollbar.setScale(new Vector3f(0.025f, 0.2f, 1));
         scrollbar.setPosition(new Vector3f(0, 0, 0));
-        scrollbar.register();
+        //scrollbar.register();
 
         new EntityStatistics2D(new File("fonts/default.png"), new Vector4f(1, 1, 0, 1), true).register();
 

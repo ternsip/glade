@@ -18,6 +18,14 @@ public class EntityUILabel extends EntityUI {
         this.sign = new EntityDynamicText2D(font, text, textColor, useAspect);
     }
 
+    public String getText() {
+        return getSign().getText();
+    }
+
+    public void setText(String text) {
+        getSign().setText(text);
+    }
+
     @Override
     public void register() {
         super.register();
