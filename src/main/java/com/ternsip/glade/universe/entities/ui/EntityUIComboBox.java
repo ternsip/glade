@@ -69,16 +69,6 @@ public class EntityUIComboBox extends EntityUI {
         getOptions().forEach(EntityUIButton::unregister);
     }
 
-    public void roll() {
-        if (isOpened()) {
-            getOptions().forEach(EntityUIButton::unregister);
-            setOpened(false);
-        } else {
-            getOptions().forEach(EntityUIButton::register);
-            setOpened(true);
-        }
-    }
-
     @Override
     public void update() {
         super.update();
@@ -107,6 +97,16 @@ public class EntityUIComboBox extends EntityUI {
 
         }
 
+    }
+
+    public void roll() {
+        if (isOpened()) {
+            getOptions().forEach(EntityUIButton::unregister);
+            setOpened(false);
+        } else {
+            getOptions().forEach(EntityUIButton::register);
+            setOpened(true);
+        }
     }
 
 }
