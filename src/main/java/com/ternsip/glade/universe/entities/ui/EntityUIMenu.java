@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+import org.joml.Vector4fc;
 
 import java.io.File;
 import java.util.Arrays;
@@ -13,38 +14,62 @@ import java.util.Arrays;
 @Setter
 public class EntityUIMenu extends EntityUI {
 
-    private final EntityUITextButton button;
+    private static final File BUTTON_BACKGROUND = new File("interface/button.png");
+    private static final File BROWSE_OVERLAY = new File("interface/browse_overlay.png");
+    private static final File PRESS_OVERLAY = new File("interface/press_overlay.png");
+    private static final File FONT = new File("fonts/default.png");
+    private static final Vector4fc TEXT_COLOR = new Vector4f(1, 1, 1, 1);
+    private static final File CLICK_SOUND = new File("sounds/click2.ogg");
 
-    private boolean active = true;
+    private final EntityUITextButton exitButton;
+    private final EntityUITextButton resumeButton;
+    private final EntityUITextButton connectButton;
+    private final EntityUITextButton hostButton;
+    private final EntityUITextButton optionsButton;
 
-    public EntityUIMenu(boolean useAspect) {
-        super(useAspect);
+    private boolean active = false;
 
-        this.button = new EntityUITextButton(
-                new File("tools/button.png"),
-                new File("tools/browse_overlay.png"),
-                new File("tools/press_overlay.png"),
-                new File("fonts/default.png"),
-                new Vector4f(1, 1, 1, 1),
-                "Exit",
-                true
-        );
-        this.button.setScale(new Vector3f(0.1f, 0.05f, 1));
-        this.button.setPosition(new Vector3f(0, -0.5f, 0));
-        this.button.getOnPress().add(() -> new Sound(new File("sounds/click2.ogg")).register());
-        this.button.getOnClick().add(() -> getUniverse().setActive(false));
+    public EntityUIMenu() {
+        super(true);
 
-        EntityUIEditBox editBox = new EntityUIEditBox(new File("tools/button.png"), new File("tools/editbox_frame.png"), new File("tools/editbox_pointer.png"), new File("fonts/default.png"), new Vector4f(1, 1, 1, 1), true);
+        this.resumeButton = new EntityUITextButton(BUTTON_BACKGROUND, BROWSE_OVERLAY, PRESS_OVERLAY, FONT, TEXT_COLOR, "Resume", true);
+        this.resumeButton.setScale(new Vector3f(0.1f, 0.05f, 1));
+        this.resumeButton.setPosition(new Vector3f(0, 0.5f, 0));
+        this.resumeButton.getOnPress().add(() -> new Sound(CLICK_SOUND).register());
+        this.resumeButton.getOnClick().add(this::toggle);
+
+        this.connectButton = new EntityUITextButton(BUTTON_BACKGROUND, BROWSE_OVERLAY, PRESS_OVERLAY, FONT, TEXT_COLOR, "Connect", true);
+        this.connectButton.setScale(new Vector3f(0.1f, 0.05f, 1));
+        this.connectButton.setPosition(new Vector3f(0, 0.25f, 0));
+        this.connectButton.getOnPress().add(() -> new Sound(CLICK_SOUND).register());
+
+        this.hostButton = new EntityUITextButton(BUTTON_BACKGROUND, BROWSE_OVERLAY, PRESS_OVERLAY, FONT, TEXT_COLOR, "Host", true);
+        this.hostButton.setScale(new Vector3f(0.1f, 0.05f, 1));
+        this.hostButton.setPosition(new Vector3f(0, 0, 0));
+        this.hostButton.getOnPress().add(() -> new Sound(CLICK_SOUND).register());
+
+        this.optionsButton = new EntityUITextButton(BUTTON_BACKGROUND, BROWSE_OVERLAY, PRESS_OVERLAY, FONT, TEXT_COLOR, "Options", true);
+        this.optionsButton.setScale(new Vector3f(0.1f, 0.05f, 1));
+        this.optionsButton.setPosition(new Vector3f(0, -0.25f, 0));
+        this.optionsButton.getOnPress().add(() -> new Sound(CLICK_SOUND).register());
+
+        this.exitButton = new EntityUITextButton(BUTTON_BACKGROUND, BROWSE_OVERLAY, PRESS_OVERLAY, FONT, TEXT_COLOR, "Exit", true);
+        this.exitButton.setScale(new Vector3f(0.1f, 0.05f, 1));
+        this.exitButton.setPosition(new Vector3f(0, -0.5f, 0));
+        this.exitButton.getOnPress().add(() -> new Sound(CLICK_SOUND).register());
+        this.exitButton.getOnClick().add(() -> getUniverse().setActive(false));
+
+        EntityUIEditBox editBox = new EntityUIEditBox(new File("interface/button.png"), new File("interface/editbox_frame.png"), new File("interface/editbox_pointer.png"), new File("fonts/default.png"), new Vector4f(1, 1, 1, 1), true);
         editBox.setScale(new Vector3f(0.2f, 0.05f, 1));
         editBox.setPosition(new Vector3f(0, 0.5f, 0));
         //editBox.register();
 
         EntityUIRadioBox radioBox = new EntityUIRadioBox(
-                new File("tools/ui_background.png"),
-                new File("tools/browse_overlay.png"),
-                new File("tools/press_overlay.png"),
-                new File("tools/checkbox_on.png"),
-                new File("tools/checkbox_off.png"),
+                new File("interface/ui_background.png"),
+                new File("interface/browse_overlay.png"),
+                new File("interface/press_overlay.png"),
+                new File("interface/checkbox_on.png"),
+                new File("interface/checkbox_off.png"),
                 new File("fonts/default.png"),
                 new Vector4f(1, 1, 1, 1),
                 Arrays.asList(
@@ -60,12 +85,12 @@ public class EntityUIMenu extends EntityUI {
         //radioBox.register();
 
         EntityUIComboBox comboBox = new EntityUIComboBox(
-                new File("tools/combo_drop.png"),
-                new File("tools/browse_overlay.png"),
-                new File("tools/press_overlay.png"),
-                new File("tools/combo_background.jpg"),
-                new File("tools/browse_overlay.png"),
-                new File("tools/press_overlay.png"),
+                new File("interface/combo_drop.png"),
+                new File("interface/browse_overlay.png"),
+                new File("interface/press_overlay.png"),
+                new File("interface/combo_background.jpg"),
+                new File("interface/browse_overlay.png"),
+                new File("interface/press_overlay.png"),
                 new File("fonts/default.png"),
                 new Vector4f(1, 1, 1, 1),
                 Arrays.asList(
@@ -80,13 +105,13 @@ public class EntityUIMenu extends EntityUI {
         //comboBox.register();
 
         EntityUIScrollbar scrollbar = new EntityUIScrollbar(
-                new File("tools/scrollbar_background.jpg"),
-                new File("tools/scrollbar_bar.png"),
-                new File("tools/browse_overlay.png"),
-                new File("tools/press_overlay.png"),
-                new File("tools/scrollbar_up.png"),
-                new File("tools/browse_overlay.png"),
-                new File("tools/press_overlay.png"),
+                new File("interface/scrollbar_background.jpg"),
+                new File("interface/scrollbar_bar.png"),
+                new File("interface/browse_overlay.png"),
+                new File("interface/press_overlay.png"),
+                new File("interface/scrollbar_up.png"),
+                new File("interface/browse_overlay.png"),
+                new File("interface/press_overlay.png"),
                 state -> {},
                 true
         );
@@ -99,21 +124,30 @@ public class EntityUIMenu extends EntityUI {
     @Override
     public void register() {
         super.register();
-        getButton().register();
+        getExitButton().register();
+        getResumeButton().register();
+        getConnectButton().register();
+        getHostButton().register();
+        getOptionsButton().register();
+        setActive(true);
     }
 
     @Override
     public void unregister() {
         super.unregister();
-        getButton().unregister();
+        getExitButton().unregister();
+        getResumeButton().unregister();
+        getConnectButton().unregister();
+        getHostButton().unregister();
+        getOptionsButton().unregister();
+        setActive(false);
     }
 
     public void toggle() {
-        setActive(!isActive());
         if (isActive()) {
-            register();
-        } else {
             unregister();
+        } else {
+            register();
         }
     }
 }

@@ -133,7 +133,7 @@ public class Universe {
         new EntityGenericRotating(() -> new EffigyDynamicText(new File("fonts/default.png"), false, false, new Vector4f(0, 0, 1, 1), "Hello world!"), new Vector3f(0, 0.1f, 0)).register();
         new EntityGeneric(() -> new EffigyAxis()).register();
 
-        EntityUIMenu entityUIMenu = new EntityUIMenu(true);
+        EntityUIMenu entityUIMenu = new EntityUIMenu();
         entityUIMenu.register();
 
         new EntityStatistics2D(new File("fonts/default.png"), new Vector4f(1, 1, 0, 1), true).register();
@@ -151,7 +151,7 @@ public class Universe {
         }
         new EntitySides().register();
 
-        getBindings().addBindCallback(Bind.TOGGLE_MENU, () -> entityUIMenu.toggle());
+        getBindings().addBindCallback(Bind.TOGGLE_MENU, entityUIMenu::toggle);
     }
 
     private void update() {
