@@ -1,17 +1,15 @@
-package com.ternsip.glade.common.events.display;
+package com.ternsip.glade.universe.bindings;
 
-import com.ternsip.glade.common.events.base.Event;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-@EqualsAndHashCode
 @RequiredArgsConstructor
+@EqualsAndHashCode
 @Getter
-public class KeyEvent implements Event {
+public class KeyState {
 
     private final int key;
-    private final int scanCode;
     private final int action;
     private final int mods;
 

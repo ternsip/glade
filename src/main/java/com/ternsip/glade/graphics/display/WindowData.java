@@ -84,12 +84,6 @@ public class WindowData implements Universal, Graphical {
         registerEvent(ResizeEvent.class, new ResizeEvent(getWidth(), getHeight()));
 
         getGraphics().getEventSnapReceiver().registerCallback(ResizeEvent.class, this::handleResize);
-        // TODO MOVE IN HOTKEY CLASS
-        getGraphics().getEventSnapReceiver().registerCallback(KeyEvent.class, e -> {
-            if (e.getKey() == GLFW_KEY_ESCAPE && e.getAction() == GLFW_PRESS) {
-                close();
-            }
-        });
     }
 
     public int getWidth() {

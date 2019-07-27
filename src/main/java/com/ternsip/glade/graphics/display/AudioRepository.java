@@ -142,7 +142,7 @@ public class AudioRepository implements Universal {
 
     @Getter
     @Setter
-    public static class SoundPlayer {
+    public static class SoundPlayer implements Universal {
 
         private final int sourcePointer;
         private int playedTimes = 0;

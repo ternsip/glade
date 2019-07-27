@@ -20,6 +20,7 @@ public class Sound implements Universal {
     private final float magnitude;
     private final float pitch;
     private final int playTimes;
+    private final boolean local;
 
     public Sound(File file) {
         this.file = file;
@@ -27,6 +28,11 @@ public class Sound implements Universal {
         this.magnitude = 1;
         this.pitch = 1;
         this.playTimes = 1;
+        this.local = true;
+    }
+
+    public Vector3fc getPosition() {
+        return isLocal() ? getUniverse().getSoundRepository().getListenerPosition() : position;
     }
 
     public void register() {
