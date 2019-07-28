@@ -58,7 +58,7 @@ public class Universe {
 
     private boolean active = true;
 
-    private final TimeNormalizer timeNormalizer = new TimeNormalizer((long) (1000.0f / getBalance().getTicksPerSecond()));
+    private final TimeNormalizer timeNormalizer = new TimeNormalizer(() -> 1000L / getBalance().getTicksPerSecond());
 
     public void run() {
         runServer();

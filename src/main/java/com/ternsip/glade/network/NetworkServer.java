@@ -17,7 +17,7 @@ public class NetworkServer extends NetworkHandler implements Universal {
 
     private final ServerSocket serverSocket;
     private final ArrayList<Connection> connections = new ArrayList<>();
-    private final TimeNormalizer timeNormalizer = new TimeNormalizer((long) (1000.0f / getUniverse().getBalance().getTicksPerSecond()));
+    private final TimeNormalizer timeNormalizer = new TimeNormalizer(() -> 1000L / getUniverse().getBalance().getTicksPerSecond());
 
     @SneakyThrows
     public NetworkServer(int port) {
