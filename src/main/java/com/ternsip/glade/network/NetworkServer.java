@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public class NetworkServer {
 
     private final ServerSocket serverSocket;
-    private final ArrayList<ServerConnection> connections = new ArrayList<>();
+    private final ArrayList<Connection> connections = new ArrayList<>();
 
     private boolean active = true;
 
@@ -32,13 +32,14 @@ public class NetworkServer {
     @SneakyThrows
     public void finish() {
         setActive(false);
+        getConnections().forEach(Connection::close);
         getServerSocket().close();
     }
 
     private void acceptNewConnection() {
         try {
-            ServerConnection serverConnection = new ServerConnection(getServerSocket().accept());
-            getConnections().add(serverConnection);
+            Connection connection = new Connection(getServerSocket().accept());
+            getConnections().add(connection);
         } catch (Exception e) {
             if (isActive()) {
                 String errMsg = String.format("Error while accepting new connection to server %s", e.getMessage());

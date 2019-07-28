@@ -53,13 +53,14 @@ public class Universe {
     private final NetworkServer networkServer = new NetworkServer(6789);
 
     @Getter(lazy = true)
-    private final NetworkClient networkClient = new NetworkClient();
+    private final NetworkClient networkClient = new NetworkClient("localhost", 6789);
 
     private boolean active = true;
 
     public void run() {
         spawnTestEntities();
         runServer();
+        runClient();
         loop();
         finish();
     }
@@ -77,6 +78,10 @@ public class Universe {
         }
     }
 
+    private void runClient() {
+        new Thread(() -> getNetworkClient().loop()).start();
+    }
+
     private void runServer() {
         new Thread(() -> getNetworkServer().loop()).start();
     }
@@ -84,6 +89,7 @@ public class Universe {
     private void finish() {
         getBlocks().finish();
         getBindings().finish();
+        getNetworkClient().finish();
         getNetworkServer().finish();
     }
 
