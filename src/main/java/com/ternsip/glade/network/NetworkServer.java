@@ -1,5 +1,7 @@
 package com.ternsip.glade.network;
 
+import com.ternsip.glade.common.logic.TimeNormalizer;
+import com.ternsip.glade.universe.common.Universal;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -11,12 +13,11 @@ import java.util.ArrayList;
 @Slf4j
 @Getter
 @Setter
-public class NetworkServer {
+public class NetworkServer extends NetworkHandler implements Universal {
 
     private final ServerSocket serverSocket;
     private final ArrayList<Connection> connections = new ArrayList<>();
-
-    private boolean active = true;
+    private final TimeNormalizer timeNormalizer = new TimeNormalizer((long) (1000.0f / getUniverse().getBalance().getTicksPerSecond()));
 
     @SneakyThrows
     public NetworkServer(int port) {
@@ -24,14 +25,23 @@ public class NetworkServer {
     }
 
     public void loop() {
-        while (isActive()) {
+        new Thread(this::processConnections).start();
+        while (!getServerSocket().isClosed()) {
             acceptNewConnection();
         }
     }
 
     @SneakyThrows
+    public void processConnections() {
+        while (!getServerSocket().isClosed()) {
+            getTimeNormalizer().drop();
+            handleInputMessages();
+            getTimeNormalizer().rest();
+        }
+    }
+
+    @SneakyThrows
     public void finish() {
-        setActive(false);
         getConnections().forEach(Connection::close);
         getServerSocket().close();
     }
@@ -40,12 +50,28 @@ public class NetworkServer {
         getConnections().forEach(connection -> connection.writeObject(obj));
     }
 
+    private void handleInputMessages() {
+        getConnections().forEach(connection -> {
+            try {
+                if (connection.getInput().available() > 0) {
+                    handleObject(connection, connection.readObject());
+                }
+            } catch (Exception e) {
+                if (!connection.getSocket().isClosed()) {
+                    String errMsg = String.format("Error while accepting data from server %s", e.getMessage());
+                    log.error(errMsg);
+                    log.debug(errMsg, e);
+                }
+            }
+        });
+    }
+
     private void acceptNewConnection() {
         try {
             Connection connection = new Connection(getServerSocket().accept());
             getConnections().add(connection);
         } catch (Exception e) {
-            if (isActive()) {
+            if (!getServerSocket().isClosed()) {
                 String errMsg = String.format("Error while accepting new connection to server %s", e.getMessage());
                 log.error(errMsg);
                 log.debug(errMsg, e);

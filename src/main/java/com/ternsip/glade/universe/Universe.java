@@ -1,6 +1,7 @@
 package com.ternsip.glade.universe;
 
 import com.ternsip.glade.common.events.base.EventSnapReceiver;
+import com.ternsip.glade.common.logic.TimeNormalizer;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigyAxis;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigyDynamicText;
 import com.ternsip.glade.graphics.visual.impl.test.*;
@@ -57,10 +58,12 @@ public class Universe {
 
     private boolean active = true;
 
+    private final TimeNormalizer timeNormalizer = new TimeNormalizer((long) (1000.0f / getBalance().getTicksPerSecond()));
+
     public void run() {
-        spawnTestEntities();
         runServer();
         runClient();
+        spawnTestEntities();
         loop();
         finish();
     }
@@ -68,13 +71,12 @@ public class Universe {
     @SneakyThrows
     private void loop() {
         while (getEventSnapReceiver().isApplicationActive() && isActive()) {
-            long startTime = System.currentTimeMillis();
-            update();
-            long pastTime = System.currentTimeMillis() - startTime;
-            long needToSleep = (long) Math.max(1000.0f / getBalance().getTicksPerSecond() - pastTime, 0);
-            if (needToSleep > 0) {
-                Thread.sleep(needToSleep);
-            }
+            getTimeNormalizer().drop();
+            getEventSnapReceiver().update();
+            getEntityRepository().update();
+            getCollisions().update();
+            getBlocks().update();
+            getTimeNormalizer().rest();
         }
     }
 
@@ -175,13 +177,7 @@ public class Universe {
 
         getBindings().addBindCallback(Bind.TOGGLE_MENU, entityUIMenu::toggle);
         getBindings().addBindCallback(Bind.TEST_BUTTON, () -> getNetworkServer().sendAll("HELLO MODERFOCKE"));
-    }
-
-    private void update() {
-        getEventSnapReceiver().update();
-        getEntityRepository().update();
-        getCollisions().update();
-        getBlocks().update();
+        getNetworkClient().registerCallback(String.class, (conn, str) -> System.out.println("Received message from srv " + str));
     }
 
 }
