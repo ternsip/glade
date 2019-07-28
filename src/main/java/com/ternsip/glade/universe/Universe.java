@@ -174,8 +174,9 @@ public class Universe {
         new EntitySides().register();
 
         getBindings().addBindCallback(Bind.TOGGLE_MENU, entityUIMenu::toggle);
-        getBindings().addBindCallback(Bind.TEST_BUTTON, () -> getNetworkServer().sendAll("HELLO MODERFOCKE"));
+        getBindings().addBindCallback(Bind.TEST_BUTTON, () -> getNetworkClient().send("HELLO MODERFOCKE"));
         getNetworkClient().registerCallback(String.class, (conn, str) -> System.out.println("Received message from srv " + str));
+        getNetworkServer().registerCallback(String.class, (conn, str) -> System.out.println("Received message from client " + str));
     }
 
 }

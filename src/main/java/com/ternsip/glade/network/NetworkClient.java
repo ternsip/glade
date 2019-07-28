@@ -47,6 +47,10 @@ public class NetworkClient extends NetworkHandler {
         }
     }
 
+    public void send(Object object) {
+        getConnection().writeObject(object);
+    }
+
     @SneakyThrows
     public void finish() {
         getConnection().close();
