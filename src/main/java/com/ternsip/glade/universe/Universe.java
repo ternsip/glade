@@ -4,6 +4,8 @@ import com.ternsip.glade.common.events.base.EventSnapReceiver;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigyAxis;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigyDynamicText;
 import com.ternsip.glade.graphics.visual.impl.test.*;
+import com.ternsip.glade.network.NetworkClient;
+import com.ternsip.glade.network.NetworkServer;
 import com.ternsip.glade.universe.audio.SoundRepository;
 import com.ternsip.glade.universe.bindings.Bind;
 import com.ternsip.glade.universe.bindings.Bindings;
@@ -47,14 +49,23 @@ public class Universe {
     @Getter(lazy = true)
     private final Bindings bindings = new Bindings();
 
+    @Getter(lazy = true)
+    private final NetworkServer networkServer = new NetworkServer(6789);
+
+    @Getter(lazy = true)
+    private final NetworkClient networkClient = new NetworkClient();
+
     private boolean active = true;
 
-    public void initialize() {
+    public void run() {
         spawnTestEntities();
+        runServer();
+        loop();
+        finish();
     }
 
     @SneakyThrows
-    public void loop() {
+    private void loop() {
         while (getEventSnapReceiver().isApplicationActive() && isActive()) {
             long startTime = System.currentTimeMillis();
             update();
@@ -66,9 +77,14 @@ public class Universe {
         }
     }
 
-    public void finish() {
+    private void runServer() {
+        new Thread(() -> getNetworkServer().loop()).start();
+    }
+
+    private void finish() {
         getBlocks().finish();
         getBindings().finish();
+        getNetworkServer().finish();
     }
 
     private void spawnTestEntities() {

@@ -1,8 +1,6 @@
 package com.ternsip.glade;
 
 import com.ternsip.glade.graphics.display.Graphical;
-import com.ternsip.glade.graphics.display.Graphics;
-import com.ternsip.glade.universe.Universe;
 import com.ternsip.glade.universe.common.Universal;
 
 /**
@@ -24,18 +22,8 @@ import com.ternsip.glade.universe.common.Universal;
 public class Glade {
 
     public static void main(String[] args) {
-
-        new Thread(() -> {
-            Universe universe = Universal.UNIVERSE;
-            universe.initialize();
-            universe.loop();
-            universe.finish();
-        }).start();
-
-        Graphics graphics = Graphical.GRAPHICS;
-        graphics.loop();
-        graphics.finish();
-
+        new Thread(Universal.UNIVERSE::run).start();
+        Graphical.GRAPHICS.run();
     }
 
 }

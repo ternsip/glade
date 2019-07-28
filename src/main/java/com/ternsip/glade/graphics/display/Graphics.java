@@ -46,6 +46,11 @@ public class Graphics implements Universal {
     @Getter(lazy = true)
     private final AudioRepository audioRepository = new AudioRepository();
 
+    public void run() {
+        loop();
+        finish();
+    }
+
     public void loop() {
         while (getWindowData().isActive() && getUniverse().isActive()) {
             getFrameBuffers().bindBuffer();
