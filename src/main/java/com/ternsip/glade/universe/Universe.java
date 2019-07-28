@@ -55,10 +55,8 @@ public class Universe {
 
     @Getter(lazy = true)
     private final NetworkClient networkClient = new NetworkClient("localhost", 6789);
-
-    private boolean active = true;
-
     private final TimeNormalizer timeNormalizer = new TimeNormalizer(() -> 1000L / getBalance().getTicksPerSecond());
+    private boolean active = true;
 
     public void run() {
         runServer();

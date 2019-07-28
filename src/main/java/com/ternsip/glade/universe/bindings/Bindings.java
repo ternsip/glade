@@ -42,16 +42,16 @@ public class Bindings implements Universal {
         getBindToCallbacks().computeIfAbsent(bind, k -> new ArrayList<>()).add(callback);
     }
 
+    public void finish() {
+        getUniverse().getEventSnapReceiver().unregisterCallback(KeyEvent.class, keyCallback);
+    }
+
     private void handleKeyEvent(KeyEvent event) {
         Bind bind = getKeyStateToBind().get(new KeyState(event.getKey(), event.getAction(), event.getMods()));
         Collection<BindingCallback> callbacks = getBindToCallbacks().get(bind);
         if (callbacks != null) {
             callbacks.forEach(BindingCallback::execute);
         }
-    }
-
-    public void finish() {
-        getUniverse().getEventSnapReceiver().unregisterCallback(KeyEvent.class, keyCallback);
     }
 
 }
