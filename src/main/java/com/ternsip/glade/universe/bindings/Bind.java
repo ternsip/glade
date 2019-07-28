@@ -10,6 +10,7 @@ import static org.lwjgl.glfw.GLFW.*;
 public enum Bind {
 
     TOGGLE_MENU(new KeyState(GLFW_KEY_ESCAPE, GLFW_PRESS, 0)),
+    TEST_BUTTON(new KeyState(GLFW_KEY_O, GLFW_RELEASE, 0)),
     EXIT_GAME(new KeyState(GLFW_KEY_F4, GLFW_PRESS, GLFW_MOD_ALT));
 
     private final KeyState defaultKeyState;

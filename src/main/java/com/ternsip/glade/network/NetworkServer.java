@@ -36,6 +36,10 @@ public class NetworkServer {
         getServerSocket().close();
     }
 
+    public void sendAll(Object obj) {
+        getConnections().forEach(connection -> connection.writeObject(obj));
+    }
+
     private void acceptNewConnection() {
         try {
             Connection connection = new Connection(getServerSocket().accept());

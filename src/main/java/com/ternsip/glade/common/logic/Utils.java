@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.SerializationUtils;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.assimp.AIScene;
 import org.lwjgl.assimp.Assimp;
@@ -27,6 +28,14 @@ import static org.lwjgl.assimp.Assimp.aiGetErrorString;
 
 @Slf4j
 public class Utils {
+
+    public static byte[] objectToByteArray(Serializable obj) {
+        return SerializationUtils.serialize(obj);
+    }
+
+    public static Object objectToByteArray(byte[] obj) {
+        return SerializationUtils.serialize(obj);
+    }
 
     @SneakyThrows
     public static FileInputStream loadResourceAsFileStream(File file) {

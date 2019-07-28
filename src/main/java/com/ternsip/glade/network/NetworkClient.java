@@ -35,7 +35,7 @@ public class NetworkClient {
 
     private void acceptData() {
         try {
-            getConnection().getInput().readInt();
+            Object obj = getConnection().readObject();
         } catch (Exception e) {
             if (isActive()) {
                 String errMsg = String.format("Error while accepting data from server %s", e.getMessage());

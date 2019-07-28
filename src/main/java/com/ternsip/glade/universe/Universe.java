@@ -174,6 +174,7 @@ public class Universe {
         new EntitySides().register();
 
         getBindings().addBindCallback(Bind.TOGGLE_MENU, entityUIMenu::toggle);
+        getBindings().addBindCallback(Bind.TEST_BUTTON, () -> getNetworkServer().sendAll("HELLO MODERFOCKE"));
     }
 
     private void update() {
