@@ -3,7 +3,7 @@ package com.ternsip.glade.universe;
 import com.ternsip.glade.common.events.base.EventSnapReceiver;
 import com.ternsip.glade.common.logic.ThreadWrapper;
 import com.ternsip.glade.common.logic.TimeNormalizer;
-import com.ternsip.glade.common.logic.Updatable;
+import com.ternsip.glade.common.logic.Threadable;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigyAxis;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigyDynamicText;
 import com.ternsip.glade.graphics.visual.impl.test.*;
@@ -32,7 +32,7 @@ import java.io.File;
 
 @Getter
 @Setter
-public class Universe implements Updatable {
+public class Universe implements Threadable {
 
     private final EventSnapReceiver eventSnapReceiver = new EventSnapReceiver();
 

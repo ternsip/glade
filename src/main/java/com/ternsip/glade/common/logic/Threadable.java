@@ -1,6 +1,6 @@
 package com.ternsip.glade.common.logic;
 
-public interface Updatable {
+public interface Threadable {
 
     void init();
 

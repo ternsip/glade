@@ -2,19 +2,18 @@ package com.ternsip.glade.network;
 
 import com.ternsip.glade.common.logic.ThreadWrapper;
 import com.ternsip.glade.common.logic.TimeNormalizer;
-import com.ternsip.glade.common.logic.Updatable;
+import com.ternsip.glade.common.logic.Threadable;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
-import java.net.ServerSocket;
 import java.util.ArrayList;
 
 @Slf4j
 @Getter
 @Setter
-public class NetworkServer extends NetworkHandler implements Updatable {
+public class NetworkServer extends NetworkHandler implements Threadable {
 
     private final long RETRY_INTERVAL = 500L;
 
@@ -22,11 +21,11 @@ public class NetworkServer extends NetworkHandler implements Updatable {
     private final TimeNormalizer timeNormalizer = new TimeNormalizer(1000L / 128);
 
     private ThreadWrapper<Acceptor> acceptorThread;
-    private ServerConnection serverConnection = new ServerConnection();
+    private ServerHolder serverHolder = new ServerHolder();
 
     @SneakyThrows
     public void bind(int port) {
-        setServerConnection(new ServerConnection(new ServerSocket(port)));
+        setServerHolder(new ServerHolder(port));
     }
 
     @Override
@@ -36,7 +35,7 @@ public class NetworkServer extends NetworkHandler implements Updatable {
 
     @Override
     public void update() {
-        if (getServerConnection().isActive()) {
+        if (getServerHolder().isActive()) {
             getTimeNormalizer().drop();
             getConnections().forEach(connection -> {
                 try {
@@ -60,7 +59,7 @@ public class NetworkServer extends NetworkHandler implements Updatable {
     public void stop() {
         getAcceptorThread().stop();
         getConnections().forEach(Connection::close);
-        getServerConnection().close();
+        getServerHolder().close();
     }
 
     @Override
@@ -75,18 +74,18 @@ public class NetworkServer extends NetworkHandler implements Updatable {
         Thread.sleep(RETRY_INTERVAL);
     }
 
-    public class Acceptor implements Updatable {
+    public class Acceptor implements Threadable {
 
         @Override
         public void init() {}
 
         @Override
         public void update() {
-            if (getServerConnection().isActive()) {
+            if (getServerHolder().isActive()) {
                 try {
-                    getConnections().add(getServerConnection().accept());
+                    getConnections().add(getServerHolder().accept());
                 } catch (Exception e) {
-                    if (getServerConnection().isActive()) {
+                    if (getServerHolder().isActive()) {
                         String errMsg = String.format("Error while accepting new connection to server %s", e.getMessage());
                         log.error(errMsg);
                         log.debug(errMsg, e);

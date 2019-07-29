@@ -2,7 +2,7 @@ package com.ternsip.glade.universe.parts.chunks;
 
 import com.ternsip.glade.common.logic.Indexer;
 import com.ternsip.glade.common.logic.Timer;
-import com.ternsip.glade.common.logic.Updatable;
+import com.ternsip.glade.common.logic.Threadable;
 import com.ternsip.glade.common.logic.Utils;
 import com.ternsip.glade.universe.parts.blocks.Block;
 import com.ternsip.glade.universe.parts.blocks.BlockSide;
@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 /**
  * This class and all folded data should be thread safe
  */
-public class Blocks implements Updatable {
+public class Blocks implements Threadable {
 
     public static final int CHUNKS_X = 8;
     public static final int CHUNKS_Z = 8;

@@ -1,21 +1,24 @@
 package com.ternsip.glade.network;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.ServerSocket;
 
-@RequiredArgsConstructor
 @Slf4j
 @Getter
-public class ServerConnection {
+public class ServerHolder {
 
     private final ServerSocket socket;
 
-    public ServerConnection() {
+    public ServerHolder() {
         socket = null;
+    }
+
+    @SneakyThrows
+    public ServerHolder(int port) {
+        socket = new ServerSocket(port);
     }
 
     public boolean isActive() {

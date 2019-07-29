@@ -1,6 +1,6 @@
 package com.ternsip.glade.network;
 
-import com.ternsip.glade.common.logic.Updatable;
+import com.ternsip.glade.common.logic.Threadable;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -11,7 +11,7 @@ import java.net.Socket;
 @Slf4j
 @Getter
 @Setter
-public class NetworkClient extends NetworkHandler implements Updatable {
+public class NetworkClient extends NetworkHandler implements Threadable {
 
     private final long RETRY_INTERVAL = 500L;
     private final int MAX_CONNECTION_ATTEMPTS = 10;

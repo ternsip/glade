@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public class ThreadWrapper<T extends Updatable> {
+public class ThreadWrapper<T extends Threadable> {
 
     private final T objective;
     private final Task task;
@@ -32,7 +32,7 @@ public class ThreadWrapper<T extends Updatable> {
     private static class Task implements Runnable {
 
         public final AtomicBoolean active = new AtomicBoolean(true);
-        public final Updatable updatable;
+        public final Threadable threadable;
 
         public void setActive(boolean active) {
             this.active.set(active);
@@ -44,11 +44,11 @@ public class ThreadWrapper<T extends Updatable> {
 
         @Override
         public void run() {
-            this.updatable.init();
+            this.threadable.init();
             while (isActive()) {
-                this.updatable.update();
+                this.threadable.update();
             }
-            this.updatable.finish();
+            this.threadable.finish();
         }
     }
 
