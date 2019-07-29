@@ -1,7 +1,6 @@
 package com.ternsip.glade;
 
 import com.ternsip.glade.graphics.display.Graphical;
-import com.ternsip.glade.universe.common.Universal;
 
 /**
  * The main entry point of the application
@@ -22,7 +21,6 @@ import com.ternsip.glade.universe.common.Universal;
 public class Glade {
 
     public static void main(String[] args) {
-        new Thread(Universal.UNIVERSE::run).start();
         Graphical.GRAPHICS.run();
     }
 

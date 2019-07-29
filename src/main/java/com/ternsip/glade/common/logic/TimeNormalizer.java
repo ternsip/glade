@@ -4,8 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 
-import java.util.function.Supplier;
-
 /**
  * Timer class to control time
  *
@@ -16,12 +14,11 @@ import java.util.function.Supplier;
 @Getter
 public class TimeNormalizer {
 
-    private Supplier<Long> timeoutSupplier;
-
+    private final long timeout;
     private long lastTime;
 
-    public TimeNormalizer(Supplier<Long> timeoutSupplier) {
-        this.timeoutSupplier = timeoutSupplier;
+    public TimeNormalizer(long timeout) {
+        this.timeout = timeout;
         this.lastTime = System.currentTimeMillis();
     }
 
@@ -32,7 +29,7 @@ public class TimeNormalizer {
     @SneakyThrows
     public void rest() {
         long pastTime = System.currentTimeMillis() - getLastTime();
-        long needToSleep = Math.max(getTimeoutSupplier().get() - pastTime, 0);
+        long needToSleep = Math.max(getTimeout() - pastTime, 0);
         if (needToSleep > 0) {
             Thread.sleep(needToSleep);
         }

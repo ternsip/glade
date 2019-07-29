@@ -50,4 +50,13 @@ public class Timer {
         return System.currentTimeMillis() - lastTime;
     }
 
+    /**
+     * How much time in milliseconds is needed to be left to finish timer
+     *
+     * @return How much time is demanded
+     */
+    public long demand() {
+        return Math.max(0, timeout - spent());
+    }
+
 }

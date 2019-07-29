@@ -57,7 +57,7 @@ public class EntityUIMenu extends EntityUI {
         this.exitButton.setScale(new Vector3f(0.1f, 0.05f, 1));
         this.exitButton.setPosition(new Vector3f(0, -0.5f, 0));
         this.exitButton.getOnPress().add(() -> new Sound(CLICK_SOUND).register());
-        this.exitButton.getOnClick().add(() -> getUniverse().setActive(false));
+        this.exitButton.getOnClick().add(() -> getUniverse().stop());
 
         EntityUIEditBox editBox = new EntityUIEditBox(new File("interface/button.png"), new File("interface/editbox_frame.png"), new File("interface/editbox_pointer.png"), new File("fonts/default.png"), new Vector4f(1, 1, 1, 1), true);
         editBox.setScale(new Vector3f(0.2f, 0.05f, 1));

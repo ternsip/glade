@@ -1,7 +1,9 @@
 package com.ternsip.glade.universe;
 
 import com.ternsip.glade.common.events.base.EventSnapReceiver;
+import com.ternsip.glade.common.logic.ThreadWrapper;
 import com.ternsip.glade.common.logic.TimeNormalizer;
+import com.ternsip.glade.common.logic.Updatable;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigyAxis;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigyDynamicText;
 import com.ternsip.glade.graphics.visual.impl.test.*;
@@ -14,6 +16,7 @@ import com.ternsip.glade.universe.collisions.base.Collisions;
 import com.ternsip.glade.universe.collisions.impl.ChunksObstacle;
 import com.ternsip.glade.universe.collisions.impl.GroundObstacle;
 import com.ternsip.glade.universe.common.Balance;
+import com.ternsip.glade.universe.common.Universal;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.impl.*;
 import com.ternsip.glade.universe.entities.repository.EntityRepository;
@@ -29,7 +32,7 @@ import java.io.File;
 
 @Getter
 @Setter
-public class Universe {
+public class Universe implements Updatable {
 
     private final EventSnapReceiver eventSnapReceiver = new EventSnapReceiver();
 
@@ -45,52 +48,63 @@ public class Universe {
     private final Collisions collisions = new Collisions();
 
     @Getter(lazy = true)
-    private final Blocks blocks = new Blocks();
+    private final ThreadWrapper<Blocks> blocksThread = new ThreadWrapper<>(new Blocks());
 
     @Getter(lazy = true)
     private final Bindings bindings = new Bindings();
 
     @Getter(lazy = true)
-    private final NetworkServer networkServer = new NetworkServer(6789);
+    private final ThreadWrapper<NetworkServer> serverThread = new ThreadWrapper<>(new NetworkServer());
 
     @Getter(lazy = true)
-    private final NetworkClient networkClient = new NetworkClient("localhost", 6789);
-    private final TimeNormalizer timeNormalizer = new TimeNormalizer(() -> 1000L / getBalance().getTicksPerSecond());
-    private boolean active = true;
+    private final ThreadWrapper<NetworkClient> clientThread = new ThreadWrapper<>(new NetworkClient());
 
-    public void run() {
-        runServer();
-        runClient();
+    private final TimeNormalizer timeNormalizer = new TimeNormalizer(1000L / getBalance().getTicksPerSecond());
+
+    @Override
+    public void init() {
+        getServer().bind(6789);
+        getClient().connect("localhost", 6789);
         spawnTestEntities();
-        loop();
-        finish();
+    }
+
+    @Override
+    public void update() {
+        if (!getEventSnapReceiver().isApplicationActive()) {
+            stop();
+        }
+        getTimeNormalizer().drop();
+        getEventSnapReceiver().update();
+        getEntityRepository().update();
+        getCollisions().update();
+        getTimeNormalizer().rest();
+    }
+
+    public Blocks getBlocks() {
+        return getBlocksThread().getObjective();
+    }
+
+    public NetworkClient getClient() {
+        return getClientThread().getObjective();
+    }
+
+    public NetworkServer getServer() {
+        return getServerThread().getObjective();
+    }
+
+    public void stop() {
+        Universal.UNIVERSE_THREAD.stop();
     }
 
     @SneakyThrows
-    private void loop() {
-        while (getEventSnapReceiver().isApplicationActive() && isActive()) {
-            getTimeNormalizer().drop();
-            getEventSnapReceiver().update();
-            getEntityRepository().update();
-            getCollisions().update();
-            getBlocks().update();
-            getTimeNormalizer().rest();
-        }
-    }
-
-    private void runClient() {
-        new Thread(() -> getNetworkClient().loop()).start();
-    }
-
-    private void runServer() {
-        new Thread(() -> getNetworkServer().loop()).start();
-    }
-
-    private void finish() {
-        getBlocks().finish();
+    @Override
+    public void finish() {
+        getBlocksThread().stop();
         getBindings().finish();
-        getNetworkClient().finish();
-        getNetworkServer().finish();
+        getClient().stop();
+        getClientThread().stop();
+        getServer().stop();
+        getServerThread().stop();
     }
 
     private void spawnTestEntities() {
@@ -174,9 +188,9 @@ public class Universe {
         new EntitySides().register();
 
         getBindings().addBindCallback(Bind.TOGGLE_MENU, entityUIMenu::toggle);
-        getBindings().addBindCallback(Bind.TEST_BUTTON, () -> getNetworkClient().send("HELLO MODERFOCKE"));
-        getNetworkClient().registerCallback(String.class, (conn, str) -> System.out.println("Received message from srv " + str));
-        getNetworkServer().registerCallback(String.class, (conn, str) -> System.out.println("Received message from client " + str));
+        getBindings().addBindCallback(Bind.TEST_BUTTON, () -> getClient().send("HELLO 123"));
+        getClient().registerCallback(String.class, (conn, str) -> System.out.println("Received message from srv " + str));
+        getServer().registerCallback(String.class, (conn, str) -> System.out.println("Received message from client " + str));
     }
 
 }

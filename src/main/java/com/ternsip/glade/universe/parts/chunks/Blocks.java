@@ -2,13 +2,14 @@ package com.ternsip.glade.universe.parts.chunks;
 
 import com.ternsip.glade.common.logic.Indexer;
 import com.ternsip.glade.common.logic.Timer;
+import com.ternsip.glade.common.logic.Updatable;
 import com.ternsip.glade.common.logic.Utils;
-import com.ternsip.glade.universe.common.Universal;
 import com.ternsip.glade.universe.parts.blocks.Block;
 import com.ternsip.glade.universe.parts.blocks.BlockSide;
 import com.ternsip.glade.universe.parts.generators.ChunkGenerator;
 import com.ternsip.glade.universe.storage.Storage;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import org.joml.Vector2i;
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 /**
  * This class and all folded data should be thread safe
  */
-public class Blocks implements Universal {
+public class Blocks implements Updatable {
 
     public static final int CHUNKS_X = 8;
     public static final int CHUNKS_Z = 8;
@@ -48,18 +49,7 @@ public class Blocks implements Universal {
     public Blocks() {
         this.storage = new Storage("blocks_meta");
         if (!storage.isExists()) {
-            for (ChunkGenerator chunkGenerator : CHUNK_GENERATORS) {
-                chunkGenerator.populate(this);
-            }
-            for (int x = 0; x < SIZE_X; x += UPDATE_SIZE) {
-                for (int z = 0; z < SIZE_Z; z += UPDATE_SIZE) {
-                    int sizeX = x + UPDATE_SIZE > SIZE_X ? SIZE_X - x : UPDATE_SIZE;
-                    int sizeZ = z + UPDATE_SIZE > SIZE_Z ? SIZE_Z - z : UPDATE_SIZE;
-                    recalculateBlockRegion(new Vector3i(x, 0, z), new Vector3i(sizeX, SIZE_Y, sizeZ));
-                    relaxChunks();
-                }
-            }
-            loadedChunks.forEach(this::saveChunk);
+            generateAll();
         } else {
             // TODO use networking, do this for observing area
             for (int x = 0; x < CHUNKS_X; x++) {
@@ -175,11 +165,18 @@ public class Blocks implements Universal {
         return INDEXER.isInside(pos);
     }
 
+    @Override
     public void finish() {
         loadedChunks.forEach(this::saveChunk);
         storage.finish();
     }
 
+    @Override
+    public void init() {
+    }
+
+    @Override
+    @SneakyThrows
     public void update() {
         if (lightUpdateTimer.isOver()) {
             ArrayList<LightUpdateRequest> updateRequests = new ArrayList<>();
@@ -211,7 +208,24 @@ public class Blocks implements Universal {
                 recalculateBlockRegion(aMin, new Vector3i(aMax).sub(aMin));
             }
             lightUpdateTimer.drop();
+        } else {
+            Thread.sleep(lightUpdateTimer.demand());
         }
+    }
+
+    private void generateAll() {
+        for (ChunkGenerator chunkGenerator : CHUNK_GENERATORS) {
+            chunkGenerator.populate(this);
+        }
+        for (int x = 0; x < SIZE_X; x += UPDATE_SIZE) {
+            for (int z = 0; z < SIZE_Z; z += UPDATE_SIZE) {
+                int sizeX = x + UPDATE_SIZE > SIZE_X ? SIZE_X - x : UPDATE_SIZE;
+                int sizeZ = z + UPDATE_SIZE > SIZE_Z ? SIZE_Z - z : UPDATE_SIZE;
+                recalculateBlockRegion(new Vector3i(x, 0, z), new Vector3i(sizeX, SIZE_Y, sizeZ));
+                relaxChunks();
+            }
+        }
+        loadedChunks.forEach(this::saveChunk);
     }
 
     private Chunk getChunk(int x, int z) {

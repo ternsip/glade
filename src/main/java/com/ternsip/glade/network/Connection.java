@@ -18,11 +18,21 @@ public class Connection {
     private final InputStream input;
     private final OutputStream output;
 
+    public Connection() {
+        socket = null;
+        input = null;
+        output = null;
+    }
+
     @SneakyThrows
     public Connection(Socket socket) {
         this.socket = socket;
         this.input = socket.getInputStream();
         this.output = socket.getOutputStream();
+    }
+
+    public boolean isActive() {
+        return getSocket() != null && !getSocket().isClosed();
     }
 
     @SneakyThrows

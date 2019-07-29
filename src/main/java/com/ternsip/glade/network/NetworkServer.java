@@ -1,7 +1,8 @@
 package com.ternsip.glade.network;
 
+import com.ternsip.glade.common.logic.ThreadWrapper;
 import com.ternsip.glade.common.logic.TimeNormalizer;
-import com.ternsip.glade.universe.common.Universal;
+import com.ternsip.glade.common.logic.Updatable;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -13,70 +14,92 @@ import java.util.ArrayList;
 @Slf4j
 @Getter
 @Setter
-public class NetworkServer extends NetworkHandler implements Universal {
+public class NetworkServer extends NetworkHandler implements Updatable {
 
-    private final ServerSocket serverSocket;
+    private final long RETRY_INTERVAL = 500L;
+
     private final ArrayList<Connection> connections = new ArrayList<>();
-    private final TimeNormalizer timeNormalizer = new TimeNormalizer(() -> 1000L / getUniverse().getBalance().getTicksPerSecond());
+    private final TimeNormalizer timeNormalizer = new TimeNormalizer(1000L / 128);
+
+    private ThreadWrapper<Acceptor> acceptorThread;
+    private ServerConnection serverConnection = new ServerConnection();
 
     @SneakyThrows
-    public NetworkServer(int port) {
-        this.serverSocket = new ServerSocket(port);
+    public void bind(int port) {
+        setServerConnection(new ServerConnection(new ServerSocket(port)));
     }
 
-    public void loop() {
-        new Thread(this::processConnections).start();
-        while (!getServerSocket().isClosed()) {
-            acceptNewConnection();
-        }
+    @Override
+    public void init() {
+        acceptorThread = new ThreadWrapper<>(new Acceptor());
     }
 
-    @SneakyThrows
-    public void processConnections() {
-        while (!getServerSocket().isClosed()) {
+    @Override
+    public void update() {
+        if (getServerConnection().isActive()) {
             getTimeNormalizer().drop();
-            handleInputMessages();
+            getConnections().forEach(connection -> {
+                try {
+                    if (connection.getInput().available() > 0) {
+                        handleObject(connection, connection.readObject());
+                    }
+                } catch (Exception e) {
+                    if (connection.isActive()) {
+                        String errMsg = String.format("Error while accepting data from server %s", e.getMessage());
+                        log.error(errMsg);
+                        log.debug(errMsg, e);
+                    }
+                }
+            });
             getTimeNormalizer().rest();
+        } else {
+            snooze();
         }
     }
 
-    @SneakyThrows
-    public void finish() {
+    public void stop() {
+        getAcceptorThread().stop();
         getConnections().forEach(Connection::close);
-        getServerSocket().close();
+        getServerConnection().close();
     }
+
+    @Override
+    public void finish() {}
 
     public void sendAll(Object obj) {
         getConnections().forEach(connection -> connection.writeObject(obj));
     }
 
-    private void handleInputMessages() {
-        getConnections().forEach(connection -> {
-            try {
-                if (connection.getInput().available() > 0) {
-                    handleObject(connection, connection.readObject());
-                }
-            } catch (Exception e) {
-                if (!connection.getSocket().isClosed()) {
-                    String errMsg = String.format("Error while accepting data from server %s", e.getMessage());
-                    log.error(errMsg);
-                    log.debug(errMsg, e);
-                }
-            }
-        });
+    @SneakyThrows
+    private void snooze() {
+        Thread.sleep(RETRY_INTERVAL);
     }
 
-    private void acceptNewConnection() {
-        try {
-            Connection connection = new Connection(getServerSocket().accept());
-            getConnections().add(connection);
-        } catch (Exception e) {
-            if (!getServerSocket().isClosed()) {
-                String errMsg = String.format("Error while accepting new connection to server %s", e.getMessage());
-                log.error(errMsg);
-                log.debug(errMsg, e);
+    public class Acceptor implements Updatable {
+
+        @Override
+        public void init() {}
+
+        @Override
+        public void update() {
+            if (getServerConnection().isActive()) {
+                try {
+                    getConnections().add(getServerConnection().accept());
+                } catch (Exception e) {
+                    if (getServerConnection().isActive()) {
+                        String errMsg = String.format("Error while accepting new connection to server %s", e.getMessage());
+                        log.error(errMsg);
+                        log.debug(errMsg, e);
+                    }
+                }
+            } else {
+                snooze();
             }
         }
+
+        @Override
+        public void finish() {}
+
     }
 
 }
