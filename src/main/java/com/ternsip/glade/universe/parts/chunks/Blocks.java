@@ -1,8 +1,8 @@
 package com.ternsip.glade.universe.parts.chunks;
 
 import com.ternsip.glade.common.logic.Indexer;
-import com.ternsip.glade.common.logic.Timer;
 import com.ternsip.glade.common.logic.Threadable;
+import com.ternsip.glade.common.logic.Timer;
 import com.ternsip.glade.common.logic.Utils;
 import com.ternsip.glade.universe.parts.blocks.Block;
 import com.ternsip.glade.universe.parts.blocks.BlockSide;
@@ -15,6 +15,7 @@ import org.joml.Vector3i;
 import org.joml.Vector3ic;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.stream.Collectors;
 
@@ -40,7 +41,7 @@ public class Blocks implements Threadable {
     private final Timer lightUpdateTimer = new Timer(200);
     private final Timer relaxationTimer = new Timer(200);
     private final Chunk[][] chunks = new Chunk[CHUNKS_X][CHUNKS_Z];
-    private final Set<Chunk> loadedChunks = new HashSet<>();
+    private final Set<Chunk> loadedChunks = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private final Deque<LightUpdateRequest> lightUpdateRequests = new ConcurrentLinkedDeque<>();
 
     @Getter
@@ -98,6 +99,10 @@ public class Blocks implements Threadable {
 
     public byte getEmitLight(Vector3ic pos) {
         return getEmitLight(pos.x(), pos.y(), pos.z());
+    }
+
+    public boolean isBlockExists(Vector3ic pos) {
+        return INDEXER.isInside(pos);
     }
 
     public void setBlock(int x, int y, int z, Block block) {
@@ -161,10 +166,6 @@ public class Blocks implements Threadable {
         chunk.modified = true;
     }
 
-    public boolean isBlockExists(Vector3ic pos) {
-        return INDEXER.isInside(pos);
-    }
-
     @Override
     public void finish() {
         loadedChunks.forEach(this::saveChunk);
@@ -179,41 +180,45 @@ public class Blocks implements Threadable {
     @SneakyThrows
     public void update() {
         if (lightUpdateTimer.isOver()) {
-            ArrayList<LightUpdateRequest> updateRequests = new ArrayList<>();
-            while (!lightUpdateRequests.isEmpty()) {
-                updateRequests.add(lightUpdateRequests.poll());
-            }
-            boolean[] used = new boolean[updateRequests.size()];
-            for (int i = 0; i < updateRequests.size(); ++i) {
-                if (used[i]) {
-                    continue;
-                }
-                Vector3i aMin = new Vector3i(updateRequests.get(i).getStart());
-                Vector3i aMax = new Vector3i(updateRequests.get(i).getEndExcluding());
-                for (int j = i + 1; j < updateRequests.size(); ++j) {
-                    if (!used[j]) {
-                        Vector3ic bMin = updateRequests.get(j).getStart();
-                        Vector3ic bMax = updateRequests.get(j).getEndExcluding();
-                        boolean isOverlapping =
-                                (aMin.x() < bMax.x() + LIGHT_UPDATE_COMBINE_DISTANCE && aMax.x() + LIGHT_UPDATE_COMBINE_DISTANCE > bMin.x()) &&
-                                        (aMin.y() < bMax.y() + LIGHT_UPDATE_COMBINE_DISTANCE && aMax.y() + LIGHT_UPDATE_COMBINE_DISTANCE > bMin.y()) &&
-                                        (aMin.z() < bMax.z() + LIGHT_UPDATE_COMBINE_DISTANCE && aMax.z() + LIGHT_UPDATE_COMBINE_DISTANCE > bMin.z());
-                        if (isOverlapping) {
-                            used[j] = true;
-                            aMin.min(bMin);
-                            aMax.max(bMax);
-                        }
-                    }
-                }
-                recalculateBlockRegion(aMin, new Vector3i(aMax).sub(aMin));
-            }
+            processLightRequests();
             lightUpdateTimer.drop();
         } else {
             Thread.sleep(lightUpdateTimer.demand());
         }
     }
 
-    private void generateAll() {
+    private void processLightRequests() {
+        ArrayList<LightUpdateRequest> updateRequests = new ArrayList<>();
+        while (!lightUpdateRequests.isEmpty()) {
+            updateRequests.add(lightUpdateRequests.poll());
+        }
+        boolean[] used = new boolean[updateRequests.size()];
+        for (int i = 0; i < updateRequests.size(); ++i) {
+            if (used[i]) {
+                continue;
+            }
+            Vector3i aMin = new Vector3i(updateRequests.get(i).getStart());
+            Vector3i aMax = new Vector3i(updateRequests.get(i).getEndExcluding());
+            for (int j = i + 1; j < updateRequests.size(); ++j) {
+                if (!used[j]) {
+                    Vector3ic bMin = updateRequests.get(j).getStart();
+                    Vector3ic bMax = updateRequests.get(j).getEndExcluding();
+                    boolean isOverlapping =
+                            (aMin.x() < bMax.x() + LIGHT_UPDATE_COMBINE_DISTANCE && aMax.x() + LIGHT_UPDATE_COMBINE_DISTANCE > bMin.x()) &&
+                                    (aMin.y() < bMax.y() + LIGHT_UPDATE_COMBINE_DISTANCE && aMax.y() + LIGHT_UPDATE_COMBINE_DISTANCE > bMin.y()) &&
+                                    (aMin.z() < bMax.z() + LIGHT_UPDATE_COMBINE_DISTANCE && aMax.z() + LIGHT_UPDATE_COMBINE_DISTANCE > bMin.z());
+                    if (isOverlapping) {
+                        used[j] = true;
+                        aMin.min(bMin);
+                        aMax.max(bMax);
+                    }
+                }
+            }
+            recalculateBlockRegion(aMin, new Vector3i(aMax).sub(aMin));
+        }
+    }
+
+    private synchronized void generateAll() {
         for (ChunkGenerator chunkGenerator : CHUNK_GENERATORS) {
             chunkGenerator.populate(this);
         }
@@ -228,7 +233,7 @@ public class Blocks implements Threadable {
         loadedChunks.forEach(this::saveChunk);
     }
 
-    private Chunk getChunk(int x, int z) {
+    private synchronized Chunk getChunk(int x, int z) {
         if (chunks[x][z] == null) {
             Vector2i pos = new Vector2i(x, z);
             chunks[x][z] = storage.isExists(pos) ? storage.load(pos) : new Chunk(x, z);
@@ -238,7 +243,7 @@ public class Blocks implements Threadable {
         return chunks[x][z];
     }
 
-    private void relaxChunks() {
+    private synchronized void relaxChunks() {
         if (relaxationTimer.isOver()) {
             loadedChunks.removeIf(chunk -> {
                 if (chunk.timer.isOver()) {
@@ -252,7 +257,7 @@ public class Blocks implements Threadable {
         }
     }
 
-    private void saveChunk(Chunk chunk) {
+    private synchronized void saveChunk(Chunk chunk) {
         if (chunk.modified) {
             storage.save(new Vector2i(chunk.xPos, chunk.zPos), chunk);
             chunk.modified = false;
