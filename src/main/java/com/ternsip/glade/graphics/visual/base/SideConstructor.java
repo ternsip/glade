@@ -187,38 +187,38 @@ public class SideConstructor implements Graphical {
 
         float[] vertices = new float[VERTEX_SIDE_SIZE];
         sideIndexDataSrc.getVertices().position(sideIndexDataSrc.getVertexPos());
-        sideIndexDataDst.getVertices().position(sideIndexDataDst.getVertexPos());
         sideIndexDataSrc.getVertices().get(vertices);
+        sideIndexDataDst.getVertices().position(sideIndexDataDst.getVertexPos());
         sideIndexDataDst.getVertices().put(vertices);
 
         float[] skyLights = new float[SKY_LIGHT_SIDE_SIZE];
         sideIndexDataSrc.getSkyLights().position(sideIndexDataSrc.getSkyLightPos());
-        sideIndexDataDst.getSkyLights().position(sideIndexDataDst.getSkyLightPos());
         sideIndexDataSrc.getSkyLights().get(skyLights);
+        sideIndexDataDst.getSkyLights().position(sideIndexDataDst.getSkyLightPos());
         sideIndexDataDst.getSkyLights().put(skyLights);
 
         float[] emitLights = new float[EMIT_LIGHT_SIDE_SIZE];
         sideIndexDataSrc.getEmitLights().position(sideIndexDataSrc.getEmitLightPos());
-        sideIndexDataDst.getEmitLights().position(sideIndexDataDst.getEmitLightPos());
         sideIndexDataSrc.getEmitLights().get(emitLights);
+        sideIndexDataDst.getEmitLights().position(sideIndexDataDst.getEmitLightPos());
         sideIndexDataDst.getEmitLights().put(emitLights);
 
         float[] blockTypes = new float[BLOCK_TYPE_SIDE_SIZE];
         sideIndexDataSrc.getBlockTypes().position(sideIndexDataSrc.getBlockTypePos());
-        sideIndexDataDst.getBlockTypes().position(sideIndexDataDst.getBlockTypePos());
         sideIndexDataSrc.getBlockTypes().get(blockTypes);
+        sideIndexDataDst.getBlockTypes().position(sideIndexDataDst.getBlockTypePos());
         sideIndexDataDst.getBlockTypes().put(blockTypes);
 
         float[] normals = new float[NORMAL_SIDE_SIZE];
         sideIndexDataSrc.getNormals().position(sideIndexDataSrc.getNormalPos());
-        sideIndexDataDst.getNormals().position(sideIndexDataDst.getNormalPos());
         sideIndexDataSrc.getNormals().get(normals);
+        sideIndexDataDst.getNormals().position(sideIndexDataDst.getNormalPos());
         sideIndexDataDst.getNormals().put(normals);
 
         float[] textures = new float[TEXTURE_SIDE_SIZE];
         sideIndexDataSrc.getTextures().position(sideIndexDataSrc.getTexturePos());
-        sideIndexDataDst.getTextures().position(sideIndexDataDst.getTexturePos());
         sideIndexDataSrc.getTextures().get(textures);
+        sideIndexDataDst.getTextures().position(sideIndexDataDst.getTexturePos());
         sideIndexDataDst.getTextures().put(textures);
 
     }
