@@ -7,7 +7,7 @@ import org.joml.Vector3ic;
 
 @RequiredArgsConstructor
 @Getter
-public class LightUpdateRequest {
+public class VisualUpdateRequest {
 
     private final Vector3ic start;
     private final Vector3ic size;

@@ -40,7 +40,8 @@ public class Blocks implements Threadable {
     private final Timer relaxationTimer = new Timer(200);
     private final Chunk[][] chunks = new Chunk[CHUNKS_X][CHUNKS_Z];
     private final Set<Chunk> loadedChunks = Collections.newSetFromMap(new ConcurrentHashMap<>());
-    private final Deque<LightUpdateRequest> lightUpdateRequests = new ConcurrentLinkedDeque<>();
+    private final Deque<VisualUpdateRequest> lightUpdateRequests = new ConcurrentLinkedDeque<>();
+    private final Deque<VisualUpdateRequest> visualUpdateRequests = new ConcurrentLinkedDeque<>();
 
     @Getter
     private final Deque<BlocksUpdate> blocksUpdates = new ConcurrentLinkedDeque<>();
@@ -223,6 +224,7 @@ public class Blocks implements Threadable {
     @Override
     @SneakyThrows
     public void update() {
+        processVisualRequests();
         if (lightUpdateTimer.isOver()) {
             processLightRequests();
             lightUpdateTimer.drop();
@@ -231,8 +233,15 @@ public class Blocks implements Threadable {
         }
     }
 
+    private void processVisualRequests() {
+        while (!visualUpdateRequests.isEmpty()) {
+            VisualUpdateRequest visualUpdate = visualUpdateRequests.poll();
+            visualUpdate(visualUpdate.getStart(), visualUpdate.getSize());
+        }
+    }
+
     private void processLightRequests() {
-        ArrayList<LightUpdateRequest> updateRequests = new ArrayList<>();
+        ArrayList<VisualUpdateRequest> updateRequests = new ArrayList<>();
         while (!lightUpdateRequests.isEmpty()) {
             updateRequests.add(lightUpdateRequests.poll());
         }
@@ -421,8 +430,8 @@ public class Blocks implements Threadable {
     }
 
     private void updateRegionProcrastinating(Vector3ic start, Vector3ic size) {
-        visualUpdate(start, size);
-        lightUpdateRequests.add(new LightUpdateRequest(start, size));
+        visualUpdateRequests.add(new VisualUpdateRequest(start, size));
+        lightUpdateRequests.add(new VisualUpdateRequest(start, size));
     }
 
     /**

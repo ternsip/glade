@@ -4,14 +4,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @NoArgsConstructor
 @Getter
 public class BlocksUpdate {
 
-    private final List<SidePosition> sidesToRemove = new ArrayList<>();
-    private final List<Side> sidesToAdd = new ArrayList<>();
+    private final List<SidePosition> sidesToRemove = Collections.synchronizedList(new ArrayList<>());
+    private final List<Side> sidesToAdd = Collections.synchronizedList(new ArrayList<>());
 
     public BlocksUpdate(Sides sides, boolean additive) {
         if (additive) {
