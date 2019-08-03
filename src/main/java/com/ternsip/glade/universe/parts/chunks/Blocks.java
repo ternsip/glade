@@ -22,8 +22,8 @@ import java.util.stream.Collectors;
  */
 public class Blocks implements Threadable {
 
-    public static final int CHUNKS_X = 8;
-    public static final int CHUNKS_Z = 8;
+    public static final int CHUNKS_X = 32;
+    public static final int CHUNKS_Z = 32;
     public static final byte MAX_LIGHT_LEVEL = 15;
     public static final int SIZE_X = CHUNKS_X * Chunk.SIZE_X;
     public static final int SIZE_Y = 256;
@@ -258,7 +258,7 @@ public class Blocks implements Threadable {
                     }
                 }
             }
-            recalculateBlockRegion(aMin, new Vector3i(aMax).sub(aMin));
+            recalculateBlockRegion(aMin, new Vector3i(aMax).sub(aMin), true);
         }
     }
 
@@ -270,7 +270,7 @@ public class Blocks implements Threadable {
             for (int z = 0; z < SIZE_Z; z += UPDATE_SIZE) {
                 int sizeX = x + UPDATE_SIZE > SIZE_X ? SIZE_X - x : UPDATE_SIZE;
                 int sizeZ = z + UPDATE_SIZE > SIZE_Z ? SIZE_Z - z : UPDATE_SIZE;
-                recalculateBlockRegion(new Vector3i(x, 0, z), new Vector3i(sizeX, SIZE_Y, sizeZ));
+                recalculateBlockRegion(new Vector3i(x, 0, z), new Vector3i(sizeX, SIZE_Y, sizeZ), false);
                 relaxChunks();
             }
         }
@@ -308,7 +308,7 @@ public class Blocks implements Threadable {
         }
     }
 
-    private void recalculateBlockRegion(Vector3ic start, Vector3ic size) {
+    private void recalculateBlockRegion(Vector3ic start, Vector3ic size, boolean updateVisually) {
 
         Utils.assertThat(size.x() > 0 || size.y() > 0 || size.z() > 0);
 
@@ -413,7 +413,9 @@ public class Blocks implements Threadable {
             }
         }
 
-        visualUpdate(startLight, lightSize);
+        if (updateVisually) {
+            visualUpdate(startLight, lightSize);
+        }
     }
 
     private void updateRegionProcrastinating(Vector3ic pos) {
@@ -425,6 +427,9 @@ public class Blocks implements Threadable {
         lightUpdateRequests.add(new LightUpdateRequest(start, size));
     }
 
+    /**
+     * In this function we are recalculating added/removed sides based on blocks state and putting them to the queue
+     */
     private void visualUpdate(Vector3ic start, Vector3ic size) {
 
         // Add border blocks to engage neighbour side-recalculation
