@@ -44,6 +44,10 @@ public class Maths {
         );
     }
 
+    public static int bound(int min, int max, int value) {
+        return Math.min(max, Math.max(min, value));
+    }
+
     public static boolean isFloatsEqual(float x, float y) {
         return Math.abs(x - y) < EPS;
     }

@@ -2,13 +2,14 @@ package com.ternsip.glade.universe;
 
 import com.ternsip.glade.common.events.base.EventSnapReceiver;
 import com.ternsip.glade.common.logic.ThreadWrapper;
-import com.ternsip.glade.common.logic.TimeNormalizer;
 import com.ternsip.glade.common.logic.Threadable;
+import com.ternsip.glade.common.logic.TimeNormalizer;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigyAxis;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigyDynamicText;
 import com.ternsip.glade.graphics.visual.impl.test.*;
 import com.ternsip.glade.network.NetworkClient;
 import com.ternsip.glade.network.NetworkServer;
+import com.ternsip.glade.network.requests.BlocksObserverChanged;
 import com.ternsip.glade.universe.audio.SoundRepository;
 import com.ternsip.glade.universe.bindings.Bind;
 import com.ternsip.glade.universe.bindings.Bindings;
@@ -191,6 +192,8 @@ public class Universe implements Threadable {
         getBindings().addBindCallback(Bind.TEST_BUTTON, () -> getClient().send("HELLO 123"));
         getClient().registerCallback(String.class, (conn, str) -> System.out.println("Received message from srv " + str));
         getServer().registerCallback(String.class, (conn, str) -> System.out.println("Received message from client " + str));
+        getServer().registerCallback(BlocksObserverChanged.class, (conn, boc) -> getBlocks().requestBlockUpdates(boc.getPrevPos(), boc.getNextPos(), 16, true));
+        getClient().send(new BlocksObserverChanged(entityPlayer.getPosition(), entityPlayer.getPosition()));
     }
 
 }

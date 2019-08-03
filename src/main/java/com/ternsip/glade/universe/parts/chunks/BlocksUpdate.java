@@ -13,10 +13,16 @@ public class BlocksUpdate {
     private final List<SidePosition> sidesToRemove = new ArrayList<>();
     private final List<Side> sidesToAdd = new ArrayList<>();
 
-    public BlocksUpdate(Sides sides) {
-        sides.getSides().forEach((pos, data) -> {
-            add(new Side(pos, data));
-        });
+    public BlocksUpdate(Sides sides, boolean additive) {
+        if (additive) {
+            sides.getSides().forEach((pos, data) -> {
+                add(new Side(pos, data));
+            });
+        } else {
+            sides.getSides().forEach((pos, data) -> {
+                remove(pos);
+            });
+        }
     }
 
     public boolean isEmpty() {

@@ -1,9 +1,7 @@
 package com.ternsip.glade.universe.parts.chunks;
 
-import com.ternsip.glade.common.logic.Indexer;
-import com.ternsip.glade.common.logic.Threadable;
+import com.ternsip.glade.common.logic.*;
 import com.ternsip.glade.common.logic.Timer;
-import com.ternsip.glade.common.logic.Utils;
 import com.ternsip.glade.universe.parts.blocks.Block;
 import com.ternsip.glade.universe.parts.blocks.BlockSide;
 import com.ternsip.glade.universe.parts.generators.ChunkGenerator;
@@ -11,6 +9,7 @@ import com.ternsip.glade.universe.storage.Storage;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.joml.Vector2i;
+import org.joml.Vector3fc;
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
 
@@ -51,13 +50,6 @@ public class Blocks implements Threadable {
         this.storage = new Storage("blocks_meta");
         if (!storage.isExists()) {
             generateAll();
-        } else {
-            // TODO use networking, do this for observing area
-            for (int x = 0; x < CHUNKS_X; x++) {
-                for (int z = 0; z < CHUNKS_Z; z++) {
-                    blocksUpdates.add(new BlocksUpdate(getChunk(x, z).sides));
-                }
-            }
         }
     }
 
@@ -66,6 +58,72 @@ public class Blocks implements Threadable {
                 .map(Utils::createInstanceSilently)
                 .sorted(Comparator.comparing(ChunkGenerator::getPriority))
                 .collect(Collectors.toList());
+    }
+
+    public void requestBlockUpdates(
+            Vector3fc prevPos,
+            Vector3fc nextPos,
+            int chunksRadius,
+            boolean inner
+    ) {
+
+        int length = chunksRadius - 1;
+
+        int middlePrevChunkX = (int) prevPos.x() / Chunk.SIZE_X;
+        int middlePrevChunkZ = (int) prevPos.z() / Chunk.SIZE_Z;
+        int startPrevChunkX = middlePrevChunkX - length;
+        int startPrevChunkZ = middlePrevChunkZ - length;
+        int endPrevChunkX = middlePrevChunkX + length;
+        int endPrevChunkZ = middlePrevChunkZ + length;
+
+        int middleNextChunkX = (int) nextPos.x() / Chunk.SIZE_X;
+        int middleNextChunkZ = (int) nextPos.z() / Chunk.SIZE_Z;
+        int startNextChunkX = middleNextChunkX - length;
+        int startNextChunkZ = middleNextChunkZ - length;
+        int endNextChunkX = middleNextChunkX + length;
+        int endNextChunkZ = middleNextChunkZ + length;
+
+        if (inner) {
+            requestBlockUpdates(
+                    Math.max(startPrevChunkX, startNextChunkX),
+                    Math.max(startPrevChunkZ, startNextChunkZ),
+                    Math.min(endPrevChunkX, endNextChunkX),
+                    Math.min(endPrevChunkZ, endNextChunkZ),
+                    true
+            );
+            return;
+        }
+
+        boolean nextXAfter = startNextChunkX > startPrevChunkX;
+        boolean nextZAfter = startNextChunkZ > startPrevChunkZ;
+        if ((nextXAfter && nextZAfter) || (!nextXAfter && !nextZAfter)) {
+            requestBlockUpdates(endPrevChunkX + 1, endPrevChunkZ + 1, endNextChunkX, endNextChunkZ, nextXAfter);
+            requestBlockUpdates(startNextChunkX, endPrevChunkZ + 1, endPrevChunkX, endNextChunkZ, nextXAfter);
+            requestBlockUpdates(endPrevChunkX + 1, startNextChunkZ, endPrevChunkX, endPrevChunkZ, nextXAfter);
+            requestBlockUpdates(startPrevChunkX, startPrevChunkZ, startNextChunkX - 1, startNextChunkZ - 1, !nextXAfter);
+            requestBlockUpdates(startPrevChunkX, startNextChunkZ, startNextChunkX - 1, endPrevChunkZ, !nextXAfter);
+            requestBlockUpdates(startNextChunkX, startPrevChunkZ, endPrevChunkX, startNextChunkZ - 1, !nextXAfter);
+        } else {
+            requestBlockUpdates(endPrevChunkX + 1, startNextChunkZ + 1, endNextChunkX, startPrevChunkZ, nextXAfter);
+            requestBlockUpdates(startNextChunkX, startNextChunkZ, endPrevChunkX, startPrevChunkZ - 1, nextXAfter);
+            requestBlockUpdates(endPrevChunkX + 1, startPrevChunkZ, endNextChunkX, endNextChunkZ, nextXAfter);
+            requestBlockUpdates(startPrevChunkX, endNextChunkZ + 1, startNextChunkX - 1, endPrevChunkZ, !nextXAfter);
+            requestBlockUpdates(startPrevChunkX, startPrevChunkZ, startNextChunkX - 1, endNextChunkZ, !nextXAfter);
+            requestBlockUpdates(startNextChunkX, endNextChunkZ + 1, endPrevChunkX, endPrevChunkZ, !nextXAfter);
+        }
+
+    }
+
+    private void requestBlockUpdates(int startChunkX, int startChunkZ, int endChunkX, int endChunkZ, boolean additive) {
+        int scx = Maths.bound(0, CHUNKS_X - 1, startChunkX);
+        int scz = Maths.bound(0, CHUNKS_Z - 1, startChunkZ);
+        int ecx = Maths.bound(0, CHUNKS_X - 1, endChunkX);
+        int ecz = Maths.bound(0, CHUNKS_Z - 1, endChunkZ);
+        for (int cx = scx; cx <= ecx; ++cx) {
+            for (int cz = scz; cz <= ecz; ++cz) {
+                blocksUpdates.add(new BlocksUpdate(getChunk(cx, cz).sides, additive));
+            }
+        }
     }
 
     public void setBlock(Vector3ic pos, Block block) {
