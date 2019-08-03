@@ -12,5 +12,7 @@ public class BlocksObserverChanged implements Serializable {
 
     private final Vector3ic prevPos;
     private final Vector3ic nextPos;
+    private final int prevViewDistance;
+    private final int nextViewDistance;
 
 }

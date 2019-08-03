@@ -62,24 +62,26 @@ public class Blocks implements Threadable {
     public void requestBlockUpdates(
             Vector3ic prevPos,
             Vector3ic nextPos,
-            int chunksRadius
+            int prevViewDistance,
+            int nextViewDistance
     ) {
 
-        int length = chunksRadius - 1;
+        int prevLength = prevViewDistance - 1;
+        int nextLength = nextViewDistance - 1;
 
         int middlePrevChunkX = prevPos.x() / Chunk.SIZE_X;
         int middlePrevChunkZ = prevPos.z() / Chunk.SIZE_Z;
-        int startPrevChunkX = middlePrevChunkX - length;
-        int startPrevChunkZ = middlePrevChunkZ - length;
-        int endPrevChunkX = middlePrevChunkX + length;
-        int endPrevChunkZ = middlePrevChunkZ + length;
+        int startPrevChunkX = middlePrevChunkX - prevLength;
+        int startPrevChunkZ = middlePrevChunkZ - prevLength;
+        int endPrevChunkX = middlePrevChunkX + prevLength;
+        int endPrevChunkZ = middlePrevChunkZ + prevLength;
 
         int middleNextChunkX = nextPos.x() / Chunk.SIZE_X;
         int middleNextChunkZ = nextPos.z() / Chunk.SIZE_Z;
-        int startNextChunkX = middleNextChunkX - length;
-        int startNextChunkZ = middleNextChunkZ - length;
-        int endNextChunkX = middleNextChunkX + length;
-        int endNextChunkZ = middleNextChunkZ + length;
+        int startNextChunkX = middleNextChunkX - nextLength;
+        int startNextChunkZ = middleNextChunkZ - nextLength;
+        int endNextChunkX = middleNextChunkX + nextLength;
+        int endNextChunkZ = middleNextChunkZ + nextLength;
 
         if (startNextChunkX == startPrevChunkX && startNextChunkZ == startPrevChunkZ) {
             return;

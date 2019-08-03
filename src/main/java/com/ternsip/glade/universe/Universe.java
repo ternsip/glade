@@ -186,7 +186,7 @@ public class Universe implements Threadable {
         getBindings().addBindCallback(Bind.TEST_BUTTON, () -> getClient().send("HELLO 123"));
         getClient().registerCallback(String.class, (conn, str) -> System.out.println("Received message from srv " + str));
         getServer().registerCallback(String.class, (conn, str) -> System.out.println("Received message from client " + str));
-        getServer().registerCallback(BlocksObserverChanged.class, (conn, boc) -> getBlocks().requestBlockUpdates(boc.getPrevPos(), boc.getNextPos(), 4));
+        getServer().registerCallback(BlocksObserverChanged.class, (conn, boc) -> getBlocks().requestBlockUpdates(boc.getPrevPos(), boc.getNextPos(), boc.getPrevViewDistance(), boc.getNextViewDistance()));
 
         EntityPlayer entityPlayer = new EntityPlayer();
         entityPlayer.register();

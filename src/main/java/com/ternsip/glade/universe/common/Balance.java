@@ -11,6 +11,7 @@ import org.joml.Vector3fc;
 @Setter
 public class Balance {
 
+    private int viewDistance = 4; // TODO move it to Options class
     private int ticksPerSecond = 128;
     private Vector3fc gravity = new Vector3f(0, -0.005f, 0);
 

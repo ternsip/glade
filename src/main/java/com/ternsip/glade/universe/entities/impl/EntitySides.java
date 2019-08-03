@@ -6,17 +6,20 @@ import com.ternsip.glade.network.requests.BlocksObserverChanged;
 import com.ternsip.glade.universe.entities.base.Entity;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.joml.Vector3fc;
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
 
 @RequiredArgsConstructor
 @Getter
+@Setter
 public class EntitySides extends Entity<EffigySides> {
 
     private final Timer timer = new Timer(250);
 
     private final Vector3i observerPos = new Vector3i(-1000);
+    private int observerViewDistance = 0;
 
     @Override
     public void register() {
@@ -48,10 +51,12 @@ public class EntitySides extends Entity<EffigySides> {
 
     private void moveObserver() {
         Vector3ic newPos = getCameraPosition();
-        if (!getObserverPos().equals(newPos)) {
-            getUniverse().getClient().send(new BlocksObserverChanged(getObserverPos(), newPos));
+        int viewDistance = getUniverse().getBalance().getViewDistance();
+        if (!getObserverPos().equals(newPos) || getObserverViewDistance() != viewDistance) {
+            getUniverse().getClient().send(new BlocksObserverChanged(getObserverPos(), newPos, getObserverViewDistance(), viewDistance));
+            getObserverPos().set(newPos);
+            setObserverViewDistance(viewDistance);
         }
-        getObserverPos().set(newPos);
     }
 
     private Vector3ic getCameraPosition() {
