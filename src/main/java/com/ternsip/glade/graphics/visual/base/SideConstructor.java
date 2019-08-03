@@ -19,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.ternsip.glade.graphics.shader.base.ShaderProgram.INDICES;
 import static com.ternsip.glade.graphics.shader.base.ShaderProgram.VERTICES;
@@ -90,8 +89,7 @@ public class SideConstructor implements Graphical {
         }
 
         TexturePackRepository texturePackRepository = getGraphics().getTexturePackRepository();
-        List<SidePosition> sidesToRemove = changes.getSidesToRemove().stream().filter(sides::containsKey).collect(Collectors.toList());
-        Utils.assertThat(sidesToRemove.size() == changes.getSidesToRemove().size());
+        List<SidePosition> sidesToRemove = changes.getSidesToRemove();
         List<Side> sidesToAdd = changes.getSidesToAdd();
 
         Material material = new Material(texturePackRepository.getBlockAtlasTexture());
