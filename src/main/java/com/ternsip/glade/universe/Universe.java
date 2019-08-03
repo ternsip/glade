@@ -109,11 +109,6 @@ public class Universe implements Threadable {
     }
 
     private void spawnTestEntities() {
-        EntityPlayer entityPlayer = new EntityPlayer();
-        entityPlayer.register();
-        entityPlayer.setPosition(new Vector3f(50, 90, 50));
-        entityPlayer.setScale(new Vector3f(1, 1, 1));
-        getEntityRepository().setCameraTarget(entityPlayer);
         Entity aim = new EntitySprite(new File("tools/aim.png"), true, true);
         aim.setScale(new Vector3f(0.01f));
         aim.register();
@@ -186,14 +181,20 @@ public class Universe implements Threadable {
                 hagrid1.setScale(new Vector3f(15, 15, 15));
             }
         }
-        new EntitySides().register();
 
         getBindings().addBindCallback(Bind.TOGGLE_MENU, entityUIMenu::toggle);
         getBindings().addBindCallback(Bind.TEST_BUTTON, () -> getClient().send("HELLO 123"));
         getClient().registerCallback(String.class, (conn, str) -> System.out.println("Received message from srv " + str));
         getServer().registerCallback(String.class, (conn, str) -> System.out.println("Received message from client " + str));
-        getServer().registerCallback(BlocksObserverChanged.class, (conn, boc) -> getBlocks().requestBlockUpdates(boc.getPrevPos(), boc.getNextPos(), 16, true));
-        getClient().send(new BlocksObserverChanged(entityPlayer.getPosition(), entityPlayer.getPosition()));
+        getServer().registerCallback(BlocksObserverChanged.class, (conn, boc) -> getBlocks().requestBlockUpdates(boc.getPrevPos(), boc.getNextPos(), 4));
+
+        EntityPlayer entityPlayer = new EntityPlayer();
+        entityPlayer.register();
+        entityPlayer.setPosition(new Vector3f(50, 90, 50));
+        entityPlayer.setScale(new Vector3f(1, 1, 1));
+        getEntityRepository().setCameraTarget(entityPlayer);
+
+        new EntitySides().register();
     }
 
 }
