@@ -3,6 +3,7 @@ package com.ternsip.glade.common.logic;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.SneakyThrows;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -13,15 +14,22 @@ public class ThreadWrapper<T extends Threadable> {
 
     private final T objective;
     private final Task task;
+    private final Thread thread;
 
     public ThreadWrapper(T objective) {
         this.objective = objective;
         this.task = new Task(objective);
-        new Thread(task).start();
+        this.thread = new Thread(task);
+        this.thread.start();
     }
 
     public void stop() {
         getTask().setActive(false);
+    }
+
+    @SneakyThrows
+    public void join() {
+        getThread().join();
     }
 
     public boolean isActive() {

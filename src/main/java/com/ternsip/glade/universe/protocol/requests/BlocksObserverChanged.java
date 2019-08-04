@@ -1,4 +1,4 @@
-package com.ternsip.glade.network.requests;
+package com.ternsip.glade.universe.protocol.requests;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

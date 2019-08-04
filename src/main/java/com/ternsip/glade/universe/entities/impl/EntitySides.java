@@ -2,7 +2,7 @@ package com.ternsip.glade.universe.entities.impl;
 
 import com.ternsip.glade.common.logic.Timer;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigySides;
-import com.ternsip.glade.network.requests.BlocksObserverChanged;
+import com.ternsip.glade.universe.protocol.requests.BlocksObserverChanged;
 import com.ternsip.glade.universe.entities.base.Entity;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

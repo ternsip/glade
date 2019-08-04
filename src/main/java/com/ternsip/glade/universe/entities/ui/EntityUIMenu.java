@@ -42,11 +42,13 @@ public class EntityUIMenu extends EntityUI {
         this.connectButton.setScale(new Vector3f(0.1f, 0.05f, 1));
         this.connectButton.setPosition(new Vector3f(0, 0.25f, 0));
         this.connectButton.getOnPress().add(() -> new Sound(CLICK_SOUND).register());
+        this.connectButton.getOnClick().add(() -> getUniverse().startClient());
 
         this.hostButton = new EntityUITextButton(BUTTON_BACKGROUND, BROWSE_OVERLAY, PRESS_OVERLAY, FONT, TEXT_COLOR, "Host", true);
         this.hostButton.setScale(new Vector3f(0.1f, 0.05f, 1));
         this.hostButton.setPosition(new Vector3f(0, 0, 0));
         this.hostButton.getOnPress().add(() -> new Sound(CLICK_SOUND).register());
+        this.hostButton.getOnClick().add(() -> getUniverse().startServer());
 
         this.optionsButton = new EntityUITextButton(BUTTON_BACKGROUND, BROWSE_OVERLAY, PRESS_OVERLAY, FONT, TEXT_COLOR, "Options", true);
         this.optionsButton.setScale(new Vector3f(0.1f, 0.05f, 1));
