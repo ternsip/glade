@@ -105,6 +105,8 @@ public class SideConstructor implements Graphical {
                             .add(EMIT_LIGHT, Utils.arrayToBuffer(new float[SIDES_PER_MESH * EMIT_LIGHT_SIDE_SIZE]))
                             .add(NORMALS, Utils.arrayToBuffer(new float[SIDES_PER_MESH * NORMAL_SIDE_SIZE]))
                             .add(TEXTURES, Utils.arrayToBuffer(new float[SIDES_PER_MESH * TEXTURE_SIDE_SIZE]))
+                            .add(TEXTURES_START, Utils.arrayToBuffer(new float[SIDES_PER_MESH * TEXTURE_SIDE_SIZE]))
+                            .add(TEXTURES_END, Utils.arrayToBuffer(new float[SIDES_PER_MESH * TEXTURE_SIDE_SIZE]))
                             .add(BLOCK_TYPE, Utils.arrayToBuffer(new float[SIDES_PER_MESH * BLOCK_TYPE_SIDE_SIZE])),
                     material, true
             );
@@ -221,6 +223,18 @@ public class SideConstructor implements Graphical {
         sideIndexDataDst.getTextures().position(sideIndexDataDst.getTexturePos());
         sideIndexDataDst.getTextures().put(textures);
 
+        float[] texturesStart = new float[TEXTURE_SIDE_SIZE];
+        sideIndexDataSrc.getTexturesStart().position(sideIndexDataSrc.getTexturePos());
+        sideIndexDataSrc.getTexturesStart().get(texturesStart);
+        sideIndexDataDst.getTexturesStart().position(sideIndexDataDst.getTexturePos());
+        sideIndexDataDst.getTexturesStart().put(texturesStart);
+
+        float[] texturesEnd = new float[TEXTURE_SIDE_SIZE];
+        sideIndexDataSrc.getTexturesEnd().position(sideIndexDataSrc.getTexturePos());
+        sideIndexDataSrc.getTexturesEnd().get(texturesEnd);
+        sideIndexDataDst.getTexturesEnd().position(sideIndexDataDst.getTexturePos());
+        sideIndexDataDst.getTexturesEnd().put(texturesEnd);
+
     }
 
     private void fillSide(int sideIndex, Side side) {
@@ -257,6 +271,12 @@ public class SideConstructor implements Graphical {
             int tIdx = i * TEXTURES.getNumberPerVertex();
             sideIndexData.getTextures().put(tIdx + sideIndexData.getTexturePos(), cubeSideMeshData.getTextures()[tIdx] ? atlasFragment.getEndU() : atlasFragment.getStartU());
             sideIndexData.getTextures().put(tIdx + sideIndexData.getTexturePos() + 1, cubeSideMeshData.getTextures()[tIdx + 1] ? atlasFragment.getEndV() : atlasFragment.getStartV());
+
+            sideIndexData.getTexturesStart().put(tIdx + sideIndexData.getTexturePos(), atlasFragment.getStartU());
+            sideIndexData.getTexturesStart().put(tIdx + sideIndexData.getTexturePos() + 1, atlasFragment.getStartV());
+
+            sideIndexData.getTexturesEnd().put(tIdx + sideIndexData.getTexturePos(), atlasFragment.getEndU());
+            sideIndexData.getTexturesEnd().put(tIdx + sideIndexData.getTexturePos() + 1, atlasFragment.getEndV());
         }
 
     }
@@ -302,6 +322,8 @@ public class SideConstructor implements Graphical {
         FloatBuffer emitLights;
         FloatBuffer normals;
         FloatBuffer textures;
+        FloatBuffer texturesStart;
+        FloatBuffer texturesEnd;
         FloatBuffer blockTypes;
 
         public SideIndexData(int sideIndex, ArrayList<Mesh> meshes) {
@@ -327,6 +349,8 @@ public class SideConstructor implements Graphical {
             this.emitLights = meshAttributes.getBuffer(EMIT_LIGHT);
             this.normals = meshAttributes.getBuffer(NORMALS);
             this.textures = meshAttributes.getBuffer(TEXTURES);
+            this.texturesStart = meshAttributes.getBuffer(TEXTURES_START);
+            this.texturesEnd = meshAttributes.getBuffer(TEXTURES_END);
             this.blockTypes = meshAttributes.getBuffer(BLOCK_TYPE);
 
         }
