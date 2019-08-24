@@ -26,7 +26,6 @@ import static org.lwjgl.stb.STBImage.stbi_load_from_memory;
 /**
  * There are two types of atlases:
  * - GPU 3d array of textures
- * - Combined images in atlas directories, it all have special parent directory
  */
 @Slf4j
 public class TextureRepository {
@@ -35,11 +34,9 @@ public class TextureRepository {
     public final static File MISSING_TEXTURE = new File("tools/missing.jpg");
     public final static String[] EXTENSIONS = {"jpg", "png", "bmp", "jpeg"};
     public final static int[] ATLAS_RESOLUTIONS = new int[]{16, 32, 64, 128, 256, 512, 1024, 2048, 4096};
-    public final static String ATLASES_PARENT_FOLDER = "atlases";
 
     private final int[] atlases;
     private final Map<File, Texture> fileToTexture;
-    private final Map<File, AtlasDecoder> directoryToAtlasDecoder;
 
     public TextureRepository() {
 
@@ -47,9 +44,6 @@ public class TextureRepository {
                 .stream()
                 .map(Image::new)
                 .collect(Collectors.toCollection(ArrayList::new));
-
-        Map<File, ImageAtlas> atlasParentFolderToAtlasImage = generateAtlasMapping(images);
-        images.addAll(atlasParentFolderToAtlasImage.values());
 
         Set<Image> usedImages = new HashSet<>();
 
@@ -93,14 +87,6 @@ public class TextureRepository {
             glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
         }
 
-        directoryToAtlasDecoder = new HashMap<>();
-        fileToTexture.forEach((file, texture) -> {
-            if (atlasParentFolderToAtlasImage.containsKey(file)) {
-                ImageAtlas imageAtlas = atlasParentFolderToAtlasImage.get(file);
-                directoryToAtlasDecoder.put(file, new AtlasDecoder(file, texture, imageAtlas.getFileToAtlasFragment()));
-            }
-        });
-
         images.forEach(image -> {
             if (!usedImages.contains(image)) {
                 log.error(String.format("Image %s has not been loaded into atlas because it exceeds maximal size", image.getFile()));
@@ -118,11 +104,8 @@ public class TextureRepository {
         return fileToTexture.get(file);
     }
 
-    public AtlasDecoder getAtlasDecoder(File directory) {
-        if (!directoryToAtlasDecoder.containsKey(directory)) {
-            throw new IllegalArgumentException(String.format("Atlas %s has not been found", directory));
-        }
-        return directoryToAtlasDecoder.get(directory);
+    public boolean isTextureExists(File file) {
+        return fileToTexture.containsKey(file);
     }
 
     public void finish() {
@@ -130,22 +113,6 @@ public class TextureRepository {
         for (int atlasNumber = 0; atlasNumber < ATLAS_RESOLUTIONS.length; ++atlasNumber) {
             glDeleteTextures(atlases[atlasNumber]);
         }
-    }
-
-    private Map<File, ImageAtlas> generateAtlasMapping(Collection<Image> images) {
-        Map<File, Image> pathToImageForAtlas = images.stream()
-                .filter(e -> Utils.isSubDirectoryPresent(e.getFile(), ATLASES_PARENT_FOLDER))
-                .collect(Collectors.toMap(Image::getFile, e -> e, (a, b) -> a, HashMap::new));
-        Map<File, Collection<File>> atlasParentFolderToFiles = Utils.combineByParentDirectory(pathToImageForAtlas.keySet());
-        Map<File, Collection<Image>> atlasParentFolderToImages = atlasParentFolderToFiles.entrySet().stream()
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        e -> e.getValue().stream().map(pathToImageForAtlas::get).collect(Collectors.toList()),
-                        (a, b) -> a,
-                        HashMap::new
-                ));
-        return atlasParentFolderToImages.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, e -> ImageAtlas.buildImageAtlas(e.getValue(), e.getKey()), (a, b) -> a, HashMap::new));
     }
 
     private void bind() {
@@ -186,98 +153,12 @@ public class TextureRepository {
 
     }
 
-    @Getter
-    private static class ImageAtlas extends Image {
-
-        private final Map<File, AtlasFragment> fileToAtlasFragment;
-
-        private ImageAtlas(
-                File file,
-                int width,
-                int height,
-                byte[] data,
-                Map<File, AtlasFragment> fileToAtlasFragment
-        ) {
-            super(file, width, height, data);
-            this.fileToAtlasFragment = fileToAtlasFragment;
-        }
-
-        static ImageAtlas buildImageAtlas(Collection<Image> images, File file) {
-            Map<File, AtlasFragment> fileToAtlasFragment = new HashMap<>();
-            int maxWidth = 0;
-            int maxHeight = 0;
-            for (Image image : images) {
-                maxWidth = Math.max(maxWidth, image.getWidth());
-                maxHeight = Math.max(maxHeight, image.getHeight());
-            }
-            int rowImages = (int) Math.ceil(Math.sqrt(images.size()));
-            int columnImages = (int) Math.ceil(Math.sqrt(images.size()));
-            int finalWidth = maxWidth * rowImages;
-            int finalHeight = maxHeight * columnImages;
-            byte[] finalImageBytes = new byte[finalWidth * finalHeight * COMPONENT_RGBA];
-            int imageNumber = 0;
-            float fragmentWidthNormalized = 1f / rowImages;
-            float fragmentHeightNormalized = 1f / columnImages;
-            float texelHalfSizeW = 0.5f / maxWidth;
-            float texelHalfSizeH = 0.5f / maxHeight;
-            for (Image image : images) {
-                int imageRow = imageNumber % rowImages;
-                int imageColumn = imageNumber / rowImages;
-                byte[] imageBytes = image.getData();
-                for (int y = 0; y < image.getHeight(); ++y) {
-                    int offset = (finalWidth * (y + imageColumn * maxHeight) + imageRow * maxWidth) * COMPONENT_RGBA;
-                    int lineSize = image.getWidth() * COMPONENT_RGBA;
-                    System.arraycopy(imageBytes, lineSize * y, finalImageBytes, offset, lineSize);
-                }
-                float widthNormalized = (float) image.getWidth() / finalWidth;
-                float heightNormalized = (float) image.getHeight() / finalHeight;
-                AtlasFragment atlasFragment = new AtlasFragment(
-                        fragmentWidthNormalized * imageRow + texelHalfSizeW,
-                        fragmentHeightNormalized * imageColumn + texelHalfSizeH,
-                        fragmentWidthNormalized * imageRow + widthNormalized - texelHalfSizeW,
-                        fragmentHeightNormalized * imageColumn + heightNormalized - texelHalfSizeH
-                );
-                fileToAtlasFragment.put(image.getFile(), atlasFragment);
-                imageNumber++;
-            }
-            return new ImageAtlas(file, finalWidth, finalHeight, finalImageBytes, fileToAtlasFragment);
-        }
-
-    }
-
     @RequiredArgsConstructor
     @Getter
     public static class Texture {
-
         private final int atlasNumber;
         private final int layer;
         private final Vector2f maxUV;
-
-    }
-
-    @RequiredArgsConstructor
-    @Getter
-    public static class AtlasDecoder {
-
-        private final File atlasDirectory;
-        private final Texture texture;
-        private final Map<File, AtlasFragment> fileToAtlasFragment;
-
-        public boolean isTextureExists(File file) {
-            return getFileToAtlasFragment().containsKey(file);
-        }
-
-    }
-
-    @RequiredArgsConstructor
-    @Getter
-    public static class AtlasFragment {
-
-        private final float startU;
-        private final float startV;
-        private final float endU;
-        private final float endV;
-
     }
 
 }

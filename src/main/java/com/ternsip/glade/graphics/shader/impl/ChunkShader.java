@@ -14,16 +14,19 @@ import java.io.File;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ChunkShader extends ShaderProgram {
 
+    public static final int MAX_SAMPLERS = 16;
+
     public static final File VERTEX_SHADER = new File("shaders/chunk/ChunkVertexShader.glsl");
     public static final File FRAGMENT_SHADER = new File("shaders/chunk/ChunkFragmentShader.glsl");
 
     public static final AttributeData TEXTURES = new AttributeData(2, "textureCoordinates", 2, AttributeData.ArrayType.FLOAT);
-    public static final AttributeData TEXTURES_START = new AttributeData(3, "textureStart", 2, AttributeData.ArrayType.FLOAT);
-    public static final AttributeData TEXTURES_END = new AttributeData(4, "textureEnd", 2, AttributeData.ArrayType.FLOAT);
-    public static final AttributeData SKY_LIGHT = new AttributeData(5, "skyLight", 1, AttributeData.ArrayType.FLOAT);
-    public static final AttributeData EMIT_LIGHT = new AttributeData(6, "emitLight", 1, AttributeData.ArrayType.FLOAT);
-    public static final AttributeData NORMALS = new AttributeData(7, "normal", 3, AttributeData.ArrayType.FLOAT);
-    public static final AttributeData BLOCK_TYPE = new AttributeData(8, "blockType", 1, AttributeData.ArrayType.FLOAT);
+    public static final AttributeData ATLAS_NUMBER = new AttributeData(3, "atlasNumber", 1, AttributeData.ArrayType.FLOAT);
+    public static final AttributeData ATLAS_LAYER = new AttributeData(4, "atlasLayer", 1, AttributeData.ArrayType.FLOAT);
+    public static final AttributeData ATLAS_MAX_UV = new AttributeData(5, "atlasMaxUV", 2, AttributeData.ArrayType.FLOAT);
+    public static final AttributeData SKY_LIGHT = new AttributeData(6, "skyLight", 1, AttributeData.ArrayType.FLOAT);
+    public static final AttributeData EMIT_LIGHT = new AttributeData(7, "emitLight", 1, AttributeData.ArrayType.FLOAT);
+    public static final AttributeData NORMALS = new AttributeData(8, "normal", 3, AttributeData.ArrayType.FLOAT);
+    public static final AttributeData BLOCK_TYPE = new AttributeData(9, "blockType", 1, AttributeData.ArrayType.FLOAT);
 
     private final UniformMatrix4 projectionMatrix = new UniformMatrix4();
     private final UniformMatrix4 viewMatrix = new UniformMatrix4();
@@ -31,6 +34,6 @@ public final class ChunkShader extends ShaderProgram {
 
     private final UniformLight sun = new UniformLight();
     private final UniformFloat time = new UniformFloat();
-    private final UniformTextureAddress diffuseMap = new UniformTextureAddress();
+    private final UniformSamplers2DArray samplers = new UniformSamplers2DArray(MAX_SAMPLERS);
 
 }

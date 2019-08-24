@@ -16,15 +16,11 @@ public class TexturePackRepository implements Graphical {
 
     private final TextureCubeMap[] blocksTextures = new TextureCubeMap[Block.getSize()];
 
-    private TextureRepository.AtlasDecoder blocksAtlasDecoder;
-
     public TexturePackRepository() {
-        reloadBlocksTextureAltas(DEFAULT_BLOCK_ATLAS_DIRECTORY);
+        reloadBlocksTextureAtlas(DEFAULT_BLOCK_ATLAS_DIRECTORY);
     }
 
-    public void reloadBlocksTextureAltas(File atlasDirectory) {
-
-        blocksAtlasDecoder = getGraphics().getTextureRepository().getAtlasDecoder(atlasDirectory);
+    public void reloadBlocksTextureAtlas(File atlasDirectory) {
 
         for (int blockIndex = 0; blockIndex < blocksTextures.length; ++blockIndex) {
 
@@ -48,7 +44,7 @@ public class TexturePackRepository implements Graphical {
             File fileFront = new File(atlasDirectory, blockName + "_front.png");
             File fileBack = new File(atlasDirectory, blockName + "_back.png");
 
-            if (blocksAtlasDecoder.isTextureExists(fileSimple)) {
+            if (getGraphics().getTextureRepository().isTextureExists(fileSimple)) {
                 sideTop = fileSimple;
                 sideBottom = fileSimple;
                 sideLeft = fileSimple;
@@ -57,39 +53,39 @@ public class TexturePackRepository implements Graphical {
                 sideBack = fileSimple;
             }
 
-            if (blocksAtlasDecoder.isTextureExists(fileSide)) {
+            if (getGraphics().getTextureRepository().isTextureExists(fileSide)) {
                 sideLeft = fileSide;
                 sideRight = fileSide;
                 sideFront = fileSide;
                 sideBack = fileSide;
             }
 
-            if (blocksAtlasDecoder.isTextureExists(fileTopBottom)) {
+            if (getGraphics().getTextureRepository().isTextureExists(fileTopBottom)) {
                 sideTop = fileTopBottom;
                 sideBottom = fileTopBottom;
             }
 
-            if (blocksAtlasDecoder.isTextureExists(fileTop)) {
+            if (getGraphics().getTextureRepository().isTextureExists(fileTop)) {
                 sideTop = fileTop;
             }
 
-            if (blocksAtlasDecoder.isTextureExists(fileBottom)) {
+            if (getGraphics().getTextureRepository().isTextureExists(fileBottom)) {
                 sideBottom = fileBottom;
             }
 
-            if (blocksAtlasDecoder.isTextureExists(fileLeft)) {
+            if (getGraphics().getTextureRepository().isTextureExists(fileLeft)) {
                 sideLeft = fileLeft;
             }
 
-            if (blocksAtlasDecoder.isTextureExists(fileRight)) {
+            if (getGraphics().getTextureRepository().isTextureExists(fileRight)) {
                 sideRight = fileRight;
             }
 
-            if (blocksAtlasDecoder.isTextureExists(fileFront)) {
+            if (getGraphics().getTextureRepository().isTextureExists(fileFront)) {
                 sideFront = fileFront;
             }
 
-            if (blocksAtlasDecoder.isTextureExists(fileBack)) {
+            if (getGraphics().getTextureRepository().isTextureExists(fileBack)) {
                 sideBack = fileBack;
             }
 
@@ -99,12 +95,12 @@ public class TexturePackRepository implements Graphical {
             }
 
             blocksTextures[blockIndex] = new TextureCubeMap(
-                    blocksAtlasDecoder.getFileToAtlasFragment().get(sideTop),
-                    blocksAtlasDecoder.getFileToAtlasFragment().get(sideBottom),
-                    blocksAtlasDecoder.getFileToAtlasFragment().get(sideLeft),
-                    blocksAtlasDecoder.getFileToAtlasFragment().get(sideRight),
-                    blocksAtlasDecoder.getFileToAtlasFragment().get(sideFront),
-                    blocksAtlasDecoder.getFileToAtlasFragment().get(sideBack)
+                    new Texture(sideTop),
+                    new Texture(sideBottom),
+                    new Texture(sideLeft),
+                    new Texture(sideRight),
+                    new Texture(sideFront),
+                    new Texture(sideBack)
             );
 
         }
@@ -115,22 +111,18 @@ public class TexturePackRepository implements Graphical {
         return getBlocksTextures()[block.getIndex()];
     }
 
-    public Texture getBlockAtlasTexture() {
-        return new Texture(getBlocksAtlasDecoder());
-    }
-
     @RequiredArgsConstructor
     @Getter
     public static class TextureCubeMap {
 
-        private final TextureRepository.AtlasFragment sideTop;
-        private final TextureRepository.AtlasFragment sideBottom;
-        private final TextureRepository.AtlasFragment sideLeft;
-        private final TextureRepository.AtlasFragment sideRight;
-        private final TextureRepository.AtlasFragment sideFront;
-        private final TextureRepository.AtlasFragment sideBack;
+        private final Texture sideTop;
+        private final Texture sideBottom;
+        private final Texture sideLeft;
+        private final Texture sideRight;
+        private final Texture sideFront;
+        private final Texture sideBack;
 
-        public TextureRepository.AtlasFragment getByBlockSide(BlockSide side) {
+        public Texture getTextureByBlockSide(BlockSide side) {
             if (side == BlockSide.TOP) {
                 return sideTop;
             }

@@ -32,10 +32,6 @@ public class Texture implements Graphical {
         this.atlasTexture = getGraphics().getTextureRepository().getTexture(this.texturePresent ? file : MISSING_TEXTURE);
     }
 
-    public Texture(TextureRepository.AtlasDecoder atlasDecoder) {
-        this(atlasDecoder.getAtlasDirectory());
-    }
-
     public Texture(File file) {
         this(null, file);
     }

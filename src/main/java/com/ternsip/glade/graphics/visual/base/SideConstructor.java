@@ -5,9 +5,8 @@ import com.ternsip.glade.common.logic.Utils;
 import com.ternsip.glade.graphics.display.Graphical;
 import com.ternsip.glade.graphics.general.Material;
 import com.ternsip.glade.graphics.general.Mesh;
+import com.ternsip.glade.graphics.general.Texture;
 import com.ternsip.glade.graphics.shader.base.MeshAttributes;
-import com.ternsip.glade.graphics.visual.repository.TexturePackRepository;
-import com.ternsip.glade.graphics.visual.repository.TextureRepository;
 import com.ternsip.glade.universe.parts.blocks.Block;
 import com.ternsip.glade.universe.parts.blocks.BlockSide;
 import com.ternsip.glade.universe.parts.chunks.BlocksUpdate;
@@ -88,11 +87,9 @@ public class SideConstructor implements Graphical {
             return;
         }
 
-        TexturePackRepository texturePackRepository = getGraphics().getTexturePackRepository();
         List<SidePosition> sidesToRemove = changes.getSidesToRemove();
         List<Side> sidesToAdd = changes.getSidesToAdd();
 
-        Material material = new Material(texturePackRepository.getBlockAtlasTexture());
         int oldLength = activeSides.size();
         int newLength = oldLength + (sidesToAdd.size() - sidesToRemove.size());
         int meshesNumber = newLength / SIDES_PER_MESH + (newLength % SIDES_PER_MESH > 0 ? 1 : 0);
@@ -105,10 +102,11 @@ public class SideConstructor implements Graphical {
                             .add(EMIT_LIGHT, Utils.arrayToBuffer(new float[SIDES_PER_MESH * EMIT_LIGHT_SIDE_SIZE]))
                             .add(NORMALS, Utils.arrayToBuffer(new float[SIDES_PER_MESH * NORMAL_SIDE_SIZE]))
                             .add(TEXTURES, Utils.arrayToBuffer(new float[SIDES_PER_MESH * TEXTURE_SIDE_SIZE]))
-                            .add(TEXTURES_START, Utils.arrayToBuffer(new float[SIDES_PER_MESH * TEXTURE_SIDE_SIZE]))
-                            .add(TEXTURES_END, Utils.arrayToBuffer(new float[SIDES_PER_MESH * TEXTURE_SIDE_SIZE]))
+                            .add(ATLAS_NUMBER, Utils.arrayToBuffer(new float[SIDES_PER_MESH * ATLAS_NUMBER_SIDE_SIZE]))
+                            .add(ATLAS_LAYER, Utils.arrayToBuffer(new float[SIDES_PER_MESH * ATLAS_LAYER_SIDE_SIZE]))
+                            .add(ATLAS_MAX_UV, Utils.arrayToBuffer(new float[SIDES_PER_MESH * ATLAS_MAX_UV_SIDE_SIZE]))
                             .add(BLOCK_TYPE, Utils.arrayToBuffer(new float[SIDES_PER_MESH * BLOCK_TYPE_SIDE_SIZE])),
-                    material, true
+                    new Material(), true
             );
             mesh.setIndicesCount(0);
             mesh.setVertexCount(0);
@@ -223,17 +221,23 @@ public class SideConstructor implements Graphical {
         sideIndexDataDst.getTextures().position(sideIndexDataDst.getTexturePos());
         sideIndexDataDst.getTextures().put(textures);
 
-        float[] texturesStart = new float[TEXTURE_SIDE_SIZE];
-        sideIndexDataSrc.getTexturesStart().position(sideIndexDataSrc.getTexturePos());
-        sideIndexDataSrc.getTexturesStart().get(texturesStart);
-        sideIndexDataDst.getTexturesStart().position(sideIndexDataDst.getTexturePos());
-        sideIndexDataDst.getTexturesStart().put(texturesStart);
+        float[] atlasNumber = new float[ATLAS_NUMBER_SIDE_SIZE];
+        sideIndexDataSrc.getAtlasNumber().position(sideIndexDataSrc.getAtlasNumberPos());
+        sideIndexDataSrc.getAtlasNumber().get(atlasNumber);
+        sideIndexDataDst.getAtlasNumber().position(sideIndexDataDst.getAtlasNumberPos());
+        sideIndexDataDst.getAtlasNumber().put(atlasNumber);
 
-        float[] texturesEnd = new float[TEXTURE_SIDE_SIZE];
-        sideIndexDataSrc.getTexturesEnd().position(sideIndexDataSrc.getTexturePos());
-        sideIndexDataSrc.getTexturesEnd().get(texturesEnd);
-        sideIndexDataDst.getTexturesEnd().position(sideIndexDataDst.getTexturePos());
-        sideIndexDataDst.getTexturesEnd().put(texturesEnd);
+        float[] atlasLayer = new float[ATLAS_LAYER_SIDE_SIZE];
+        sideIndexDataSrc.getAtlasLayer().position(sideIndexDataSrc.getAtlasLayerPos());
+        sideIndexDataSrc.getAtlasLayer().get(atlasLayer);
+        sideIndexDataDst.getAtlasLayer().position(sideIndexDataDst.getAtlasLayerPos());
+        sideIndexDataDst.getAtlasLayer().put(atlasLayer);
+
+        float[] atlasMaxUV = new float[ATLAS_MAX_UV_SIDE_SIZE];
+        sideIndexDataSrc.getAtlasMaxUV().position(sideIndexDataSrc.getAtlasMaxUVPos());
+        sideIndexDataSrc.getAtlasMaxUV().get(atlasMaxUV);
+        sideIndexDataDst.getAtlasMaxUV().position(sideIndexDataDst.getAtlasMaxUVPos());
+        sideIndexDataDst.getAtlasMaxUV().put(atlasMaxUV);
 
     }
 
@@ -245,7 +249,7 @@ public class SideConstructor implements Graphical {
         int dx = side.getSidePosition().getX();
         int dy = side.getSidePosition().getY();
         int dz = side.getSidePosition().getZ();
-        TextureRepository.AtlasFragment atlasFragment = getGraphics().getTexturePackRepository().getCubeMap(side.getSideData().getBlock()).getByBlockSide(blockSide);
+        Texture atlasFragment = getGraphics().getTexturePackRepository().getCubeMap(side.getSideData().getBlock()).getTextureByBlockSide(blockSide);
 
         for (int i = 0; i < SIDE_INDICES.length; ++i) {
             sideIndexData.getIndices().put(i + sideIndexData.getIndexPos(), SIDE_INDICES[i] + sideIndexData.getVertexStart());
@@ -269,14 +273,18 @@ public class SideConstructor implements Graphical {
             sideIndexData.getNormals().put(nIdx + sideIndexData.getNormalPos() + 2, cubeSideMeshData.getNormals()[nIdx + 2]);
 
             int tIdx = i * TEXTURES.getNumberPerVertex();
-            sideIndexData.getTextures().put(tIdx + sideIndexData.getTexturePos(), cubeSideMeshData.getTextures()[tIdx] ? atlasFragment.getEndU() : atlasFragment.getStartU());
-            sideIndexData.getTextures().put(tIdx + sideIndexData.getTexturePos() + 1, cubeSideMeshData.getTextures()[tIdx + 1] ? atlasFragment.getEndV() : atlasFragment.getStartV());
+            sideIndexData.getTextures().put(tIdx + sideIndexData.getTexturePos(), cubeSideMeshData.getTextures()[tIdx] ? 1 : 0);
+            sideIndexData.getTextures().put(tIdx + sideIndexData.getTexturePos() + 1, cubeSideMeshData.getTextures()[tIdx + 1] ? 1 : 0);
 
-            sideIndexData.getTexturesStart().put(tIdx + sideIndexData.getTexturePos(), atlasFragment.getStartU());
-            sideIndexData.getTexturesStart().put(tIdx + sideIndexData.getTexturePos() + 1, atlasFragment.getStartV());
+            int aNumberIdx = i * ATLAS_NUMBER.getNumberPerVertex();
+            sideIndexData.getAtlasNumber().put(aNumberIdx + sideIndexData.getAtlasNumberPos(), (float)atlasFragment.getAtlasTexture().getAtlasNumber());
 
-            sideIndexData.getTexturesEnd().put(tIdx + sideIndexData.getTexturePos(), atlasFragment.getEndU());
-            sideIndexData.getTexturesEnd().put(tIdx + sideIndexData.getTexturePos() + 1, atlasFragment.getEndV());
+            int aLayerIdx = i * ATLAS_LAYER.getNumberPerVertex();
+            sideIndexData.getAtlasLayer().put(aLayerIdx + sideIndexData.getAtlasLayerPos(), (float)atlasFragment.getAtlasTexture().getLayer());
+
+            int aMaxUVIdx = i * ATLAS_MAX_UV.getNumberPerVertex();
+            sideIndexData.getAtlasMaxUV().put(aMaxUVIdx + sideIndexData.getAtlasMaxUVPos(), atlasFragment.getAtlasTexture().getMaxUV().x());
+            sideIndexData.getAtlasMaxUV().put(aMaxUVIdx + sideIndexData.getAtlasMaxUVPos() + 1, atlasFragment.getAtlasTexture().getMaxUV().y());
         }
 
     }
@@ -303,6 +311,9 @@ public class SideConstructor implements Graphical {
         public static final int INDEX_SIDE_SIZE = SIDE_INDICES.length;
         public static final int NORMAL_SIDE_SIZE = VERTICES_PER_SIDE * NORMALS.getNumberPerVertex();
         public static final int TEXTURE_SIDE_SIZE = VERTICES_PER_SIDE * TEXTURES.getNumberPerVertex();
+        public static final int ATLAS_NUMBER_SIDE_SIZE = VERTICES_PER_SIDE * ATLAS_NUMBER.getNumberPerVertex();
+        public static final int ATLAS_LAYER_SIDE_SIZE = VERTICES_PER_SIDE * ATLAS_LAYER.getNumberPerVertex();
+        public static final int ATLAS_MAX_UV_SIDE_SIZE = VERTICES_PER_SIDE * ATLAS_MAX_UV.getNumberPerVertex();
         public static final int SKY_LIGHT_SIDE_SIZE = VERTICES_PER_SIDE * SKY_LIGHT.getNumberPerVertex();
         public static final int EMIT_LIGHT_SIDE_SIZE = VERTICES_PER_SIDE * EMIT_LIGHT.getNumberPerVertex();
         public static final int BLOCK_TYPE_SIDE_SIZE = VERTICES_PER_SIDE * BLOCK_TYPE.getNumberPerVertex();
@@ -312,6 +323,9 @@ public class SideConstructor implements Graphical {
         int indexPos;
         int normalPos;
         int texturePos;
+        int atlasNumberPos;
+        int atlasLayerPos;
+        int atlasMaxUVPos;
         int skyLightPos;
         int emitLightPos;
         int blockTypePos;
@@ -322,8 +336,9 @@ public class SideConstructor implements Graphical {
         FloatBuffer emitLights;
         FloatBuffer normals;
         FloatBuffer textures;
-        FloatBuffer texturesStart;
-        FloatBuffer texturesEnd;
+        FloatBuffer atlasNumber;
+        FloatBuffer atlasLayer;
+        FloatBuffer atlasMaxUV;
         FloatBuffer blockTypes;
 
         public SideIndexData(int sideIndex, ArrayList<Mesh> meshes) {
@@ -339,6 +354,9 @@ public class SideConstructor implements Graphical {
             this.indexPos = sideOffset * INDEX_SIDE_SIZE;
             this.normalPos = sideOffset * NORMAL_SIDE_SIZE;
             this.texturePos = sideOffset * TEXTURE_SIDE_SIZE;
+            this.atlasNumberPos = sideOffset * ATLAS_NUMBER_SIDE_SIZE;
+            this.atlasLayerPos = sideOffset * ATLAS_LAYER_SIDE_SIZE;
+            this.atlasMaxUVPos = sideOffset * ATLAS_MAX_UV_SIDE_SIZE;
             this.skyLightPos = sideOffset * SKY_LIGHT_SIDE_SIZE;
             this.emitLightPos = sideOffset * EMIT_LIGHT_SIDE_SIZE;
             this.blockTypePos = sideOffset * BLOCK_TYPE_SIDE_SIZE;
@@ -349,8 +367,9 @@ public class SideConstructor implements Graphical {
             this.emitLights = meshAttributes.getBuffer(EMIT_LIGHT);
             this.normals = meshAttributes.getBuffer(NORMALS);
             this.textures = meshAttributes.getBuffer(TEXTURES);
-            this.texturesStart = meshAttributes.getBuffer(TEXTURES_START);
-            this.texturesEnd = meshAttributes.getBuffer(TEXTURES_END);
+            this.atlasNumber = meshAttributes.getBuffer(ATLAS_NUMBER);
+            this.atlasLayer = meshAttributes.getBuffer(ATLAS_LAYER);
+            this.atlasMaxUV = meshAttributes.getBuffer(ATLAS_MAX_UV);
             this.blockTypes = meshAttributes.getBuffer(BLOCK_TYPE);
 
         }
