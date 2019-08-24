@@ -64,7 +64,7 @@ public class Universe implements Threadable {
 
     @Override
     public void init() {
-        //spawnMenu();
+        spawnMenu();
         startServer(); startClient(); // TODO REMOVE THIS AND TURN ON MENU
     }
 
@@ -108,6 +108,7 @@ public class Universe implements Threadable {
     private void spawnMenu() {
         EntityUIMenu entityUIMenu = new EntityUIMenu();
         entityUIMenu.register();
+        entityUIMenu.toggle();
         getBindings().addBindCallback(Bind.TOGGLE_MENU, entityUIMenu::toggle);
         new EntityStatistics2D(new File("fonts/default.png"), new Vector4f(1, 1, 0, 1), true).register();
     }
