@@ -28,7 +28,7 @@ public class EntityPlayer extends Entity<EffigyBoy> {
     private Vector3fc lookDirection = new Vector3f(0);
     private Vector3fc moveEffort = new Vector3f(0);
     private float velocity = 0.1f;
-    private float jumpPower = 10.3f;
+    private float jumpPower = 0.3f;
     private boolean onTheGround = false;
     private float height = 2;
     private final Callback<KeyEvent> keyCallback = this::handleKeyEvent;
@@ -71,11 +71,11 @@ public class EntityPlayer extends Entity<EffigyBoy> {
         Vector3fc tryX = tryToMove(cPos, new Vector3f(nPos.x(), cPos.y(), cPos.z()));
         Vector3fc tryY = tryToMove(tryX, new Vector3f(tryX.x(), nPos.y(), cPos.z()));
         Vector3fc tryZ = tryToMove(tryY, new Vector3f(tryY.x(), tryY.y(), nPos.z()));
+        setPosition(tryZ);
         setOnTheGround(tryToMove(cPos, new Vector3f(cPos).add(DOWN_DIRECTION)).equals(cPos, 5 * EPS));
         if (isOnTheGround()) {
             getCurrentVelocity().y = 0;
         }
-        setPosition(tryZ);
     }
 
     @Override

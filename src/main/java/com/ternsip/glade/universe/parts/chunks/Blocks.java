@@ -239,69 +239,43 @@ public class Blocks implements Threadable {
 
     // Using A Fast Voxel Traversal Algorithm for Ray Tracing by John Amanatides and Andrew Woo
     public @Nullable Vector3ic traverse(LineSegmentf segment, Function<Block, Boolean> condition) {
-        Vector3fc ray = new Vector3f(
-                segment.bX - segment.aX,
-                segment.bY - segment.aY,
-                segment.bZ - segment.aZ
-        );
-        Vector3fc step = new Vector3f(
-                (ray.x() >= 0) ? 1f : -1f,
-                (ray.y() >= 0) ? 1f : -1f,
-                (ray.z() >= 0) ? 1f : -1f
-        );
-        Vector3i currentVoxel = new Vector3i(
-                (int) Math.floor(segment.aX),
-                (int) Math.floor(segment.aY),
-                (int) Math.floor(segment.aZ)
-        );
-        Vector3ic lastVoxel = new Vector3i(
-                (int) Math.floor(segment.bX),
-                (int) Math.floor(segment.bY),
-                (int) Math.floor(segment.bZ)
-        );
+        Vector3fc ray = new Vector3f(segment.bX - segment.aX, segment.bY - segment.aY, segment.bZ - segment.aZ);
+        Vector3ic step = new Vector3i((ray.x() >= 0) ? 1 : -1, (ray.y() >= 0) ? 1 : -1, (ray.z() >= 0) ? 1 : -1);
+        Vector3i currentVoxel = new Vector3i((int) Math.floor(segment.aX), (int) Math.floor(segment.aY), (int) Math.floor(segment.aZ));
+        Vector3ic lastVoxel = new Vector3i((int) Math.floor(segment.bX), (int) Math.floor(segment.bY), (int) Math.floor(segment.bZ));
         // Distance along the ray to the next voxel border from the current position (tMaxX, tMaxY, tMaxZ)
-        Vector3fc nextBoundary = new Vector3f(currentVoxel).add(step);
+        Vector3ic nextBoundary = new Vector3i(currentVoxel).add(step);
         // tMax - distance until next intersection with voxel-border
         // the value of t at which the ray crosses the first vertical voxel boundary
         Vector3f tMax = new Vector3f(
-                (Math.abs(ray.x()) != 0) ? (nextBoundary.x() - segment.aX) / ray.x() : Float.MAX_VALUE,
-                (Math.abs(ray.y()) != 0) ? (nextBoundary.y() - segment.aY) / ray.y() : Float.MAX_VALUE,
-                (Math.abs(ray.z()) != 0) ? (nextBoundary.z() - segment.aZ) / ray.z() : Float.MAX_VALUE
+                (ray.x() != 0) ? (nextBoundary.x() - segment.aX) / ray.x() : Float.MAX_VALUE,
+                (ray.y() != 0) ? (nextBoundary.y() - segment.aY) / ray.y() : Float.MAX_VALUE,
+                (ray.z() != 0) ? (nextBoundary.z() - segment.aZ) / ray.z() : Float.MAX_VALUE
         );
         // How far along the ray we must move for the horizontal component to equal the width of a voxel
         // the direction in which we traverse the grid. Can only be Float.MAX_VALUE if we never go in that direction
         Vector3fc tDelta = new Vector3f(
-                (Math.abs(ray.x()) != 0) ? 1 / ray.x() * step.x() : Float.MAX_VALUE,
-                (Math.abs(ray.y()) != 0) ? 1 / ray.y() * step.y() : Float.MAX_VALUE,
-                (Math.abs(ray.z()) != 0) ? 1 / ray.z() * step.z() : Float.MAX_VALUE
+                (ray.x() != 0) ? 1f / ray.x() * step.x() : Float.MAX_VALUE,
+                (ray.y() != 0) ? 1f / ray.y() * step.y() : Float.MAX_VALUE,
+                (ray.z() != 0) ? 1f / ray.z() * step.z() : Float.MAX_VALUE
         );
-        Vector3i diff = new Vector3i(0);
-        boolean negativeRay = false;
+        if (checkVoxel(currentVoxel, condition)) {
+            return currentVoxel;
+        }
         if (currentVoxel.x() != lastVoxel.x() && ray.x() < 0) {
-            diff.x--;
-            negativeRay = true;
+            currentVoxel.x--;
         }
         if (currentVoxel.y() != lastVoxel.y() && ray.y() < 0) {
-            diff.y--;
-            negativeRay = true;
+            currentVoxel.y--;
         }
         if (currentVoxel.z() != lastVoxel.z() && ray.z() < 0) {
-            diff.z--;
-            negativeRay = true;
+            currentVoxel.z--;
         }
-        ArrayList<Vector3ic> positions = new ArrayList<>();
         if (checkVoxel(currentVoxel, condition)) {
-            positions.add(new Vector3i(currentVoxel));
-        }
-        if (negativeRay) {
-            currentVoxel.add(diff);
-            if (checkVoxel(currentVoxel, condition)) {
-                positions.add(new Vector3i(currentVoxel));
-            }
+            return currentVoxel;
         }
         int counter = 0;
         while (!lastVoxel.equals(currentVoxel)) {
-            ++counter;
             if (tMax.x < tMax.y) {
                 if (tMax.x < tMax.z) {
                     currentVoxel.x += step.x();
@@ -320,22 +294,15 @@ public class Blocks implements Threadable {
                 }
             }
             if (checkVoxel(currentVoxel, condition)) {
-                positions.add(new Vector3i(currentVoxel));
+                return currentVoxel;
             }
+            ++counter;
             if (counter > MAX_TRAVERSAL_LENGTH) {
                 log.error("Potential loop inside chunks voxels traversal algorithm. Manual avoiding...");
                 break;
             }
         }
-        // TODO It is superfluous, Remove this
-        Vector3fc start = new Vector3f(segment.aX, segment.aY, segment.aZ);
-        Vector3ic closest = null;
-        for (Vector3ic pos : positions) {
-            if (closest == null || start.distanceSquared(pos.x(), pos.y(), pos.z()) < start.distanceSquared(closest.x(), closest.y(), closest.z())) {
-                closest = pos;
-            }
-        }
-        return closest;
+        return null;
     }
 
     private void processVisualRequests() {
@@ -593,7 +560,7 @@ public class Blocks implements Threadable {
 
     }
 
-    private boolean checkVoxel(Vector3i pos, Function<Block, Boolean> condition) {
+    private boolean checkVoxel(Vector3ic pos, Function<Block, Boolean> condition) {
         return isBlockExists(pos) && condition.apply(getBlock(pos));
     }
 
