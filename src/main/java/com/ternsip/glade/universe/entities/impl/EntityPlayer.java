@@ -158,7 +158,7 @@ public class EntityPlayer extends Entity<EffigyBoy> {
                     getCameraAttachmentPoint().y() + lookDirection.y() * ARM_LENGTH,
                     getCameraAttachmentPoint().z() + lookDirection.z() * ARM_LENGTH
             );
-            Vector3ic blockPositionLooking = getUniverse().getBlocks().traverse(lookingSegment, Block::isObstacle);
+            Vector3ic blockPositionLooking = getUniverse().getBlocks().traverse(lookingSegment, (block) -> block != Block.AIR);
             if (blockPositionLooking != null && getUniverse().getBlocks().isBlockExists(blockPositionLooking)) {
                 getUniverse().getBlocks().setBlock(blockPositionLooking, Block.AIR);
             }
