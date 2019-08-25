@@ -23,7 +23,7 @@ import static org.lwjgl.glfw.GLFW.*;
 public class EntityPlayer extends Entity<EffigyBoy> {
 
     private static final float ARM_LENGTH = 5f;
-
+    private final Callback<KeyEvent> keyCallback = this::handleKeyEvent;
     private Vector3f currentVelocity = new Vector3f();
     private LineSegmentf eyeSegment = new LineSegmentf(new Vector3f(0), new Vector3f(0));
     private Vector3fc moveEffort = new Vector3f(0);
@@ -31,7 +31,6 @@ public class EntityPlayer extends Entity<EffigyBoy> {
     private float jumpPower = 0.3f;
     private boolean onTheGround = false;
     private float height = 2;
-    private final Callback<KeyEvent> keyCallback = this::handleKeyEvent;
 
     @Override
     public void register() {

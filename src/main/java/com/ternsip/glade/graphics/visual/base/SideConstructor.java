@@ -277,10 +277,10 @@ public class SideConstructor implements Graphical {
             sideIndexData.getTextures().put(tIdx + sideIndexData.getTexturePos() + 1, cubeSideMeshData.getTextures()[tIdx + 1] ? 1 : 0);
 
             int aNumberIdx = i * ATLAS_NUMBER.getNumberPerVertex();
-            sideIndexData.getAtlasNumber().put(aNumberIdx + sideIndexData.getAtlasNumberPos(), (float)atlasFragment.getAtlasTexture().getAtlasNumber());
+            sideIndexData.getAtlasNumber().put(aNumberIdx + sideIndexData.getAtlasNumberPos(), (float) atlasFragment.getAtlasTexture().getAtlasNumber());
 
             int aLayerIdx = i * ATLAS_LAYER.getNumberPerVertex();
-            sideIndexData.getAtlasLayer().put(aLayerIdx + sideIndexData.getAtlasLayerPos(), (float)atlasFragment.getAtlasTexture().getLayer());
+            sideIndexData.getAtlasLayer().put(aLayerIdx + sideIndexData.getAtlasLayerPos(), (float) atlasFragment.getAtlasTexture().getLayer());
 
             int aMaxUVIdx = i * ATLAS_MAX_UV.getNumberPerVertex();
             sideIndexData.getAtlasMaxUV().put(aMaxUVIdx + sideIndexData.getAtlasMaxUVPos(), atlasFragment.getAtlasTexture().getMaxUV().x());

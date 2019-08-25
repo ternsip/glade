@@ -42,12 +42,12 @@ public class ThreadWrapper<T extends Threadable> {
         public final AtomicBoolean active = new AtomicBoolean(true);
         public final Threadable threadable;
 
-        public void setActive(boolean active) {
-            this.active.set(active);
-        }
-
         public boolean isActive() {
             return this.active.get();
+        }
+
+        public void setActive(boolean active) {
+            this.active.set(active);
         }
 
         @Override

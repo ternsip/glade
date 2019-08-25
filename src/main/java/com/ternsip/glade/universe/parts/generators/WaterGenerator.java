@@ -2,7 +2,6 @@ package com.ternsip.glade.universe.parts.generators;
 
 import com.ternsip.glade.universe.parts.blocks.Block;
 import com.ternsip.glade.universe.parts.chunks.Blocks;
-import org.joml.Vector3i;
 
 public class WaterGenerator implements ChunkGenerator {
 

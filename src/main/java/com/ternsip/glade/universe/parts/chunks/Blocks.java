@@ -99,27 +99,6 @@ public class Blocks implements Threadable {
 
     }
 
-    private void requestBlockUpdates(
-            int startNextChunkX, int startNextChunkZ, int endNextChunkX, int endNextChunkZ,
-            int startPrevChunkX, int startPrevChunkZ, int endPrevChunkX, int endPrevChunkZ,
-            boolean additive
-    ) {
-        if (startNextChunkX >= CHUNKS_X || startNextChunkZ >= CHUNKS_Z || endNextChunkX < 0 || endNextChunkZ < 0) {
-            return;
-        }
-        int scx = Maths.bound(0, CHUNKS_X - 1, startNextChunkX);
-        int scz = Maths.bound(0, CHUNKS_Z - 1, startNextChunkZ);
-        int ecx = Maths.bound(0, CHUNKS_X - 1, endNextChunkX);
-        int ecz = Maths.bound(0, CHUNKS_Z - 1, endNextChunkZ);
-        for (int cx = scx; cx <= ecx; ++cx) {
-            for (int cz = scz; cz <= ecz; ++cz) {
-                if (cx < startPrevChunkX || cx > endPrevChunkX || cz < startPrevChunkZ || cz > endPrevChunkZ) {
-                    blocksUpdates.add(new BlocksUpdate(getChunk(cx, cz).sides, additive));
-                }
-            }
-        }
-    }
-
     public void setBlock(Vector3ic pos, Block block) {
         setBlock(pos.x(), pos.y(), pos.z(), block);
         setEmitLight(pos.x(), pos.y(), pos.z(), (byte) (MAX_LIGHT_LEVEL / 4));
@@ -219,12 +198,6 @@ public class Blocks implements Threadable {
     }
 
     @Override
-    public void finish() {
-        loadedChunks.forEach(this::saveChunk);
-        storage.finish();
-    }
-
-    @Override
     public void init() {
     }
 
@@ -240,18 +213,24 @@ public class Blocks implements Threadable {
         }
     }
 
+    @Override
+    public void finish() {
+        loadedChunks.forEach(this::saveChunk);
+        storage.finish();
+    }
+
     // Using A Fast Voxel Traversal Algorithm for Ray Tracing by John Amanatides and Andrew Woo
     public List<Vector3ic> traverseFull(LineSegmentf segment, Function<Block, Boolean> condition) {
         Vector3i currentVoxel = new Vector3i((int) Math.floor(segment.aX), (int) Math.floor(segment.aY), (int) Math.floor(segment.aZ));
         Vector3fc ray = new Vector3f(segment.bX - segment.aX, segment.bY - segment.aY, segment.bZ - segment.aZ);
-        int dx = (int)Math.signum(ray.x());
-        int dy = (int)Math.signum(ray.y());
-        int dz = (int)Math.signum(ray.z());
+        int dx = (int) Math.signum(ray.x());
+        int dy = (int) Math.signum(ray.y());
+        int dz = (int) Math.signum(ray.z());
         float tDeltaX = (dx != 0) ? Math.min(dx / ray.x(), Float.MAX_VALUE) : Float.MAX_VALUE;
         float tMaxX = (dx > 0) ? tDeltaX * frac1(segment.aX) : tDeltaX * frac0(segment.aX);
-        float tDeltaY = (dy != 0) ? Math.min(dy / ray.y(), Float.MAX_VALUE): Float.MAX_VALUE;
-        float tMaxY = (dy > 0) ? tDeltaY * frac1(segment.aY) :  tDeltaY * frac0(segment.aY);
-        float tDeltaZ = (dz != 0) ? Math.min(dz / ray.z(), Float.MAX_VALUE) :  Float.MAX_VALUE;
+        float tDeltaY = (dy != 0) ? Math.min(dy / ray.y(), Float.MAX_VALUE) : Float.MAX_VALUE;
+        float tMaxY = (dy > 0) ? tDeltaY * frac1(segment.aY) : tDeltaY * frac0(segment.aY);
+        float tDeltaZ = (dz != 0) ? Math.min(dz / ray.z(), Float.MAX_VALUE) : Float.MAX_VALUE;
         float tMaxZ = (dz > 0) ? tDeltaZ * frac1(segment.aZ) : tDeltaZ * frac0(segment.aZ);
         ArrayList<Vector3ic> voxels = new ArrayList<>();
         if (checkVoxel(currentVoxel, condition)) {
@@ -282,9 +261,30 @@ public class Blocks implements Threadable {
         return voxels;
     }
 
-
-    public @Nullable Vector3ic traverse(LineSegmentf segment, Function<Block, Boolean> condition) {
+    public @Nullable
+    Vector3ic traverse(LineSegmentf segment, Function<Block, Boolean> condition) {
         return traverseFull(segment, condition).stream().findFirst().orElse(null);
+    }
+
+    private void requestBlockUpdates(
+            int startNextChunkX, int startNextChunkZ, int endNextChunkX, int endNextChunkZ,
+            int startPrevChunkX, int startPrevChunkZ, int endPrevChunkX, int endPrevChunkZ,
+            boolean additive
+    ) {
+        if (startNextChunkX >= CHUNKS_X || startNextChunkZ >= CHUNKS_Z || endNextChunkX < 0 || endNextChunkZ < 0) {
+            return;
+        }
+        int scx = Maths.bound(0, CHUNKS_X - 1, startNextChunkX);
+        int scz = Maths.bound(0, CHUNKS_Z - 1, startNextChunkZ);
+        int ecx = Maths.bound(0, CHUNKS_X - 1, endNextChunkX);
+        int ecz = Maths.bound(0, CHUNKS_Z - 1, endNextChunkZ);
+        for (int cx = scx; cx <= ecx; ++cx) {
+            for (int cz = scz; cz <= ecz; ++cz) {
+                if (cx < startPrevChunkX || cx > endPrevChunkX || cz < startPrevChunkZ || cz > endPrevChunkZ) {
+                    blocksUpdates.add(new BlocksUpdate(getChunk(cx, cz).sides, additive));
+                }
+            }
+        }
     }
 
     private void processVisualRequests() {

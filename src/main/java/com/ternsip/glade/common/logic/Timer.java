@@ -42,21 +42,21 @@ public class Timer {
     }
 
     /**
-     * How much time spent in milliseconds
-     *
-     * @return How much time spent
-     */
-    private long spent() {
-        return System.currentTimeMillis() - lastTime;
-    }
-
-    /**
      * How much time in milliseconds is needed to be left to finish timer
      *
      * @return How much time is demanded
      */
     public long demand() {
         return Math.max(0, timeout - spent());
+    }
+
+    /**
+     * How much time spent in milliseconds
+     *
+     * @return How much time spent
+     */
+    private long spent() {
+        return System.currentTimeMillis() - lastTime;
     }
 
 }

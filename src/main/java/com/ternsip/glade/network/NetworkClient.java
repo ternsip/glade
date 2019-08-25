@@ -52,6 +52,9 @@ public class NetworkClient extends NetworkHandler implements Threadable {
         }
     }
 
+    @Override
+    public void finish() {}
+
     public void send(Object object) {
         getConnection().writeObject(object);
     }
@@ -59,9 +62,6 @@ public class NetworkClient extends NetworkHandler implements Threadable {
     public void stop() {
         getConnection().close();
     }
-
-    @Override
-    public void finish() {}
 
     @SneakyThrows
     private void snooze() {

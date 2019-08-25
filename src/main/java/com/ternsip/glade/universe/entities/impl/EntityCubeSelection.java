@@ -11,11 +11,6 @@ import org.joml.Vector3ic;
 public class EntityCubeSelection extends Entity<EffigyCube> {
 
     @Override
-    public EffigyCube getEffigy() {
-        return new EffigyCube();
-    }
-
-    @Override
     public void update(EffigyCube effigy) {
         super.update(effigy);
         Vector3fc eye = effigy.getGraphics().getCameraController().getTarget();
@@ -28,6 +23,11 @@ public class EntityCubeSelection extends Entity<EffigyCube> {
         } else {
             setVisible(false);
         }
+    }
+
+    @Override
+    public EffigyCube getEffigy() {
+        return new EffigyCube();
     }
 
 }

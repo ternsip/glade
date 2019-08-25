@@ -65,7 +65,8 @@ public class Universe implements Threadable {
     @Override
     public void init() {
         spawnMenu();
-        startServer(); startClient(); // TODO REMOVE THIS AND TURN ON MENU
+        startServer();
+        startClient(); // TODO REMOVE THIS AND TURN ON MENU
     }
 
     @Override
@@ -78,6 +79,15 @@ public class Universe implements Threadable {
         getEntityRepository().update();
         getCollisions().update();
         getTimeNormalizer().rest();
+    }
+
+    @SneakyThrows
+    @Override
+    public void finish() {
+        getBlocksThread().stop();
+        getBindings().finish();
+        stopClient();
+        stopServer();
     }
 
     public Blocks getBlocks() {
@@ -96,13 +106,16 @@ public class Universe implements Threadable {
         Universal.UNIVERSE_THREAD.stop();
     }
 
-    @SneakyThrows
-    @Override
-    public void finish() {
-        getBlocksThread().stop();
-        getBindings().finish();
-        stopClient();
-        stopServer();
+    public void startClient() {
+        getClient().connect("localhost", 6789);
+        getClient().registerCallback(String.class, (conn, str) -> System.out.println("Received message from srv " + str));
+        spawnClientEntities();
+    }
+
+    public void startServer() {
+        getServer().bind(6789);
+        getServer().registerCallback(String.class, (conn, str) -> System.out.println("Received message from client " + str));
+        getServer().registerCallback(BlocksObserverChanged.class, (conn, boc) -> getBlocks().requestBlockUpdates(boc.getPrevPos(), boc.getNextPos(), boc.getPrevViewDistance(), boc.getNextViewDistance()));
     }
 
     private void spawnMenu() {
@@ -195,18 +208,6 @@ public class Universe implements Threadable {
         entityCubeSelection.register();
 
         new EntitySides().register();
-    }
-
-    public void startClient() {
-        getClient().connect("localhost", 6789);
-        getClient().registerCallback(String.class, (conn, str) -> System.out.println("Received message from srv " + str));
-        spawnClientEntities();
-    }
-
-    public void startServer() {
-        getServer().bind(6789);
-        getServer().registerCallback(String.class, (conn, str) -> System.out.println("Received message from client " + str));
-        getServer().registerCallback(BlocksObserverChanged.class, (conn, boc) -> getBlocks().requestBlockUpdates(boc.getPrevPos(), boc.getNextPos(), boc.getPrevViewDistance(), boc.getNextViewDistance()));
     }
 
     private void stopClient() {

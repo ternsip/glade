@@ -1,8 +1,8 @@
 package com.ternsip.glade.network;
 
 import com.ternsip.glade.common.logic.ThreadWrapper;
-import com.ternsip.glade.common.logic.TimeNormalizer;
 import com.ternsip.glade.common.logic.Threadable;
+import com.ternsip.glade.common.logic.TimeNormalizer;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -33,7 +33,11 @@ public class NetworkServer extends NetworkHandler implements Threadable {
         acceptorThread = new ThreadWrapper<>(new Acceptor());
     }
 
-    @Override
+    public void stop() {
+        getAcceptorThread().stop();
+        getConnections().forEach(Connection::close);
+        getServerHolder().close();
+    }    @Override
     public void update() {
         if (getServerHolder().isActive()) {
             getTimeNormalizer().drop();
@@ -56,15 +60,6 @@ public class NetworkServer extends NetworkHandler implements Threadable {
         }
     }
 
-    public void stop() {
-        getAcceptorThread().stop();
-        getConnections().forEach(Connection::close);
-        getServerHolder().close();
-    }
-
-    @Override
-    public void finish() {}
-
     public void sendAll(Object obj) {
         getConnections().forEach(connection -> connection.writeObject(obj));
     }
@@ -72,7 +67,8 @@ public class NetworkServer extends NetworkHandler implements Threadable {
     @SneakyThrows
     private void snooze() {
         Thread.sleep(RETRY_INTERVAL);
-    }
+    }    @Override
+    public void finish() {}
 
     public class Acceptor implements Threadable {
 
@@ -100,5 +96,9 @@ public class NetworkServer extends NetworkHandler implements Threadable {
         public void finish() {}
 
     }
+
+
+
+
 
 }
