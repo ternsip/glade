@@ -3,7 +3,6 @@ package com.ternsip.glade.graphics.display;
 import com.ternsip.glade.common.events.base.EventSnapReceiver;
 import com.ternsip.glade.graphics.camera.Camera;
 import com.ternsip.glade.graphics.camera.CameraController;
-import com.ternsip.glade.graphics.camera.UniversalCameraController;
 import com.ternsip.glade.graphics.visual.repository.*;
 import com.ternsip.glade.universe.common.Universal;
 import lombok.Getter;
@@ -35,7 +34,7 @@ public class Graphics implements Universal {
     private final Camera camera = new Camera();
 
     @Getter(lazy = true)
-    private final CameraController cameraController = new UniversalCameraController();
+    private final CameraController cameraController = new CameraController();
 
     @Getter(lazy = true)
     private final EffigyRepository effigyRepository = new EffigyRepository();

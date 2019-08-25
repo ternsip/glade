@@ -1,5 +1,7 @@
 package com.ternsip.glade.universe.entities.impl;
 
+import com.ternsip.glade.common.events.base.Callback;
+import com.ternsip.glade.common.events.display.KeyEvent;
 import com.ternsip.glade.common.logic.Maths;
 import com.ternsip.glade.graphics.visual.impl.test.EffigyBoy;
 import com.ternsip.glade.universe.collisions.base.Collision;
@@ -20,22 +22,35 @@ import static org.lwjgl.glfw.GLFW.*;
 @Setter
 public class EntityPlayer extends Entity<EffigyBoy> {
 
+    private static final float ARM_LENGTH = 5f;
+
     private Vector3f currentVelocity = new Vector3f();
     private Vector3fc lookDirection = new Vector3f(0);
     private Vector3fc moveEffort = new Vector3f(0);
     private float velocity = 0.1f;
-    private float jumpPower = 0.3f;
+    private float jumpPower = 10.3f;
     private boolean onTheGround = false;
     private float height = 2;
+    private final Callback<KeyEvent> keyCallback = this::handleKeyEvent;
+
+    @Override
+    public void register() {
+        super.register();
+        getUniverse().getEventSnapReceiver().registerCallback(KeyEvent.class, keyCallback);
+    }
 
     @Override
     public void unregister() {
         super.unregister();
+        getUniverse().getEventSnapReceiver().unregisterCallback(KeyEvent.class, keyCallback);
     }
 
     @Override
     public void update(EffigyBoy effigy) {
         super.update(effigy);
+        if (!effigy.getGraphics().getCameraController().isThirdPerson()) {
+            setLookDirection(effigy.getGraphics().getCameraController().getLookDirection());
+        }
         effigy.setSkyIntensity(getSkyIntensity());
     }
 
@@ -109,27 +124,46 @@ public class EntityPlayer extends Entity<EffigyBoy> {
 
         setMoveEffort(normalizeOrEmpty(move).mul(getVelocity(), new Vector3f()));
 
-        if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_R)) {
+    }
+
+    private void handleKeyEvent(KeyEvent event) {
+
+        if (event.getKey() == GLFW_KEY_R && event.getAction() == GLFW_PRESS) {
             setRotation(new Vector3f(0, 0, 0));
             setPosition(new Vector3f(50, 90, 50));
         }
 
-        if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_T)) {
+        if (event.getKey() == GLFW_KEY_T && event.getAction() == GLFW_PRESS) {
             setRotation(new Vector3f(0, 0, 0));
             setPosition(new Vector3f(512, 90, 512));
         }
 
-        if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_SPACE)) {
+        if (event.getKey() == GLFW_KEY_SPACE && event.getAction() == GLFW_PRESS) {
             if (isOnTheGround()) {
                 getCurrentVelocity().add(new Vector3f(0, jumpPower, 0));
             }
         }
 
-        if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_B)) {
-            if (getUniverse().getBlocks().isBlockExists(getBlockPositionStandingOn())) {
-                getUniverse().getBlocks().setBlock(getBlockPositionStandingOn(), Block.AIR);
+        if (event.getKey() == GLFW_KEY_B && event.getAction() == GLFW_PRESS) {
+            Vector3ic blockUnder = getBlockPositionStandingOn();
+            if (getUniverse().getBlocks().isBlockExists(blockUnder)) {
+                getUniverse().getBlocks().setBlock(blockUnder, Block.AIR);
+            }
+        }
+
+        if (event.getKey() == GLFW_KEY_Q && event.getAction() == GLFW_PRESS) {
+            LineSegmentf lookingSegment = new LineSegmentf(
+                    getCameraAttachmentPoint().x(), getCameraAttachmentPoint().y(), getCameraAttachmentPoint().z(),
+                    getCameraAttachmentPoint().x() + lookDirection.x() * ARM_LENGTH,
+                    getCameraAttachmentPoint().y() + lookDirection.y() * ARM_LENGTH,
+                    getCameraAttachmentPoint().z() + lookDirection.z() * ARM_LENGTH
+            );
+            Vector3ic blockPositionLooking = getUniverse().getBlocks().traverse(lookingSegment, Block::isObstacle);
+            if (blockPositionLooking != null && getUniverse().getBlocks().isBlockExists(blockPositionLooking)) {
+                getUniverse().getBlocks().setBlock(blockPositionLooking, Block.AIR);
             }
         }
 
     }
+
 }
