@@ -191,6 +191,9 @@ public class Universe implements Threadable {
         entityPlayer.setScale(new Vector3f(1, 1, 1));
         getEntityRepository().setCameraTarget(entityPlayer);
 
+        EntityCubeSelection entityCubeSelection = new EntityCubeSelection();
+        entityCubeSelection.register();
+
         new EntitySides().register();
     }
 

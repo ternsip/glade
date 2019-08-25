@@ -25,7 +25,7 @@ public class EntityPlayer extends Entity<EffigyBoy> {
     private static final float ARM_LENGTH = 5f;
 
     private Vector3f currentVelocity = new Vector3f();
-    private Vector3fc lookDirection = new Vector3f(0);
+    private LineSegmentf eyeSegment = new LineSegmentf(new Vector3f(0), new Vector3f(0));
     private Vector3fc moveEffort = new Vector3f(0);
     private float velocity = 0.1f;
     private float jumpPower = 0.3f;
@@ -49,7 +49,9 @@ public class EntityPlayer extends Entity<EffigyBoy> {
     public void update(EffigyBoy effigy) {
         super.update(effigy);
         if (!effigy.getGraphics().getCameraController().isThirdPerson()) {
-            setLookDirection(effigy.getGraphics().getCameraController().getLookDirection());
+            Vector3fc eye = effigy.getGraphics().getCameraController().getTarget();
+            Vector3fc direction = effigy.getGraphics().getCameraController().getLookDirection().mul(ARM_LENGTH, new Vector3f());
+            eyeSegment = new LineSegmentf(eye, eye.add(direction, new Vector3f()));
         }
         effigy.setSkyIntensity(getSkyIntensity());
     }
@@ -152,13 +154,7 @@ public class EntityPlayer extends Entity<EffigyBoy> {
         }
 
         if (event.getKey() == GLFW_KEY_Q && event.getAction() == GLFW_PRESS) {
-            LineSegmentf lookingSegment = new LineSegmentf(
-                    getCameraAttachmentPoint().x(), getCameraAttachmentPoint().y(), getCameraAttachmentPoint().z(),
-                    getCameraAttachmentPoint().x() + lookDirection.x() * ARM_LENGTH,
-                    getCameraAttachmentPoint().y() + lookDirection.y() * ARM_LENGTH,
-                    getCameraAttachmentPoint().z() + lookDirection.z() * ARM_LENGTH
-            );
-            Vector3ic blockPositionLooking = getUniverse().getBlocks().traverse(lookingSegment, (block) -> block != Block.AIR);
+            Vector3ic blockPositionLooking = getUniverse().getBlocks().traverse(eyeSegment, (block) -> block != Block.AIR);
             if (blockPositionLooking != null && getUniverse().getBlocks().isBlockExists(blockPositionLooking)) {
                 getUniverse().getBlocks().setBlock(blockPositionLooking, Block.AIR);
             }

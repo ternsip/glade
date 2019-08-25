@@ -11,6 +11,7 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.io.File;
+import java.util.Collections;
 
 import static com.ternsip.glade.graphics.shader.base.ShaderProgram.INDICES;
 import static com.ternsip.glade.graphics.shader.base.ShaderProgram.VERTICES;
@@ -91,7 +92,7 @@ public class EffigyCube extends EffigyAnimated {
 
     public Model loadModel() {
         Material material = new Material(new Texture(new Vector4f(1.0f, 1.0f, 1.0f, 0.4f), new File("models/others/stall.png")));
-        return new Model(createAABBMesh(new Vector3f(1), material));
+        return new Model(Collections.singletonList(createAABBMesh(new Vector3f(1), material)), new Vector3f(0.5f), new Vector3f(0), new Vector3f(0.55f));
     }
 
 }
