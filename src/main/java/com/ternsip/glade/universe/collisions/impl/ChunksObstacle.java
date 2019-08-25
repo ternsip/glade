@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.joml.*;
 
+import java.util.List;
+
 /**
 
  */
@@ -21,20 +23,20 @@ public class ChunksObstacle implements Obstacle, Universal {
 
     @Override
     public Vector3fc collideSegment(LineSegmentf segment) {
-        Vector3ic pos = getUniverse().getBlocks().traverse(segment, Block::isObstacle);
-        Vector3fc end = new Vector3f(segment.bX, segment.bY, segment.bZ);
-        if (pos == null) {
-            return end;
+        List<Vector3ic> positions = getUniverse().getBlocks().traverseFull(segment, Block::isObstacle);
+        Vector3fc start = new Vector3f(segment.aX, segment.aY, segment.aZ);
+        Vector3f closest = new Vector3f(segment.bX, segment.bY, segment.bZ);
+        for (Vector3ic pos : positions) {
+            AABBf aabb = new AABBf(
+                    pos.x() * CUBE_SIZE - BLOCK_SAVE_DELTA, pos.y() * CUBE_SIZE - BLOCK_SAVE_DELTA, pos.z() * CUBE_SIZE - BLOCK_SAVE_DELTA,
+                    (pos.x() + 1) * CUBE_SIZE + BLOCK_SAVE_DELTA, (pos.y() + 1) * CUBE_SIZE + BLOCK_SAVE_DELTA, (pos.z() + 1) * CUBE_SIZE + BLOCK_SAVE_DELTA
+            );
+            Vector3fc nPos = collideSegmentDefault(segment, aabb);
+            if (nPos != null && start.distanceSquared(closest) > start.distanceSquared(nPos)) {
+                closest.set(nPos);
+            }
         }
-        AABBf aabb = new AABBf(
-                pos.x() * CUBE_SIZE - BLOCK_SAVE_DELTA, pos.y() * CUBE_SIZE - BLOCK_SAVE_DELTA, pos.z() * CUBE_SIZE - BLOCK_SAVE_DELTA,
-                (pos.x() + 1) * CUBE_SIZE + BLOCK_SAVE_DELTA, (pos.y() + 1) * CUBE_SIZE + BLOCK_SAVE_DELTA, (pos.z() + 1) * CUBE_SIZE + BLOCK_SAVE_DELTA
-        );
-        Vector3fc collision = collideSegmentDefault(segment, aabb);
-        if (collision == null) {
-            return end;
-        }
-        return collision;
+        return closest;
     }
 
 }
