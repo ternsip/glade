@@ -19,8 +19,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.ternsip.glade.common.logic.Maths.frac0;
-import static com.ternsip.glade.common.logic.Maths.frac1;
+import static com.ternsip.glade.common.logic.Maths.frac;
 
 /**
  * This class and all folded data should be thread safe
@@ -227,11 +226,11 @@ public class Blocks implements Threadable {
         int dy = (int) Math.signum(ray.y());
         int dz = (int) Math.signum(ray.z());
         float tDeltaX = (dx != 0) ? Math.min(dx / ray.x(), Float.MAX_VALUE) : Float.MAX_VALUE;
-        float tMaxX = (dx > 0) ? tDeltaX * frac1(segment.aX) : tDeltaX * frac0(segment.aX);
+        float tMaxX = (dx > 0) ? tDeltaX * (1 - frac(segment.aX)) : tDeltaX * frac(segment.aX);
         float tDeltaY = (dy != 0) ? Math.min(dy / ray.y(), Float.MAX_VALUE) : Float.MAX_VALUE;
-        float tMaxY = (dy > 0) ? tDeltaY * frac1(segment.aY) : tDeltaY * frac0(segment.aY);
+        float tMaxY = (dy > 0) ? tDeltaY * (1 - frac(segment.aY)) : tDeltaY * frac(segment.aY);
         float tDeltaZ = (dz != 0) ? Math.min(dz / ray.z(), Float.MAX_VALUE) : Float.MAX_VALUE;
-        float tMaxZ = (dz > 0) ? tDeltaZ * frac1(segment.aZ) : tDeltaZ * frac0(segment.aZ);
+        float tMaxZ = (dz > 0) ? tDeltaZ * (1 - frac(segment.aZ)) : tDeltaZ * frac(segment.aZ);
         ArrayList<Vector3ic> voxels = new ArrayList<>();
         if (checkVoxel(currentVoxel, condition)) {
             voxels.add(new Vector3i(currentVoxel));

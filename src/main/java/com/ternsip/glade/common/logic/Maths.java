@@ -44,12 +44,8 @@ public class Maths {
         );
     }
 
-    public static float frac0(float v) {
+    public static float frac(float v) {
         return (float) (v - Math.floor(v));
-    }
-
-    public static float frac1(float v) {
-        return (float) (1 - v + Math.floor(v));
     }
 
     public static int bound(int min, int max, int value) {
