@@ -236,24 +236,29 @@ public class Blocks implements Threadable {
             voxels.add(new Vector3i(currentVoxel));
         }
         while (tMaxX <= 1 || tMaxY <= 1 || tMaxZ <= 1) {
+            boolean changed;
             if (tMaxX < tMaxY) {
                 if (tMaxX < tMaxZ) {
                     currentVoxel.x += dx;
                     tMaxX += tDeltaX;
+                    changed = dx != 0;
                 } else {
                     currentVoxel.z += dz;
                     tMaxZ += tDeltaZ;
+                    changed = dz != 0;
                 }
             } else {
                 if (tMaxY < tMaxZ) {
                     currentVoxel.y += dy;
                     tMaxY += tDeltaY;
+                    changed = dy != 0;
                 } else {
                     currentVoxel.z += dz;
                     tMaxZ += tDeltaZ;
+                    changed = dz != 0;
                 }
             }
-            if (checkVoxel(currentVoxel, condition)) {
+            if (changed && checkVoxel(currentVoxel, condition)) {
                 voxels.add(new Vector3i(currentVoxel));
             }
         }
