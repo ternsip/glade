@@ -235,7 +235,7 @@ public class Blocks implements Threadable {
         if (checkVoxel(currentVoxel, condition)) {
             voxels.add(new Vector3i(currentVoxel));
         }
-        do {
+        while (tMaxX <= 1 || tMaxY <= 1 || tMaxZ <= 1) {
             if (tMaxX < tMaxY) {
                 if (tMaxX < tMaxZ) {
                     currentVoxel.x += dx;
@@ -256,7 +256,7 @@ public class Blocks implements Threadable {
             if (checkVoxel(currentVoxel, condition)) {
                 voxels.add(new Vector3i(currentVoxel));
             }
-        } while (tMaxX <= 1 || tMaxY <= 1 || tMaxZ <= 1);
+        }
         return voxels;
     }
 
