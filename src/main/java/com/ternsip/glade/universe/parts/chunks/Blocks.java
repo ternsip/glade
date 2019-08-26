@@ -260,8 +260,8 @@ public class Blocks implements Threadable {
         return voxels;
     }
 
-    public @Nullable
-    Vector3ic traverse(LineSegmentf segment, Function<Block, Boolean> condition) {
+    @Nullable
+    public Vector3ic traverse(LineSegmentf segment, Function<Block, Boolean> condition) {
         return traverseFull(segment, condition).stream().findFirst().orElse(null);
     }
 
