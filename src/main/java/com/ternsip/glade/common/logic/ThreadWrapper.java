@@ -48,10 +48,12 @@ public class ThreadWrapper<T extends Threadable> {
 
         public void setActive(boolean active) {
             this.active.set(active);
+            if (!this.active.get()) {
+                threadable.unlock();
+            }
         }
 
         @Override
-        // TODO add wait notify architecture for run/update loop
         public void run() {
             this.threadable.init();
             while (isActive()) {

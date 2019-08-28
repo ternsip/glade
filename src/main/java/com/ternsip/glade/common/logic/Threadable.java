@@ -8,4 +8,16 @@ public interface Threadable {
 
     void finish();
 
+    default void lock() throws InterruptedException {
+        synchronized(this) {
+            this.wait();
+        }
+    }
+
+    default void unlock() {
+        synchronized(this) {
+            this.notify();
+        }
+    }
+
 }

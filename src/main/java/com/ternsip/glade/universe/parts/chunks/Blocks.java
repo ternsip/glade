@@ -104,10 +104,12 @@ public class Blocks implements Threadable {
 
     public void setBlock(Vector3ic pos, Block block) {
         setBlocksRequests.add(new SetBlocksRequest(pos, block));
+        unlock();
     }
 
     public void setBlocks(Vector3ic start, Block[][][] regionBlocks) {
         setBlocksRequests.add(new SetBlocksRequest(start, regionBlocks));
+        unlock();
     }
 
     public Block getBlock(Vector3ic pos) {
@@ -194,6 +196,9 @@ public class Blocks implements Threadable {
     @Override
     @SneakyThrows
     public void update() {
+        if (setBlocksRequests.isEmpty()) {
+            lock();
+        }
         while (!setBlocksRequests.isEmpty()) {
             processSetBlockRequest(setBlocksRequests.poll());
         }
