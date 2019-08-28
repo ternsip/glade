@@ -36,25 +36,32 @@ public class Blocks implements Threadable {
     public static final Vector3ic SIZE = new Vector3i(SIZE_X, SIZE_Y, SIZE_Z);
     public static final Indexer INDEXER = new Indexer(SIZE);
 
-    private static final int LIGHT_UPDATE_COMBINE_DISTANCE = 4;
     private static final List<ChunkGenerator> CHUNK_GENERATORS = constructChunkGenerators();
     private static final int UPDATE_SIZE = 256;
 
     private final Storage storage;
-    private final Timer lightUpdateTimer = new Timer(200);
     private final Timer relaxationTimer = new Timer(200);
     private final Chunk[][] chunks = new Chunk[CHUNKS_X][CHUNKS_Z];
     private final Set<Chunk> loadedChunks = Collections.newSetFromMap(new ConcurrentHashMap<>());
-    private final Deque<VisualUpdateRequest> lightUpdateRequests = new ConcurrentLinkedDeque<>();
-    private final Deque<VisualUpdateRequest> visualUpdateRequests = new ConcurrentLinkedDeque<>();
+    private final ConcurrentLinkedDeque<SetBlocksRequest> setBlocksRequests = new ConcurrentLinkedDeque<>();
 
     @Getter
-    private final Deque<BlocksUpdate> blocksUpdates = new ConcurrentLinkedDeque<>();
+    private final ConcurrentLinkedDeque<BlocksUpdate> blocksUpdates = new ConcurrentLinkedDeque<>();
 
     public Blocks() {
         this.storage = new Storage("blocks_meta");
         if (!storage.isExists()) {
-            generateAll();
+            for (ChunkGenerator chunkGenerator : CHUNK_GENERATORS) {
+                chunkGenerator.populate(this);
+            }
+            for (int x = 0; x < SIZE_X; x += UPDATE_SIZE) {
+                for (int z = 0; z < SIZE_Z; z += UPDATE_SIZE) {
+                    int sizeX = x + UPDATE_SIZE > SIZE_X ? SIZE_X - x : UPDATE_SIZE;
+                    int sizeZ = z + UPDATE_SIZE > SIZE_Z ? SIZE_Z - z : UPDATE_SIZE;
+                    visualUpdate(new Vector3i(x, 0, z), new Vector3i(sizeX, SIZE_Y, sizeZ), false);
+                }
+            }
+            loadedChunks.forEach(this::saveChunk);
         }
     }
 
@@ -65,13 +72,12 @@ public class Blocks implements Threadable {
                 .collect(Collectors.toList());
     }
 
-    public void requestBlockUpdates(
+    public synchronized void requestBlockUpdates(
             Vector3ic prevPos,
             Vector3ic nextPos,
             int prevViewDistance,
             int nextViewDistance
     ) {
-
         int prevLength = prevViewDistance - 1;
         int nextLength = nextViewDistance - 1;
 
@@ -94,28 +100,14 @@ public class Blocks implements Threadable {
         }
         requestBlockUpdates(startNextChunkX, startNextChunkZ, endNextChunkX, endNextChunkZ, startPrevChunkX, startPrevChunkZ, endPrevChunkX, endPrevChunkZ, true);
         requestBlockUpdates(startPrevChunkX, startPrevChunkZ, endPrevChunkX, endPrevChunkZ, startNextChunkX, startNextChunkZ, endNextChunkX, endNextChunkZ, false);
-
     }
 
     public void setBlock(Vector3ic pos, Block block) {
-        setBlock(pos.x(), pos.y(), pos.z(), block);
-        setEmitLight(pos.x(), pos.y(), pos.z(), (byte) (MAX_LIGHT_LEVEL / 4));
-        updateRegionProcrastinating(pos);
-        relaxChunks();
+        setBlocksRequests.add(new SetBlocksRequest(pos, block));
     }
 
     public void setBlocks(Vector3ic start, Block[][][] regionBlocks) {
-        Vector3ic size = new Vector3i(regionBlocks.length, regionBlocks[0].length, regionBlocks[0][0].length);
-        Vector3ic endExcluding = new Vector3i(start).add(size).min(SIZE);
-        for (int x = start.x(), dx = 0; x < endExcluding.x(); ++x, ++dx) {
-            for (int y = start.y(), dy = 0; y < endExcluding.y(); ++y, ++dy) {
-                for (int z = start.z(), dz = 0; z < endExcluding.z(); ++z, ++dz) {
-                    setBlock(x, y, z, regionBlocks[dx][dy][dz]);
-                }
-            }
-        }
-        updateRegionProcrastinating(start, size);
-        relaxChunks();
+        setBlocksRequests.add(new SetBlocksRequest(start, regionBlocks));
     }
 
     public Block getBlock(Vector3ic pos) {
@@ -145,51 +137,51 @@ public class Blocks implements Threadable {
         return chunk.blocks[x % Chunk.SIZE_X][y][z % Chunk.SIZE_Z];
     }
 
-    public void setSkyLight(int x, int y, int z, byte light) {
+    private void setSkyLight(int x, int y, int z, byte light) {
         Chunk chunk = getChunk(x / Chunk.SIZE_X, z / Chunk.SIZE_Z);
         chunk.skyLights[x % Chunk.SIZE_X][y][z % Chunk.SIZE_Z] = light;
         chunk.modified = true;
     }
 
-    public byte getSkyLight(int x, int y, int z) {
+    private byte getSkyLight(int x, int y, int z) {
         Chunk chunk = getChunk(x / Chunk.SIZE_X, z / Chunk.SIZE_Z);
         return chunk.skyLights[x % Chunk.SIZE_X][y][z % Chunk.SIZE_Z];
     }
 
-    public void setEmitLight(int x, int y, int z, byte light) {
+    private void setEmitLight(int x, int y, int z, byte light) {
         Chunk chunk = getChunk(x / Chunk.SIZE_X, z / Chunk.SIZE_Z);
         chunk.emitLights[x % Chunk.SIZE_X][y][z % Chunk.SIZE_Z] = light;
         chunk.modified = true;
     }
 
-    public byte getEmitLight(int x, int y, int z) {
+    private byte getEmitLight(int x, int y, int z) {
         Chunk chunk = getChunk(x / Chunk.SIZE_X, z / Chunk.SIZE_Z);
         return chunk.emitLights[x % Chunk.SIZE_X][y][z % Chunk.SIZE_Z];
     }
 
-    public void setHeight(int x, int z, int height) {
+    private void setHeight(int x, int z, int height) {
         Chunk chunk = getChunk(x / Chunk.SIZE_X, z / Chunk.SIZE_Z);
         chunk.heights[x % Chunk.SIZE_X][z % Chunk.SIZE_Z] = height;
         chunk.modified = true;
     }
 
-    public int getHeight(int x, int z) {
+    private int getHeight(int x, int z) {
         Chunk chunk = getChunk(x / Chunk.SIZE_X, z / Chunk.SIZE_Z);
         return chunk.heights[x % Chunk.SIZE_X][z % Chunk.SIZE_Z];
     }
 
-    public SideData getSideData(SidePosition sPos) {
+    private SideData getSideData(SidePosition sPos) {
         Chunk chunk = getChunk(sPos.getX() / Chunk.SIZE_X, sPos.getZ() / Chunk.SIZE_Z);
         return chunk.sides.get(sPos);
     }
 
-    public void addSide(SidePosition sPos, SideData sideData) {
+    private void addSide(SidePosition sPos, SideData sideData) {
         Chunk chunk = getChunk(sPos.getX() / Chunk.SIZE_X, sPos.getZ() / Chunk.SIZE_Z);
         chunk.sides.put(sPos, sideData);
         chunk.modified = true;
     }
 
-    public void removeSide(SidePosition sPos) {
+    private void removeSide(SidePosition sPos) {
         Chunk chunk = getChunk(sPos.getX() / Chunk.SIZE_X, sPos.getZ() / Chunk.SIZE_Z);
         chunk.sides.remove(sPos);
         chunk.modified = true;
@@ -202,12 +194,8 @@ public class Blocks implements Threadable {
     @Override
     @SneakyThrows
     public void update() {
-        processVisualRequests();
-        if (lightUpdateTimer.isOver()) {
-            processLightRequests();
-            lightUpdateTimer.drop();
-        } else {
-            Thread.sleep(lightUpdateTimer.demand());
+        while (!setBlocksRequests.isEmpty()) {
+            processSetBlockRequest(setBlocksRequests.poll());
         }
     }
 
@@ -218,6 +206,7 @@ public class Blocks implements Threadable {
     }
 
     // Using A Fast Voxel Traversal Algorithm for Ray Tracing by John Amanatides and Andrew Woo
+    // TODO Add case when it includes edges and corners (hard one)
     public List<Vector3ic> traverseFull(LineSegmentf segment, Function<Block, Boolean> condition) {
         Vector3i currentVoxel = new Vector3i((int) Math.floor(segment.aX), (int) Math.floor(segment.aY), (int) Math.floor(segment.aZ));
         Vector3fc ray = new Vector3f(segment.bX - segment.aX, segment.bY - segment.aY, segment.bZ - segment.aZ);
@@ -290,59 +279,6 @@ public class Blocks implements Threadable {
         }
     }
 
-    private void processVisualRequests() {
-        while (!visualUpdateRequests.isEmpty()) {
-            VisualUpdateRequest visualUpdate = visualUpdateRequests.poll();
-            visualUpdate(visualUpdate.getStart(), visualUpdate.getSize());
-        }
-    }
-
-    private void processLightRequests() {
-        ArrayList<VisualUpdateRequest> updateRequests = new ArrayList<>();
-        while (!lightUpdateRequests.isEmpty()) {
-            updateRequests.add(lightUpdateRequests.poll());
-        }
-        boolean[] used = new boolean[updateRequests.size()];
-        for (int i = 0; i < updateRequests.size(); ++i) {
-            if (used[i]) {
-                continue;
-            }
-            Vector3i aMin = new Vector3i(updateRequests.get(i).getStart());
-            Vector3i aMax = new Vector3i(updateRequests.get(i).getEndExcluding());
-            for (int j = i + 1; j < updateRequests.size(); ++j) {
-                if (!used[j]) {
-                    Vector3ic bMin = updateRequests.get(j).getStart();
-                    Vector3ic bMax = updateRequests.get(j).getEndExcluding();
-                    boolean isOverlapping =
-                            (aMin.x() < bMax.x() + LIGHT_UPDATE_COMBINE_DISTANCE && aMax.x() + LIGHT_UPDATE_COMBINE_DISTANCE > bMin.x()) &&
-                                    (aMin.y() < bMax.y() + LIGHT_UPDATE_COMBINE_DISTANCE && aMax.y() + LIGHT_UPDATE_COMBINE_DISTANCE > bMin.y()) &&
-                                    (aMin.z() < bMax.z() + LIGHT_UPDATE_COMBINE_DISTANCE && aMax.z() + LIGHT_UPDATE_COMBINE_DISTANCE > bMin.z());
-                    if (isOverlapping) {
-                        used[j] = true;
-                        aMin.min(bMin);
-                        aMax.max(bMax);
-                    }
-                }
-            }
-            recalculateBlockRegion(aMin, new Vector3i(aMax).sub(aMin));
-        }
-    }
-
-    private synchronized void generateAll() {
-        for (ChunkGenerator chunkGenerator : CHUNK_GENERATORS) {
-            chunkGenerator.populate(this);
-        }
-        for (int x = 0; x < SIZE_X; x += UPDATE_SIZE) {
-            for (int z = 0; z < SIZE_Z; z += UPDATE_SIZE) {
-                int sizeX = x + UPDATE_SIZE > SIZE_X ? SIZE_X - x : UPDATE_SIZE;
-                int sizeZ = z + UPDATE_SIZE > SIZE_Z ? SIZE_Z - z : UPDATE_SIZE;
-                recalculateBlockRegion(new Vector3i(x, 0, z), new Vector3i(sizeX, SIZE_Y, sizeZ));
-                relaxChunks();
-            }
-        }
-        loadedChunks.forEach(this::saveChunk);
-    }
-
     private synchronized Chunk getChunk(int x, int z) {
         if (chunks[x][z] == null) {
             Vector2i pos = new Vector2i(x, z);
@@ -374,13 +310,25 @@ public class Blocks implements Threadable {
         }
     }
 
-    private void recalculateBlockRegion(Vector3ic start, Vector3ic size) {
+    private void processSetBlockRequest(SetBlocksRequest setBlocksRequest) {
+        Vector3ic start = setBlocksRequest.getStart();
+        Vector3ic size = setBlocksRequest.getSize();
+        Vector3ic endExcluding = setBlocksRequest.getEndExcluding();
+        Block[][][] regionBlocks = setBlocksRequest.getBlocks();
+        for (int x = start.x(), dx = 0; x < endExcluding.x(); ++x, ++dx) {
+            for (int y = start.y(), dy = 0; y < endExcluding.y(); ++y, ++dy) {
+                for (int z = start.z(), dz = 0; z < endExcluding.z(); ++z, ++dz) {
+                    setBlock(x, y, z, regionBlocks[dx][dy][dz]);
+                }
+            }
+        }
+        visualUpdate(start, size, true);
+    }
 
-        Utils.assertThat(size.x() > 0 || size.y() > 0 || size.z() > 0);
-
+    private void visualUpdate(Vector3ic start, Vector3ic size, boolean collectChanges) {
         // Recalculate height maps
-        Vector3ic endExcluding = new Vector3i(start).add(size);
         int minObservedHeight = SIZE_Y;
+        Vector3ic endExcluding = new Vector3i(start).add(size);
         for (int x = start.x(); x < endExcluding.x(); ++x) {
             for (int z = start.z(); z < endExcluding.z(); ++z) {
                 if (getHeight(x, z) > endExcluding.y()) {
@@ -479,30 +427,14 @@ public class Blocks implements Threadable {
             }
         }
 
-        visualUpdate(startLight, lightSize);
-    }
-
-    private void updateRegionProcrastinating(Vector3ic pos) {
-        updateRegionProcrastinating(pos, new Vector3i(1));
-    }
-
-    private void updateRegionProcrastinating(Vector3ic start, Vector3ic size) {
-        visualUpdateRequests.add(new VisualUpdateRequest(start, size));
-        lightUpdateRequests.add(new VisualUpdateRequest(start, size));
-    }
-
-    /**
-     * In this function we are recalculating added/removed sides based on blocks state and putting them to the queue
-     */
-    private void visualUpdate(Vector3ic start, Vector3ic size) {
-
         // Add border blocks to engage neighbour side-recalculation
-        Vector3ic startChanges = new Vector3i(start).sub(new Vector3i(1)).max(new Vector3i(0));
-        Vector3ic endChangesExcluding = new Vector3i(start).add(size).add(new Vector3i(1)).min(SIZE);
+        Vector3ic startChanges = new Vector3i(startLight).sub(new Vector3i(1)).max(new Vector3i(0));
+        Vector3ic endChangesExcluding = new Vector3i(startLight).add(lightSize).add(new Vector3i(1)).min(SIZE);
 
         // Calculate which sides should be removed or added
         BlocksUpdate blocksUpdate = new BlocksUpdate();
 
+        // Recalculating added/removed sides based on blocks state and putting them to the queue
         for (int x = startChanges.x(); x < endChangesExcluding.x(); ++x) {
             for (int z = startChanges.z(); z < endChangesExcluding.z(); ++z) {
                 for (int y = startChanges.y(); y < endChangesExcluding.y(); ++y) {
@@ -539,10 +471,11 @@ public class Blocks implements Threadable {
             }
         }
 
-        if (!blocksUpdate.isEmpty()) {
+        if (collectChanges && !blocksUpdate.isEmpty()) {
             getBlocksUpdates().add(blocksUpdate);
         }
 
+        relaxChunks();
     }
 
     private boolean checkVoxel(Vector3ic pos, Function<Block, Boolean> condition) {

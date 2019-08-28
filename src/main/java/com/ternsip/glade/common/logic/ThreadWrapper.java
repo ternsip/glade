@@ -51,6 +51,7 @@ public class ThreadWrapper<T extends Threadable> {
         }
 
         @Override
+        // TODO add wait notify architecture for run/update loop
         public void run() {
             this.threadable.init();
             while (isActive()) {
