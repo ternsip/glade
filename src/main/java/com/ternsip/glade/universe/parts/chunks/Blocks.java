@@ -21,9 +21,6 @@ import java.util.stream.Collectors;
 
 import static com.ternsip.glade.common.logic.Maths.frac;
 
-/**
- * This class and all folded data should be thread safe
- */
 @Slf4j
 public class Blocks implements Threadable {
 

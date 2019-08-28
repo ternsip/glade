@@ -66,7 +66,7 @@ public class Universe implements Threadable {
     public void init() {
         spawnMenu();
         startServer();
-        startClient(); // TODO REMOVE THIS AND TURN ON MENU
+        startClient();
     }
 
     @Override
