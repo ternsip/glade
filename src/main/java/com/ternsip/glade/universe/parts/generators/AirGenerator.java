@@ -17,7 +17,7 @@ public class AirGenerator implements ChunkGenerator {
         for (int x = 0; x < Blocks.SIZE_X; ++x) {
             for (int z = 0; z < Blocks.SIZE_Z; ++z) {
                 for (int y = 0; y < Blocks.SIZE_Y; ++y) {
-                    blocks.setBlock(x, y, z, Block.AIR);
+                    blocks.setBlockInternal(x, y, z, Block.AIR);
                 }
             }
         }

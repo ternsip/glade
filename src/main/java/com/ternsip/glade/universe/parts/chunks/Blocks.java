@@ -44,6 +44,7 @@ public class Blocks implements Threadable {
     private final Chunk[][] chunks = new Chunk[CHUNKS_X][CHUNKS_Z];
     private final Set<Chunk> loadedChunks = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private final ConcurrentLinkedDeque<SetBlocksRequest> setBlocksRequests = new ConcurrentLinkedDeque<>();
+    private final ConcurrentLinkedDeque<MovementRequest> movementRequests = new ConcurrentLinkedDeque<>();
 
     @Getter
     private final ConcurrentLinkedDeque<BlocksUpdate> blocksUpdates = new ConcurrentLinkedDeque<>();
@@ -72,34 +73,9 @@ public class Blocks implements Threadable {
                 .collect(Collectors.toList());
     }
 
-    public synchronized void requestBlockUpdates(
-            Vector3ic prevPos,
-            Vector3ic nextPos,
-            int prevViewDistance,
-            int nextViewDistance
-    ) {
-        int prevLength = prevViewDistance - 1;
-        int nextLength = nextViewDistance - 1;
-
-        int middlePrevChunkX = prevPos.x() / Chunk.SIZE_X;
-        int middlePrevChunkZ = prevPos.z() / Chunk.SIZE_Z;
-        int startPrevChunkX = middlePrevChunkX - prevLength;
-        int startPrevChunkZ = middlePrevChunkZ - prevLength;
-        int endPrevChunkX = middlePrevChunkX + prevLength;
-        int endPrevChunkZ = middlePrevChunkZ + prevLength;
-
-        int middleNextChunkX = nextPos.x() / Chunk.SIZE_X;
-        int middleNextChunkZ = nextPos.z() / Chunk.SIZE_Z;
-        int startNextChunkX = middleNextChunkX - nextLength;
-        int startNextChunkZ = middleNextChunkZ - nextLength;
-        int endNextChunkX = middleNextChunkX + nextLength;
-        int endNextChunkZ = middleNextChunkZ + nextLength;
-
-        if (startNextChunkX == startPrevChunkX && startNextChunkZ == startPrevChunkZ) {
-            return;
-        }
-        requestBlockUpdates(startNextChunkX, startNextChunkZ, endNextChunkX, endNextChunkZ, startPrevChunkX, startPrevChunkZ, endPrevChunkX, endPrevChunkZ, true);
-        requestBlockUpdates(startPrevChunkX, startPrevChunkZ, endPrevChunkX, endPrevChunkZ, startNextChunkX, startNextChunkZ, endNextChunkX, endNextChunkZ, false);
+    public void processMovement(Vector3ic prevPos, Vector3ic nextPos, int prevViewDistance, int nextViewDistance) {
+        movementRequests.add(new MovementRequest(prevPos, nextPos, prevViewDistance, nextViewDistance));
+        unlock();
     }
 
     public void setBlock(Vector3ic pos, Block block) {
@@ -128,13 +104,21 @@ public class Blocks implements Threadable {
         return INDEXER.isInside(pos);
     }
 
-    public void setBlock(int x, int y, int z, Block block) {
+    public void setBlockInternal(int x, int y, int z, Block block) {
+        setBlock(x, y, z, block);
+    }
+
+    public Block getBlockInternal(int x, int y, int z) {
+        return getBlock(x, y, z);
+    }
+
+    private void setBlock(int x, int y, int z, Block block) {
         Chunk chunk = getChunk(x / Chunk.SIZE_X, z / Chunk.SIZE_Z);
         chunk.blocks[x % Chunk.SIZE_X][y][z % Chunk.SIZE_Z] = block;
         chunk.modified = true;
     }
 
-    public Block getBlock(int x, int y, int z) {
+    private Block getBlock(int x, int y, int z) {
         Chunk chunk = getChunk(x / Chunk.SIZE_X, z / Chunk.SIZE_Z);
         return chunk.blocks[x % Chunk.SIZE_X][y][z % Chunk.SIZE_Z];
     }
@@ -196,8 +180,11 @@ public class Blocks implements Threadable {
     @Override
     @SneakyThrows
     public void update() {
-        if (setBlocksRequests.isEmpty()) {
+        if (setBlocksRequests.isEmpty() && movementRequests.isEmpty()) {
             lock();
+        }
+        while (!movementRequests.isEmpty()) {
+            processMovementRequest(movementRequests.poll());
         }
         while (!setBlocksRequests.isEmpty()) {
             processSetBlockRequest(setBlocksRequests.poll());
@@ -261,6 +248,31 @@ public class Blocks implements Threadable {
     @Nullable
     public Vector3ic traverse(LineSegmentf segment, Function<Block, Boolean> condition) {
         return traverseFull(segment, condition).stream().findFirst().orElse(null);
+    }
+
+    private void processMovementRequest(MovementRequest movementRequest) {
+        int prevLength = movementRequest.getPrevViewDistance() - 1;
+        int nextLength = movementRequest.getNextViewDistance() - 1;
+
+        int middlePrevChunkX = movementRequest.getPrevPos().x() / Chunk.SIZE_X;
+        int middlePrevChunkZ = movementRequest.getPrevPos().z() / Chunk.SIZE_Z;
+        int startPrevChunkX = middlePrevChunkX - prevLength;
+        int startPrevChunkZ = middlePrevChunkZ - prevLength;
+        int endPrevChunkX = middlePrevChunkX + prevLength;
+        int endPrevChunkZ = middlePrevChunkZ + prevLength;
+
+        int middleNextChunkX = movementRequest.getNextPos().x() / Chunk.SIZE_X;
+        int middleNextChunkZ = movementRequest.getNextPos().z() / Chunk.SIZE_Z;
+        int startNextChunkX = middleNextChunkX - nextLength;
+        int startNextChunkZ = middleNextChunkZ - nextLength;
+        int endNextChunkX = middleNextChunkX + nextLength;
+        int endNextChunkZ = middleNextChunkZ + nextLength;
+
+        if (startNextChunkX == startPrevChunkX && startNextChunkZ == startPrevChunkZ) {
+            return;
+        }
+        requestBlockUpdates(startNextChunkX, startNextChunkZ, endNextChunkX, endNextChunkZ, startPrevChunkX, startPrevChunkZ, endPrevChunkX, endPrevChunkZ, true);
+        requestBlockUpdates(startPrevChunkX, startPrevChunkZ, endPrevChunkX, endPrevChunkZ, startNextChunkX, startNextChunkZ, endNextChunkX, endNextChunkZ, false);
     }
 
     private void requestBlockUpdates(

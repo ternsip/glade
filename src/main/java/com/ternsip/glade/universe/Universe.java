@@ -115,7 +115,7 @@ public class Universe implements Threadable {
     public void startServer() {
         getServer().bind(6789);
         getServer().registerCallback(String.class, (conn, str) -> System.out.println("Received message from client " + str));
-        getServer().registerCallback(BlocksObserverChanged.class, (conn, boc) -> getBlocks().requestBlockUpdates(boc.getPrevPos(), boc.getNextPos(), boc.getPrevViewDistance(), boc.getNextViewDistance()));
+        getServer().registerCallback(BlocksObserverChanged.class, (conn, boc) -> getBlocks().processMovement(boc.getPrevPos(), boc.getNextPos(), boc.getPrevViewDistance(), boc.getNextViewDistance()));
     }
 
     private void spawnMenu() {
