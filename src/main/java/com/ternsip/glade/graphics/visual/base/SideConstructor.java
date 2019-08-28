@@ -90,8 +90,9 @@ public class SideConstructor implements Graphical {
         List<SidePosition> sidesToRemove = changes.getSidesToRemove();
         List<Side> sidesToAdd = changes.getSidesToAdd();
 
+        int numberOfSidesThatExists = (int) sidesToAdd.stream().filter(side -> sides.get(side.getSidePosition()) != null).count();
         int oldLength = activeSides.size();
-        int newLength = oldLength + (sidesToAdd.size() - sidesToRemove.size());
+        int newLength = oldLength + (sidesToAdd.size() - sidesToRemove.size()) - numberOfSidesThatExists;
         int meshesNumber = newLength / SIDES_PER_MESH + (newLength % SIDES_PER_MESH > 0 ? 1 : 0);
         while (meshes.size() < meshesNumber) {
             Mesh mesh = new Mesh(
