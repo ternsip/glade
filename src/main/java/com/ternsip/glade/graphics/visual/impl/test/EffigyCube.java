@@ -91,7 +91,7 @@ public class EffigyCube extends EffigyAnimated {
     }
 
     public Model loadModel() {
-        Material material = new Material(new Texture(new Vector4f(1.0f, 1.0f, 1.0f, 0.4f), new File("models/others/stall.png")));
+        Material material = new Material(new Texture(new Vector4f(1.0f, 1.0f, 1.0f, 0.4f), new File("tools/frame.png")));
         return new Model(Collections.singletonList(createAABBMesh(new Vector3f(1), material)), new Vector3f(0.5f), new Vector3f(0), new Vector3f(0.55f));
     }
 

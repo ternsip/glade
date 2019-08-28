@@ -36,7 +36,6 @@ public class Blocks implements Threadable {
     public static final Vector3ic SIZE = new Vector3i(SIZE_X, SIZE_Y, SIZE_Z);
     public static final Indexer INDEXER = new Indexer(SIZE);
 
-    private static final int MAX_TRAVERSAL_LENGTH = 256;
     private static final int LIGHT_UPDATE_COMBINE_DISTANCE = 4;
     private static final List<ChunkGenerator> CHUNK_GENERATORS = constructChunkGenerators();
     private static final int UPDATE_SIZE = 256;
