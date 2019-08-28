@@ -37,7 +37,9 @@ public class NetworkServer extends NetworkHandler implements Threadable {
         getAcceptorThread().stop();
         getConnections().forEach(Connection::close);
         getServerHolder().close();
-    }    @Override
+    }
+
+    @Override
     public void update() {
         if (getServerHolder().isActive()) {
             getTimeNormalizer().drop();
@@ -67,7 +69,9 @@ public class NetworkServer extends NetworkHandler implements Threadable {
     @SneakyThrows
     private void snooze() {
         Thread.sleep(RETRY_INTERVAL);
-    }    @Override
+    }
+
+    @Override
     public void finish() {}
 
     public class Acceptor implements Threadable {
@@ -96,9 +100,6 @@ public class NetworkServer extends NetworkHandler implements Threadable {
         public void finish() {}
 
     }
-
-
-
 
 
 }
