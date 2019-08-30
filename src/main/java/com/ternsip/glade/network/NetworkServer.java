@@ -13,7 +13,7 @@ import java.util.ArrayList;
 @Slf4j
 @Getter
 @Setter
-public class NetworkServer extends NetworkHandler implements Threadable {
+public class NetworkServer implements Threadable {
 
     private final long RETRY_INTERVAL = 500L;
 
@@ -46,7 +46,8 @@ public class NetworkServer extends NetworkHandler implements Threadable {
             getConnections().forEach(connection -> {
                 try {
                     if (connection.getInput().available() > 0) {
-                        handleObject(connection, connection.readObject());
+                        Packet packet = (Packet)connection.readObject();
+                        packet.apply(connection);
                     }
                 } catch (Exception e) {
                     if (connection.isActive()) {
@@ -62,8 +63,8 @@ public class NetworkServer extends NetworkHandler implements Threadable {
         }
     }
 
-    public void sendAll(Object obj) {
-        getConnections().forEach(connection -> connection.writeObject(obj));
+    public void sendAll(Packet packet) {
+        getConnections().forEach(connection -> connection.writeObject(packet));
     }
 
     @SneakyThrows

@@ -1,18 +1,22 @@
 package com.ternsip.glade.universe.protocol.requests;
 
+import com.ternsip.glade.network.Connection;
+import com.ternsip.glade.network.Packet;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.joml.Vector3ic;
 
-import java.io.Serializable;
-
 @RequiredArgsConstructor
 @Getter
-public class BlocksObserverChanged implements Serializable {
+public class BlocksObserverChanged implements Packet {
 
     private final Vector3ic prevPos;
     private final Vector3ic nextPos;
     private final int prevViewDistance;
     private final int nextViewDistance;
 
+    @Override
+    public void apply(Connection connection) {
+        getUniverse().getBlocks().processMovement(getPrevPos(), getNextPos(), getPrevViewDistance(), getNextViewDistance());
+    }
 }

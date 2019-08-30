@@ -22,7 +22,7 @@ import com.ternsip.glade.universe.entities.impl.*;
 import com.ternsip.glade.universe.entities.repository.EntityRepository;
 import com.ternsip.glade.universe.entities.ui.EntityUIMenu;
 import com.ternsip.glade.universe.parts.chunks.Blocks;
-import com.ternsip.glade.universe.protocol.requests.BlocksObserverChanged;
+import com.ternsip.glade.universe.protocol.common.ConsoleMessagePacket;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -108,14 +108,11 @@ public class Universe implements Threadable {
 
     public void startClient() {
         getClient().connect("localhost", 6789);
-        getClient().registerCallback(String.class, (conn, str) -> System.out.println("Received message from srv " + str));
         spawnClientEntities();
     }
 
     public void startServer() {
         getServer().bind(6789);
-        getServer().registerCallback(String.class, (conn, str) -> System.out.println("Received message from client " + str));
-        getServer().registerCallback(BlocksObserverChanged.class, (conn, boc) -> getBlocks().processMovement(boc.getPrevPos(), boc.getNextPos(), boc.getPrevViewDistance(), boc.getNextViewDistance()));
     }
 
     private void spawnMenu() {
@@ -196,7 +193,7 @@ public class Universe implements Threadable {
 
         new EntityGeneric(() -> new EffigyAxis()).register();
 
-        getBindings().addBindCallback(Bind.TEST_BUTTON, () -> getClient().send("HELLO 123"));
+        getBindings().addBindCallback(Bind.TEST_BUTTON, () -> getClient().send(new ConsoleMessagePacket("HELLO 123")));
 
         EntityPlayer entityPlayer = new EntityPlayer();
         entityPlayer.register();

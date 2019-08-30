@@ -11,7 +11,7 @@ import java.net.Socket;
 @Slf4j
 @Getter
 @Setter
-public class NetworkClient extends NetworkHandler implements Threadable {
+public class NetworkClient implements Threadable {
 
     private final long RETRY_INTERVAL = 500L;
     private final int MAX_CONNECTION_ATTEMPTS = 10;
@@ -39,7 +39,8 @@ public class NetworkClient extends NetworkHandler implements Threadable {
     public void update() {
         if (getConnection().isActive()) {
             try {
-                handleObject(getConnection(), getConnection().readObject());
+                Packet packet = (Packet)getConnection().readObject();
+                packet.apply(getConnection());
             } catch (Exception e) {
                 if (getConnection().isActive()) {
                     String errMsg = String.format("Error while accepting data from server %s", e.getMessage());
@@ -55,8 +56,8 @@ public class NetworkClient extends NetworkHandler implements Threadable {
     @Override
     public void finish() {}
 
-    public void send(Object object) {
-        getConnection().writeObject(object);
+    public void send(Packet packet) {
+        getConnection().writeObject(packet);
     }
 
     public void stop() {
