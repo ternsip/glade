@@ -51,7 +51,7 @@ public class Graphics implements Universal {
     }
 
     public void loop() {
-        while (getWindowData().isActive() && UNIVERSE_THREAD.isActive()) {
+        while (getWindowData().isActive() && Universal.isThreadActive()) {
             getFrameBuffers().bindBuffer();
             getWindowData().clear();
             getEventSnapReceiver().update();

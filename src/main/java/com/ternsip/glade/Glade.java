@@ -21,7 +21,7 @@ import com.ternsip.glade.graphics.display.Graphical;
 public class Glade {
 
     public static void main(String[] args) {
-        Graphical.GRAPHICS.run();
+        Graphical.run();
     }
 
 }

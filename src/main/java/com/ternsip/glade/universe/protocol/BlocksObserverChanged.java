@@ -1,4 +1,4 @@
-package com.ternsip.glade.universe.protocol.requests;
+package com.ternsip.glade.universe.protocol;
 
 import com.ternsip.glade.network.Connection;
 import com.ternsip.glade.network.Packet;

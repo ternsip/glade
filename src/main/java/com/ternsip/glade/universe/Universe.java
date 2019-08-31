@@ -22,7 +22,7 @@ import com.ternsip.glade.universe.entities.impl.*;
 import com.ternsip.glade.universe.entities.repository.EntityRepository;
 import com.ternsip.glade.universe.entities.ui.EntityUIMenu;
 import com.ternsip.glade.universe.parts.chunks.Blocks;
-import com.ternsip.glade.universe.protocol.common.ConsoleMessagePacket;
+import com.ternsip.glade.universe.protocol.ConsoleMessagePacket;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -103,7 +103,7 @@ public class Universe implements Threadable {
     }
 
     public void stop() {
-        Universal.UNIVERSE_THREAD.stop();
+        Universal.stopThread();
     }
 
     public void startClient() {
