@@ -4,9 +4,7 @@ import com.ternsip.glade.common.events.display.ResizeEvent;
 import lombok.Getter;
 
 import static org.lwjgl.opengl.ARBFramebufferObject.GL_RENDERBUFFER;
-import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_NEAREST;
-import static org.lwjgl.opengl.GL11.glGetInteger;
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.opengl.GL30C.GL_FRAMEBUFFER;
 

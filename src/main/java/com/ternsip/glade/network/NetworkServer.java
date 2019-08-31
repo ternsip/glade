@@ -31,6 +31,31 @@ public class NetworkServer implements Threadable {
         acceptorThread = new ThreadWrapper<>(Acceptor::new);
     }
 
+    @Override
+    public void update() {
+        if (getServerHolder().isActive()) {
+            getConnections().forEach(connection -> {
+                try {
+                    if (connection.getInput().available() > 0) {
+                        Packet packet = (Packet) connection.readObject();
+                        packet.apply(connection);
+                    }
+                } catch (Exception e) {
+                    if (connection.isActive()) {
+                        String errMsg = String.format("Error while accepting data from server %s", e.getMessage());
+                        log.error(errMsg);
+                        log.debug(errMsg, e);
+                    }
+                }
+            });
+        } else {
+            snooze();
+        }
+    }
+
+    @Override
+    public void finish() {}
+
     public void stop() {
         getAcceptorThread().stop();
         getConnections().forEach(Connection::close);
@@ -71,30 +96,5 @@ public class NetworkServer implements Threadable {
 
     }
 
-    @Override
-    public void update() {
-        if (getServerHolder().isActive()) {
-            getConnections().forEach(connection -> {
-                try {
-                    if (connection.getInput().available() > 0) {
-                        Packet packet = (Packet) connection.readObject();
-                        packet.apply(connection);
-                    }
-                } catch (Exception e) {
-                    if (connection.isActive()) {
-                        String errMsg = String.format("Error while accepting data from server %s", e.getMessage());
-                        log.error(errMsg);
-                        log.debug(errMsg, e);
-                    }
-                }
-            });
-        } else {
-            snooze();
-        }
-    }
-
-
-    @Override
-    public void finish() {}
 
 }

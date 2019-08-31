@@ -1,7 +1,7 @@
 package com.ternsip.glade.universe.parts.chunks;
 
-import com.ternsip.glade.common.logic.*;
 import com.ternsip.glade.common.logic.Timer;
+import com.ternsip.glade.common.logic.*;
 import com.ternsip.glade.universe.parts.blocks.Block;
 import com.ternsip.glade.universe.parts.blocks.BlockSide;
 import com.ternsip.glade.universe.parts.generators.ChunkGenerator;
