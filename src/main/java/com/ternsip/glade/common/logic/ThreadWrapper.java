@@ -15,10 +15,14 @@ public class ThreadWrapper<T extends Threadable> {
     private final Task<T> task;
     private final Thread thread;
 
-    public ThreadWrapper(Supplier<T> supplier) {
-        this.task = new Task<>(supplier);
+    public ThreadWrapper(Supplier<T> supplier, long timeout) {
+        this.task = new Task<>(supplier, timeout);
         this.thread = new Thread(task);
         this.thread.start();
+    }
+
+    public ThreadWrapper(Supplier<T> supplier) {
+        this(supplier, 0L);
     }
 
     public void stop() {
@@ -38,22 +42,33 @@ public class ThreadWrapper<T extends Threadable> {
         return getTask().getObjective();
     }
 
+    public void setTimeout(long timeout) {
+        getTask().getTimer().setTimeout(timeout);
+    }
+
     @RequiredArgsConstructor
+    @Getter
     private static class Task<T extends Threadable> implements Runnable {
 
         private final AtomicBoolean active = new AtomicBoolean(true);
         private final Supplier<T> supplier;
+        private final Timer timer;
 
         @Getter(lazy = true)
         private final T objective = supplier.get();
+
+        public Task(Supplier<T> supplier, long timeout) {
+            this.supplier = supplier;
+            this.timer = new Timer(timeout);
+        }
 
         public boolean isActive() {
             return this.active.get();
         }
 
         public void setActive(boolean active) {
-            this.active.set(active);
-            if (!this.active.get()) {
+            getActive().set(active);
+            if (!getActive().get()) {
                 getObjective().unlock();
             }
         }
@@ -63,6 +78,7 @@ public class ThreadWrapper<T extends Threadable> {
             getObjective().init();
             while (isActive()) {
                 getObjective().update();
+                getTimer().rest();
             }
             getObjective().finish();
         }

@@ -2,7 +2,6 @@ package com.ternsip.glade.universe;
 
 import com.ternsip.glade.common.events.base.EventSnapReceiver;
 import com.ternsip.glade.common.logic.Threadable;
-import com.ternsip.glade.common.logic.TimeNormalizer;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigyAxis;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigyDynamicText;
 import com.ternsip.glade.graphics.visual.impl.test.*;
@@ -46,8 +45,6 @@ public class Universe implements Threadable, Universal, Server, Client, Blocks {
     @Getter(lazy = true)
     private final Bindings bindings = new Bindings();
 
-    private final TimeNormalizer timeNormalizer = new TimeNormalizer(1000L / getBalance().getTicksPerSecond());
-
     @Override
     public void init() {
         spawnMenu();
@@ -60,11 +57,9 @@ public class Universe implements Threadable, Universal, Server, Client, Blocks {
         if (!getEventSnapReceiver().isApplicationActive()) {
             stopUniverseThread();
         }
-        getTimeNormalizer().drop();
         getEventSnapReceiver().update();
         getEntityRepository().update();
         getCollisions().update();
-        getTimeNormalizer().rest();
     }
 
     @SneakyThrows

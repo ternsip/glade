@@ -2,7 +2,6 @@ package com.ternsip.glade.network;
 
 import com.ternsip.glade.common.logic.ThreadWrapper;
 import com.ternsip.glade.common.logic.Threadable;
-import com.ternsip.glade.common.logic.TimeNormalizer;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -18,7 +17,6 @@ public class NetworkServer implements Threadable {
     private final long RETRY_INTERVAL = 500L;
 
     private final ArrayList<Connection> connections = new ArrayList<>();
-    private final TimeNormalizer timeNormalizer = new TimeNormalizer(1000L / 128);
 
     private ThreadWrapper<Acceptor> acceptorThread;
     private ServerHolder serverHolder = new ServerHolder();
@@ -41,28 +39,6 @@ public class NetworkServer implements Threadable {
 
     public void sendAll(Packet packet) {
         getConnections().forEach(connection -> connection.writeObject(packet));
-    }    @Override
-    public void update() {
-        if (getServerHolder().isActive()) {
-            getTimeNormalizer().drop();
-            getConnections().forEach(connection -> {
-                try {
-                    if (connection.getInput().available() > 0) {
-                        Packet packet = (Packet) connection.readObject();
-                        packet.apply(connection);
-                    }
-                } catch (Exception e) {
-                    if (connection.isActive()) {
-                        String errMsg = String.format("Error while accepting data from server %s", e.getMessage());
-                        log.error(errMsg);
-                        log.debug(errMsg, e);
-                    }
-                }
-            });
-            getTimeNormalizer().rest();
-        } else {
-            snooze();
-        }
     }
 
     @SneakyThrows
@@ -87,8 +63,6 @@ public class NetworkServer implements Threadable {
                         log.debug(errMsg, e);
                     }
                 }
-            } else {
-                snooze();
             }
         }
 
@@ -98,9 +72,29 @@ public class NetworkServer implements Threadable {
     }
 
     @Override
+    public void update() {
+        if (getServerHolder().isActive()) {
+            getConnections().forEach(connection -> {
+                try {
+                    if (connection.getInput().available() > 0) {
+                        Packet packet = (Packet) connection.readObject();
+                        packet.apply(connection);
+                    }
+                } catch (Exception e) {
+                    if (connection.isActive()) {
+                        String errMsg = String.format("Error while accepting data from server %s", e.getMessage());
+                        log.error(errMsg);
+                        log.debug(errMsg, e);
+                    }
+                }
+            });
+        } else {
+            snooze();
+        }
+    }
+
+
+    @Override
     public void finish() {}
-
-
-
 
 }

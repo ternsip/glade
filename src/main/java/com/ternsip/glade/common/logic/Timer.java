@@ -1,11 +1,17 @@
 package com.ternsip.glade.common.logic;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.SneakyThrows;
+
 /**
  * Timer class to control time
  *
  * @author Ternsip
  */
 @SuppressWarnings({"unused"})
+@Getter
+@Setter
 public class Timer {
 
     private long timeout = 0;
@@ -29,7 +35,7 @@ public class Timer {
      * Drop timer time
      */
     public void drop() {
-        this.lastTime = System.currentTimeMillis();
+        setLastTime(System.currentTimeMillis());
     }
 
     /**
@@ -38,7 +44,7 @@ public class Timer {
      * @return timer is over
      */
     public boolean isOver() {
-        return spent() > timeout;
+        return spent() > getTimeout();
     }
 
     /**
@@ -47,7 +53,19 @@ public class Timer {
      * @return How much time is demanded
      */
     public long demand() {
-        return Math.max(0, timeout - spent());
+        return Math.max(0, getTimeout() - spent());
+    }
+
+    /**
+     * Sleep if there is free time for that and drop timer
+     */
+    @SneakyThrows
+    public void rest() {
+        long needToSleep = demand();
+        if (needToSleep > 0) {
+            Thread.sleep(needToSleep);
+        }
+        drop();
     }
 
     /**
@@ -56,7 +74,7 @@ public class Timer {
      * @return How much time spent
      */
     private long spent() {
-        return System.currentTimeMillis() - lastTime;
+        return System.currentTimeMillis() - getLastTime();
     }
 
 }
