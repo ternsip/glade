@@ -39,7 +39,7 @@ public class NetworkClient implements Threadable {
     public void update() {
         if (getConnection().isActive()) {
             try {
-                Packet packet = (Packet)getConnection().readObject();
+                Packet packet = (Packet) getConnection().readObject();
                 packet.apply(getConnection());
             } catch (Exception e) {
                 if (getConnection().isActive()) {

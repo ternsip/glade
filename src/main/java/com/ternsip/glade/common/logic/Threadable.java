@@ -9,13 +9,13 @@ public interface Threadable {
     void finish();
 
     default void lock() throws InterruptedException {
-        synchronized(this) {
+        synchronized (this) {
             this.wait();
         }
     }
 
     default void unlock() {
-        synchronized(this) {
+        synchronized (this) {
             this.notify();
         }
     }

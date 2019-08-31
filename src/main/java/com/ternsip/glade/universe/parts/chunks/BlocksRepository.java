@@ -109,67 +109,6 @@ public class BlocksRepository implements Threadable {
         return getBlock(x, y, z);
     }
 
-    private void setBlock(int x, int y, int z, Block block) {
-        Chunk chunk = getChunk(x / Chunk.SIZE_X, z / Chunk.SIZE_Z);
-        chunk.blocks[x % Chunk.SIZE_X][y][z % Chunk.SIZE_Z] = block;
-        chunk.modified = true;
-    }
-
-    private Block getBlock(int x, int y, int z) {
-        Chunk chunk = getChunk(x / Chunk.SIZE_X, z / Chunk.SIZE_Z);
-        return chunk.blocks[x % Chunk.SIZE_X][y][z % Chunk.SIZE_Z];
-    }
-
-    private void setSkyLight(int x, int y, int z, byte light) {
-        Chunk chunk = getChunk(x / Chunk.SIZE_X, z / Chunk.SIZE_Z);
-        chunk.skyLights[x % Chunk.SIZE_X][y][z % Chunk.SIZE_Z] = light;
-        chunk.modified = true;
-    }
-
-    private byte getSkyLight(int x, int y, int z) {
-        Chunk chunk = getChunk(x / Chunk.SIZE_X, z / Chunk.SIZE_Z);
-        return chunk.skyLights[x % Chunk.SIZE_X][y][z % Chunk.SIZE_Z];
-    }
-
-    private void setEmitLight(int x, int y, int z, byte light) {
-        Chunk chunk = getChunk(x / Chunk.SIZE_X, z / Chunk.SIZE_Z);
-        chunk.emitLights[x % Chunk.SIZE_X][y][z % Chunk.SIZE_Z] = light;
-        chunk.modified = true;
-    }
-
-    private byte getEmitLight(int x, int y, int z) {
-        Chunk chunk = getChunk(x / Chunk.SIZE_X, z / Chunk.SIZE_Z);
-        return chunk.emitLights[x % Chunk.SIZE_X][y][z % Chunk.SIZE_Z];
-    }
-
-    private void setHeight(int x, int z, int height) {
-        Chunk chunk = getChunk(x / Chunk.SIZE_X, z / Chunk.SIZE_Z);
-        chunk.heights[x % Chunk.SIZE_X][z % Chunk.SIZE_Z] = height;
-        chunk.modified = true;
-    }
-
-    private int getHeight(int x, int z) {
-        Chunk chunk = getChunk(x / Chunk.SIZE_X, z / Chunk.SIZE_Z);
-        return chunk.heights[x % Chunk.SIZE_X][z % Chunk.SIZE_Z];
-    }
-
-    private SideData getSideData(SidePosition sPos) {
-        Chunk chunk = getChunk(sPos.getX() / Chunk.SIZE_X, sPos.getZ() / Chunk.SIZE_Z);
-        return chunk.sides.get(sPos);
-    }
-
-    private void addSide(SidePosition sPos, SideData sideData) {
-        Chunk chunk = getChunk(sPos.getX() / Chunk.SIZE_X, sPos.getZ() / Chunk.SIZE_Z);
-        chunk.sides.put(sPos, sideData);
-        chunk.modified = true;
-    }
-
-    private void removeSide(SidePosition sPos) {
-        Chunk chunk = getChunk(sPos.getX() / Chunk.SIZE_X, sPos.getZ() / Chunk.SIZE_Z);
-        chunk.sides.remove(sPos);
-        chunk.modified = true;
-    }
-
     @Override
     public void init() {
     }
@@ -245,6 +184,67 @@ public class BlocksRepository implements Threadable {
     @Nullable
     public Vector3ic traverse(LineSegmentf segment, Function<Block, Boolean> condition) {
         return traverseFull(segment, condition).stream().findFirst().orElse(null);
+    }
+
+    private void setBlock(int x, int y, int z, Block block) {
+        Chunk chunk = getChunk(x / Chunk.SIZE_X, z / Chunk.SIZE_Z);
+        chunk.blocks[x % Chunk.SIZE_X][y][z % Chunk.SIZE_Z] = block;
+        chunk.modified = true;
+    }
+
+    private Block getBlock(int x, int y, int z) {
+        Chunk chunk = getChunk(x / Chunk.SIZE_X, z / Chunk.SIZE_Z);
+        return chunk.blocks[x % Chunk.SIZE_X][y][z % Chunk.SIZE_Z];
+    }
+
+    private void setSkyLight(int x, int y, int z, byte light) {
+        Chunk chunk = getChunk(x / Chunk.SIZE_X, z / Chunk.SIZE_Z);
+        chunk.skyLights[x % Chunk.SIZE_X][y][z % Chunk.SIZE_Z] = light;
+        chunk.modified = true;
+    }
+
+    private byte getSkyLight(int x, int y, int z) {
+        Chunk chunk = getChunk(x / Chunk.SIZE_X, z / Chunk.SIZE_Z);
+        return chunk.skyLights[x % Chunk.SIZE_X][y][z % Chunk.SIZE_Z];
+    }
+
+    private void setEmitLight(int x, int y, int z, byte light) {
+        Chunk chunk = getChunk(x / Chunk.SIZE_X, z / Chunk.SIZE_Z);
+        chunk.emitLights[x % Chunk.SIZE_X][y][z % Chunk.SIZE_Z] = light;
+        chunk.modified = true;
+    }
+
+    private byte getEmitLight(int x, int y, int z) {
+        Chunk chunk = getChunk(x / Chunk.SIZE_X, z / Chunk.SIZE_Z);
+        return chunk.emitLights[x % Chunk.SIZE_X][y][z % Chunk.SIZE_Z];
+    }
+
+    private void setHeight(int x, int z, int height) {
+        Chunk chunk = getChunk(x / Chunk.SIZE_X, z / Chunk.SIZE_Z);
+        chunk.heights[x % Chunk.SIZE_X][z % Chunk.SIZE_Z] = height;
+        chunk.modified = true;
+    }
+
+    private int getHeight(int x, int z) {
+        Chunk chunk = getChunk(x / Chunk.SIZE_X, z / Chunk.SIZE_Z);
+        return chunk.heights[x % Chunk.SIZE_X][z % Chunk.SIZE_Z];
+    }
+
+    private SideData getSideData(SidePosition sPos) {
+        Chunk chunk = getChunk(sPos.getX() / Chunk.SIZE_X, sPos.getZ() / Chunk.SIZE_Z);
+        return chunk.sides.get(sPos);
+    }
+
+    private void addSide(SidePosition sPos, SideData sideData) {
+        Chunk chunk = getChunk(sPos.getX() / Chunk.SIZE_X, sPos.getZ() / Chunk.SIZE_Z);
+        chunk.sides.put(sPos, sideData);
+        chunk.modified = true;
+    }
+
+    private void removeSide(SidePosition sPos) {
+        Chunk chunk = getChunk(sPos.getX() / Chunk.SIZE_X, sPos.getZ() / Chunk.SIZE_Z);
+        chunk.sides.remove(sPos);
+        chunk.modified = true;
     }
 
     private void processMovementRequest(MovementRequest movementRequest) {

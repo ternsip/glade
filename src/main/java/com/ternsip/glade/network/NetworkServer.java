@@ -39,14 +39,16 @@ public class NetworkServer implements Threadable {
         getServerHolder().close();
     }
 
-    @Override
+    public void sendAll(Packet packet) {
+        getConnections().forEach(connection -> connection.writeObject(packet));
+    }    @Override
     public void update() {
         if (getServerHolder().isActive()) {
             getTimeNormalizer().drop();
             getConnections().forEach(connection -> {
                 try {
                     if (connection.getInput().available() > 0) {
-                        Packet packet = (Packet)connection.readObject();
+                        Packet packet = (Packet) connection.readObject();
                         packet.apply(connection);
                     }
                 } catch (Exception e) {
@@ -63,17 +65,10 @@ public class NetworkServer implements Threadable {
         }
     }
 
-    public void sendAll(Packet packet) {
-        getConnections().forEach(connection -> connection.writeObject(packet));
-    }
-
     @SneakyThrows
     private void snooze() {
         Thread.sleep(RETRY_INTERVAL);
     }
-
-    @Override
-    public void finish() {}
 
     public class Acceptor implements Threadable {
 
@@ -101,6 +96,11 @@ public class NetworkServer implements Threadable {
         public void finish() {}
 
     }
+
+    @Override
+    public void finish() {}
+
+
 
 
 }
