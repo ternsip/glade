@@ -1,24 +1,22 @@
 package com.ternsip.glade.common.logic;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.SneakyThrows;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Supplier;
 
 @RequiredArgsConstructor
-@Getter
-@Setter
+@Getter(value = AccessLevel.PRIVATE)
 public class ThreadWrapper<T extends Threadable> {
 
-    private final T objective;
-    private final Task task;
+    private final Task<T> task;
     private final Thread thread;
 
-    public ThreadWrapper(T objective) {
-        this.objective = objective;
-        this.task = new Task(objective);
+    public ThreadWrapper(Supplier<T> supplier) {
+        this.task = new Task<>(supplier);
         this.thread = new Thread(task);
         this.thread.start();
     }
@@ -36,11 +34,18 @@ public class ThreadWrapper<T extends Threadable> {
         return getTask().isActive();
     }
 
-    @RequiredArgsConstructor
-    private static class Task implements Runnable {
+    public T getObjective() {
+        return getTask().getObjective();
+    }
 
-        public final AtomicBoolean active = new AtomicBoolean(true);
-        public final Threadable threadable;
+    @RequiredArgsConstructor
+    private static class Task<T extends Threadable> implements Runnable {
+
+        private final AtomicBoolean active = new AtomicBoolean(true);
+        private final Supplier<T> supplier;
+
+        @Getter(lazy = true)
+        private final T objective = supplier.get();
 
         public boolean isActive() {
             return this.active.get();
@@ -49,17 +54,17 @@ public class ThreadWrapper<T extends Threadable> {
         public void setActive(boolean active) {
             this.active.set(active);
             if (!this.active.get()) {
-                threadable.unlock();
+                getObjective().unlock();
             }
         }
 
         @Override
         public void run() {
-            this.threadable.init();
+            getObjective().init();
             while (isActive()) {
-                this.threadable.update();
+                getObjective().update();
             }
-            this.threadable.finish();
+            getObjective().finish();
         }
     }
 

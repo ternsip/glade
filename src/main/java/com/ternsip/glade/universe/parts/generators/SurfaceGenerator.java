@@ -1,7 +1,7 @@
 package com.ternsip.glade.universe.parts.generators;
 
 import com.ternsip.glade.universe.parts.blocks.Block;
-import com.ternsip.glade.universe.parts.chunks.Blocks;
+import com.ternsip.glade.universe.parts.chunks.BlocksRepository;
 import lombok.Getter;
 import org.joml.SimplexNoise;
 import org.joml.Vector3i;
@@ -18,19 +18,19 @@ public class SurfaceGenerator implements ChunkGenerator {
     }
 
     @Override
-    public void populate(Blocks blocks) {
+    public void populate(BlocksRepository blocksRepository) {
         int[][] heightMapStone = generateHeightMap(11, 5, 50, 0.01f);
         int[][] heightMapDirt = generateHeightMap(60, 5, 20, 0.01f);
-        for (int x = 0; x < Blocks.SIZE_X; ++x) {
-            for (int z = 0; z < Blocks.SIZE_Z; ++z) {
-                for (int y = 0; y < Blocks.SIZE_Y; ++y) {
+        for (int x = 0; x < BlocksRepository.SIZE_X; ++x) {
+            for (int z = 0; z < BlocksRepository.SIZE_Z; ++z) {
+                for (int y = 0; y < BlocksRepository.SIZE_Y; ++y) {
                     Vector3ic wPos = new Vector3i(x, y, z);
                     int stoneHeight = height + heightMapStone[x][z];
                     int dirtHeight = stoneHeight + heightMapDirt[x][z];
                     if (wPos.y() < stoneHeight) {
-                        blocks.setBlockInternal(x, y, z, Block.STONE);
+                        blocksRepository.setBlockInternal(x, y, z, Block.STONE);
                     } else if (wPos.y() <= dirtHeight) {
-                        blocks.setBlockInternal(x, y, z, wPos.y() == dirtHeight ? Block.LAWN : Block.DIRT);
+                        blocksRepository.setBlockInternal(x, y, z, wPos.y() == dirtHeight ? Block.LAWN : Block.DIRT);
                     }
                 }
             }
@@ -38,9 +38,9 @@ public class SurfaceGenerator implements ChunkGenerator {
     }
 
     private int[][] generateHeightMap(float seed, long terraces, float deviation, float compress) {
-        int[][] heightMap = new int[Blocks.SIZE_X][Blocks.SIZE_Z];
-        for (int x = 0; x < Blocks.SIZE_X; ++x) {
-            for (int z = 0; z < Blocks.SIZE_Z; ++z) {
+        int[][] heightMap = new int[BlocksRepository.SIZE_X][BlocksRepository.SIZE_Z];
+        for (int x = 0; x < BlocksRepository.SIZE_X; ++x) {
+            for (int z = 0; z < BlocksRepository.SIZE_Z; ++z) {
                 float noiseX = x * compress;
                 float noiseZ = z * compress;
                 double noise1 = SimplexNoise.noise(noiseX, noiseZ, seed);

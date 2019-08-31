@@ -5,7 +5,7 @@ import com.ternsip.glade.universe.Universe;
 
 public interface Universal {
 
-    ThreadWrapper<Universe> UNIVERSE_THREAD = new ThreadWrapper<>(new Universe());
+    ThreadWrapper<Universe> UNIVERSE_THREAD = new ThreadWrapper<>(Universe::new);
 
     default boolean isUniverseThreadActive() {
         return UNIVERSE_THREAD.isActive();

@@ -1,7 +1,7 @@
 package com.ternsip.glade.universe.parts.generators;
 
 import com.ternsip.glade.universe.parts.blocks.Block;
-import com.ternsip.glade.universe.parts.chunks.Blocks;
+import com.ternsip.glade.universe.parts.chunks.BlocksRepository;
 
 public class WaterGenerator implements ChunkGenerator {
 
@@ -13,12 +13,12 @@ public class WaterGenerator implements ChunkGenerator {
     }
 
     @Override
-    public void populate(Blocks blocks) {
-        for (int x = 0; x < Blocks.SIZE_X; ++x) {
-            for (int z = 0; z < Blocks.SIZE_Z; ++z) {
-                for (int y = 0; y < Blocks.SIZE_Y; ++y) {
-                    if (y <= waterHeight && blocks.getBlockInternal(x, y, z) == Block.AIR) {
-                        blocks.setBlockInternal(x, y, z, Block.WATER);
+    public void populate(BlocksRepository blocksRepository) {
+        for (int x = 0; x < BlocksRepository.SIZE_X; ++x) {
+            for (int z = 0; z < BlocksRepository.SIZE_Z; ++z) {
+                for (int y = 0; y < BlocksRepository.SIZE_Y; ++y) {
+                    if (y <= waterHeight && blocksRepository.getBlockInternal(x, y, z) == Block.AIR) {
+                        blocksRepository.setBlockInternal(x, y, z, Block.WATER);
                     }
                 }
             }

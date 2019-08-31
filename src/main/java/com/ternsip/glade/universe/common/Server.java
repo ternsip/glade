@@ -5,7 +5,7 @@ import com.ternsip.glade.network.NetworkServer;
 
 public interface Server {
 
-    ThreadWrapper<NetworkServer> SERVER_THREAD = new ThreadWrapper<>(new NetworkServer());
+    ThreadWrapper<NetworkServer> SERVER_THREAD = new ThreadWrapper<>(NetworkServer::new);
 
     default void stopServerThread() {
         getServer().stop();

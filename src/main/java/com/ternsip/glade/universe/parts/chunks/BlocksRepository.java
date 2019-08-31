@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 import static com.ternsip.glade.common.logic.Maths.frac;
 
 @Slf4j
-public class Blocks implements Threadable {
+public class BlocksRepository implements Threadable {
 
     public static final int CHUNKS_X = 8;
     public static final int CHUNKS_Z = 8;
@@ -46,7 +46,7 @@ public class Blocks implements Threadable {
     @Getter
     private final ConcurrentLinkedDeque<BlocksUpdate> blocksUpdates = new ConcurrentLinkedDeque<>();
 
-    public Blocks() {
+    public BlocksRepository() {
         this.storage = new Storage("blocks_meta");
         if (!storage.isExists()) {
             for (ChunkGenerator chunkGenerator : CHUNK_GENERATORS) {

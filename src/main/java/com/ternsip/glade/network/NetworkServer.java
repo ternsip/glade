@@ -30,7 +30,7 @@ public class NetworkServer implements Threadable {
 
     @Override
     public void init() {
-        acceptorThread = new ThreadWrapper<>(new Acceptor());
+        acceptorThread = new ThreadWrapper<>(Acceptor::new);
     }
 
     public void stop() {

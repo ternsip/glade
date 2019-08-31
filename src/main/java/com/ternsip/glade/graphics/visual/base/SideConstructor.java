@@ -23,7 +23,7 @@ import static com.ternsip.glade.graphics.shader.base.ShaderProgram.INDICES;
 import static com.ternsip.glade.graphics.shader.base.ShaderProgram.VERTICES;
 import static com.ternsip.glade.graphics.shader.impl.ChunkShader.*;
 import static com.ternsip.glade.graphics.visual.base.SideConstructor.SideIndexData.*;
-import static com.ternsip.glade.universe.parts.chunks.Blocks.MAX_LIGHT_LEVEL;
+import static com.ternsip.glade.universe.parts.chunks.BlocksRepository.MAX_LIGHT_LEVEL;
 
 public class SideConstructor implements Graphical {
 

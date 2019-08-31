@@ -15,7 +15,7 @@ import java.lang.Math;
 import java.util.List;
 
 import static com.ternsip.glade.common.logic.Maths.*;
-import static com.ternsip.glade.universe.parts.chunks.Blocks.MAX_LIGHT_LEVEL;
+import static com.ternsip.glade.universe.parts.chunks.BlocksRepository.MAX_LIGHT_LEVEL;
 import static org.lwjgl.glfw.GLFW.*;
 
 @Getter

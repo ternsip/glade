@@ -5,7 +5,7 @@ import com.ternsip.glade.network.NetworkClient;
 
 public interface Client {
 
-    ThreadWrapper<NetworkClient> CLIENT_THREAD = new ThreadWrapper<>(new NetworkClient());
+    ThreadWrapper<NetworkClient> CLIENT_THREAD = new ThreadWrapper<>(NetworkClient::new);
 
     default void stopClientThread() {
         getClient().stop();

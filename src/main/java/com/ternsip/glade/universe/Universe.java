@@ -1,7 +1,6 @@
 package com.ternsip.glade.universe;
 
 import com.ternsip.glade.common.events.base.EventSnapReceiver;
-import com.ternsip.glade.common.logic.ThreadWrapper;
 import com.ternsip.glade.common.logic.Threadable;
 import com.ternsip.glade.common.logic.TimeNormalizer;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigyAxis;
@@ -13,15 +12,11 @@ import com.ternsip.glade.universe.bindings.Bindings;
 import com.ternsip.glade.universe.collisions.base.Collisions;
 import com.ternsip.glade.universe.collisions.impl.ChunksObstacle;
 import com.ternsip.glade.universe.collisions.impl.GroundObstacle;
-import com.ternsip.glade.universe.common.Balance;
-import com.ternsip.glade.universe.common.Client;
-import com.ternsip.glade.universe.common.Server;
-import com.ternsip.glade.universe.common.Universal;
+import com.ternsip.glade.universe.common.*;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.impl.*;
 import com.ternsip.glade.universe.entities.repository.EntityRepository;
 import com.ternsip.glade.universe.entities.ui.EntityUIMenu;
-import com.ternsip.glade.universe.parts.chunks.Blocks;
 import com.ternsip.glade.universe.protocol.ConsoleMessagePacket;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,7 +28,7 @@ import java.io.File;
 
 @Getter
 @Setter
-public class Universe implements Threadable, Universal, Server, Client {
+public class Universe implements Threadable, Universal, Server, Client, Blocks {
 
     private final EventSnapReceiver eventSnapReceiver = new EventSnapReceiver();
 
@@ -47,9 +42,6 @@ public class Universe implements Threadable, Universal, Server, Client {
 
     @Getter(lazy = true)
     private final Collisions collisions = new Collisions();
-
-    @Getter(lazy = true)
-    private final ThreadWrapper<Blocks> blocksThread = new ThreadWrapper<>(new Blocks());
 
     @Getter(lazy = true)
     private final Bindings bindings = new Bindings();
@@ -78,14 +70,10 @@ public class Universe implements Threadable, Universal, Server, Client {
     @SneakyThrows
     @Override
     public void finish() {
-        getBlocksThread().stop();
+        stopBlocksThread();
         getBindings().finish();
         stopClientThread();
         stopServerThread();
-    }
-
-    public Blocks getBlocks() {
-        return getBlocksThread().getObjective();
     }
 
     public void startClient() {
