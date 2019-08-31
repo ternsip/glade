@@ -18,6 +18,7 @@ import com.ternsip.glade.graphics.display.Graphical;
 // TODO TURN ALL Vectors and Matrixes and Quaternions to constant interface (quatenrionfc/matrixfc)]
 // TODO SHADOWING/LIGHTING
 // TODO Animated Textures
+// TODO It is worth it to use polar interpolation instead of linear for animated models
 public class Glade {
 
     public static void main(String[] args) {
