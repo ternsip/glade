@@ -7,8 +7,6 @@ import com.ternsip.glade.common.logic.TimeNormalizer;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigyAxis;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigyDynamicText;
 import com.ternsip.glade.graphics.visual.impl.test.*;
-import com.ternsip.glade.network.NetworkClient;
-import com.ternsip.glade.network.NetworkServer;
 import com.ternsip.glade.universe.audio.SoundRepository;
 import com.ternsip.glade.universe.bindings.Bind;
 import com.ternsip.glade.universe.bindings.Bindings;
@@ -16,6 +14,8 @@ import com.ternsip.glade.universe.collisions.base.Collisions;
 import com.ternsip.glade.universe.collisions.impl.ChunksObstacle;
 import com.ternsip.glade.universe.collisions.impl.GroundObstacle;
 import com.ternsip.glade.universe.common.Balance;
+import com.ternsip.glade.universe.common.Client;
+import com.ternsip.glade.universe.common.Server;
 import com.ternsip.glade.universe.common.Universal;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.impl.*;
@@ -33,7 +33,7 @@ import java.io.File;
 
 @Getter
 @Setter
-public class Universe implements Threadable {
+public class Universe implements Threadable, Universal, Server, Client {
 
     private final EventSnapReceiver eventSnapReceiver = new EventSnapReceiver();
 
@@ -54,12 +54,6 @@ public class Universe implements Threadable {
     @Getter(lazy = true)
     private final Bindings bindings = new Bindings();
 
-    @Getter(lazy = true)
-    private final ThreadWrapper<NetworkServer> serverThread = new ThreadWrapper<>(new NetworkServer());
-
-    @Getter(lazy = true)
-    private final ThreadWrapper<NetworkClient> clientThread = new ThreadWrapper<>(new NetworkClient());
-
     private final TimeNormalizer timeNormalizer = new TimeNormalizer(1000L / getBalance().getTicksPerSecond());
 
     @Override
@@ -72,7 +66,7 @@ public class Universe implements Threadable {
     @Override
     public void update() {
         if (!getEventSnapReceiver().isApplicationActive()) {
-            stop();
+            stopUniverseThread();
         }
         getTimeNormalizer().drop();
         getEventSnapReceiver().update();
@@ -86,24 +80,12 @@ public class Universe implements Threadable {
     public void finish() {
         getBlocksThread().stop();
         getBindings().finish();
-        stopClient();
-        stopServer();
+        stopClientThread();
+        stopServerThread();
     }
 
     public Blocks getBlocks() {
         return getBlocksThread().getObjective();
-    }
-
-    public NetworkClient getClient() {
-        return getClientThread().getObjective();
-    }
-
-    public NetworkServer getServer() {
-        return getServerThread().getObjective();
-    }
-
-    public void stop() {
-        Universal.stopThread();
     }
 
     public void startClient() {
@@ -205,18 +187,6 @@ public class Universe implements Threadable {
         entityCubeSelection.register();
 
         new EntitySides().register();
-    }
-
-    private void stopClient() {
-        getClient().stop();
-        getClientThread().stop();
-        getClientThread().join();
-    }
-
-    private void stopServer() {
-        getServer().stop();
-        getServerThread().stop();
-        getServerThread().join();
     }
 
 }

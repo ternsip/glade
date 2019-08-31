@@ -7,11 +7,11 @@ public interface Universal {
 
     ThreadWrapper<Universe> UNIVERSE_THREAD = new ThreadWrapper<>(new Universe());
 
-    static boolean isThreadActive() {
+    default boolean isUniverseThreadActive() {
         return UNIVERSE_THREAD.isActive();
     }
 
-    static void stopThread() {
+    default void stopUniverseThread() {
         UNIVERSE_THREAD.stop();
     }
 
