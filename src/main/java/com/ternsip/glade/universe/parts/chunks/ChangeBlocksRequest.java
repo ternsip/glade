@@ -6,12 +6,12 @@ import org.joml.Vector3i;
 import org.joml.Vector3ic;
 
 @Getter
-public class SetBlocksRequest {
+public class ChangeBlocksRequest {
 
     private final Vector3ic start;
     private final Block[][][] blocks;
 
-    public SetBlocksRequest(Vector3ic start, Block[][][] blocks) {
+    public ChangeBlocksRequest(Vector3ic start, Block[][][] blocks) {
         this.start = start;
         this.blocks = blocks;
         if (getSize().length() == 0) {
@@ -19,7 +19,7 @@ public class SetBlocksRequest {
         }
     }
 
-    public SetBlocksRequest(Vector3ic start, Block block) {
+    public ChangeBlocksRequest(Vector3ic start, Block block) {
         this.start = start;
         this.blocks = new Block[1][1][1];
         this.blocks[0][0][0] = block;

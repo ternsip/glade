@@ -40,7 +40,7 @@ public class Blocks implements Threadable {
     private final Timer relaxationTimer = new Timer(200);
     private final Chunk[][] chunks = new Chunk[CHUNKS_X][CHUNKS_Z];
     private final Set<Chunk> loadedChunks = Collections.newSetFromMap(new ConcurrentHashMap<>());
-    private final ConcurrentLinkedDeque<SetBlocksRequest> setBlocksRequests = new ConcurrentLinkedDeque<>();
+    private final ConcurrentLinkedDeque<ChangeBlocksRequest> changeBlocksRequests = new ConcurrentLinkedDeque<>();
     private final ConcurrentLinkedDeque<MovementRequest> movementRequests = new ConcurrentLinkedDeque<>();
 
     @Getter
@@ -76,12 +76,12 @@ public class Blocks implements Threadable {
     }
 
     public void setBlock(Vector3ic pos, Block block) {
-        setBlocksRequests.add(new SetBlocksRequest(pos, block));
+        changeBlocksRequests.add(new ChangeBlocksRequest(pos, block));
         unlock();
     }
 
     public void setBlocks(Vector3ic start, Block[][][] regionBlocks) {
-        setBlocksRequests.add(new SetBlocksRequest(start, regionBlocks));
+        changeBlocksRequests.add(new ChangeBlocksRequest(start, regionBlocks));
         unlock();
     }
 
@@ -177,14 +177,14 @@ public class Blocks implements Threadable {
     @Override
     @SneakyThrows
     public void update() {
-        if (setBlocksRequests.isEmpty() && movementRequests.isEmpty()) {
+        if (changeBlocksRequests.isEmpty() && movementRequests.isEmpty()) {
             lock();
         }
         while (!movementRequests.isEmpty()) {
             processMovementRequest(movementRequests.poll());
         }
-        while (!setBlocksRequests.isEmpty()) {
-            processSetBlockRequest(setBlocksRequests.poll());
+        while (!changeBlocksRequests.isEmpty()) {
+            processSetBlockRequest(changeBlocksRequests.poll());
         }
     }
 
@@ -324,11 +324,11 @@ public class Blocks implements Threadable {
         }
     }
 
-    private void processSetBlockRequest(SetBlocksRequest setBlocksRequest) {
-        Vector3ic start = setBlocksRequest.getStart();
-        Vector3ic size = setBlocksRequest.getSize();
-        Vector3ic endExcluding = setBlocksRequest.getEndExcluding();
-        Block[][][] regionBlocks = setBlocksRequest.getBlocks();
+    private void processSetBlockRequest(ChangeBlocksRequest changeBlocksRequest) {
+        Vector3ic start = changeBlocksRequest.getStart();
+        Vector3ic size = changeBlocksRequest.getSize();
+        Vector3ic endExcluding = changeBlocksRequest.getEndExcluding();
+        Block[][][] regionBlocks = changeBlocksRequest.getBlocks();
         for (int x = start.x(), dx = 0; x < endExcluding.x(); ++x, ++dx) {
             for (int y = start.y(), dy = 0; y < endExcluding.y(); ++y, ++dy) {
                 for (int z = start.z(), dz = 0; z < endExcluding.z(); ++z, ++dz) {
