@@ -1,9 +1,9 @@
 package com.ternsip.glade.graphics.visual.repository;
 
-import com.ternsip.glade.graphics.interfaces.Graphical;
+import com.ternsip.glade.graphics.interfaces.IGraphics;
 import com.ternsip.glade.graphics.visual.base.Effigy;
 import com.ternsip.glade.universe.entities.base.Entity;
-import com.ternsip.glade.universe.interfaces.Universal;
+import com.ternsip.glade.universe.interfaces.IUniverseClient;
 import lombok.Getter;
 
 import java.util.HashMap;
@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Getter
-public class EffigyRepository implements Universal, Graphical {
+public class EffigyRepository implements IUniverseClient, IGraphics {
 
     private final Map<Entity, Effigy> entityToEffigy = new HashMap<>();
 
@@ -30,7 +30,7 @@ public class EffigyRepository implements Universal, Graphical {
 
     @SuppressWarnings("unchecked")
     private void updateEntities() {
-        Set<Entity> entities = getUniverse().getEntityRepository().getEntities();
+        Set<Entity> entities = getUniverseClient().getEntityRepository().getEntities();
         entities.forEach(e -> getEntityToEffigy().computeIfAbsent(e, x -> e.getEffigy()));
         getEntityToEffigy().entrySet().removeIf(entry -> {
             Entity entity = entry.getKey();
@@ -42,16 +42,7 @@ public class EffigyRepository implements Universal, Graphical {
             }
             return false;
         });
-        getEntityToEffigy().entrySet().forEach(entry -> {
-            Entity entity = entry.getKey();
-            Effigy effigy = entry.getValue();
-            if (entity.isVisualReloadRequired()) {
-                effigy.finish();
-                entry.setValue(entity.getEffigy());
-                entity.setVisualReloadRequired(false);
-            }
-        });
-        Entity cameraTarget = getUniverse().getEntityRepository().getCameraTarget();
+        Entity cameraTarget = getUniverseClient().getEntityRepository().getCameraTarget();
         getEntityToEffigy().forEach((entity, effigy) -> {
             entity.update(effigy);
             if (entity == cameraTarget) {

@@ -1,13 +1,13 @@
 package com.ternsip.glade.graphics.display;
 
-import com.ternsip.glade.graphics.interfaces.Graphical;
-import com.ternsip.glade.universe.interfaces.Universal;
+import com.ternsip.glade.graphics.interfaces.IGraphics;
+import com.ternsip.glade.universe.interfaces.IUniverseClient;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class FpsCounter implements Universal, Graphical {
+public class FpsCounter implements IUniverseClient, IGraphics {
 
     private static final long FPS_MEASURE_TIME_MILLISECONDS = 250;
 

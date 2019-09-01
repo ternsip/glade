@@ -4,8 +4,8 @@ import com.ternsip.glade.common.events.base.CharEvent;
 import com.ternsip.glade.common.events.base.ErrorEvent;
 import com.ternsip.glade.common.events.base.Event;
 import com.ternsip.glade.common.events.display.*;
-import com.ternsip.glade.graphics.interfaces.Graphical;
-import com.ternsip.glade.universe.interfaces.Universal;
+import com.ternsip.glade.graphics.interfaces.IGraphics;
+import com.ternsip.glade.universe.interfaces.IUniverseClient;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.Vector2i;
@@ -24,7 +24,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 @Getter
 @Setter
-public class WindowData implements Universal, Graphical {
+public class WindowData implements IUniverseClient, IGraphics {
 
     public static final Vector4fc BACKGROUND_COLOR = new Vector4f(1f, 0f, 0f, 1f);
 
@@ -214,7 +214,7 @@ public class WindowData implements Universal, Graphical {
 
     private <T extends Event> void registerEvent(Class<T> clazz, T event) {
         getGraphics().getEventSnapReceiver().registerEvent(clazz, event);
-        getUniverse().getEventSnapReceiver().registerEvent(clazz, event);
+        getUniverseClient().getEventSnapReceiver().registerEvent(clazz, event);
     }
 
     private void handleError(ErrorEvent errorEvent) {

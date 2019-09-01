@@ -36,7 +36,7 @@ public class EffigySides extends Effigy<ChunkShader> {
         getShader().getViewMatrix().load(getViewMatrix());
         getShader().getTransformationMatrix().load(getTransformationMatrix());
         getShader().getTime().load((System.currentTimeMillis() % TIME_PERIOD_MILLISECONDS) / TIME_PERIOD_DIVISOR);
-        getShader().getSun().load(getUniverse().getEntityRepository().getSun());
+        getShader().getSun().load(getUniverseClient().getEntityRepository().getSun());
         getShader().getSamplers().loadDefault();
         for (Mesh mesh : getSideConstructor().getMeshes()) {
             mesh.render();

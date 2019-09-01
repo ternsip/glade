@@ -1,7 +1,7 @@
 package com.ternsip.glade.universe.collisions.base;
 
 import com.ternsip.glade.common.logic.Utils;
-import com.ternsip.glade.universe.interfaces.Universal;
+import com.ternsip.glade.universe.interfaces.IUniverseClient;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,7 @@ import org.joml.Vector3fc;
 import java.util.*;
 
 @Getter(AccessLevel.PRIVATE)
-public class Collisions implements Universal {
+public class Collisions implements IUniverseClient {
 
     private final Octree octree = new Octree();
 

@@ -16,7 +16,7 @@ public class EntityCubeSelection extends Entity<EffigyCube> {
         Vector3fc eye = effigy.getGraphics().getCameraController().getTarget();
         Vector3fc direction = effigy.getGraphics().getCameraController().getLookDirection().mul(10, new Vector3f());
         LineSegmentf segment = new LineSegmentf(eye, eye.add(direction, new Vector3f()));
-        Vector3ic pos = getUniverse().getBlocks().traverse(segment, block -> block != Block.AIR);
+        Vector3ic pos = getUniverseClient().getBlocks().traverse(segment, block -> block != Block.AIR);
         if (pos != null) {
             setVisible(true);
             setPosition(new Vector3f(pos));

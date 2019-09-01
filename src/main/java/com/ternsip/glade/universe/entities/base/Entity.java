@@ -1,7 +1,7 @@
 package com.ternsip.glade.universe.entities.base;
 
 import com.ternsip.glade.graphics.visual.base.Effigy;
-import com.ternsip.glade.universe.interfaces.Universal;
+import com.ternsip.glade.universe.interfaces.IUniverseClient;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.Vector3fc;
@@ -11,16 +11,14 @@ import org.joml.Vector3fc;
  */
 @Getter
 @Setter
-public abstract class Entity<T extends Effigy> extends Volumetric implements Universal {
-
-    private boolean visualReloadRequired = false;
+public abstract class Entity<T extends Effigy> extends Volumetric implements IUniverseClient {
 
     public void register() {
-        getUniverse().getEntityRepository().register(this);
+        getUniverseClient().getEntityRepository().register(this);
     }
 
     public void unregister() {
-        getUniverse().getEntityRepository().unregister(this);
+        getUniverseClient().getEntityRepository().unregister(this);
     }
 
     public void update(T effigy) {

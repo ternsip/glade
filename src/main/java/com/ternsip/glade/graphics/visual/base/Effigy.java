@@ -3,17 +3,17 @@ package com.ternsip.glade.graphics.visual.base;
 import com.ternsip.glade.common.logic.Maths;
 import com.ternsip.glade.common.logic.Utils;
 import com.ternsip.glade.graphics.general.Model;
-import com.ternsip.glade.graphics.interfaces.Graphical;
+import com.ternsip.glade.graphics.interfaces.IGraphics;
 import com.ternsip.glade.graphics.shader.base.ShaderProgram;
 import com.ternsip.glade.universe.entities.base.Volumetric;
-import com.ternsip.glade.universe.interfaces.Universal;
+import com.ternsip.glade.universe.interfaces.IUniverseClient;
 import lombok.Getter;
 import org.joml.*;
 
 import java.lang.Math;
 
 @Getter
-public abstract class Effigy<SHADER extends ShaderProgram> extends Volumetric implements Graphical, Universal {
+public abstract class Effigy<SHADER extends ShaderProgram> extends Volumetric implements IGraphics, IUniverseClient {
 
     @Getter(lazy = true)
     private final Model model = getGraphics().getModelRepository().getEffigyModel(this);

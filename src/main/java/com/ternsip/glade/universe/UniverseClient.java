@@ -5,8 +5,6 @@ import com.ternsip.glade.graphics.visual.impl.basis.EffigyAxis;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigyDynamicText;
 import com.ternsip.glade.graphics.visual.impl.test.*;
 import com.ternsip.glade.universe.bindings.Bind;
-import com.ternsip.glade.universe.collisions.impl.ChunksObstacle;
-import com.ternsip.glade.universe.collisions.impl.GroundObstacle;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.impl.*;
 import com.ternsip.glade.universe.entities.ui.EntityUIMenu;
@@ -22,44 +20,37 @@ import java.io.File;
 
 @Getter
 @Setter
-public class Universe implements Threadable, Universal, INetworkServer, INetworkClient, IBlocksRepository, IBindings, ICollisions, IBalance,
-        ISoundRepository, IEntityRepository, IEventSnapReceiver {
+public class UniverseClient implements Threadable, INetworkClient, IBindings, ISoundRepository,
+        IEntityRepository, IEventSnapReceiver {
 
     private final String name = "universe";
 
     @Override
     public void init() {
         spawnMenu();
-        startServer();
+        IUniverseServer.run(6789);
         startClient();
     }
 
     @Override
     public void update() {
         if (!getEventSnapReceiver().isApplicationActive()) {
-            stopUniverseThread();
+            IUniverseClient.stopUniverseClientThread();
         }
         getEventSnapReceiver().update();
         getEntityRepository().update();
-        getCollisions().update();
     }
 
     @SneakyThrows
     @Override
     public void finish() {
-        stopBlocksThread();
         getBindings().finish();
         stopClientThread();
-        stopServerThread();
     }
 
     public void startClient() {
         getClient().connect("localhost", 6789);
         spawnClientEntities();
-    }
-
-    public void startServer() {
-        getServer().bind(6789);
     }
 
     private void spawnMenu() {
@@ -125,9 +116,6 @@ public class Universe implements Threadable, Universal, INetworkServer, INetwork
         dude.setScale(new Vector3f(10f, 10f, 10f));
 
         new EntityGenericRotating(() -> new EffigyDynamicText(new File("fonts/default.png"), false, false, new Vector4f(0, 0, 1, 1), "Hello world!"), new Vector3f(0, 0.1f, 0)).register();
-
-        getCollisions().add(new GroundObstacle());
-        getCollisions().add(new ChunksObstacle());
 
         for (int i = 0; i < 10; ++i) {
             for (int j = 0; j < 10; ++j) {

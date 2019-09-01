@@ -35,13 +35,13 @@ public class EntityPlayer extends Entity<EffigyBoy> {
     @Override
     public void register() {
         super.register();
-        getUniverse().getEventSnapReceiver().registerCallback(KeyEvent.class, keyCallback);
+        getUniverseClient().getEventSnapReceiver().registerCallback(KeyEvent.class, keyCallback);
     }
 
     @Override
     public void unregister() {
         super.unregister();
-        getUniverse().getEventSnapReceiver().unregisterCallback(KeyEvent.class, keyCallback);
+        getUniverseClient().getEventSnapReceiver().unregisterCallback(KeyEvent.class, keyCallback);
     }
 
     @Override
@@ -64,7 +64,7 @@ public class EntityPlayer extends Entity<EffigyBoy> {
     public void update() {
         checkInputs();
         Vector3f moveDirection = getMoveEffort().rotate(Maths.getRotationQuaternion(getRotation()), new Vector3f());
-        getCurrentVelocity().add(getUniverse().getBalance().getGravity());
+        getCurrentVelocity().add(getUniverseClient().getBalance().getGravity());
         Vector3fc cPos = getPosition();
         Vector3fc nPos = new Vector3f(cPos)
                 .add(getCurrentVelocity())
@@ -94,11 +94,11 @@ public class EntityPlayer extends Entity<EffigyBoy> {
 
     private float getSkyIntensity() {
         Vector3ic blockPos = round(getPosition());
-        return getUniverse().getBlocks().isBlockExists(blockPos) ? getUniverse().getBlocks().getSkyLight(blockPos) / (float) MAX_LIGHT_LEVEL : 1;
+        return getUniverseClient().getBlocks().isBlockExists(blockPos) ? getUniverseClient().getBlocks().getSkyLight(blockPos) / (float) MAX_LIGHT_LEVEL : 1;
     }
 
     private Vector3fc tryToMove(Vector3fc startPosition, Vector3fc endPosition) {
-        List<Collision> collisions = getUniverse().getCollisions().collideSegment(new LineSegmentf(startPosition, endPosition));
+        List<Collision> collisions = getUniverseClient().getCollisions().collideSegment(new LineSegmentf(startPosition, endPosition));
         if (!collisions.isEmpty()) {
             Vector3fc intersection = collisions.get(0).getPosition();
             Vector3f shift = Maths.normalizeOrEmpty(new Vector3f(startPosition).sub(endPosition)).mul(2 * EPS, new Vector3f());
@@ -110,16 +110,16 @@ public class EntityPlayer extends Entity<EffigyBoy> {
     private void checkInputs() {
 
         Vector3f move = new Vector3f(0);
-        if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_W) || getUniverse().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_1) && getUniverse().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_2)) {
+        if (getUniverseClient().getEventSnapReceiver().isKeyDown(GLFW_KEY_W) || getUniverseClient().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_1) && getUniverseClient().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_2)) {
             move.add(FRONT_DIRECTION);
         }
-        if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_S)) {
+        if (getUniverseClient().getEventSnapReceiver().isKeyDown(GLFW_KEY_S)) {
             move.add(BACK_DIRECTION);
         }
-        if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_D)) {
+        if (getUniverseClient().getEventSnapReceiver().isKeyDown(GLFW_KEY_D)) {
             move.add(RIGHT_DIRECTION);
         }
-        if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_A)) {
+        if (getUniverseClient().getEventSnapReceiver().isKeyDown(GLFW_KEY_A)) {
             move.add(LEFT_DIRECTION);
         }
 
@@ -147,15 +147,15 @@ public class EntityPlayer extends Entity<EffigyBoy> {
 
         if (event.getKey() == GLFW_KEY_B && event.getAction() == GLFW_PRESS) {
             Vector3ic blockUnder = getBlockPositionStandingOn();
-            if (getUniverse().getBlocks().isBlockExists(blockUnder)) {
-                getUniverse().getBlocks().setBlock(blockUnder, Block.AIR);
+            if (getUniverseClient().getBlocks().isBlockExists(blockUnder)) {
+                getUniverseClient().getBlocks().setBlock(blockUnder, Block.AIR);
             }
         }
 
         if (event.getKey() == GLFW_KEY_Q && event.getAction() == GLFW_PRESS) {
-            Vector3ic blockPositionLooking = getUniverse().getBlocks().traverse(eyeSegment, (block) -> block != Block.AIR);
-            if (blockPositionLooking != null && getUniverse().getBlocks().isBlockExists(blockPositionLooking)) {
-                getUniverse().getBlocks().setBlock(blockPositionLooking, Block.AIR);
+            Vector3ic blockPositionLooking = getUniverseClient().getBlocks().traverse(eyeSegment, (block) -> block != Block.AIR);
+            if (blockPositionLooking != null && getUniverseClient().getBlocks().isBlockExists(blockPositionLooking)) {
+                getUniverseClient().getBlocks().setBlock(blockPositionLooking, Block.AIR);
             }
         }
 

@@ -1,9 +1,9 @@
 package com.ternsip.glade.universe.protocol;
 
 import com.ternsip.glade.network.Connection;
-import com.ternsip.glade.network.Packet;
+import com.ternsip.glade.network.ServerPacket;
 
-public class SpawnEntity implements Packet {
+public class SpawnEntity implements ServerPacket {
 
     @Override
     public void apply(Connection connection) {

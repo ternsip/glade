@@ -37,7 +37,7 @@ public class NetworkServer implements Threadable {
             getConnections().forEach(connection -> {
                 try {
                     if (connection.getInput().available() > 0) {
-                        Packet packet = (Packet) connection.readObject();
+                        ServerPacket packet = (ServerPacket) connection.readObject();
                         packet.apply(connection);
                     }
                 } catch (Exception e) {
@@ -62,7 +62,7 @@ public class NetworkServer implements Threadable {
         getServerHolder().close();
     }
 
-    public void sendAll(Packet packet) {
+    public void sendAll(ServerPacket packet) {
         getConnections().forEach(connection -> connection.writeObject(packet));
     }
 

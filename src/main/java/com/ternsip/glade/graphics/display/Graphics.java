@@ -1,16 +1,16 @@
 package com.ternsip.glade.graphics.display;
 
 import com.ternsip.glade.graphics.interfaces.*;
-import com.ternsip.glade.universe.interfaces.Universal;
+import com.ternsip.glade.universe.interfaces.IUniverseClient;
 import lombok.Getter;
 
 /**
  * Provides full control over user Input/Output channels
  * Uses OpenGL/OpenAl under the hood and maybe some other IO-libraries
- * In general words it is graphical representation of the universe state
+ * In general words it is graphical representation of the client universe state
  */
 @Getter
-public class Graphics implements Universal, IEventSnapReceiver, IFrameBuffers, IWindowData, ITextureRepository,
+public class Graphics implements IUniverseClient, IEventSnapReceiver, IFrameBuffers, IWindowData, ITextureRepository,
         IModelRepository, IShaderRepository, ICamera, ICameraController, IEffigyRepository, ITexturePackRepository,
         IAudioRepository {
 
@@ -28,7 +28,7 @@ public class Graphics implements Universal, IEventSnapReceiver, IFrameBuffers, I
     }
 
     private void loop() {
-        while (getWindowData().isActive() && isUniverseThreadActive()) {
+        while (getWindowData().isActive() && isUniverseClientThreadActive()) {
             getFrameBuffers().bindBuffer();
             getWindowData().clear();
             getEventSnapReceiver().update();
@@ -42,7 +42,7 @@ public class Graphics implements Universal, IEventSnapReceiver, IFrameBuffers, I
     }
 
     private void finish() {
-        getUniverse().getEventSnapReceiver().getApplicationActive().set(false);
+        getUniverseClient().getEventSnapReceiver().getApplicationActive().set(false);
         getModelRepository().finish();
         getShaderRepository().finish();
         getTextureRepository().finish();

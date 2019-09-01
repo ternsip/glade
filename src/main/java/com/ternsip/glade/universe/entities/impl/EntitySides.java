@@ -34,8 +34,8 @@ public class EntitySides extends Entity<EffigySides> {
             moveObserver();
             getTimer().drop();
         }
-        if (!getUniverse().getBlocks().getBlocksUpdates().isEmpty()) {
-            effigy.applyBlockUpdate(getUniverse().getBlocks().getBlocksUpdates().poll());
+        if (!getUniverseClient().getBlocks().getBlocksUpdates().isEmpty()) {
+            effigy.applyBlockUpdate(getUniverseClient().getBlocks().getBlocksUpdates().poll());
         }
     }
 
@@ -51,16 +51,17 @@ public class EntitySides extends Entity<EffigySides> {
 
     private void moveObserver() {
         Vector3ic newPos = getCameraPosition();
-        int viewDistance = getUniverse().getBalance().getViewDistance();
+        int viewDistance = getUniverseClient().getBalance().getViewDistance();
         if (!getObserverPos().equals(newPos) || getObserverViewDistance() != viewDistance) {
-            getUniverse().getClient().send(new BlocksObserverChanged(getObserverPos(), newPos, getObserverViewDistance(), viewDistance));
+            getUniverseClient().getClient().send(new BlocksObserverChanged(getObserverPos(), newPos, getObserverViewDistance(), viewDistance));
+            getUniverseClient().getClient().send(new BlocksObserverChanged(getObserverPos(), newPos, getObserverViewDistance(), viewDistance));
             getObserverPos().set(newPos);
             setObserverViewDistance(viewDistance);
         }
     }
 
     private Vector3ic getCameraPosition() {
-        Vector3fc pos = getUniverse().getEntityRepository().getCameraTarget().getPosition();
+        Vector3fc pos = getUniverseClient().getEntityRepository().getCameraTarget().getPosition();
         return new Vector3i((int) pos.x(), (int) pos.y(), (int) pos.z());
     }
 

@@ -39,7 +39,7 @@ public class NetworkClient implements Threadable {
     public void update() {
         if (getConnection().isActive()) {
             try {
-                Packet packet = (Packet) getConnection().readObject();
+                ServerPacket packet = (ServerPacket) getConnection().readObject();
                 packet.apply(getConnection());
             } catch (Exception e) {
                 if (getConnection().isActive()) {
@@ -56,7 +56,7 @@ public class NetworkClient implements Threadable {
     @Override
     public void finish() {}
 
-    public void send(Packet packet) {
+    public void send(ServerPacket packet) {
         getConnection().writeObject(packet);
     }
 

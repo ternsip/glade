@@ -2,7 +2,7 @@ package com.ternsip.glade.universe.bindings;
 
 import com.ternsip.glade.common.events.base.Callback;
 import com.ternsip.glade.common.events.display.KeyEvent;
-import com.ternsip.glade.universe.interfaces.Universal;
+import com.ternsip.glade.universe.interfaces.IUniverseClient;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,7 +13,7 @@ import java.util.Map;
 
 @Getter
 @Setter
-public class Bindings implements Universal {
+public class Bindings implements IUniverseClient {
 
     private final Map<KeyState, Bind> keyStateToBind = new HashMap<>();
     private final Map<Bind, Collection<BindingCallback>> bindToCallbacks = new HashMap<>();
@@ -23,7 +23,7 @@ public class Bindings implements Universal {
         for (Bind bind : Bind.values()) {
             keyStateToBind.put(bind.getDefaultKeyState(), bind);
         }
-        getUniverse().getEventSnapReceiver().registerCallback(KeyEvent.class, keyCallback);
+        getUniverseClient().getEventSnapReceiver().registerCallback(KeyEvent.class, keyCallback);
     }
 
     public void load() {
@@ -43,7 +43,7 @@ public class Bindings implements Universal {
     }
 
     public void finish() {
-        getUniverse().getEventSnapReceiver().unregisterCallback(KeyEvent.class, keyCallback);
+        getUniverseClient().getEventSnapReceiver().unregisterCallback(KeyEvent.class, keyCallback);
     }
 
     private void handleKeyEvent(KeyEvent event) {

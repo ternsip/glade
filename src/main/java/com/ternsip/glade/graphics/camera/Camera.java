@@ -1,7 +1,7 @@
 package com.ternsip.glade.graphics.camera;
 
 import com.ternsip.glade.common.events.display.ResizeEvent;
-import com.ternsip.glade.graphics.interfaces.Graphical;
+import com.ternsip.glade.graphics.interfaces.IGraphics;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.Matrix4f;
@@ -11,7 +11,7 @@ import org.joml.Vector3fc;
 
 @Getter
 @Setter
-public class Camera implements Graphical {
+public class Camera implements IGraphics {
 
     private static final float FOV = (float) Math.toRadians(80);
     private static final float NEAR_PLANE = 0.1f;

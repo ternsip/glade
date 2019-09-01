@@ -2,7 +2,7 @@ package com.ternsip.glade.graphics.display;
 
 import com.ternsip.glade.common.logic.Utils;
 import com.ternsip.glade.universe.audio.Sound;
-import com.ternsip.glade.universe.interfaces.Universal;
+import com.ternsip.glade.universe.interfaces.IUniverseClient;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -26,7 +26,7 @@ import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.libc.LibCStdlib.free;
 
 @Getter
-public class AudioRepository implements Universal {
+public class AudioRepository implements IUniverseClient {
 
     private static FloatBuffer ORIENTATION_BUFFER = BufferUtils.createFloatBuffer(6);
 
@@ -51,7 +51,7 @@ public class AudioRepository implements Universal {
 
     public void update() {
 
-        Set<Sound> soundsSet = getUniverse().getSoundRepository().getSounds();
+        Set<Sound> soundsSet = getUniverseClient().getSoundRepository().getSounds();
 
         soundsSet.removeIf(sound -> {
 
@@ -82,9 +82,9 @@ public class AudioRepository implements Universal {
         });
 
         // Orient listener in 3d space
-        Vector3fc pos = getUniverse().getSoundRepository().getListenerPosition();
-        Vector3fc orientFront = getUniverse().getSoundRepository().getOrientationFront();
-        Vector3fc orientUp = getUniverse().getSoundRepository().getOrientationUp();
+        Vector3fc pos = getUniverseClient().getSoundRepository().getListenerPosition();
+        Vector3fc orientFront = getUniverseClient().getSoundRepository().getOrientationFront();
+        Vector3fc orientUp = getUniverseClient().getSoundRepository().getOrientationUp();
         ORIENTATION_BUFFER.clear();
         ORIENTATION_BUFFER.put(orientFront.x());
         ORIENTATION_BUFFER.put(orientFront.y());
@@ -142,7 +142,7 @@ public class AudioRepository implements Universal {
 
     @Getter
     @Setter
-    public static class SoundPlayer implements Universal {
+    public static class SoundPlayer implements IUniverseClient {
 
         private final int sourcePointer;
         private int playedTimes = 0;

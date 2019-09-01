@@ -1,7 +1,7 @@
 package com.ternsip.glade.graphics.visual.repository;
 
 import com.ternsip.glade.graphics.general.Texture;
-import com.ternsip.glade.graphics.interfaces.Graphical;
+import com.ternsip.glade.graphics.interfaces.IGraphics;
 import com.ternsip.glade.universe.parts.blocks.Block;
 import com.ternsip.glade.universe.parts.blocks.BlockSide;
 import lombok.Getter;
@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import java.io.File;
 
 @Getter
-public class TexturePackRepository implements Graphical {
+public class TexturePackRepository implements IGraphics {
 
     public static final File DEFAULT_BLOCK_ATLAS_DIRECTORY = new File("atlases/blocks");
 
