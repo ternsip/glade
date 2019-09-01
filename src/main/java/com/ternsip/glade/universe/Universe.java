@@ -22,7 +22,7 @@ import java.io.File;
 
 @Getter
 @Setter
-public class Universe implements Threadable, IUniverse, INetworkServer, INetworkClient, IBlocksRepository, IBindings, ICollisions, IBalance,
+public class Universe implements Threadable, INetworkServer, INetworkClient, IBlocksRepository, IBindings, ICollisions, IBalance,
         ISoundRepository, IEntityRepository, IEventSnapReceiver {
 
     private final String name = "universe";
@@ -37,7 +37,7 @@ public class Universe implements Threadable, IUniverse, INetworkServer, INetwork
     @Override
     public void update() {
         if (!getEventSnapReceiver().isApplicationActive()) {
-            stopUniverseThread();
+            IUniverse.stopUniverseThread();
         }
         getEventSnapReceiver().update();
         getEntityRepository().update();

@@ -13,8 +13,6 @@ import org.joml.Vector3fc;
 @Setter
 public abstract class Entity<T extends Effigy> extends Volumetric implements IUniverse {
 
-    private boolean visualReloadRequired = false;
-
     public void register() {
         getUniverse().getEntityRepository().register(this);
     }

@@ -7,12 +7,12 @@ public interface IUniverse {
 
     ThreadWrapper<Universe> UNIVERSE_THREAD = new ThreadWrapper<>(Universe::new, 1000L / 128);
 
-    default boolean isUniverseThreadActive() {
-        return UNIVERSE_THREAD.isActive();
+    static void stopUniverseThread() {
+        UNIVERSE_THREAD.stop();
     }
 
-    default void stopUniverseThread() {
-        UNIVERSE_THREAD.stop();
+    default boolean isUniverseThreadActive() {
+        return UNIVERSE_THREAD.isActive();
     }
 
     default Universe getUniverse() {
