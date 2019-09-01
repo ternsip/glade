@@ -1,6 +1,6 @@
 package com.ternsip.glade.graphics.general;
 
-import com.ternsip.glade.graphics.interfaces.Graphical;
+import com.ternsip.glade.graphics.interfaces.IGraphics;
 import com.ternsip.glade.graphics.visual.repository.TextureRepository;
 import lombok.Getter;
 import org.joml.Vector4f;
@@ -12,7 +12,7 @@ import java.io.File;
 import static com.ternsip.glade.graphics.visual.repository.TextureRepository.MISSING_TEXTURE;
 
 @Getter
-public class Texture implements Graphical {
+public class Texture implements IGraphics {
 
     public static final Vector4f DEFAULT_COLOR = new Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
 

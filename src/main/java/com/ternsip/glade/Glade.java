@@ -1,6 +1,6 @@
 package com.ternsip.glade;
 
-import com.ternsip.glade.graphics.interfaces.Graphical;
+import com.ternsip.glade.graphics.interfaces.IGraphics;
 
 /**
  * The main entry point of the application
@@ -22,7 +22,7 @@ import com.ternsip.glade.graphics.interfaces.Graphical;
 public class Glade {
 
     public static void main(String[] args) {
-        Graphical.run();
+        IGraphics.run();
     }
 
 }

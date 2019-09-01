@@ -2,7 +2,7 @@ package com.ternsip.glade.graphics.interfaces;
 
 import com.ternsip.glade.graphics.display.Graphics;
 
-public interface Graphical {
+public interface IGraphics {
 
     Graphics GRAPHICS = new Graphics();
 

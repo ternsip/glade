@@ -1,6 +1,6 @@
 package com.ternsip.glade.universe.audio;
 
-import com.ternsip.glade.universe.interfaces.Universal;
+import com.ternsip.glade.universe.interfaces.IUniverse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.joml.Vector3f;
@@ -13,7 +13,7 @@ import java.io.File;
  */
 @RequiredArgsConstructor
 @Getter
-public class Sound implements Universal {
+public class Sound implements IUniverse {
 
     private final File file;
     private final Vector3fc position;

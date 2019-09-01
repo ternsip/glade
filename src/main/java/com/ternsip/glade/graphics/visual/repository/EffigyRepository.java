@@ -1,9 +1,9 @@
 package com.ternsip.glade.graphics.visual.repository;
 
-import com.ternsip.glade.graphics.interfaces.Graphical;
+import com.ternsip.glade.graphics.interfaces.IGraphics;
 import com.ternsip.glade.graphics.visual.base.Effigy;
 import com.ternsip.glade.universe.entities.base.Entity;
-import com.ternsip.glade.universe.interfaces.Universal;
+import com.ternsip.glade.universe.interfaces.IUniverse;
 import lombok.Getter;
 
 import java.util.HashMap;
@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Getter
-public class EffigyRepository implements Universal, Graphical {
+public class EffigyRepository implements IUniverse, IGraphics {
 
     private final Map<Entity, Effigy> entityToEffigy = new HashMap<>();
 

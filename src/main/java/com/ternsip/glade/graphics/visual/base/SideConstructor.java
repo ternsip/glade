@@ -5,7 +5,7 @@ import com.ternsip.glade.common.logic.Utils;
 import com.ternsip.glade.graphics.general.Material;
 import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.general.Texture;
-import com.ternsip.glade.graphics.interfaces.Graphical;
+import com.ternsip.glade.graphics.interfaces.IGraphics;
 import com.ternsip.glade.graphics.shader.base.MeshAttributes;
 import com.ternsip.glade.universe.parts.blocks.Block;
 import com.ternsip.glade.universe.parts.blocks.BlockSide;
@@ -25,7 +25,7 @@ import static com.ternsip.glade.graphics.shader.impl.ChunkShader.*;
 import static com.ternsip.glade.graphics.visual.base.SideConstructor.SideIndexData.*;
 import static com.ternsip.glade.universe.parts.chunks.BlocksRepository.MAX_LIGHT_LEVEL;
 
-public class SideConstructor implements Graphical {
+public class SideConstructor implements IGraphics {
 
     private static final int BLOCK_TYPE_NORMAL = 0;
     private static final int BLOCK_TYPE_WATER = 1;

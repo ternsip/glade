@@ -3,7 +3,7 @@ package com.ternsip.glade.universe.entities.repository;
 import com.ternsip.glade.universe.collisions.base.Obstacle;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.impl.EntitySun;
-import com.ternsip.glade.universe.interfaces.Universal;
+import com.ternsip.glade.universe.interfaces.IUniverse;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Getter
 @Setter
-public class EntityRepository implements Universal {
+public class EntityRepository implements IUniverse {
 
     private final Set<Entity> entities = Collections.newSetFromMap(new ConcurrentHashMap<>());
 

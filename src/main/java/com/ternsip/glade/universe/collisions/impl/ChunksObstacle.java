@@ -1,7 +1,7 @@
 package com.ternsip.glade.universe.collisions.impl;
 
 import com.ternsip.glade.universe.collisions.base.Obstacle;
-import com.ternsip.glade.universe.interfaces.Universal;
+import com.ternsip.glade.universe.interfaces.IUniverse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.joml.*;
@@ -13,7 +13,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
-public class ChunksObstacle implements Obstacle, Universal {
+public class ChunksObstacle implements Obstacle, IUniverse {
 
     private static final float BLOCK_SAVE_DELTA = 1e-4f;
     private static final float CUBE_SIZE = 1;

@@ -2,7 +2,7 @@ package com.ternsip.glade.graphics.display;
 
 import com.ternsip.glade.common.logic.Utils;
 import com.ternsip.glade.universe.audio.Sound;
-import com.ternsip.glade.universe.interfaces.Universal;
+import com.ternsip.glade.universe.interfaces.IUniverse;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -26,7 +26,7 @@ import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.libc.LibCStdlib.free;
 
 @Getter
-public class AudioRepository implements Universal {
+public class AudioRepository implements IUniverse {
 
     private static FloatBuffer ORIENTATION_BUFFER = BufferUtils.createFloatBuffer(6);
 
@@ -142,7 +142,7 @@ public class AudioRepository implements Universal {
 
     @Getter
     @Setter
-    public static class SoundPlayer implements Universal {
+    public static class SoundPlayer implements IUniverse {
 
         private final int sourcePointer;
         private int playedTimes = 0;

@@ -1,7 +1,7 @@
 package com.ternsip.glade.universe.entities.base;
 
 import com.ternsip.glade.graphics.visual.base.Effigy;
-import com.ternsip.glade.universe.interfaces.Universal;
+import com.ternsip.glade.universe.interfaces.IUniverse;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.Vector3fc;
@@ -11,7 +11,7 @@ import org.joml.Vector3fc;
  */
 @Getter
 @Setter
-public abstract class Entity<T extends Effigy> extends Volumetric implements Universal {
+public abstract class Entity<T extends Effigy> extends Volumetric implements IUniverse {
 
     private boolean visualReloadRequired = false;
 

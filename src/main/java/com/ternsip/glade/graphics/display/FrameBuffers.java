@@ -1,7 +1,7 @@
 package com.ternsip.glade.graphics.display;
 
 import com.ternsip.glade.common.events.display.ResizeEvent;
-import com.ternsip.glade.graphics.interfaces.Graphical;
+import com.ternsip.glade.graphics.interfaces.IGraphics;
 import lombok.Getter;
 
 import static org.lwjgl.opengl.ARBFramebufferObject.GL_RENDERBUFFER;
@@ -10,7 +10,7 @@ import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.opengl.GL30C.GL_FRAMEBUFFER;
 
 @Getter
-public class FrameBuffers implements Graphical {
+public class FrameBuffers implements IGraphics {
 
     private int colorRenderBufferFirst;
     private int colorRenderBufferSecond;

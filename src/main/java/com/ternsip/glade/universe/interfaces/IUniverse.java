@@ -3,7 +3,7 @@ package com.ternsip.glade.universe.interfaces;
 import com.ternsip.glade.common.logic.ThreadWrapper;
 import com.ternsip.glade.universe.Universe;
 
-public interface Universal {
+public interface IUniverse {
 
     ThreadWrapper<Universe> UNIVERSE_THREAD = new ThreadWrapper<>(Universe::new, 1000L / 128);
 

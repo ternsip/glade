@@ -1,7 +1,7 @@
 package com.ternsip.glade.graphics.display;
 
 import com.ternsip.glade.graphics.interfaces.*;
-import com.ternsip.glade.universe.interfaces.Universal;
+import com.ternsip.glade.universe.interfaces.IUniverse;
 import lombok.Getter;
 
 /**
@@ -10,7 +10,7 @@ import lombok.Getter;
  * In general words it is graphical representation of the universe state
  */
 @Getter
-public class Graphics implements Universal, IEventSnapReceiver, IFrameBuffers, IWindowData, ITextureRepository,
+public class Graphics implements IUniverse, IEventSnapReceiver, IFrameBuffers, IWindowData, ITextureRepository,
         IModelRepository, IShaderRepository, ICamera, ICameraController, IEffigyRepository, ITexturePackRepository,
         IAudioRepository {
 

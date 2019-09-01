@@ -2,7 +2,7 @@ package com.ternsip.glade.universe.bindings;
 
 import com.ternsip.glade.common.events.base.Callback;
 import com.ternsip.glade.common.events.display.KeyEvent;
-import com.ternsip.glade.universe.interfaces.Universal;
+import com.ternsip.glade.universe.interfaces.IUniverse;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,7 +13,7 @@ import java.util.Map;
 
 @Getter
 @Setter
-public class Bindings implements Universal {
+public class Bindings implements IUniverse {
 
     private final Map<KeyState, Bind> keyStateToBind = new HashMap<>();
     private final Map<Bind, Collection<BindingCallback>> bindToCallbacks = new HashMap<>();

@@ -22,7 +22,7 @@ import java.io.File;
 
 @Getter
 @Setter
-public class Universe implements Threadable, Universal, INetworkServer, INetworkClient, IBlocksRepository, IBindings, ICollisions, IBalance,
+public class Universe implements Threadable, IUniverse, INetworkServer, INetworkClient, IBlocksRepository, IBindings, ICollisions, IBalance,
         ISoundRepository, IEntityRepository, IEventSnapReceiver {
 
     private final String name = "universe";
