@@ -8,9 +8,6 @@ import org.joml.*;
 
 import java.util.List;
 
-/**
- *
- */
 @RequiredArgsConstructor
 @Getter
 public class ChunksObstacle implements Obstacle, IUniverse {
