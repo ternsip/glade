@@ -1,49 +1,15 @@
 package com.ternsip.glade.graphics.display;
 
-import com.ternsip.glade.common.events.base.EventSnapReceiver;
-import com.ternsip.glade.graphics.camera.Camera;
-import com.ternsip.glade.graphics.camera.CameraController;
-import com.ternsip.glade.graphics.visual.repository.*;
+import com.ternsip.glade.graphics.interfaces.*;
 import com.ternsip.glade.universe.interfaces.Universal;
 import lombok.Getter;
 
-public class Graphics implements Universal {
+@Getter
+public class Graphics implements Universal, IEventSnapReceiver, IFrameBuffers, IWindowData, ITextureRepository,
+        IModelRepository, IShaderRepository, ICamera, ICameraController, IEffigyRepository, ITexturePackRepository,
+        IAudioRepository {
 
-    @Getter
     private final Thread rootThread = Thread.currentThread();
-
-    @Getter
-    private final EventSnapReceiver eventSnapReceiver = new EventSnapReceiver();
-
-    @Getter(lazy = true)
-    private final WindowData windowData = new WindowData();
-
-    @Getter(lazy = true)
-    private final FrameBuffers frameBuffers = new FrameBuffers();
-
-    @Getter(lazy = true)
-    private final TextureRepository textureRepository = new TextureRepository();
-
-    @Getter(lazy = true)
-    private final ModelRepository modelRepository = new ModelRepository();
-
-    @Getter(lazy = true)
-    private final ShaderRepository shaderRepository = new ShaderRepository();
-
-    @Getter(lazy = true)
-    private final Camera camera = new Camera();
-
-    @Getter(lazy = true)
-    private final CameraController cameraController = new CameraController();
-
-    @Getter(lazy = true)
-    private final EffigyRepository effigyRepository = new EffigyRepository();
-
-    @Getter(lazy = true)
-    private final TexturePackRepository texturePackRepository = new TexturePackRepository();
-
-    @Getter(lazy = true)
-    private final AudioRepository audioRepository = new AudioRepository();
 
     public void run() {
         loop();

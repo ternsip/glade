@@ -1,5 +1,6 @@
 package com.ternsip.glade.graphics.display;
 
+import com.ternsip.glade.graphics.interfaces.Graphical;
 import com.ternsip.glade.universe.interfaces.Universal;
 import lombok.Getter;
 import lombok.Setter;

@@ -1,6 +1,6 @@
 package com.ternsip.glade.graphics.visual.repository;
 
-import com.ternsip.glade.graphics.display.Graphical;
+import com.ternsip.glade.graphics.interfaces.Graphical;
 import com.ternsip.glade.graphics.visual.base.Effigy;
 import com.ternsip.glade.universe.interfaces.Universal;
 import com.ternsip.glade.universe.entities.base.Entity;

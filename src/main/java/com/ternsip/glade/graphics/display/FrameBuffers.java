@@ -1,6 +1,7 @@
 package com.ternsip.glade.graphics.display;
 
 import com.ternsip.glade.common.events.display.ResizeEvent;
+import com.ternsip.glade.graphics.interfaces.Graphical;
 import lombok.Getter;
 
 import static org.lwjgl.opengl.ARBFramebufferObject.GL_RENDERBUFFER;

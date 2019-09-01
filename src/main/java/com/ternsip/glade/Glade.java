@@ -1,6 +1,6 @@
 package com.ternsip.glade;
 
-import com.ternsip.glade.graphics.display.Graphical;
+import com.ternsip.glade.graphics.interfaces.Graphical;
 
 /**
  * The main entry point of the application

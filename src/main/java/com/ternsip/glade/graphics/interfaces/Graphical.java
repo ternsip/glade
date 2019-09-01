@@ -1,4 +1,6 @@
-package com.ternsip.glade.graphics.display;
+package com.ternsip.glade.graphics.interfaces;
+
+import com.ternsip.glade.graphics.display.Graphics;
 
 public interface Graphical {
 

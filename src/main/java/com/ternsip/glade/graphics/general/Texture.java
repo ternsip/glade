@@ -1,6 +1,6 @@
 package com.ternsip.glade.graphics.general;
 
-import com.ternsip.glade.graphics.display.Graphical;
+import com.ternsip.glade.graphics.interfaces.Graphical;
 import com.ternsip.glade.graphics.visual.repository.TextureRepository;
 import lombok.Getter;
 import org.joml.Vector4f;

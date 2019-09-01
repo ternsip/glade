@@ -1,7 +1,7 @@
 package com.ternsip.glade.graphics.camera;
 
 import com.ternsip.glade.common.events.display.ResizeEvent;
-import com.ternsip.glade.graphics.display.Graphical;
+import com.ternsip.glade.graphics.interfaces.Graphical;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.Matrix4f;
