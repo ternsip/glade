@@ -4,7 +4,7 @@ import com.ternsip.glade.common.events.base.EventSnapReceiver;
 import com.ternsip.glade.graphics.camera.Camera;
 import com.ternsip.glade.graphics.camera.CameraController;
 import com.ternsip.glade.graphics.visual.repository.*;
-import com.ternsip.glade.universe.common.Universal;
+import com.ternsip.glade.universe.interfaces.Universal;
 import lombok.Getter;
 
 public class Graphics implements Universal {

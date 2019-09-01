@@ -1,21 +1,16 @@
 package com.ternsip.glade.universe;
 
-import com.ternsip.glade.common.events.base.EventSnapReceiver;
 import com.ternsip.glade.common.logic.Threadable;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigyAxis;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigyDynamicText;
 import com.ternsip.glade.graphics.visual.impl.test.*;
-import com.ternsip.glade.universe.audio.SoundRepository;
 import com.ternsip.glade.universe.bindings.Bind;
-import com.ternsip.glade.universe.bindings.Bindings;
-import com.ternsip.glade.universe.collisions.base.Collisions;
 import com.ternsip.glade.universe.collisions.impl.ChunksObstacle;
 import com.ternsip.glade.universe.collisions.impl.GroundObstacle;
-import com.ternsip.glade.universe.common.*;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.impl.*;
-import com.ternsip.glade.universe.entities.repository.EntityRepository;
 import com.ternsip.glade.universe.entities.ui.EntityUIMenu;
+import com.ternsip.glade.universe.interfaces.*;
 import com.ternsip.glade.universe.protocol.ConsoleMessagePacket;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,23 +22,10 @@ import java.io.File;
 
 @Getter
 @Setter
-public class Universe implements Threadable, Universal, Server, Client, Blocks {
-
-    private final EventSnapReceiver eventSnapReceiver = new EventSnapReceiver();
-
-    private final EntityRepository entityRepository = new EntityRepository();
-
-    private final SoundRepository soundRepository = new SoundRepository();
+public class Universe implements Threadable, Universal, INetworkServer, INetworkClient, IBlocksRepository, IBindings, ICollisions, IBalance,
+        ISoundRepository, IEntityRepository, IEventSnapReceiver {
 
     private final String name = "universe";
-
-    private final Balance balance = new Balance();
-
-    @Getter(lazy = true)
-    private final Collisions collisions = new Collisions();
-
-    @Getter(lazy = true)
-    private final Bindings bindings = new Bindings();
 
     @Override
     public void init() {

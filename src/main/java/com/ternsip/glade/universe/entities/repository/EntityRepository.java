@@ -1,7 +1,7 @@
 package com.ternsip.glade.universe.entities.repository;
 
 import com.ternsip.glade.universe.collisions.base.Obstacle;
-import com.ternsip.glade.universe.common.Universal;
+import com.ternsip.glade.universe.interfaces.Universal;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.impl.EntitySun;
 import lombok.Getter;

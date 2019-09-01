@@ -1,6 +1,6 @@
 package com.ternsip.glade.universe.audio;
 
-import com.ternsip.glade.universe.common.Universal;
+import com.ternsip.glade.universe.interfaces.Universal;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.joml.Vector3f;

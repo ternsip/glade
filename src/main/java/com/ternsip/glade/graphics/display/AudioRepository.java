@@ -2,7 +2,7 @@ package com.ternsip.glade.graphics.display;
 
 import com.ternsip.glade.common.logic.Utils;
 import com.ternsip.glade.universe.audio.Sound;
-import com.ternsip.glade.universe.common.Universal;
+import com.ternsip.glade.universe.interfaces.Universal;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;

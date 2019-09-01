@@ -1,9 +1,9 @@
-package com.ternsip.glade.universe.common;
+package com.ternsip.glade.universe.interfaces;
 
 import com.ternsip.glade.common.logic.ThreadWrapper;
 import com.ternsip.glade.network.NetworkClient;
 
-public interface Client {
+public interface INetworkClient {
 
     ThreadWrapper<NetworkClient> CLIENT_THREAD = new ThreadWrapper<>(NetworkClient::new);
 

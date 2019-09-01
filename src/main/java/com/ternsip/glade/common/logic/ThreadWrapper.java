@@ -26,7 +26,7 @@ public class ThreadWrapper<T extends Threadable> {
     }
 
     public void stop() {
-        getTask().setActive(false);
+        getTask().deactivate();
     }
 
     @SneakyThrows
@@ -48,7 +48,7 @@ public class ThreadWrapper<T extends Threadable> {
 
     @RequiredArgsConstructor
     @Getter
-    private static class Task<T extends Threadable> implements Runnable {
+    private static final class Task<T extends Threadable> implements Runnable {
 
         private final AtomicBoolean active = new AtomicBoolean(true);
         private final Supplier<T> supplier;
@@ -57,24 +57,22 @@ public class ThreadWrapper<T extends Threadable> {
         @Getter(lazy = true)
         private final T objective = supplier.get();
 
-        public Task(Supplier<T> supplier, long timeout) {
+        Task(Supplier<T> supplier, long timeout) {
             this.supplier = supplier;
             this.timer = new Timer(timeout);
         }
 
-        public boolean isActive() {
-            return this.active.get();
+        final boolean isActive() {
+            return getActive().get();
         }
 
-        public void setActive(boolean active) {
-            getActive().set(active);
-            if (!getActive().get()) {
-                getObjective().unlock();
-            }
+        final void deactivate() {
+            getActive().set(false);
+            getObjective().unlock();
         }
 
         @Override
-        public void run() {
+        public final void run() {
             getObjective().init();
             while (isActive()) {
                 getObjective().update();

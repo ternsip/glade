@@ -4,7 +4,7 @@ import com.ternsip.glade.common.events.base.CharEvent;
 import com.ternsip.glade.common.events.base.ErrorEvent;
 import com.ternsip.glade.common.events.base.Event;
 import com.ternsip.glade.common.events.display.*;
-import com.ternsip.glade.universe.common.Universal;
+import com.ternsip.glade.universe.interfaces.Universal;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.Vector2i;

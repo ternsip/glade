@@ -2,7 +2,7 @@ package com.ternsip.glade.universe.bindings;
 
 import com.ternsip.glade.common.events.base.Callback;
 import com.ternsip.glade.common.events.display.KeyEvent;
-import com.ternsip.glade.universe.common.Universal;
+import com.ternsip.glade.universe.interfaces.Universal;
 import lombok.Getter;
 import lombok.Setter;
 

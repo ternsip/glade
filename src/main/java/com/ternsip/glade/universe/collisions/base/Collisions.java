@@ -1,7 +1,7 @@
 package com.ternsip.glade.universe.collisions.base;
 
 import com.ternsip.glade.common.logic.Utils;
-import com.ternsip.glade.universe.common.Universal;
+import com.ternsip.glade.universe.interfaces.Universal;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

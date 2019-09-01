@@ -18,8 +18,8 @@ public class NetworkServer implements Threadable {
 
     private final ArrayList<Connection> connections = new ArrayList<>();
 
-    private ThreadWrapper<Acceptor> acceptorThread;
     private ServerHolder serverHolder = new ServerHolder();
+    private ThreadWrapper<Acceptor> acceptorThread;
 
     @SneakyThrows
     public void bind(int port) {

@@ -1,6 +1,6 @@
 package com.ternsip.glade.network;
 
-import com.ternsip.glade.universe.common.Universal;
+import com.ternsip.glade.universe.interfaces.Universal;
 
 import java.io.Serializable;
 

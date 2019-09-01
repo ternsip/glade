@@ -4,7 +4,7 @@ import com.ternsip.glade.common.events.base.Callback;
 import com.ternsip.glade.common.events.display.CursorPosEvent;
 import com.ternsip.glade.common.events.display.ScrollEvent;
 import com.ternsip.glade.graphics.display.Graphical;
-import com.ternsip.glade.universe.common.Universal;
+import com.ternsip.glade.universe.interfaces.Universal;
 import com.ternsip.glade.universe.entities.base.Entity;
 import lombok.Getter;
 import lombok.Setter;
