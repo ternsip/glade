@@ -2,11 +2,11 @@ package com.ternsip.glade.graphics.visual.base;
 
 import com.ternsip.glade.common.logic.Maths;
 import com.ternsip.glade.common.logic.Utils;
-import com.ternsip.glade.graphics.interfaces.Graphical;
 import com.ternsip.glade.graphics.general.Model;
+import com.ternsip.glade.graphics.interfaces.Graphical;
 import com.ternsip.glade.graphics.shader.base.ShaderProgram;
-import com.ternsip.glade.universe.interfaces.Universal;
 import com.ternsip.glade.universe.entities.base.Volumetric;
+import com.ternsip.glade.universe.interfaces.Universal;
 import lombok.Getter;
 import org.joml.*;
 

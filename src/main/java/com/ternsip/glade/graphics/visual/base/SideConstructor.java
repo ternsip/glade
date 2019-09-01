@@ -2,10 +2,10 @@ package com.ternsip.glade.graphics.visual.base;
 
 import com.google.common.collect.ImmutableMap;
 import com.ternsip.glade.common.logic.Utils;
-import com.ternsip.glade.graphics.interfaces.Graphical;
 import com.ternsip.glade.graphics.general.Material;
 import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.general.Texture;
+import com.ternsip.glade.graphics.interfaces.Graphical;
 import com.ternsip.glade.graphics.shader.base.MeshAttributes;
 import com.ternsip.glade.universe.parts.blocks.Block;
 import com.ternsip.glade.universe.parts.blocks.BlockSide;

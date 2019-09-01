@@ -62,15 +62,6 @@ public class ThreadWrapper<T extends Threadable> {
             this.timer = new Timer(timeout);
         }
 
-        final boolean isActive() {
-            return getActive().get();
-        }
-
-        final void deactivate() {
-            getActive().set(false);
-            getObjective().unlock();
-        }
-
         @Override
         public final void run() {
             getObjective().init();
@@ -79,6 +70,15 @@ public class ThreadWrapper<T extends Threadable> {
                 getTimer().rest();
             }
             getObjective().finish();
+        }
+
+        final boolean isActive() {
+            return getActive().get();
+        }
+
+        final void deactivate() {
+            getActive().set(false);
+            getObjective().unlock();
         }
     }
 

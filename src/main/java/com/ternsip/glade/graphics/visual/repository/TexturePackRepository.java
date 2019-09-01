@@ -1,7 +1,7 @@
 package com.ternsip.glade.graphics.visual.repository;
 
-import com.ternsip.glade.graphics.interfaces.Graphical;
 import com.ternsip.glade.graphics.general.Texture;
+import com.ternsip.glade.graphics.interfaces.Graphical;
 import com.ternsip.glade.universe.parts.blocks.Block;
 import com.ternsip.glade.universe.parts.blocks.BlockSide;
 import lombok.Getter;
