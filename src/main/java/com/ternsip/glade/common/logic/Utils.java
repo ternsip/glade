@@ -4,7 +4,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.SerializationUtils;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.assimp.AIScene;
 import org.lwjgl.assimp.Assimp;
@@ -183,7 +182,7 @@ public class Utils {
 
     @SneakyThrows
     public static <T> T createInstanceSilently(Class<? extends T> clazz) {
-        return clazz.newInstance();
+        return clazz.getDeclaredConstructor().newInstance();
     }
 
     public static boolean isSubDirectoryPresent(File file, String subDirectory) {
