@@ -26,19 +26,16 @@ import java.util.stream.Collectors;
 
 import static org.lwjgl.assimp.Assimp.aiGetErrorString;
 
+/**
+ * Set of util methods that are not part of any object
+ * Should contain only static methods
+ * Must be thread safe
+ */
 @Slf4j
 public class Utils {
 
-    public static byte[] objectToByteArray(Serializable obj) {
-        return SerializationUtils.serialize(obj);
-    }
-
-    public static Object objectToByteArray(byte[] obj) {
-        return SerializationUtils.serialize(obj);
-    }
-
     @SneakyThrows
-    public static FileInputStream loadResourceAsFileStream(File file) {
+    public static synchronized FileInputStream loadResourceAsFileStream(File file) {
         URL resource = Utils.class.getClassLoader().getResource(file.getPath());
         if (resource == null) {
             throw new IllegalArgumentException("Can't find file: " + file.getPath());
@@ -48,12 +45,12 @@ public class Utils {
     }
 
     @SneakyThrows
-    public static BufferedReader loadResourceAsBufferedReader(File file) {
+    public static synchronized BufferedReader loadResourceAsBufferedReader(File file) {
         return new BufferedReader(new InputStreamReader(loadResourceAsStream(file), StandardCharsets.UTF_8));
     }
 
     @SneakyThrows
-    public static InputStream loadResourceAsStream(File file) {
+    public static synchronized InputStream loadResourceAsStream(File file) {
         InputStream in = Utils.class.getClassLoader().getResourceAsStream(file.getPath());
         if (in == null) {
             throw new FileNotFoundException("Can't find file: " + file.getPath());
@@ -62,7 +59,7 @@ public class Utils {
     }
 
     @SneakyThrows
-    public static AIScene loadResourceAsAssimp(File file, int flags) {
+    public static synchronized AIScene loadResourceAsAssimp(File file, int flags) {
         byte[] _data = IOUtils.toByteArray(Utils.loadResourceAsStream(file));
         ByteBuffer data = BufferUtils.createByteBuffer(_data.length);
         data.put(_data);
@@ -132,7 +129,7 @@ public class Utils {
     }
 
     @SneakyThrows
-    public static ByteBuffer loadResourceToByteBuffer(File file) {
+    public static synchronized ByteBuffer loadResourceToByteBuffer(File file) {
         return arrayToBuffer(loadResourceAsByteArray(file));
     }
 
@@ -144,7 +141,7 @@ public class Utils {
     }
 
     @SneakyThrows
-    public static byte[] loadResourceAsByteArray(File file) {
+    public static synchronized byte[] loadResourceAsByteArray(File file) {
         return IOUtils.toByteArray(loadResourceAsStream(file));
     }
 
@@ -155,12 +152,12 @@ public class Utils {
         }
     }
 
-    public static <T> Set<Class<? extends T>> getAllClasses(Class<T> clazz) {
+    public static synchronized <T> Set<Class<? extends T>> getAllClasses(Class<T> clazz) {
         Reflections reflections = new Reflections("", new SubTypesScanner());
         return reflections.getSubTypesOf(clazz);
     }
 
-    public static List<File> getResourceListing(String[] extensions) {
+    public static synchronized List<File> getResourceListing(String[] extensions) {
         Reflections reflections = new Reflections("", new ResourcesScanner());
         String pattern = "(.*\\." + String.join(")|(.*\\.", extensions) + ")";
         return reflections
@@ -171,7 +168,7 @@ public class Utils {
     }
 
     @SneakyThrows
-    public static Method findDeclaredMethodInHierarchy(Class<?> objectClass, String methodName) {
+    public static synchronized Method findDeclaredMethodInHierarchy(Class<?> objectClass, String methodName) {
         Class<?> targetClass = objectClass;
         while (targetClass != null) {
             try {
