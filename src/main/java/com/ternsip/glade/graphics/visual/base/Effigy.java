@@ -8,12 +8,16 @@ import com.ternsip.glade.graphics.shader.base.ShaderProgram;
 import com.ternsip.glade.universe.entities.base.Volumetric;
 import com.ternsip.glade.universe.interfaces.IUniverse;
 import lombok.Getter;
+import lombok.experimental.Delegate;
 import org.joml.*;
 
 import java.lang.Math;
 
 @Getter
-public abstract class Effigy<SHADER extends ShaderProgram> extends Volumetric implements IGraphics, IUniverse {
+public abstract class Effigy<SHADER extends ShaderProgram> implements IGraphics, IUniverse {
+
+    @Delegate
+    private final Volumetric volumetric = new Volumetric();
 
     @Getter(lazy = true)
     private final Model model = getGraphics().getModelRepository().getEffigyModel(this);

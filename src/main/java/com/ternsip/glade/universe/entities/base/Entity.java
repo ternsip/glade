@@ -4,6 +4,7 @@ import com.ternsip.glade.graphics.visual.base.Effigy;
 import com.ternsip.glade.universe.interfaces.IUniverse;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Delegate;
 import org.joml.Vector3fc;
 
 /**
@@ -11,7 +12,10 @@ import org.joml.Vector3fc;
  */
 @Getter
 @Setter
-public abstract class Entity<T extends Effigy> extends Volumetric implements IUniverse {
+public abstract class Entity<T extends Effigy> implements IUniverse {
+
+    @Delegate
+    private final Volumetric volumetric = new Volumetric();
 
     public void register() {
         getUniverse().getEntityRepository().register(this);
