@@ -70,7 +70,7 @@ public class AnimationData {
 
     @RequiredArgsConstructor
     @Getter
-    private class BoneIndexData {
+    private static class BoneIndexData {
 
         private final Bone bone;
         private final int parentBoneOrder;
