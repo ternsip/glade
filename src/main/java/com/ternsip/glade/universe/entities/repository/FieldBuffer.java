@@ -12,7 +12,10 @@ import org.reflections.ReflectionUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -22,20 +25,14 @@ public final class FieldBuffer {
     private final Map<Class, Set<Methods>> CLASS_TO_METHODS_SERVER_SIDE = new HashMap<>();
     private final Map<Class, Set<Methods>> CLASS_TO_METHODS_CLIENT_SIDE = new HashMap<>();
 
-    private final HashMap<UUID, FieldValues> uuidToFieldValues = new HashMap<>();
     private final boolean onServer;
 
     public final <T extends Entity> FieldValues pullChanges(T entity) {
         Set<Methods> methods = isOnServer() ? getServerMethods(entity.getClass()) : getClientMethods(entity.getClass());
-        FieldValues oldFieldValues = getUuidToFieldValues().computeIfAbsent(entity.getUuid(), k -> new FieldValues());
         FieldValues newFieldValues = new FieldValues();
         methods.forEach(m -> {
-            Object getterResult = invokeSilently(m.getGetter(), entity);
-            if (!oldFieldValues.containsKey(m.getFieldName()) || !Objects.equals(getterResult, oldFieldValues.get(m.getFieldName()))) {
-                Object clonedResult = Utils.cloneThroughJson(getterResult);
-                oldFieldValues.put(m.getFieldName(), clonedResult);
-                newFieldValues.put(m.getFieldName(), clonedResult);
-            }
+            Object getterResult = Utils.cloneThroughJson(invokeSilently(m.getGetter(), entity));
+            newFieldValues.put(m.getFieldName(), getterResult);
         });
         return newFieldValues;
     }

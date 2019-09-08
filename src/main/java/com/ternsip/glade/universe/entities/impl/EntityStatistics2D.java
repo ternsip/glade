@@ -1,13 +1,22 @@
 package com.ternsip.glade.universe.entities.impl;
 
+import com.ternsip.glade.common.logic.Timer;
 import com.ternsip.glade.graphics.display.Graphics;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigyDynamicText;
 import com.ternsip.glade.universe.parts.blocks.Block;
+import lombok.Getter;
+import lombok.Setter;
 import org.joml.*;
 
 import java.io.File;
 
+@Getter
+@Setter
 public class EntityStatistics2D extends EntityDynamicText2D {
+
+    private final Timer updateTimer = new Timer(1000);
+    private int updates = 0;
+    private int updatesPerSecond = 0;
 
     public EntityStatistics2D(File file, Vector4fc color, boolean useAspect) {
         super(file, "NO DATA CALCULATED", color, useAspect);
@@ -22,6 +31,7 @@ public class EntityStatistics2D extends EntityDynamicText2D {
         Graphics graphics = effigy.getGraphics();
         sb.append("FPS : ").append(graphics.getWindowData().getFpsCounter().getFps()).append(System.lineSeparator());
         sb.append("Entities : ").append(graphics.getEffigyRepository().getLastSeenNumberOfEntitiesInFrustum()).append(System.lineSeparator());
+        sb.append("TickRate : ").append(getUpdatesPerSecond()).append(System.lineSeparator());
         Vector3fc eye = graphics.getCameraController().getTarget();
         Vector3fc direction = graphics.getCameraController().getLookDirection().mul(10, new Vector3f());
         LineSegmentf segment = new LineSegmentf(eye, eye.add(direction, new Vector3f()));
@@ -35,4 +45,13 @@ public class EntityStatistics2D extends EntityDynamicText2D {
         effigy.alignOnScreen(new Vector2i(0, 0), new Vector2i(75, 75));
     }
 
+    @Override
+    public void clientUpdate() {
+        setUpdates(getUpdates() + 1);
+        if (getUpdateTimer().isOver()) {
+            getUpdateTimer().drop();
+            setUpdatesPerSecond(getUpdates());
+            setUpdates(0);
+        }
+    }
 }

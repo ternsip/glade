@@ -1,5 +1,6 @@
 package com.ternsip.glade.universe.entities.repository;
 
+import com.ternsip.glade.common.logic.Timer;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.impl.EntityDummy;
 import com.ternsip.glade.universe.entities.impl.EntitySun;
@@ -14,6 +15,7 @@ import java.util.UUID;
 public class EntityClientRepository extends EntityRepository {
 
     private final FieldBuffer fieldBuffer = new FieldBuffer(false);
+    private final Timer networkTimer = new Timer(150);
 
     private Entity aim = new EntityDummy();
     private Entity cameraTarget = new EntityDummy();
@@ -25,18 +27,16 @@ public class EntityClientRepository extends EntityRepository {
 
     public void unregister(UUID uuid) {
         getUuidToEntity().remove(uuid);
-        getFieldBuffer().getUuidToFieldValues().remove(uuid);
     }
 
     public void update() {
         getUuidToEntity().values().forEach(Entity::clientUpdate);
-        sendChanges();
-    }
-
-    public void sendChanges() {
-        EntitiesChanges entitiesChanges = findEntitiesChanges();
-        if (!entitiesChanges.isEmpty()) {
-            getUniverse().getClient().send(new EntitiesChangedServerPacket(entitiesChanges));
+        if (getNetworkTimer().isOver()) {
+            EntitiesChanges entitiesChanges = findEntitiesChanges();
+            if (!entitiesChanges.isEmpty()) {
+                getUniverse().getClient().send(new EntitiesChangedServerPacket(entitiesChanges));
+            }
+            getNetworkTimer().drop();
         }
     }
 

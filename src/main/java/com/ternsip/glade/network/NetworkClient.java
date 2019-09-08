@@ -1,5 +1,6 @@
 package com.ternsip.glade.network;
 
+import com.ternsip.glade.common.logic.ThreadWrapper;
 import com.ternsip.glade.common.logic.Threadable;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,6 +8,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.Socket;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Slf4j
 @Getter
@@ -15,6 +17,9 @@ public class NetworkClient implements Threadable {
 
     private final long RETRY_INTERVAL = 500L;
     private final int MAX_CONNECTION_ATTEMPTS = 10;
+    private final ConcurrentLinkedQueue<Packet> packets = new ConcurrentLinkedQueue<>();
+
+    private ThreadWrapper<Sender> senderThread;
     private Connection connection = new Connection();
 
     public void connect(String host, int port) {
@@ -33,7 +38,9 @@ public class NetworkClient implements Threadable {
     }
 
     @Override
-    public void init() {}
+    public void init() {
+        setSenderThread(new ThreadWrapper<>(Sender::new, 150));
+    }
 
     @Override
     public void update() {
@@ -48,6 +55,7 @@ public class NetworkClient implements Threadable {
                     log.debug(errMsg, e);
                 }
             }
+
         } else {
             snooze();
         }
@@ -57,16 +65,41 @@ public class NetworkClient implements Threadable {
     public void finish() {}
 
     public void send(Packet packet) {
-        getConnection().writeObject(packet);
+        getPackets().add(packet);
     }
 
     public void stop() {
+        getSenderThread().stop();
         getConnection().close();
     }
 
     @SneakyThrows
     private void snooze() {
         Thread.sleep(RETRY_INTERVAL);
+    }
+
+    public class Sender implements Threadable {
+
+        @Override
+        public void init() {}
+
+        @Override
+        public void update() {
+            while (getConnection().isActive() && !getPackets().isEmpty()) {
+                Packet packet = getPackets().poll();
+                try {
+                    getConnection().writeObject(packet);
+                } catch (Exception e) {
+                    String errMsg = String.format("Error while sending packet %s", e.getMessage());
+                    log.error(errMsg);
+                    log.debug(errMsg, e);
+                }
+            }
+        }
+
+        @Override
+        public void finish() {}
+
     }
 
 }

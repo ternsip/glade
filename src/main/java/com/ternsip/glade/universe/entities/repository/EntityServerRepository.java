@@ -1,5 +1,6 @@
 package com.ternsip.glade.universe.entities.repository;
 
+import com.ternsip.glade.common.logic.Timer;
 import com.ternsip.glade.universe.collisions.base.Obstacle;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.impl.EntitySun;
@@ -14,6 +15,7 @@ import lombok.Setter;
 public class EntityServerRepository extends EntityRepository {
 
     private final FieldBuffer fieldBuffer = new FieldBuffer(true);
+    private final Timer networkTimer = new Timer(150);
 
     private EntitySun sun = new EntitySun();
 
@@ -31,18 +33,16 @@ public class EntityServerRepository extends EntityRepository {
             getUniverse().getCollisions().remove((Obstacle) entity);
         }
         getUniverse().getServer().sendAll(new UnregisterEntityPacket(entity.getUuid()));
-        getFieldBuffer().getUuidToFieldValues().remove(entity.getUuid());
     }
 
     public void update() {
         getUuidToEntity().values().forEach(Entity::serverUpdate);
-        sendChanges();
-    }
-
-    public void sendChanges() {
-        EntitiesChanges entitiesChanges = findEntitiesChanges();
-        if (!entitiesChanges.isEmpty()) {
-            getUniverse().getServer().sendAll(new EntitiesChangedClientPacket(entitiesChanges));
+        if (getNetworkTimer().isOver()) {
+            EntitiesChanges entitiesChanges = findEntitiesChanges();
+            if (!entitiesChanges.isEmpty()) {
+                getUniverse().getServer().sendAll(new EntitiesChangedClientPacket(entitiesChanges));
+            }
+            getNetworkTimer().drop();
         }
     }
 

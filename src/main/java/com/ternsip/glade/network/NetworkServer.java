@@ -8,6 +8,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Slf4j
 @Getter
@@ -17,9 +18,11 @@ public class NetworkServer implements Threadable {
     private final long RETRY_INTERVAL = 500L;
 
     private final ArrayList<Connection> connections = new ArrayList<>();
+    private final ConcurrentLinkedQueue<Packet> packets = new ConcurrentLinkedQueue<>();
 
     private ServerHolder serverHolder = new ServerHolder();
     private ThreadWrapper<Acceptor> acceptorThread;
+    private ThreadWrapper<Sender> senderThread;
 
     @SneakyThrows
     public void bind(int port) {
@@ -28,7 +31,8 @@ public class NetworkServer implements Threadable {
 
     @Override
     public void init() {
-        acceptorThread = new ThreadWrapper<>(Acceptor::new);
+        setAcceptorThread(new ThreadWrapper<>(Acceptor::new));
+        setSenderThread(new ThreadWrapper<>(Sender::new, 150));
     }
 
     @Override
@@ -58,12 +62,13 @@ public class NetworkServer implements Threadable {
 
     public void stop() {
         getAcceptorThread().stop();
+        getSenderThread().stop();
         getConnections().forEach(Connection::close);
         getServerHolder().close();
     }
 
     public void sendAll(Packet packet) {
-        getConnections().forEach(connection -> connection.writeObject(packet));
+        getPackets().add(packet);
     }
 
     @SneakyThrows
@@ -87,6 +92,31 @@ public class NetworkServer implements Threadable {
                         log.error(errMsg);
                         log.debug(errMsg, e);
                     }
+                }
+                getConnections().removeIf(connection -> !connection.isActive());
+            }
+        }
+
+        @Override
+        public void finish() {}
+
+    }
+
+    public class Sender implements Threadable {
+
+        @Override
+        public void init() {}
+
+        @Override
+        public void update() {
+            while (getServerHolder().isActive() && !getPackets().isEmpty()) {
+                Packet packet = getPackets().poll();
+                try {
+                    getConnections().forEach(connection -> connection.writeObject(packet));
+                } catch (Exception e) {
+                    String errMsg = String.format("Error while sending packet %s", e.getMessage());
+                    log.error(errMsg);
+                    log.debug(errMsg, e);
                 }
             }
         }

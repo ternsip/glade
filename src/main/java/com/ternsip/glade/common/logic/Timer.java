@@ -21,6 +21,10 @@ public class Timer {
      */
     private long lastTime = 0;
 
+    public Timer() {
+        this(0);
+    }
+
     /**
      * Construct time and register current time
      *
@@ -73,7 +77,7 @@ public class Timer {
      *
      * @return How much time spent
      */
-    private long spent() {
+    public long spent() {
         return System.currentTimeMillis() - getLastTime();
     }
 
