@@ -42,7 +42,7 @@ public class NetworkServer implements Threadable {
                     }
                 } catch (Exception e) {
                     if (connection.isActive()) {
-                        String errMsg = String.format("Error while accepting data from server %s", e.getMessage());
+                        String errMsg = String.format("Error while accepting data from client %s", e.getMessage());
                         log.error(errMsg);
                         log.debug(errMsg, e);
                     }

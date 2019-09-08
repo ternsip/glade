@@ -1,27 +1,24 @@
 package com.ternsip.glade.universe.entities.impl;
 
-import com.ternsip.glade.graphics.visual.base.Effigy;
-import com.ternsip.glade.universe.entities.base.Entity;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.joml.Vector3f;
 
-import java.util.function.Supplier;
-
-@RequiredArgsConstructor
 @Getter
-public class EntityGenericRotating extends Entity {
+public class EntityGenericRotating extends EntityGeneric {
 
-    private final Supplier<Effigy> loadVisual;
     private final Vector3f rotationSpeed;
 
-    @Override
-    public Effigy getEffigy() {
-        return loadVisual.get();
+    public EntityGenericRotating() {
+        this.rotationSpeed = null;
+    }
+
+    public EntityGenericRotating(EffigySupplier effigySupplier, Vector3f rotationSpeed) {
+        super(effigySupplier);
+        this.rotationSpeed = rotationSpeed;
     }
 
     @Override
-    public void update() {
+    public void serverUpdate() {
         setRotation(getRotation().add(getRotationSpeed(), new Vector3f()));
     }
 }

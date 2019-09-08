@@ -1,42 +1,32 @@
 package com.ternsip.glade.universe.entities.repository;
 
-import com.ternsip.glade.universe.collisions.base.Obstacle;
 import com.ternsip.glade.universe.entities.base.Entity;
-import com.ternsip.glade.universe.entities.impl.EntitySun;
 import com.ternsip.glade.universe.interfaces.IUniverse;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Collections;
-import java.util.Set;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
-public class EntityRepository implements IUniverse {
+public abstract class EntityRepository implements IUniverse {
 
-    private final Set<Entity> entities = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    private final ConcurrentHashMap<UUID, Entity> uuidToEntity = new ConcurrentHashMap<>();
 
-    private Entity aim = null;
-    private Entity cameraTarget = null;
-    private EntitySun sun = null;
+    public abstract FieldBuffer getFieldBuffer();
 
-    public void register(Entity entity) {
-        entities.add(entity);
-        if (entity instanceof Obstacle) {
-            getUniverse().getCollisions().add((Obstacle) entity);
-        }
+    public final EntitiesChanges findEntitiesChanges() {
+        Map<UUID, FieldValues> uuidToChanges = getUuidToEntity().entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> getFieldBuffer().pullChanges(e.getValue())));
+        uuidToChanges.entrySet().removeIf(e -> e.getValue().isEmpty());
+        return new EntitiesChanges(uuidToChanges);
     }
 
-    public void unregister(Entity entity) {
-        entities.remove(entity);
-        if (entity instanceof Obstacle) {
-            getUniverse().getCollisions().remove((Obstacle) entity);
-        }
-    }
-
-    public void update() {
-        getEntities().forEach(Entity::update);
+    public final void applyEntitiesChanges(EntitiesChanges changes) {
+        changes.forEach((uuid, fieldValues) -> getFieldBuffer().applyChanges(fieldValues, getUuidToEntity().get(uuid)));
     }
 
 }

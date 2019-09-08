@@ -21,4 +21,8 @@ public class EntitySprite extends Entity {
         return new EffigySprite(getFile(), isOrtho(), isUseAspect());
     }
 
+    @Override
+    public boolean isClientSideOnly() {
+        return true;
+    }
 }

@@ -11,7 +11,9 @@ import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.impl.*;
 import com.ternsip.glade.universe.entities.ui.EntityUIMenu;
 import com.ternsip.glade.universe.interfaces.*;
+import com.ternsip.glade.universe.protocol.CameraTargetPacket;
 import com.ternsip.glade.universe.protocol.ConsoleMessagePacket;
+import com.ternsip.glade.universe.protocol.SunPacket;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -23,7 +25,7 @@ import java.io.File;
 @Getter
 @Setter
 public class Universe implements Threadable, INetworkServer, INetworkClient, IBlocksRepository, IBindings, ICollisions, IBalance,
-        ISoundRepository, IEntityRepository, IEventSnapReceiver {
+        ISoundRepository, IEntityClientRepository, IEntityServerRepository, IEventSnapReceiver {
 
     private final String name = "universe";
 
@@ -40,7 +42,8 @@ public class Universe implements Threadable, INetworkServer, INetworkClient, IBl
             IUniverse.stopUniverseThread();
         }
         getEventSnapReceiver().update();
-        getEntityRepository().update();
+        getEntityClientRepository().update();
+        getEntityServerRepository().update();
         getCollisions().update();
     }
 
@@ -74,11 +77,12 @@ public class Universe implements Threadable, INetworkServer, INetworkClient, IBl
         Entity aim = new EntitySprite(new File("tools/aim.png"), true, true);
         aim.setScale(new Vector3f(0.01f));
         aim.register();
-        getEntityRepository().setAim(aim);
+        getEntityClientRepository().setAim(aim);
 
         EntitySun sun = new EntitySun();
         sun.register();
-        getEntityRepository().setSun(sun);
+        getEntityServerRepository().setSun(sun);
+        getServer().sendAll(new SunPacket(sun.getUuid())); // TODO wrap inside
 
         Entity cube = new EntityGeneric(() -> new EffigyCube());
         cube.register();
@@ -146,7 +150,7 @@ public class Universe implements Threadable, INetworkServer, INetworkClient, IBl
         entityPlayer.register();
         entityPlayer.setPosition(new Vector3f(50, 90, 50));
         entityPlayer.setScale(new Vector3f(1, 1, 1));
-        getEntityRepository().setCameraTarget(entityPlayer);
+        getServer().sendAll(new CameraTargetPacket(entityPlayer.getUuid()));
 
         EntityCubeSelection entityCubeSelection = new EntityCubeSelection();
         entityCubeSelection.register();

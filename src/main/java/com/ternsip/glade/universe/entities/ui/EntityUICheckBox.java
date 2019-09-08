@@ -65,8 +65,8 @@ public class EntityUICheckBox extends EntityUI {
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void clientUpdate() {
+        super.clientUpdate();
 
         Vector3fc scale = getVisualScale();
         Vector3fc position = getVisualPosition();

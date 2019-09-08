@@ -33,8 +33,8 @@ public class EntityUISwitcher extends EntityUIButton {
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void clientUpdate() {
+        super.clientUpdate();
         getSwitchedOverlay().setScale(getVisualScale());
         getSwitchedOverlay().setRotation(getVisualRotation());
         getSwitchedOverlay().setPosition(getPosition());

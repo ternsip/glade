@@ -47,7 +47,7 @@ public class EntityUIEditBox extends EntityUI {
     private final ArrayList<UICallback> onCursorLeave = new ArrayList<>();
     private final ArrayList<UICallback> onTextChange = new ArrayList<>();
 
-    private boolean available = false;
+    private boolean available = true;
     private boolean cursorInside = false;
     private long cursorJoinTime = 0;
     private int pointerPosition = -1;
@@ -85,8 +85,8 @@ public class EntityUIEditBox extends EntityUI {
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void clientUpdate() {
+        super.clientUpdate();
 
         Vector3fc scale = getVisualScale();
         Vector3fc position = getVisualPosition();

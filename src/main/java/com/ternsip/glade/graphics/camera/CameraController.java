@@ -51,10 +51,10 @@ public class CameraController implements IGraphics, IUniverse {
 
         if (isThirdPerson()) {
             getGraphics().getWindowData().enableCursor();
-            getUniverse().getEntityRepository().getAim().setVisible(false);
+            getUniverse().getEntityClientRepository().getAim().setVisible(false);
         } else {
             getGraphics().getWindowData().disableCursor();
-            getUniverse().getEntityRepository().getAim().setVisible(true);
+            getUniverse().getEntityClientRepository().getAim().setVisible(true);
         }
 
         if (!isThirdPerson() || (getGraphics().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_1) &&

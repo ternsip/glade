@@ -47,6 +47,11 @@ public class EntityUI extends Entity<EffigySprite> {
         setUiSize(new Vector2f(getScale().x(), getScale().y()));
     }
 
+    @Override
+    public boolean isClientSideOnly() {
+        return true;
+    }
+
     public Vector3fc getVisualScale() {
         return getScale();
     }

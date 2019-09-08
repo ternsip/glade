@@ -39,8 +39,8 @@ public class EntityUILabel extends EntityUI {
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void clientUpdate() {
+        super.clientUpdate();
         getSign().setScale(getVisualScale());
         getSign().setRotation(getVisualRotation());
         getSign().setPosition(getVisualPosition());

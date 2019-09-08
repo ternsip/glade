@@ -28,7 +28,9 @@ public class EventProcessor<T extends Event> {
     }
 
     void applyCallbacks() {
-        getCallbacks().forEach(callback -> getEvents().forEach(callback::apply));
+        if (!getEvents().isEmpty() && !getCallbacks().isEmpty()) {
+            getCallbacks().forEach(callback -> getEvents().forEach(callback::apply));
+        }
     }
 
 }

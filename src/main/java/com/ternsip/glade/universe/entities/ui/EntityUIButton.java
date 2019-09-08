@@ -34,7 +34,7 @@ public class EntityUIButton extends EntityUI {
     private final ArrayList<UICallback> onCursorJoin = new ArrayList<>();
     private final ArrayList<UICallback> onCursorLeave = new ArrayList<>();
 
-    private boolean available = false;
+    private boolean available = true;
     private boolean cursorInside = false;
     private long cursorJoinTime = 0;
     private boolean pressed = false;
@@ -70,8 +70,8 @@ public class EntityUIButton extends EntityUI {
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void clientUpdate() {
+        super.clientUpdate();
 
         Vector3fc scale = getVisualScale();
         Vector3fc position = getVisualPosition();

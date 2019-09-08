@@ -40,4 +40,9 @@ public class EntityDynamicText2D extends Entity<EffigyDynamicText> {
     public EffigyDynamicText getEffigy() {
         return new EffigyDynamicText(getFile(), true, isUseAspect(), getColor(), getText());
     }
+
+    @Override
+    public boolean isClientSideOnly() {
+        return true;
+    }
 }

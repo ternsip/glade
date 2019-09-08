@@ -4,6 +4,8 @@ import com.ternsip.glade.common.events.base.Callback;
 import com.ternsip.glade.common.events.display.KeyEvent;
 import com.ternsip.glade.common.logic.Maths;
 import com.ternsip.glade.graphics.visual.impl.test.EffigyBoy;
+import com.ternsip.glade.network.ClientSide;
+import com.ternsip.glade.network.ServerSide;
 import com.ternsip.glade.universe.collisions.base.Collision;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.parts.blocks.Block;
@@ -24,12 +26,24 @@ public class EntityPlayer extends Entity<EffigyBoy> {
 
     private static final float ARM_LENGTH = 5f;
     private final Callback<KeyEvent> keyCallback = this::handleKeyEvent;
-    private Vector3f currentVelocity = new Vector3f();
     private LineSegmentf eyeSegment = new LineSegmentf(new Vector3f(0), new Vector3f(0));
-    private Vector3fc moveEffort = new Vector3f(0);
+
+    @Setter(onMethod=@__({@ServerSide}))
+    private Vector3f currentVelocity = new Vector3f();
+
+    @Setter(onMethod=@__({@ClientSide}))
+    private Vector3f moveEffort = new Vector3f(0);
+
+    @Setter(onMethod=@__({@ServerSide}))
     private float velocity = 0.1f;
+
+    @Setter(onMethod=@__({@ServerSide}))
     private float jumpPower = 0.3f;
+
+    @Setter(onMethod=@__({@ServerSide}))
     private boolean onTheGround = false;
+
+    @Setter(onMethod=@__({@ServerSide}))
     private float height = 2;
 
     @Override
@@ -61,8 +75,25 @@ public class EntityPlayer extends Entity<EffigyBoy> {
     }
 
     @Override
-    public void update() {
-        checkInputs();
+    public void clientUpdate() {
+        Vector3f move = new Vector3f(0);
+        if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_W) || getUniverse().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_1) && getUniverse().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_2)) {
+            move.add(FRONT_DIRECTION);
+        }
+        if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_S)) {
+            move.add(BACK_DIRECTION);
+        }
+        if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_D)) {
+            move.add(RIGHT_DIRECTION);
+        }
+        if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_A)) {
+            move.add(LEFT_DIRECTION);
+        }
+        setMoveEffort(normalizeOrEmpty(move).mul(getVelocity(), new Vector3f()));
+    }
+
+    @Override
+    public void serverUpdate() {
         Vector3f moveDirection = getMoveEffort().rotate(Maths.getRotationQuaternion(getRotation()), new Vector3f());
         getCurrentVelocity().add(getUniverse().getBalance().getGravity());
         Vector3fc cPos = getPosition();
@@ -107,26 +138,6 @@ public class EntityPlayer extends Entity<EffigyBoy> {
         return endPosition;
     }
 
-    private void checkInputs() {
-
-        Vector3f move = new Vector3f(0);
-        if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_W) || getUniverse().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_1) && getUniverse().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_2)) {
-            move.add(FRONT_DIRECTION);
-        }
-        if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_S)) {
-            move.add(BACK_DIRECTION);
-        }
-        if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_D)) {
-            move.add(RIGHT_DIRECTION);
-        }
-        if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_A)) {
-            move.add(LEFT_DIRECTION);
-        }
-
-        setMoveEffort(normalizeOrEmpty(move).mul(getVelocity(), new Vector3f()));
-
-    }
-
     private void handleKeyEvent(KeyEvent event) {
 
         if (event.getKey() == GLFW_KEY_R && event.getAction() == GLFW_PRESS) {
@@ -141,7 +152,7 @@ public class EntityPlayer extends Entity<EffigyBoy> {
 
         if (event.getKey() == GLFW_KEY_SPACE && event.getAction() == GLFW_PRESS) {
             if (isOnTheGround()) {
-                getCurrentVelocity().add(new Vector3f(0, jumpPower, 0));
+                getCurrentVelocity().add(new Vector3f(0, getJumpPower(), 0));
             }
         }
 
@@ -153,7 +164,7 @@ public class EntityPlayer extends Entity<EffigyBoy> {
         }
 
         if (event.getKey() == GLFW_KEY_Q && event.getAction() == GLFW_PRESS) {
-            Vector3ic blockPositionLooking = getUniverse().getBlocks().traverse(eyeSegment, (block) -> block != Block.AIR);
+            Vector3ic blockPositionLooking = getUniverse().getBlocks().traverse(getEyeSegment(), (block) -> block != Block.AIR);
             if (blockPositionLooking != null && getUniverse().getBlocks().isBlockExists(blockPositionLooking)) {
                 getUniverse().getBlocks().setBlock(blockPositionLooking, Block.AIR);
             }

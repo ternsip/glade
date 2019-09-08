@@ -5,17 +5,27 @@ import com.ternsip.glade.universe.entities.base.Entity;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.io.Serializable;
 import java.util.function.Supplier;
 
 @RequiredArgsConstructor
 @Getter
 public class EntityGeneric extends Entity {
 
-    private final Supplier<Effigy> loadVisual;
+    private final EffigySupplier effigySupplier;
+
+    public EntityGeneric() {
+        this.effigySupplier = null;
+    }
 
     @Override
     public Effigy getEffigy() {
-        return loadVisual.get();
+        return effigySupplier.get();
+    }
+
+
+    @FunctionalInterface
+    public interface EffigySupplier extends Supplier<Effigy>, Serializable {
     }
 
 }

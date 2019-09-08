@@ -44,11 +44,6 @@ public class EntitySides extends Entity<EffigySides> {
         return new EffigySides();
     }
 
-    @Override
-    public void update() {
-        super.update();
-    }
-
     private void moveObserver() {
         Vector3ic newPos = getCameraPosition();
         int viewDistance = getUniverse().getBalance().getViewDistance();
@@ -60,8 +55,12 @@ public class EntitySides extends Entity<EffigySides> {
     }
 
     private Vector3ic getCameraPosition() {
-        Vector3fc pos = getUniverse().getEntityRepository().getCameraTarget().getPosition();
+        Vector3fc pos = getUniverse().getEntityClientRepository().getCameraTarget().getPosition();
         return new Vector3i((int) pos.x(), (int) pos.y(), (int) pos.z());
     }
 
+    @Override
+    public boolean isClientSideOnly() {
+        return true;
+    }
 }

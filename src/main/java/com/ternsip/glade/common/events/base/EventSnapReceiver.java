@@ -5,7 +5,6 @@ import com.ternsip.glade.common.events.display.MouseButtonEvent;
 import com.ternsip.glade.common.logic.Utils;
 import lombok.Getter;
 
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -31,7 +30,7 @@ public class EventSnapReceiver {
     private final boolean[] keyPressed = new boolean[512];
     private final boolean[] mouseButtonPressed = new boolean[8];
 
-    private final Map<Class<?>, EventProcessor> eventProcessors = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Class<?>, EventProcessor> eventProcessors = new ConcurrentHashMap<>();
     private final AtomicBoolean applicationActive = new AtomicBoolean(true);
 
     public EventSnapReceiver() {

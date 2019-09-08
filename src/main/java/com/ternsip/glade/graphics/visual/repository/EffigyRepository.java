@@ -6,9 +6,9 @@ import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.interfaces.IUniverse;
 import lombok.Getter;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 @Getter
 public class EffigyRepository implements IUniverse, IGraphics {
@@ -30,7 +30,7 @@ public class EffigyRepository implements IUniverse, IGraphics {
 
     @SuppressWarnings("unchecked")
     private void updateEntities() {
-        Set<Entity> entities = getUniverse().getEntityRepository().getEntities();
+        Collection<Entity> entities = getUniverse().getEntityClientRepository().getUuidToEntity().values();
         entities.forEach(e -> getEntityToEffigy().computeIfAbsent(e, x -> e.getEffigy()));
         getEntityToEffigy().entrySet().removeIf(entry -> {
             Entity entity = entry.getKey();
@@ -42,7 +42,7 @@ public class EffigyRepository implements IUniverse, IGraphics {
             }
             return false;
         });
-        Entity cameraTarget = getUniverse().getEntityRepository().getCameraTarget();
+        Entity cameraTarget = getUniverse().getEntityClientRepository().getCameraTarget();
         getEntityToEffigy().forEach((entity, effigy) -> {
             entity.update(effigy);
             if (entity == cameraTarget) {
