@@ -47,6 +47,7 @@ public class EntityStatistics2D extends EntityDynamicText2D {
 
     @Override
     public void clientUpdate() {
+        super.clientUpdate();
         setUpdates(getUpdates() + 1);
         if (getUpdateTimer().isOver()) {
             getUpdateTimer().drop();

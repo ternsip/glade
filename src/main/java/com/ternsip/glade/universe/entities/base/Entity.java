@@ -44,11 +44,6 @@ public abstract class Entity<T extends Effigy> implements IUniverse {
     // This method can be called only in graphics, it should be supplied
     public abstract T getEffigy();
 
-    public boolean isClientSideOnly() {
-        // TODO use annotations
-        return false;
-    }
-
     public NetworkSide findNetworkSide() {
         if (Utils.isAnnotationPresentInHierarchy(getClass(), ClientSide.class)) {
             return NetworkSide.CLIENT;

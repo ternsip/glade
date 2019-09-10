@@ -39,6 +39,7 @@ public class EntitySides extends Entity<EffigySides> {
 
     @Override
     public void clientUpdate() {
+        super.clientUpdate();
         if (getTimer().isOver()) {
             moveObserver();
             getTimer().drop();

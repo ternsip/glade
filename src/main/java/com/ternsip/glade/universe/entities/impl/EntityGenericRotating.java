@@ -19,6 +19,7 @@ public class EntityGenericRotating extends EntityGeneric {
 
     @Override
     public void serverUpdate() {
+        super.serverUpdate();
         setRotation(getRotation().add(getRotationSpeed(), new Vector3f()));
     }
 }

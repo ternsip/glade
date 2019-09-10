@@ -92,6 +92,7 @@ public class EntityPlayer extends Entity<EffigyBoy> {
 
     @Override
     public void clientUpdate() {
+        super.clientUpdate();
         Vector3f move = new Vector3f(0);
         setVisible(isThirdPerson());
         if (!isThirdPerson() || (getUniverse().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_1) && getUniverse().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_2))) {

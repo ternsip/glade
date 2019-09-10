@@ -27,6 +27,7 @@ public class EntitySun extends Entity<EffigySky> implements Light {
 
     @Override
     public void serverUpdate() {
+        super.serverUpdate();
         phase += delta;
         phase %= 1;
     }
