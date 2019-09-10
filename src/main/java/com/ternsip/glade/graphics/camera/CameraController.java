@@ -4,7 +4,6 @@ import com.ternsip.glade.common.events.base.Callback;
 import com.ternsip.glade.common.events.display.CursorPosEvent;
 import com.ternsip.glade.common.events.display.ScrollEvent;
 import com.ternsip.glade.graphics.interfaces.IGraphics;
-import com.ternsip.glade.graphics.visual.base.Effigy;
 import com.ternsip.glade.universe.interfaces.IUniverse;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +14,6 @@ import java.lang.Math;
 import static com.ternsip.glade.common.logic.Maths.FRONT_DIRECTION;
 import static com.ternsip.glade.common.logic.Maths.UP_DIRECTION;
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1;
-import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_2;
 
 @Setter
 @Getter
@@ -43,8 +41,7 @@ public class CameraController implements IGraphics, IUniverse {
         getGraphics().getEventSnapReceiver().registerCallback(CursorPosEvent.class, cursorPosCallback);
     }
 
-    public void update(Effigy effigy) {
-        setTarget(effigy.getCameraAttachmentPoint());
+    public void update() {
         Camera camera = getGraphics().getCamera();
         camera.setPosition(getEyePosition());
         camera.setViewMatrix(getViewMatrix());
@@ -56,12 +53,6 @@ public class CameraController implements IGraphics, IUniverse {
             getGraphics().getWindowData().disableCursor();
             getUniverse().getEntityClientRepository().getAim().setVisible(true);
         }
-
-        if (!isThirdPerson() || (getGraphics().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_1) &&
-                getGraphics().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_2))) {
-            effigy.setRotation(new Vector3f(0, getRotation().y(), 0));
-        }
-        effigy.setVisible(isThirdPerson());
         getUniverse().getSoundRepository().setListenerPosition(getEyePosition());
         getUniverse().getSoundRepository().setListenerOrientationFront(getLookDirection());
         getUniverse().getSoundRepository().setListenerOrientationUp(getUpDirection());

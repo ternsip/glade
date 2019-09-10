@@ -16,11 +16,11 @@ public class Volumetric implements Serializable {
     private final AtomicLong lastTimeChanged = new AtomicLong(getCurrentTime());
 
     public void setFromVolumetric(Volumetric volumetric) {
-        this.position.set(volumetric.getPosition());
-        this.rotation.set(volumetric.getRotation());
-        this.scale.set(volumetric.getScale());
-        this.visible.set(volumetric.isVisible());
-        this.lastTimeChanged.set(volumetric.getLastTimeChanged());
+        setPosition(volumetric.getPosition());
+        setRotation(volumetric.getRotation());
+        setScale(volumetric.getScale());
+        setVisible(volumetric.isVisible());
+        setLastTimeChanged(volumetric.getLastTimeChanged());
     }
 
     public void setPosition(Vector3fc position) {
@@ -39,8 +39,12 @@ public class Volumetric implements Serializable {
         this.visible.set(visible);
     }
 
+    public void setLastTimeChanged(long time) {
+        this.lastTimeChanged.set(time);
+    }
+
     public void updateTime() {
-        this.lastTimeChanged.set(getCurrentTime());
+        setLastTimeChanged(getCurrentTime());
     }
 
     public Vector3fc getPosition() {

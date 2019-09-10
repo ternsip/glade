@@ -8,6 +8,7 @@ import com.ternsip.glade.network.ClientSide;
 import com.ternsip.glade.network.ServerSide;
 import com.ternsip.glade.universe.collisions.base.Collision;
 import com.ternsip.glade.universe.entities.base.Entity;
+import com.ternsip.glade.universe.entities.base.Volumetric;
 import com.ternsip.glade.universe.parts.blocks.Block;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,9 +28,10 @@ public class EntityPlayer extends Entity<EffigyBoy> {
     private static final float ARM_LENGTH = 5f;
     private final Callback<KeyEvent> keyCallback = this::handleKeyEvent;
     private LineSegmentf eyeSegment = new LineSegmentf(new Vector3f(0), new Vector3f(0));
+    private boolean thirdPerson = false;
 
     @Setter(onMethod=@__({@ServerSide}))
-    private Vector3f currentVelocity = new Vector3f();
+    private Vector3f currentVelocity = new Vector3f(0);
 
     @Setter(onMethod=@__({@ClientSide}))
     private Vector3f moveEffort = new Vector3f(0);
@@ -46,6 +48,9 @@ public class EntityPlayer extends Entity<EffigyBoy> {
     @Setter(onMethod=@__({@ServerSide}))
     private float height = 2;
 
+    @Setter(onMethod=@__({@ClientSide}))
+    private float cameraYRotation = 0;
+
     @Override
     public void register() {
         super.register();
@@ -61,10 +66,12 @@ public class EntityPlayer extends Entity<EffigyBoy> {
     @Override
     public void update(EffigyBoy effigy) {
         super.update(effigy);
-        if (!effigy.getGraphics().getCameraController().isThirdPerson()) {
+        setThirdPerson(effigy.getGraphics().getCameraController().isThirdPerson());
+        setCameraYRotation(effigy.getGraphics().getCameraController().getRotation().y());
+        if (!isThirdPerson()) {
             Vector3fc eye = effigy.getGraphics().getCameraController().getTarget();
             Vector3fc direction = effigy.getGraphics().getCameraController().getLookDirection().mul(ARM_LENGTH, new Vector3f());
-            eyeSegment = new LineSegmentf(eye, eye.add(direction, new Vector3f()));
+            setEyeSegment(new LineSegmentf(eye, eye.add(direction, new Vector3f())));
         }
         effigy.setSkyIntensity(getSkyIntensity());
     }
@@ -77,6 +84,10 @@ public class EntityPlayer extends Entity<EffigyBoy> {
     @Override
     public void clientUpdate() {
         Vector3f move = new Vector3f(0);
+        setVisible(isThirdPerson());
+        if (!isThirdPerson() || (getUniverse().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_1) && getUniverse().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_2))) {
+            setRotation(new Vector3f(0, getCameraYRotation(), 0));
+        }
         if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_W) || getUniverse().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_1) && getUniverse().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_2)) {
             move.add(FRONT_DIRECTION);
         }
@@ -116,6 +127,25 @@ public class EntityPlayer extends Entity<EffigyBoy> {
                 (int) Math.floor(getPosition().y()) - 1,
                 (int) Math.floor(getPosition().z())
         );
+    }
+
+    @ServerSide
+    public void setVolumetric(Volumetric volumetric) {
+        getVolumetric().setPosition(volumetric.getPosition());
+        getVolumetric().setScale(volumetric.getScale());
+        getVolumetric().setLastTimeChanged(volumetric.getLastTimeChanged());
+    }
+
+    @Override
+    @ClientSide
+    public void setRotation(Vector3fc rotation) {
+        getVolumetric().setRotation(rotation);
+    }
+
+    @Override
+    @ClientSide
+    public void setVisible(boolean visible) {
+        getVolumetric().setVisible(visible);
     }
 
     private float getSkyIntensity() {
