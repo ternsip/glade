@@ -1,6 +1,9 @@
 package com.ternsip.glade.universe.entities.base;
 
+import com.ternsip.glade.common.logic.Utils;
 import com.ternsip.glade.graphics.visual.base.Effigy;
+import com.ternsip.glade.network.ClientSide;
+import com.ternsip.glade.network.NetworkSide;
 import com.ternsip.glade.network.ServerSide;
 import com.ternsip.glade.universe.interfaces.IUniverse;
 import lombok.Getter;
@@ -16,37 +19,22 @@ public abstract class Entity<T extends Effigy> implements IUniverse {
 
     private final Volumetric volumetric = new Volumetric();
     private final UUID uuid = UUID.randomUUID();
+    private final NetworkSide networkSide = findNetworkSide();
 
     public void register() {
-        if (isClientSideOnly()) {
-            registerOnClient();
+        if (getNetworkSide() == NetworkSide.CLIENT) {
+            getUniverse().getEntityClientRepository().register(this);
         } else {
-            registerOnServer();
+            getUniverse().getEntityServerRepository().register(this);
         }
     }
 
     public void unregister() {
-        if (isClientSideOnly()) {
-            unregisterOnClient();
+        if (getNetworkSide() == NetworkSide.CLIENT) {
+            getUniverse().getEntityClientRepository().unregister(getUuid());
         } else {
-            unregisterOnServer();
+            getUniverse().getEntityServerRepository().register(this);
         }
-    }
-
-    public void registerOnServer() {
-        getUniverse().getEntityServerRepository().register(this);
-    }
-
-    public void registerOnClient() {
-        getUniverse().getEntityClientRepository().register(this);
-    }
-
-    public void unregisterOnServer() {
-        getUniverse().getEntityServerRepository().register(this);
-    }
-
-    public void unregisterOnClient() {
-        getUniverse().getEntityClientRepository().unregister(getUuid());
     }
 
     public void update(T effigy) {
@@ -59,6 +47,13 @@ public abstract class Entity<T extends Effigy> implements IUniverse {
     public boolean isClientSideOnly() {
         // TODO use annotations
         return false;
+    }
+
+    public NetworkSide findNetworkSide() {
+        if (Utils.isAnnotationPresentInHierarchy(getClass(), ClientSide.class)) {
+            return NetworkSide.CLIENT;
+        }
+        return NetworkSide.SERVER;
     }
 
     public void clientUpdate() {

@@ -1,6 +1,7 @@
 package com.ternsip.glade.universe.protocol;
 
 import com.ternsip.glade.network.Connection;
+import com.ternsip.glade.network.NetworkSide;
 import com.ternsip.glade.network.Packet;
 import com.ternsip.glade.universe.entities.base.Entity;
 import lombok.Getter;
@@ -20,7 +21,6 @@ import java.util.stream.Collectors;
 @Getter
 public class RegisterEntityPacket implements Packet {
 
-    private static final Field ENTITY_UUID_FIELD = getEntityUUIDField();
     private static final Map<Class<? extends Entity>, Set<Field>> CLASS_TO_SERIALIZABLE_FIELDS = new HashMap<>();
     private final Class<? extends Entity> clazz;
     private final UUID uuid;
@@ -33,17 +33,17 @@ public class RegisterEntityPacket implements Packet {
                 .computeIfAbsent(entity.getClass(), k -> findAllSerializableFields(entity.getClass()))
                 .stream()
                 .collect(Collectors.toMap(Field::getName, field -> getFieldValueSilently(field, entity)));
+        this.initialValues.put("networkSide", NetworkSide.CLIENT);
     }
 
     @Override
     public void apply(Connection connection) {
-        getUniverse().getEntityClientRepository().register(constructNewEntity());
+        constructNewEntity().register();
     }
 
     @SneakyThrows
     private Entity constructNewEntity() {
         Entity entity = clazz.getDeclaredConstructor().newInstance();
-        ENTITY_UUID_FIELD.set(entity, getUuid());
         if (!getInitialValues().isEmpty()) {
             CLASS_TO_SERIALIZABLE_FIELDS
                     .computeIfAbsent(clazz, k -> findAllSerializableFields(clazz))
@@ -53,13 +53,6 @@ public class RegisterEntityPacket implements Packet {
                     });
         }
         return entity;
-    }
-
-    @SneakyThrows
-    private static Field getEntityUUIDField() {
-        Field uuidField = Entity.class.getDeclaredField("uuid");
-        uuidField.setAccessible(true);
-        return uuidField;
     }
 
     @SneakyThrows

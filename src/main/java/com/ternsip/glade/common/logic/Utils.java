@@ -13,6 +13,7 @@ import org.reflections.scanners.ResourcesScanner;
 import org.reflections.scanners.SubTypesScanner;
 
 import java.io.*;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -175,7 +176,7 @@ public class Utils {
     }
 
     @SneakyThrows
-    public static synchronized Method findDeclaredMethodInHierarchy(Class<?> objectClass, String methodName) {
+    public static Method findDeclaredMethodInHierarchy(Class<?> objectClass, String methodName) {
         Class<?> targetClass = objectClass;
         while (targetClass != null) {
             try {
@@ -186,6 +187,18 @@ public class Utils {
         }
         String msg = String.format("Can't find method %s anywhere in the class %s", methodName, objectClass.getName());
         throw new IllegalArgumentException(msg);
+    }
+
+    @SneakyThrows
+    public static boolean isAnnotationPresentInHierarchy(Class<?> objectClass, Class<? extends Annotation> annotationClass) {
+        Class<?> targetClass = objectClass;
+        while (targetClass != null) {
+            if (targetClass.isAnnotationPresent(annotationClass)) {
+                return true;
+            }
+            targetClass = targetClass.getSuperclass();
+        }
+        return false;
     }
 
     @SneakyThrows

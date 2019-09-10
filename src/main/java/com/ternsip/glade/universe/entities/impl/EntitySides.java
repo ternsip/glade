@@ -2,6 +2,7 @@ package com.ternsip.glade.universe.entities.impl;
 
 import com.ternsip.glade.common.logic.Timer;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigySides;
+import com.ternsip.glade.network.ClientSide;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.protocol.BlocksObserverChangedPacket;
 import lombok.Getter;
@@ -14,6 +15,7 @@ import org.joml.Vector3ic;
 @RequiredArgsConstructor
 @Getter
 @Setter
+@ClientSide
 public class EntitySides extends Entity<EffigySides> {
 
     private final Timer timer = new Timer(250);
@@ -49,7 +51,8 @@ public class EntitySides extends Entity<EffigySides> {
     }
 
     private void moveObserver() {
-        Vector3ic newPos = getCameraPosition();
+        Vector3fc cameraPos = getUniverse().getEntityClientRepository().getCameraTarget().getPosition();
+        Vector3ic newPos = new Vector3i((int) cameraPos.x(), (int) cameraPos.y(), (int) cameraPos.z());
         int viewDistance = getUniverse().getBalance().getViewDistance();
         if (!getObserverPos().equals(newPos) || getObserverViewDistance() != viewDistance) {
             getUniverse().getClient().send(new BlocksObserverChangedPacket(new Vector3i(getObserverPos()), newPos, getObserverViewDistance(), viewDistance));
@@ -58,13 +61,4 @@ public class EntitySides extends Entity<EffigySides> {
         }
     }
 
-    private Vector3ic getCameraPosition() {
-        Vector3fc pos = getUniverse().getEntityClientRepository().getCameraTarget().getPosition();
-        return new Vector3i((int) pos.x(), (int) pos.y(), (int) pos.z());
-    }
-
-    @Override
-    public boolean isClientSideOnly() {
-        return true;
-    }
 }

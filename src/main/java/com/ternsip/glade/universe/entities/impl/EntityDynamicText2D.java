@@ -1,6 +1,7 @@
 package com.ternsip.glade.universe.entities.impl;
 
 import com.ternsip.glade.graphics.visual.impl.basis.EffigyDynamicText;
+import com.ternsip.glade.network.ClientSide;
 import com.ternsip.glade.universe.entities.base.Entity;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,6 +11,7 @@ import java.io.File;
 
 @Getter
 @Setter
+@ClientSide
 public class EntityDynamicText2D extends Entity<EffigyDynamicText> {
 
     private final File file;
@@ -41,8 +43,4 @@ public class EntityDynamicText2D extends Entity<EffigyDynamicText> {
         return new EffigyDynamicText(getFile(), true, isUseAspect(), getColor(), getText());
     }
 
-    @Override
-    public boolean isClientSideOnly() {
-        return true;
-    }
 }

@@ -1,6 +1,7 @@
 package com.ternsip.glade.universe.entities.ui;
 
 import com.ternsip.glade.graphics.visual.impl.basis.EffigySprite;
+import com.ternsip.glade.network.ClientSide;
 import com.ternsip.glade.universe.entities.base.Entity;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,6 +11,7 @@ import org.joml.Vector3fc;
 
 @Getter
 @Setter
+@ClientSide
 public class EntityUI extends Entity<EffigySprite> {
 
     private boolean useAspect;
@@ -45,11 +47,6 @@ public class EntityUI extends Entity<EffigySprite> {
     public void setScale(Vector3fc scale) {
         super.setScale(scale);
         setUiSize(new Vector2f(getScale().x(), getScale().y()));
-    }
-
-    @Override
-    public boolean isClientSideOnly() {
-        return true;
     }
 
     public Vector3fc getVisualScale() {

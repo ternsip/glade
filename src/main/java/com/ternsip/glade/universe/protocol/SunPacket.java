@@ -16,7 +16,8 @@ public class SunPacket implements Packet {
 
     @Override
     public void apply(Connection connection) {
-        getUniverse().getEntityClientRepository().setSun((EntitySun) getUniverse().getEntityClientRepository().getUuidToEntity().get(getUuid()));
+        EntitySun sun = (EntitySun) getUniverse().getEntityClientRepository().getUuidToEntity().get(getUuid());
+        getUniverse().getEntityClientRepository().setSun(sun);
     }
 
 }
