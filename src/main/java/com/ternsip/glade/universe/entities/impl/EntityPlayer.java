@@ -3,7 +3,6 @@ package com.ternsip.glade.universe.entities.impl;
 import com.ternsip.glade.common.events.base.Callback;
 import com.ternsip.glade.common.events.display.KeyEvent;
 import com.ternsip.glade.common.logic.Maths;
-import com.ternsip.glade.common.logic.Segment;
 import com.ternsip.glade.graphics.visual.impl.test.EffigyBoy;
 import com.ternsip.glade.network.ClientSide;
 import com.ternsip.glade.network.NetworkSide;
@@ -54,7 +53,7 @@ public class EntityPlayer extends Entity<EffigyBoy> {
     private float cameraYRotation = 0;
 
     @ClientSide
-    private Segment eyeSegment = new Segment();
+    private LineSegmentf eyeSegment = new LineSegmentf();
 
     @Override
     public void register() {
@@ -80,7 +79,7 @@ public class EntityPlayer extends Entity<EffigyBoy> {
         if (!isThirdPerson()) {
             Vector3fc eye = effigy.getGraphics().getCameraController().getTarget();
             Vector3fc direction = effigy.getGraphics().getCameraController().getLookDirection().mul(ARM_LENGTH, new Vector3f());
-            setEyeSegment(new Segment(eye, eye.add(direction, new Vector3f())));
+            setEyeSegment(new LineSegmentf(eye, eye.add(direction, new Vector3f())));
         }
         effigy.setSkyIntensity(getSkyIntensity());
     }
