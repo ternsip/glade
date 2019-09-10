@@ -1,5 +1,6 @@
 package com.ternsip.glade.universe.protocol;
 
+import com.ternsip.glade.common.logic.Utils;
 import com.ternsip.glade.network.Connection;
 import com.ternsip.glade.network.NetworkSide;
 import com.ternsip.glade.network.Packet;
@@ -32,7 +33,7 @@ public class RegisterEntityPacket implements Packet {
         this.initialValues = CLASS_TO_SERIALIZABLE_FIELDS
                 .computeIfAbsent(entity.getClass(), k -> findAllSerializableFields(entity.getClass()))
                 .stream()
-                .collect(Collectors.toMap(Field::getName, field -> getFieldValueSilently(field, entity)));
+                .collect(Collectors.toMap(Field::getName, field -> Utils.cloneThroughJson(getFieldValueSilently(field, entity))));
         this.initialValues.put("networkSide", NetworkSide.CLIENT);
     }
 
