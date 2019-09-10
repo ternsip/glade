@@ -9,6 +9,7 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 // TODO Ask JOML to make LineSegmentf externalizable like vector3f https://github.com/JOML-CI/JOML/issues/192
+// Just refresh the library to >1.9.18+<
 public class Segment extends LineSegmentf implements Externalizable {
 
     public Segment() {
