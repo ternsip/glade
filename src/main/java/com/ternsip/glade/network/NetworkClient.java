@@ -39,7 +39,7 @@ public class NetworkClient implements Threadable {
 
     @Override
     public void init() {
-        setSenderThread(new ThreadWrapper<>(Sender::new, 1000L / 128));
+        setSenderThread(new ThreadWrapper<>(Sender::new));
     }
 
     @Override

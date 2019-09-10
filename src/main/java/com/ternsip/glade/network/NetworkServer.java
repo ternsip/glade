@@ -32,7 +32,7 @@ public class NetworkServer implements Threadable {
     @Override
     public void init() {
         setAcceptorThread(new ThreadWrapper<>(Acceptor::new));
-        setSenderThread(new ThreadWrapper<>(Sender::new, 1000L / 128));
+        setSenderThread(new ThreadWrapper<>(Sender::new));
     }
 
     @Override
