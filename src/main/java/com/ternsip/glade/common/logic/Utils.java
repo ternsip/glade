@@ -8,12 +8,14 @@ import org.apache.commons.lang.ArrayUtils;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.assimp.AIScene;
 import org.lwjgl.assimp.Assimp;
+import org.reflections.ReflectionUtils;
 import org.reflections.Reflections;
 import org.reflections.scanners.ResourcesScanner;
 import org.reflections.scanners.SubTypesScanner;
 
 import java.io.*;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -202,6 +204,10 @@ public class Utils {
             targetClass = targetClass.getSuperclass();
         }
         return false;
+    }
+
+    public static Field findFieldInHierarchy(String fieldName, Class<?> objectClass) {
+        return ReflectionUtils.getAllFields(objectClass).stream().filter(e -> e.getName().equals(fieldName)).findFirst().orElseThrow(() -> new IllegalArgumentException("Field not found"));
     }
 
     @SneakyThrows

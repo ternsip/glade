@@ -32,28 +32,28 @@ public class EntityPlayer extends Entity<EffigyBoy> {
     private final Callback<KeyEvent> keyCallback = this::handleKeyEvent;
     private boolean thirdPerson = false;
 
-    @Setter(onMethod=@__({@ServerSide}))
+    @ServerSide
     private Vector3f currentVelocity = new Vector3f(0);
 
-    @Setter(onMethod=@__({@ClientSide}))
+    @ClientSide
     private Vector3f moveEffort = new Vector3f(0);
 
-    @Setter(onMethod=@__({@ServerSide}))
+    @ClientSide
     private float velocity = 0.1f;
 
-    @Setter(onMethod=@__({@ServerSide}))
+    @ServerSide
     private float jumpPower = 0.3f;
 
-    @Setter(onMethod=@__({@ServerSide}))
+    @ServerSide
     private boolean onTheGround = false;
 
-    @Setter(onMethod=@__({@ServerSide}))
+    @ServerSide
     private float height = 2;
 
-    @Setter(onMethod=@__({@ClientSide}))
+    @ClientSide
     private float cameraYRotation = 0;
 
-    @Setter(onMethod=@__({@ClientSide}))
+    @ClientSide
     private Segment eyeSegment = new Segment();
 
     @Override

@@ -11,6 +11,7 @@ import lombok.SneakyThrows;
 import org.reflections.ReflectionUtils;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -55,15 +56,31 @@ public final class FieldBuffer {
         return CLASS_TO_METHODS_SERVER_SIDE.computeIfAbsent(clazz, key -> retrieveMethods(clazz, ServerSide.class));
     }
 
-    private Set<Methods> retrieveMethods(Class<? extends Entity> clazz, Class<? extends Annotation> annotationClazz) {
+    private Set<Methods> retrieveMethods(Class<? extends Entity> clazz, Class<? extends Annotation> annotationClass) {
         Map<String, Method> nameToMethod = ReflectionUtils.getAllMethods(clazz).stream()
                 .collect(Collectors.toMap(Method::getName, e -> e, (a1, a2) -> a1.getDeclaringClass().isAssignableFrom(a2.getDeclaringClass()) ? a2 : a1));
         Set<Method> setters = nameToMethod.values().stream()
-                .filter(method -> method.isAnnotationPresent(annotationClazz))
+                .filter(method -> checkIfMethodNetworking(method, clazz, annotationClass))
                 .collect(Collectors.toSet());
         return setters.stream()
                 .map(setter -> new Methods(nameToMethod, setter))
                 .collect(Collectors.toSet());
+    }
+
+    private boolean checkIfMethodNetworking(Method method, Class<? extends Entity> clazz, Class<? extends Annotation> annotationClass) {
+        if (!method.getName().startsWith("set")) {
+            return false;
+        }
+        if (method.isAnnotationPresent(annotationClass)) {
+            return true;
+        }
+        String fieldName = StringUtils.decapitalize(method.getName().replaceAll("^set", ""));
+        try {
+            Field field = Utils.findFieldInHierarchy(fieldName, clazz);
+            return field.isAnnotationPresent(annotationClass);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @SneakyThrows
