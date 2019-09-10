@@ -30,12 +30,16 @@ public class EntitySides extends Entity<EffigySides> {
     @Override
     public void update(EffigySides effigy) {
         super.update(effigy);
+        if (!getUniverse().getBlocks().getBlocksUpdates().isEmpty()) {
+            effigy.applyBlockUpdate(getUniverse().getBlocks().getBlocksUpdates().poll());
+        }
+    }
+
+    @Override
+    public void clientUpdate() {
         if (getTimer().isOver()) {
             moveObserver();
             getTimer().drop();
-        }
-        if (!getUniverse().getBlocks().getBlocksUpdates().isEmpty()) {
-            effigy.applyBlockUpdate(getUniverse().getBlocks().getBlocksUpdates().poll());
         }
     }
 
@@ -48,7 +52,7 @@ public class EntitySides extends Entity<EffigySides> {
         Vector3ic newPos = getCameraPosition();
         int viewDistance = getUniverse().getBalance().getViewDistance();
         if (!getObserverPos().equals(newPos) || getObserverViewDistance() != viewDistance) {
-            getUniverse().getClient().send(new BlocksObserverChanged(getObserverPos(), newPos, getObserverViewDistance(), viewDistance));
+            getUniverse().getClient().send(new BlocksObserverChanged(new Vector3i(getObserverPos()), newPos, getObserverViewDistance(), viewDistance));
             getObserverPos().set(newPos);
             setObserverViewDistance(viewDistance);
         }
