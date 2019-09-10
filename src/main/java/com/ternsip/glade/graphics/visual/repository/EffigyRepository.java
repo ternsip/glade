@@ -46,7 +46,7 @@ public class EffigyRepository implements IUniverse, IGraphics {
         getEntityToEffigy().forEach((entity, effigy) -> {
             entity.update(effigy);
             if (entity == cameraTarget) {
-                getGraphics().getCameraController().update(cameraTarget);
+                getGraphics().getCameraController().update(effigy);
             }
         });
     }

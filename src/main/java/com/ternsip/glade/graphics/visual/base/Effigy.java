@@ -6,9 +6,9 @@ import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.interfaces.IGraphics;
 import com.ternsip.glade.graphics.shader.base.ShaderProgram;
 import com.ternsip.glade.universe.entities.base.Volumetric;
+import com.ternsip.glade.universe.entities.base.VolumetricInterpolated;
 import com.ternsip.glade.universe.interfaces.IUniverse;
 import lombok.Getter;
-import lombok.experimental.Delegate;
 import org.joml.*;
 
 import java.lang.Math;
@@ -16,8 +16,7 @@ import java.lang.Math;
 @Getter
 public abstract class Effigy<SHADER extends ShaderProgram> implements IGraphics, IUniverse {
 
-    @Delegate
-    private final Volumetric volumetric = new Volumetric();
+    private final VolumetricInterpolated volumetric = new VolumetricInterpolated();
 
     @Getter(lazy = true)
     private final Model model = getGraphics().getModelRepository().getEffigyModel(this);
@@ -32,15 +31,15 @@ public abstract class Effigy<SHADER extends ShaderProgram> implements IGraphics,
     }
 
     public Vector3f getAdjustedScale() {
-        return new Vector3f(getScale()).mul(getModel().getBaseScale());
+        return new Vector3f(getScaleInterpolated()).mul(getModel().getBaseScale());
     }
 
     public Vector3f getAdjustedRotation() {
-        return new Vector3f(getRotation()).add(getModel().getBaseRotation());
+        return new Vector3f(getRotationInterpolated()).add(getModel().getBaseRotation());
     }
 
     public Vector3f getAdjustedPosition() {
-        return new Vector3f(getPosition()).add(getModel().getBaseOffset());
+        return new Vector3f(getPositionInterpolated()).add(getModel().getBaseOffset());
     }
 
     public abstract void render();
@@ -90,6 +89,46 @@ public abstract class Effigy<SHADER extends ShaderProgram> implements IGraphics,
 
     protected Matrix4fc getProjectionMatrix() {
         return getGraphics().getCamera().getNormalProjectionMatrix();
+    }
+
+    public Vector3fc getCameraAttachmentPoint() {
+        return getPositionInterpolated();
+    }
+
+    public void setFromVolumetric(Volumetric volumetric) {
+        getVolumetric().setFromVolumetric(volumetric);
+    }
+
+    public void setPosition(Vector3fc position) {
+        getVolumetric().setPosition(position);
+    }
+
+    public void setScale(Vector3fc scale) {
+        getVolumetric().setScale(scale);
+    }
+
+    public void setRotation(Vector3fc rotation) {
+        getVolumetric().setRotation(rotation);
+    }
+
+    public void setVisible(boolean visible) {
+        getVolumetric().setVisible(visible);
+    }
+
+    public Vector3fc getPositionInterpolated() {
+        return getVolumetric().getPositionInterpolated();
+    }
+
+    public Vector3fc getScaleInterpolated() {
+        return getVolumetric().getScaleInterpolated();
+    }
+
+    public Vector3fc getRotationInterpolated() {
+        return getVolumetric().getRotationInterpolated();
+    }
+
+    public boolean isVisible() {
+        return getVolumetric().isVisible();
     }
 
 }

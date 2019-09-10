@@ -1,12 +1,9 @@
 package com.ternsip.glade.universe.entities.base;
 
-import com.ternsip.glade.common.logic.Maths;
-import com.ternsip.glade.common.logic.Timer;
 import com.ternsip.glade.graphics.visual.base.Effigy;
 import com.ternsip.glade.network.ServerSide;
 import com.ternsip.glade.universe.interfaces.IUniverse;
 import lombok.Getter;
-import lombok.experimental.Delegate;
 import org.joml.Vector3fc;
 
 import java.util.UUID;
@@ -17,12 +14,7 @@ import java.util.UUID;
 @Getter
 public abstract class Entity<T extends Effigy> implements IUniverse {
 
-    @Delegate
     private final Volumetric volumetric = new Volumetric();
-
-    private final Volumetric prevVolumetric = new Volumetric();
-    private final Timer lastTimeVolumetricSet = new Timer();
-
     private final UUID uuid = UUID.randomUUID();
 
     public void register() {
@@ -58,14 +50,7 @@ public abstract class Entity<T extends Effigy> implements IUniverse {
     }
 
     public void update(T effigy) {
-        if (isClientSideOnly()) {
-            effigy.setFromAnother(getVolumetric());
-            return;
-        }
-        effigy.setPosition(getPositionInterpolated());
-        effigy.setRotation(getRotationInterpolated());
-        effigy.setScale(getScaleInterpolated());
-        effigy.setVisible(isVisible());
+        effigy.setFromVolumetric(getVolumetric());
     }
 
     // This method can be called only in graphics, it should be supplied
@@ -82,31 +67,45 @@ public abstract class Entity<T extends Effigy> implements IUniverse {
     public void serverUpdate() {
     }
 
-    public Vector3fc getCameraAttachmentPoint() {
-        return getPositionInterpolated();
-    }
-
     @ServerSide
     public void setVolumetric(Volumetric volumetric) {
-        getPrevVolumetric().setFromAnother(getVolumetric());
-        getVolumetric().setFromAnother(volumetric);
-        getLastTimeVolumetricSet().drop();
+        getVolumetric().setFromVolumetric(volumetric);
     }
 
-    public Vector3fc getPositionInterpolated() {
-        return Maths.interpolate(getVolumetric().getPosition(), getPrevVolumetric().getPosition(), getTimeMultiplier());
+    public void setPosition(Vector3fc position) {
+        getVolumetric().setPosition(position);
+        getVolumetric().updateTime();
     }
 
-    public Vector3fc getScaleInterpolated() {
-        return Maths.interpolate(getVolumetric().getScale(), getPrevVolumetric().getScale(), getTimeMultiplier());
+    public void setScale(Vector3fc scale) {
+        getVolumetric().setScale(scale);
+        getVolumetric().updateTime();
     }
 
-    public Vector3fc getRotationInterpolated() {
-        return Maths.interpolate(getVolumetric().getRotation(), getPrevVolumetric().getRotation(), getTimeMultiplier());
+    public void setRotation(Vector3fc rotation) {
+        getVolumetric().setRotation(rotation);
+        getVolumetric().updateTime();
     }
 
-    private float getTimeMultiplier() {
-        return Maths.bound(0f, 1f, (150 - getLastTimeVolumetricSet().spent()) / 150f);
+    public void setVisible(boolean visible) {
+        getVolumetric().setVisible(visible);
+        getVolumetric().updateTime();
+    }
+
+    public Vector3fc getPosition() {
+        return getVolumetric().getPosition();
+    }
+
+    public Vector3fc getScale() {
+        return getVolumetric().getScale();
+    }
+
+    public Vector3fc getRotation() {
+        return getVolumetric().getRotation();
+    }
+
+    public boolean isVisible() {
+        return getVolumetric().isVisible();
     }
 
 }

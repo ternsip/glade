@@ -4,7 +4,7 @@ import com.ternsip.glade.common.events.base.Callback;
 import com.ternsip.glade.common.events.display.CursorPosEvent;
 import com.ternsip.glade.common.events.display.ScrollEvent;
 import com.ternsip.glade.graphics.interfaces.IGraphics;
-import com.ternsip.glade.universe.entities.base.Entity;
+import com.ternsip.glade.graphics.visual.base.Effigy;
 import com.ternsip.glade.universe.interfaces.IUniverse;
 import lombok.Getter;
 import lombok.Setter;
@@ -43,8 +43,8 @@ public class CameraController implements IGraphics, IUniverse {
         getGraphics().getEventSnapReceiver().registerCallback(CursorPosEvent.class, cursorPosCallback);
     }
 
-    public void update(Entity entity) {
-        setTarget(entity.getCameraAttachmentPoint());
+    public void update(Effigy effigy) {
+        setTarget(effigy.getCameraAttachmentPoint());
         Camera camera = getGraphics().getCamera();
         camera.setPosition(getEyePosition());
         camera.setViewMatrix(getViewMatrix());
@@ -59,9 +59,9 @@ public class CameraController implements IGraphics, IUniverse {
 
         if (!isThirdPerson() || (getGraphics().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_1) &&
                 getGraphics().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_2))) {
-            entity.setRotation(new Vector3f(0, getRotation().y(), 0));
+            effigy.setRotation(new Vector3f(0, getRotation().y(), 0));
         }
-        entity.setVisible(isThirdPerson());
+        effigy.setVisible(isThirdPerson());
         getUniverse().getSoundRepository().setListenerPosition(getEyePosition());
         getUniverse().getSoundRepository().setListenerOrientationFront(getLookDirection());
         getUniverse().getSoundRepository().setListenerOrientationUp(getUpDirection());
