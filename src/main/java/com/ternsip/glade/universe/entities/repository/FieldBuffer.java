@@ -56,7 +56,6 @@ public final class FieldBuffer {
     }
 
     private Set<Methods> retrieveMethods(Class<? extends Entity> clazz, Class<? extends Annotation> annotationClazz) {
-        // TODO catch potential situation when getter had been overridden by an old one (a1, a2) -> a1, where a1 - old
         Map<String, Method> nameToMethod = ReflectionUtils.getAllMethods(clazz).stream()
                 .collect(Collectors.toMap(Method::getName, e -> e, (a1, a2) -> a1.getDeclaringClass().isAssignableFrom(a2.getDeclaringClass()) ? a2 : a1));
         Set<Method> setters = nameToMethod.values().stream()
