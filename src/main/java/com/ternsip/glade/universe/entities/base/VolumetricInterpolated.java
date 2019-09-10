@@ -17,6 +17,8 @@ public class VolumetricInterpolated {
             getPrevVolumetric().setFromVolumetric(getCurVolumetric());
             getCurVolumetric().setFromVolumetric(volumetric);
             getTickTimer().drop();
+        } else {
+            getCurVolumetric().setFromVolumetric(volumetric);
         }
     }
 
