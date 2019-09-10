@@ -24,6 +24,7 @@ import java.io.File;
 
 @Getter
 @Setter
+// TODO split on interfaces and check in entities that called correct one
 public class Universe implements Threadable, INetworkServer, INetworkClient, IBlocksRepository, IBindings, ICollisions, IBalance,
         ISoundRepository, IEntityClientRepository, IEntityServerRepository, IEventSnapReceiver {
 

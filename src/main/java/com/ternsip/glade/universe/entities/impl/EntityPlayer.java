@@ -3,13 +3,16 @@ package com.ternsip.glade.universe.entities.impl;
 import com.ternsip.glade.common.events.base.Callback;
 import com.ternsip.glade.common.events.display.KeyEvent;
 import com.ternsip.glade.common.logic.Maths;
+import com.ternsip.glade.common.logic.Segment;
 import com.ternsip.glade.graphics.visual.impl.test.EffigyBoy;
 import com.ternsip.glade.network.ClientSide;
+import com.ternsip.glade.network.NetworkSide;
 import com.ternsip.glade.network.ServerSide;
 import com.ternsip.glade.universe.collisions.base.Collision;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.base.Volumetric;
 import com.ternsip.glade.universe.parts.blocks.Block;
+import com.ternsip.glade.universe.protocol.PlayerActionPacket;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.*;
@@ -27,7 +30,6 @@ public class EntityPlayer extends Entity<EffigyBoy> {
 
     private static final float ARM_LENGTH = 5f;
     private final Callback<KeyEvent> keyCallback = this::handleKeyEvent;
-    private LineSegmentf eyeSegment = new LineSegmentf(new Vector3f(0), new Vector3f(0));
     private boolean thirdPerson = false;
 
     @Setter(onMethod=@__({@ServerSide}))
@@ -51,16 +53,23 @@ public class EntityPlayer extends Entity<EffigyBoy> {
     @Setter(onMethod=@__({@ClientSide}))
     private float cameraYRotation = 0;
 
+    @Setter(onMethod=@__({@ClientSide}))
+    private Segment eyeSegment = new Segment();
+
     @Override
     public void register() {
         super.register();
-        getUniverse().getEventSnapReceiver().registerCallback(KeyEvent.class, keyCallback);
+        if (getNetworkSide() == NetworkSide.CLIENT) {
+            getUniverse().getEventSnapReceiver().registerCallback(KeyEvent.class, keyCallback);
+        }
     }
 
     @Override
     public void unregister() {
         super.unregister();
-        getUniverse().getEventSnapReceiver().unregisterCallback(KeyEvent.class, keyCallback);
+        if (getNetworkSide() == NetworkSide.CLIENT) {
+            getUniverse().getEventSnapReceiver().unregisterCallback(KeyEvent.class, keyCallback);
+        }
     }
 
     @Override
@@ -71,7 +80,7 @@ public class EntityPlayer extends Entity<EffigyBoy> {
         if (!isThirdPerson()) {
             Vector3fc eye = effigy.getGraphics().getCameraController().getTarget();
             Vector3fc direction = effigy.getGraphics().getCameraController().getLookDirection().mul(ARM_LENGTH, new Vector3f());
-            setEyeSegment(new LineSegmentf(eye, eye.add(direction, new Vector3f())));
+            setEyeSegment(new Segment(eye, eye.add(direction, new Vector3f())));
         }
         effigy.setSkyIntensity(getSkyIntensity());
     }
@@ -164,36 +173,66 @@ public class EntityPlayer extends Entity<EffigyBoy> {
     }
 
     private void handleKeyEvent(KeyEvent event) {
-
         if (event.getKey() == GLFW_KEY_R && event.getAction() == GLFW_PRESS) {
+            getUniverse().getClient().send(new PlayerActionPacket(this, Action.RESPAWN));
+        }
+
+        if (event.getKey() == GLFW_KEY_T && event.getAction() == GLFW_PRESS) {
+            getUniverse().getClient().send(new PlayerActionPacket(this, Action.TELEPORT_FAR));
+        }
+
+        if (event.getKey() == GLFW_KEY_SPACE && event.getAction() == GLFW_PRESS) {
+            getUniverse().getClient().send(new PlayerActionPacket(this, Action.JUMP));
+        }
+
+        if (event.getKey() == GLFW_KEY_B && event.getAction() == GLFW_PRESS) {
+            getUniverse().getClient().send(new PlayerActionPacket(this, Action.DESTROY_BLOCK_UNDER));
+        }
+
+        if (event.getKey() == GLFW_KEY_Q && event.getAction() == GLFW_PRESS) {
+            getUniverse().getClient().send(new PlayerActionPacket(this, Action.DESTROY_SELECTED_BLOCK));
+        }
+    }
+
+    public void handleAction(Action action) {
+        if (action == Action.RESPAWN) {
             setRotation(new Vector3f(0, 0, 0));
             setPosition(new Vector3f(50, 90, 50));
         }
 
-        if (event.getKey() == GLFW_KEY_T && event.getAction() == GLFW_PRESS) {
+        if (action == Action.TELEPORT_FAR) {
             setRotation(new Vector3f(0, 0, 0));
             setPosition(new Vector3f(512, 90, 512));
         }
 
-        if (event.getKey() == GLFW_KEY_SPACE && event.getAction() == GLFW_PRESS) {
+        if (action == Action.JUMP) {
             if (isOnTheGround()) {
                 getCurrentVelocity().add(new Vector3f(0, getJumpPower(), 0));
             }
         }
 
-        if (event.getKey() == GLFW_KEY_B && event.getAction() == GLFW_PRESS) {
+        if (action == Action.DESTROY_BLOCK_UNDER) {
             Vector3ic blockUnder = getBlockPositionStandingOn();
             if (getUniverse().getBlocks().isBlockExists(blockUnder)) {
                 getUniverse().getBlocks().setBlock(blockUnder, Block.AIR);
             }
         }
 
-        if (event.getKey() == GLFW_KEY_Q && event.getAction() == GLFW_PRESS) {
+        if (action == Action.DESTROY_SELECTED_BLOCK) {
             Vector3ic blockPositionLooking = getUniverse().getBlocks().traverse(getEyeSegment(), (block) -> block != Block.AIR);
             if (blockPositionLooking != null && getUniverse().getBlocks().isBlockExists(blockPositionLooking)) {
                 getUniverse().getBlocks().setBlock(blockPositionLooking, Block.AIR);
             }
         }
+    }
+
+    public enum Action {
+
+        JUMP,
+        RESPAWN,
+        TELEPORT_FAR,
+        DESTROY_BLOCK_UNDER,
+        DESTROY_SELECTED_BLOCK,
 
     }
 

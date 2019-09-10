@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @Getter
-public class CameraTargetPacket implements Packet {
+public class CameraTargetPacket extends Packet {
 
     private final UUID uuid;
 

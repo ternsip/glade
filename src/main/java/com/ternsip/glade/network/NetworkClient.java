@@ -46,7 +46,7 @@ public class NetworkClient implements Threadable {
     public void update() {
         if (getConnection().isActive()) {
             try {
-                Packet packet = (Packet) getConnection().readObject();
+                Packet packet = getConnection().readPacket();
                 packet.apply(getConnection());
             } catch (Exception e) {
                 if (getConnection().isActive()) {
@@ -88,9 +88,9 @@ public class NetworkClient implements Threadable {
             while (getConnection().isActive() && !getPackets().isEmpty()) {
                 Packet packet = getPackets().poll();
                 try {
-                    getConnection().writeObject(packet);
+                    getConnection().writePacket(packet);
                 } catch (Exception e) {
-                    String errMsg = String.format("Error while sending packet %s", e.getMessage());
+                    String errMsg = String.format("Error while sending packet from client %s", e.getMessage());
                     log.error(errMsg);
                     log.debug(errMsg, e);
                 }

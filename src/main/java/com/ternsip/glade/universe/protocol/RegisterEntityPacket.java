@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Getter
-public class RegisterEntityPacket implements Packet {
+public class RegisterEntityPacket extends Packet {
 
     private static final Map<Class<? extends Entity>, Set<Field>> CLASS_TO_SERIALIZABLE_FIELDS = new HashMap<>();
     private final Class<? extends Entity> clazz;

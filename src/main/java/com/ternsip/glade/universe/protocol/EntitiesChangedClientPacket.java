@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public class EntitiesChangedClientPacket implements Packet {
+public class EntitiesChangedClientPacket extends Packet {
 
     private final EntitiesChanges changes;
 

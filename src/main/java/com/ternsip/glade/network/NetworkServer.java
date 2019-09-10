@@ -41,7 +41,7 @@ public class NetworkServer implements Threadable {
             getConnections().forEach(connection -> {
                 try {
                     if (connection.getInput().available() > 0) {
-                        Packet packet = (Packet) connection.readObject();
+                        Packet packet = connection.readPacket();
                         packet.apply(connection);
                     }
                 } catch (Exception e) {
@@ -112,10 +112,10 @@ public class NetworkServer implements Threadable {
             while (getServerHolder().isActive() && !getPackets().isEmpty()) {
                 Packet packet = getPackets().poll();
                 try {
-                    getConnections().forEach(connection -> connection.writeObject(packet));
+                    getConnections().forEach(connection -> connection.writePacket(packet));
                 } catch (Exception e) {
-                    String errMsg = String.format("Error while sending packet %s", e.getMessage());
-                    log.error(errMsg);
+                    String errMsg = String.format("Error while sending packet from server %s", e.getMessage());
+                    log.error(errMsg, e);
                     log.debug(errMsg, e);
                 }
             }

@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @Getter
-public class SunPacket implements Packet {
+public class SunPacket extends Packet {
 
     private final UUID uuid;
 

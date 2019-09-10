@@ -1,11 +1,13 @@
 package com.ternsip.glade.network;
 
 import com.ternsip.glade.universe.interfaces.IUniverse;
+import lombok.Getter;
 
 import java.io.Serializable;
 
-public interface Packet extends Serializable, IUniverse {
+@Getter
+public abstract class Packet implements Serializable, IUniverse {
 
-    void apply(Connection connection);
+    public abstract void apply(Connection connection);
 
 }

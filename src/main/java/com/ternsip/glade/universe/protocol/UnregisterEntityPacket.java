@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @Getter
-public class UnregisterEntityPacket implements Packet {
+public class UnregisterEntityPacket extends Packet {
 
     private final UUID uuid;
 

@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Getter
 @Slf4j
-public class ConsoleMessagePacket implements Packet {
+public class ConsoleMessagePacket extends Packet {
 
     private final String message;
 
