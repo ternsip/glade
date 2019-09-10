@@ -1,21 +1,43 @@
 package com.ternsip.glade.universe.entities.impl;
 
 import com.ternsip.glade.graphics.visual.impl.test.EffigyCube;
+import com.ternsip.glade.network.ServerSide;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.parts.blocks.Block;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.joml.LineSegmentf;
 import org.joml.Vector3f;
-import org.joml.Vector3fc;
 import org.joml.Vector3ic;
 
+@RequiredArgsConstructor
+@Getter
 public class EntityCubeSelection extends Entity<EffigyCube> {
+
+    private transient final EntityPlayer player;
+
+    public EntityCubeSelection() {
+        player = null;
+    }
+
+    @Setter(onMethod=@__({@ServerSide}))
+    private Vector3f pos;
 
     @Override
     public void update(EffigyCube effigy) {
         super.update(effigy);
-        Vector3fc eye = effigy.getGraphics().getCameraController().getTarget();
-        Vector3fc direction = effigy.getGraphics().getCameraController().getLookDirection().mul(10, new Vector3f());
-        LineSegmentf segment = new LineSegmentf(eye, eye.add(direction, new Vector3f()));
+    }
+
+    @Override
+    public EffigyCube getEffigy() {
+        return new EffigyCube();
+    }
+
+    @Override
+    public void serverUpdate() {
+        super.serverUpdate();
+        LineSegmentf segment = getPlayer().getEyeSegment();
         Vector3ic pos = getUniverse().getBlocks().traverse(segment, block -> block != Block.AIR);
         if (pos != null) {
             setVisible(true);
@@ -24,10 +46,4 @@ public class EntityCubeSelection extends Entity<EffigyCube> {
             setVisible(false);
         }
     }
-
-    @Override
-    public EffigyCube getEffigy() {
-        return new EffigyCube();
-    }
-
 }

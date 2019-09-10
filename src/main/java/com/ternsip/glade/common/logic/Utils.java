@@ -60,10 +60,13 @@ public class Utils {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T cloneThroughJson(T t) {
+    public static <T> T cloneThroughJson(T object) {
+        if (object == null) {
+            return null;
+        }
         Gson gson = new Gson();
-        String json = gson.toJson(t);
-        return (T) gson.fromJson(json, t.getClass());
+        String json = gson.toJson(object);
+        return (T) gson.fromJson(json, object.getClass());
     }
 
     @SneakyThrows

@@ -19,6 +19,7 @@ import com.ternsip.glade.graphics.interfaces.IGraphics;
 // TODO SHADOWING/LIGHTING
 // TODO Animated Textures
 // TODO It is worth it to use polar interpolation instead of linear for animated models
+// TODO turn all  .collect(Collectors.toMap to hashmap creation
 public class Glade {
 
     public static void main(String[] args) {

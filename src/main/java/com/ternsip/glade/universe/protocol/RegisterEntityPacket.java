@@ -12,6 +12,7 @@ import org.reflections.ReflectionUtils;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -33,7 +34,7 @@ public class RegisterEntityPacket extends Packet {
         this.initialValues = CLASS_TO_SERIALIZABLE_FIELDS
                 .computeIfAbsent(entity.getClass(), k -> findAllSerializableFields(entity.getClass()))
                 .stream()
-                .collect(Collectors.toMap(Field::getName, field -> Utils.cloneThroughJson(getFieldValueSilently(field, entity))));
+                .collect(HashMap::new, (m, field) -> m.put(field.getName(), Utils.cloneThroughJson(getFieldValueSilently(field, entity))), HashMap::putAll);
         this.initialValues.put("networkSide", NetworkSide.CLIENT);
     }
 
@@ -68,7 +69,7 @@ public class RegisterEntityPacket extends Packet {
 
     private static Set<Field> findAllSerializableFields(Class<? extends Entity> clazz) {
         return ReflectionUtils.getAllFields(clazz).stream()
-                .filter(field -> Serializable.class.isAssignableFrom(field.getType()))
+                .filter(field -> Serializable.class.isAssignableFrom(field.getType()) && !Modifier.isTransient(field.getModifiers()))
                 .peek(field -> field.setAccessible(true))
                 .collect(Collectors.toSet());
     }

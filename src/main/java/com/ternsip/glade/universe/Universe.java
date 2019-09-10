@@ -153,7 +153,7 @@ public class Universe implements Threadable, INetworkServer, INetworkClient, IBl
         entityPlayer.setScale(new Vector3f(1, 1, 1));
         getServer().sendAll(new CameraTargetPacket(entityPlayer.getUuid()));
 
-        EntityCubeSelection entityCubeSelection = new EntityCubeSelection();
+        EntityCubeSelection entityCubeSelection = new EntityCubeSelection(entityPlayer);
         entityCubeSelection.register();
 
         new EntitySides().register();
