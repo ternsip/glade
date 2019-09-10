@@ -8,7 +8,7 @@ import org.joml.Vector3ic;
 
 @RequiredArgsConstructor
 @Getter
-public class BlocksObserverChanged implements Packet {
+public class BlocksObserverChangedPacket implements Packet {
 
     private final Vector3ic prevPos;
     private final Vector3ic nextPos;

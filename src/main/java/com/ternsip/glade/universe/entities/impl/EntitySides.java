@@ -3,7 +3,7 @@ package com.ternsip.glade.universe.entities.impl;
 import com.ternsip.glade.common.logic.Timer;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigySides;
 import com.ternsip.glade.universe.entities.base.Entity;
-import com.ternsip.glade.universe.protocol.BlocksObserverChanged;
+import com.ternsip.glade.universe.protocol.BlocksObserverChangedPacket;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -52,7 +52,7 @@ public class EntitySides extends Entity<EffigySides> {
         Vector3ic newPos = getCameraPosition();
         int viewDistance = getUniverse().getBalance().getViewDistance();
         if (!getObserverPos().equals(newPos) || getObserverViewDistance() != viewDistance) {
-            getUniverse().getClient().send(new BlocksObserverChanged(new Vector3i(getObserverPos()), newPos, getObserverViewDistance(), viewDistance));
+            getUniverse().getClient().send(new BlocksObserverChangedPacket(new Vector3i(getObserverPos()), newPos, getObserverViewDistance(), viewDistance));
             getObserverPos().set(newPos);
             setObserverViewDistance(viewDistance);
         }
