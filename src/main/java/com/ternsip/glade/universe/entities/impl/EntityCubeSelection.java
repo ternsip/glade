@@ -6,7 +6,6 @@ import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.parts.blocks.Block;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.joml.LineSegmentf;
 import org.joml.Vector3f;
 import org.joml.Vector3ic;
@@ -21,7 +20,7 @@ public class EntityCubeSelection extends Entity<EffigyCube> {
         player = null;
     }
 
-    @Setter(onMethod=@__({@ServerSide}))
+    @ServerSide
     private Vector3f pos;
 
     @Override

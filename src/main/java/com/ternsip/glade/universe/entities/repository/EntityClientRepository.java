@@ -15,7 +15,7 @@ import java.util.UUID;
 public class EntityClientRepository extends EntityRepository {
 
     private final FieldBuffer fieldBuffer = new FieldBuffer(false);
-    private final Timer networkTimer = new Timer(150);
+    private final Timer networkTimer = new Timer(50);
 
     private Entity aim = new EntityDummy();
     private Entity cameraTarget = new EntityDummy();
