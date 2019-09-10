@@ -32,7 +32,7 @@ public class NetworkServer implements Threadable {
     @Override
     public void init() {
         setAcceptorThread(new ThreadWrapper<>(Acceptor::new));
-        setSenderThread(new ThreadWrapper<>(Sender::new, 150));
+        setSenderThread(new ThreadWrapper<>(Sender::new, 1000L / 128));
     }
 
     @Override
@@ -115,7 +115,7 @@ public class NetworkServer implements Threadable {
                     getConnections().forEach(connection -> connection.writePacket(packet));
                 } catch (Exception e) {
                     String errMsg = String.format("Error while sending packet from server %s", e.getMessage());
-                    log.error(errMsg, e);
+                    log.error(errMsg);
                     log.debug(errMsg, e);
                 }
             }
