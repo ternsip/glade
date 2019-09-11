@@ -20,7 +20,20 @@ import com.ternsip.glade.graphics.interfaces.IGraphics;
 // TODO Animated Textures
 // TODO It is worth it to use polar interpolation instead of linear for animated models
 // TODO turn all  .collect(Collectors.toMap to hashmap creation
-// TODO add all todos from paper
+// TODO handle network block sides inconsistency (like non-existent sides or packet loss)
+// TODO Add block placing on cursor
+// TODO Add trees and structures and wand for selecting the area
+// TODO Add fog and underwater fog effect
+// TODO Add ambient sounds for underwater, forest, sky,
+// TODO Add Particle effects
+// TODO Sort effigies in shader type order in order to reduce bandwidth in CPU-GPU shader rebinding
+// TODO Add camera collision with collidable
+// TODO ?? Add Combine collidable and block traversal (name blocksRepository collidable)
+// TODO Blocks or BlocksRepository
+// TODO Better collisions with playaer (push out from shape AABB)
+// TODO Player inventory based on UI
+// TODO Item repository (blocks, tools)
+// TODO Add Free look camera
 public class Glade {
 
     public static void main(String[] args) {
