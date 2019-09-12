@@ -13,6 +13,14 @@ public class VolumetricInterpolated {
     private final Volumetric prevVolumetric = new Volumetric();
     private final Timer tickTimer = new Timer();
 
+    private static Vector3fc interpolate(Vector3fc a, Vector3fc b, float blend) {
+        return new Vector3f(
+                a.x() + (b.x() - a.x()) * blend,
+                a.y() + (b.y() - a.y()) * blend,
+                a.z() + (b.z() - a.z()) * blend
+        );
+    }
+
     public void updateWithVolumetric(Volumetric volumetric) {
         if (volumetric.getLastTimeChanged() > getCurVolumetric().getLastTimeChanged()) {
             getPrevVolumetric().setFromVolumetric(getCurVolumetric());
@@ -41,14 +49,6 @@ public class VolumetricInterpolated {
     private float getTimeMultiplier() {
         long timeGap = getCurVolumetric().getLastTimeChanged() - getPrevVolumetric().getLastTimeChanged();
         return timeGap <= 0 ? 0 : Maths.bound(0f, 1f, (timeGap - getTickTimer().spent()) / ((float) timeGap));
-    }
-
-    private static Vector3fc interpolate(Vector3fc a, Vector3fc b, float blend) {
-        return new Vector3f(
-                a.x() + (b.x() - a.x()) * blend,
-                a.y() + (b.y() - a.y()) * blend,
-                a.z() + (b.z() - a.z()) * blend
-        );
     }
 
 }

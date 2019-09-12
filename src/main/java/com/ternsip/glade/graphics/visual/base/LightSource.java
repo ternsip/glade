@@ -1,7 +1,9 @@
 package com.ternsip.glade.graphics.visual.base;
 
 import com.ternsip.glade.universe.common.Light;
-import lombok.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 

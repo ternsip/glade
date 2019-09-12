@@ -38,17 +38,17 @@ public class EntitySides extends Entity<EffigySides> {
     }
 
     @Override
+    public EffigySides getEffigy() {
+        return new EffigySides();
+    }
+
+    @Override
     public void clientUpdate() {
         super.clientUpdate();
         if (getTimer().isOver()) {
             moveObserver();
             getTimer().drop();
         }
-    }
-
-    @Override
-    public EffigySides getEffigy() {
-        return new EffigySides();
     }
 
     private void moveObserver() {

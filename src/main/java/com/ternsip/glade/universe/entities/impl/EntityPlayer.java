@@ -130,14 +130,6 @@ public class EntityPlayer extends Entity<EffigyBoy> {
         }
     }
 
-    public Vector3i getBlockPositionStandingOn() {
-        return new Vector3i(
-                (int) Math.floor(getPosition().x()),
-                (int) Math.floor(getPosition().y()) - 1,
-                (int) Math.floor(getPosition().z())
-        );
-    }
-
     @ServerSide
     public void setVolumetric(Volumetric volumetric) {
         getVolumetric().setPosition(volumetric.getPosition());
@@ -156,6 +148,46 @@ public class EntityPlayer extends Entity<EffigyBoy> {
     @ClientSide
     public void setVisible(boolean visible) {
         getVolumetric().setVisible(visible);
+    }
+
+    public Vector3i getBlockPositionStandingOn() {
+        return new Vector3i(
+                (int) Math.floor(getPosition().x()),
+                (int) Math.floor(getPosition().y()) - 1,
+                (int) Math.floor(getPosition().z())
+        );
+    }
+
+    public void handleAction(Action action) {
+        if (action == Action.RESPAWN) {
+            setRotation(new Vector3f(0, 0, 0));
+            setPosition(new Vector3f(50, 90, 50));
+        }
+
+        if (action == Action.TELEPORT_FAR) {
+            setRotation(new Vector3f(0, 0, 0));
+            setPosition(new Vector3f(512, 90, 512));
+        }
+
+        if (action == Action.JUMP) {
+            if (isOnTheGround()) {
+                getCurrentVelocity().add(new Vector3f(0, getJumpPower(), 0));
+            }
+        }
+
+        if (action == Action.DESTROY_BLOCK_UNDER) {
+            Vector3ic blockUnder = getBlockPositionStandingOn();
+            if (getUniverse().getBlocks().isBlockExists(blockUnder)) {
+                getUniverse().getBlocks().setBlock(blockUnder, Block.AIR);
+            }
+        }
+
+        if (action == Action.DESTROY_SELECTED_BLOCK) {
+            Vector3ic blockPositionLooking = getUniverse().getBlocks().traverse(getEyeSegment(), (block) -> block != Block.AIR);
+            if (blockPositionLooking != null && getUniverse().getBlocks().isBlockExists(blockPositionLooking)) {
+                getUniverse().getBlocks().setBlock(blockPositionLooking, Block.AIR);
+            }
+        }
     }
 
     private float getSkyIntensity() {
@@ -192,38 +224,6 @@ public class EntityPlayer extends Entity<EffigyBoy> {
 
         if (event.getKey() == GLFW_KEY_Q && event.getAction() == GLFW_PRESS) {
             getUniverse().getClient().send(new PlayerActionPacket(this, Action.DESTROY_SELECTED_BLOCK));
-        }
-    }
-
-    public void handleAction(Action action) {
-        if (action == Action.RESPAWN) {
-            setRotation(new Vector3f(0, 0, 0));
-            setPosition(new Vector3f(50, 90, 50));
-        }
-
-        if (action == Action.TELEPORT_FAR) {
-            setRotation(new Vector3f(0, 0, 0));
-            setPosition(new Vector3f(512, 90, 512));
-        }
-
-        if (action == Action.JUMP) {
-            if (isOnTheGround()) {
-                getCurrentVelocity().add(new Vector3f(0, getJumpPower(), 0));
-            }
-        }
-
-        if (action == Action.DESTROY_BLOCK_UNDER) {
-            Vector3ic blockUnder = getBlockPositionStandingOn();
-            if (getUniverse().getBlocks().isBlockExists(blockUnder)) {
-                getUniverse().getBlocks().setBlock(blockUnder, Block.AIR);
-            }
-        }
-
-        if (action == Action.DESTROY_SELECTED_BLOCK) {
-            Vector3ic blockPositionLooking = getUniverse().getBlocks().traverse(getEyeSegment(), (block) -> block != Block.AIR);
-            if (blockPositionLooking != null && getUniverse().getBlocks().isBlockExists(blockPositionLooking)) {
-                getUniverse().getBlocks().setBlock(blockPositionLooking, Block.AIR);
-            }
         }
     }
 

@@ -84,16 +84,16 @@ public abstract class Effigy<SHADER extends ShaderProgram> implements IGraphics,
         return Utils.findDeclaredMethodInHierarchy(getClass(), "loadModel");
     }
 
+    public Vector3fc getCameraAttachmentPoint() {
+        return getPosition();
+    }
+
     protected Matrix4fc getViewMatrix() {
         return getGraphics().getCamera().getViewMatrix();
     }
 
     protected Matrix4fc getProjectionMatrix() {
         return getGraphics().getCamera().getNormalProjectionMatrix();
-    }
-
-    public Vector3fc getCameraAttachmentPoint() {
-        return getPosition();
     }
 
 }

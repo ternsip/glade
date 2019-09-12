@@ -34,7 +34,7 @@ public class EffigyCube extends EffigyAnimated {
     //  |/      |/
     //  v2------v3
 
-    public static float CUBE_VERTICES[] = {
+    public static float[] CUBE_VERTICES = {
             SIZE, SIZE, SIZE, -SIZE, SIZE, SIZE, -SIZE, -SIZE, SIZE, SIZE, -SIZE, SIZE, // v0,v1,v2,v3 (front)
             SIZE, SIZE, SIZE, SIZE, -SIZE, SIZE, SIZE, -SIZE, -SIZE, SIZE, SIZE, -SIZE, // v0,v3,v4,v5 (right)
             SIZE, SIZE, SIZE, SIZE, SIZE, -SIZE, -SIZE, SIZE, -SIZE, -SIZE, SIZE, SIZE, // v0,v5,v6,v1 (top)
@@ -44,7 +44,7 @@ public class EffigyCube extends EffigyAnimated {
     };
 
     // texture coord array
-    public static float CUBE_TEXCOORDS[] = {
+    public static float[] CUBE_TEXCOORDS = {
             1, 0, 0, 0, 0, 1, 1, 1,               // v0,v1,v2,v3 (front)
             0, 0, 0, 1, 1, 1, 1, 0,               // v0,v3,v4,v5 (right)
             1, 1, 1, 0, 0, 0, 0, 1,               // v0,v5,v6,v1 (top)
@@ -54,7 +54,7 @@ public class EffigyCube extends EffigyAnimated {
     };
 
     // normal array
-    public static float CUBE_NORMALS[] = {
+    public static float[] CUBE_NORMALS = {
             0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,  // v0,v1,v2,v3 (front)
             1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,  // v0,v3,v4,v5 (right)
             0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0,  // v0,v5,v6,v1 (top)
@@ -64,7 +64,7 @@ public class EffigyCube extends EffigyAnimated {
     };
 
     // A cube requires 36 indices = 6 sides * 2 tris * 3 verts
-    public static int CUBE_INDICES[] = {
+    public static int[] CUBE_INDICES = {
             0, 1, 2, 2, 3, 0,    // v0-v1-v2, v2-v3-v0 (front)
             4, 5, 6, 6, 7, 4,    // v0-v3-v4, v4-v5-v0 (right)
             8, 9, 10, 10, 11, 8,    // v0-v5-v6, v6-v1-v0 (top)

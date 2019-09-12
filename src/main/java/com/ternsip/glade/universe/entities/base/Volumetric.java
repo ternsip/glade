@@ -31,26 +31,6 @@ public class Volumetric implements VolumetricSetters, Serializable {
         setLastTimeChanged(volumetricInterpolated.getCurVolumetric().getLastTimeChanged());
     }
 
-    public void setPosition(Vector3fc position) {
-        this.position.set(position);
-    }
-
-    public void setScale(Vector3fc scale) {
-        this.scale.set(scale);
-    }
-
-    public void setRotation(Vector3fc rotation) {
-        this.rotation.set(rotation);
-    }
-
-    public void setVisible(boolean visible) {
-        this.visible.set(visible);
-    }
-
-    public void setLastTimeChanged(long time) {
-        this.lastTimeChanged.set(time);
-    }
-
     public void updateTime() {
         setLastTimeChanged(getCurrentTime());
     }
@@ -59,20 +39,40 @@ public class Volumetric implements VolumetricSetters, Serializable {
         return position;
     }
 
+    public void setPosition(Vector3fc position) {
+        this.position.set(position);
+    }
+
     public Vector3fc getScale() {
         return scale;
+    }
+
+    public void setScale(Vector3fc scale) {
+        this.scale.set(scale);
     }
 
     public Vector3fc getRotation() {
         return rotation;
     }
 
+    public void setRotation(Vector3fc rotation) {
+        this.rotation.set(rotation);
+    }
+
     public boolean isVisible() {
         return visible.get();
     }
 
+    public void setVisible(boolean visible) {
+        this.visible.set(visible);
+    }
+
     public long getLastTimeChanged() {
         return lastTimeChanged.get();
+    }
+
+    public void setLastTimeChanged(long time) {
+        this.lastTimeChanged.set(time);
     }
 
     private long getCurrentTime() {

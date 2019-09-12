@@ -37,7 +37,7 @@ public class Connection {
 
     @SneakyThrows
     public Packet readPacket() {
-        return ((Packet)new ObjectInputStream(getInput()).readObject());
+        return ((Packet) new ObjectInputStream(getInput()).readObject());
     }
 
     @SneakyThrows

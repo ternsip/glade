@@ -114,7 +114,7 @@ public class SideConstructor implements IGraphics {
             meshes.add(mesh);
         }
         Iterator<SidePosition> toRemove = sidesToRemove.iterator();
-        boolean changedMeshes[] = new boolean[meshes.size()];
+        boolean[] changedMeshes = new boolean[meshes.size()];
         for (Side side : sidesToAdd) {
             SidePosition sidePositionSrc = side.getSidePosition();
             Integer sideIndexSrc = sides.get(sidePositionSrc);

@@ -38,6 +38,23 @@ public class RegisterEntityPacket extends Packet {
         this.initialValues.put("networkSide", NetworkSide.CLIENT);
     }
 
+    @SneakyThrows
+    private static Object getFieldValueSilently(Field field, Object object) {
+        return field.get(object);
+    }
+
+    @SneakyThrows
+    private static void setFieldValueSilently(Field field, Object object, Object value) {
+        field.set(object, value);
+    }
+
+    private static Set<Field> findAllSerializableFields(Class<? extends Entity> clazz) {
+        return ReflectionUtils.getAllFields(clazz).stream()
+                .filter(field -> Serializable.class.isAssignableFrom(field.getType()) && !Modifier.isTransient(field.getModifiers()))
+                .peek(field -> field.setAccessible(true))
+                .collect(Collectors.toSet());
+    }
+
     @Override
     public void apply(Connection connection) {
         constructNewEntity().register();
@@ -55,23 +72,6 @@ public class RegisterEntityPacket extends Packet {
                     });
         }
         return entity;
-    }
-
-    @SneakyThrows
-    private static Object getFieldValueSilently(Field field, Object object) {
-        return field.get(object);
-    }
-
-    @SneakyThrows
-    private static void setFieldValueSilently(Field field, Object object, Object value) {
-        field.set(object, value);
-    }
-
-    private static Set<Field> findAllSerializableFields(Class<? extends Entity> clazz) {
-        return ReflectionUtils.getAllFields(clazz).stream()
-                .filter(field -> Serializable.class.isAssignableFrom(field.getType()) && !Modifier.isTransient(field.getModifiers()))
-                .peek(field -> field.setAccessible(true))
-                .collect(Collectors.toSet());
     }
 
 }

@@ -15,13 +15,12 @@ import org.joml.Vector3ic;
 public class EntityCubeSelection extends Entity<EffigyCube> {
 
     private transient final EntityPlayer player;
+    @ServerSide
+    private Vector3f pos;
 
     public EntityCubeSelection() {
         player = null;
     }
-
-    @ServerSide
-    private Vector3f pos;
 
     @Override
     public void update(EffigyCube effigy) {

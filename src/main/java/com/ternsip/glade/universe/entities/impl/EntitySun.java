@@ -2,7 +2,6 @@ package com.ternsip.glade.universe.entities.impl;
 
 import com.ternsip.glade.graphics.visual.impl.basis.EffigySky;
 import com.ternsip.glade.network.ServerSide;
-import com.ternsip.glade.universe.common.Light;
 import com.ternsip.glade.universe.entities.base.Entity;
 import lombok.Getter;
 import org.joml.Vector2f;
@@ -23,15 +22,15 @@ public class EntitySun extends Entity<EffigySky> {
     private float delta = 0.001f;
 
     @Override
-    public EffigySky getEffigy() {
-        return new EffigySky();
-    }
-
-    @Override
     public void update(EffigySky effigy) {
         super.update(effigy);
         effigy.setIntensity(getIntensity());
         effigy.setColor(getColor());
+    }
+
+    @Override
+    public EffigySky getEffigy() {
+        return new EffigySky();
     }
 
     @Override
