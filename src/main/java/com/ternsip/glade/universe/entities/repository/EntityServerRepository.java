@@ -15,7 +15,7 @@ import lombok.Setter;
 public class EntityServerRepository extends EntityRepository {
 
     private final FieldBuffer fieldBuffer = new FieldBuffer(true);
-    private final Timer networkTimer = new Timer(50);
+    private final Timer networkTimer = new Timer(250);
 
     private EntitySun sun = new EntitySun();
 

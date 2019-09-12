@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class Volumetric implements Serializable {
+public class Volumetric implements VolumetricSetters, Serializable {
 
     private final Vector3f position = new Vector3f(0, 0, 0);
     private final Vector3f scale = new Vector3f(1, 1, 1);
@@ -21,6 +21,14 @@ public class Volumetric implements Serializable {
         setScale(volumetric.getScale());
         setVisible(volumetric.isVisible());
         setLastTimeChanged(volumetric.getLastTimeChanged());
+    }
+
+    public void setFromVolumetricInterpolated(VolumetricInterpolated volumetricInterpolated) {
+        setPosition(volumetricInterpolated.getPositionInterpolated());
+        setRotation(volumetricInterpolated.getRotationInterpolated());
+        setScale(volumetricInterpolated.getScaleInterpolated());
+        setVisible(volumetricInterpolated.isVisibleInterpolated());
+        setLastTimeChanged(volumetricInterpolated.getCurVolumetric().getLastTimeChanged());
     }
 
     public void setPosition(Vector3fc position) {

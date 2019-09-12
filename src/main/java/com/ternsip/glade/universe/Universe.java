@@ -8,6 +8,8 @@ import com.ternsip.glade.universe.bindings.Bind;
 import com.ternsip.glade.universe.collisions.impl.ChunksObstacle;
 import com.ternsip.glade.universe.collisions.impl.GroundObstacle;
 import com.ternsip.glade.universe.entities.base.Entity;
+import com.ternsip.glade.universe.entities.base.EntityGeneric;
+import com.ternsip.glade.universe.entities.base.EntityGenericRotating;
 import com.ternsip.glade.universe.entities.impl.*;
 import com.ternsip.glade.universe.entities.ui.EntityUIMenu;
 import com.ternsip.glade.universe.interfaces.*;

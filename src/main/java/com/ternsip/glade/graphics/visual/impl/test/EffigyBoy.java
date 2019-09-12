@@ -28,14 +28,8 @@ public class EffigyBoy extends EffigyAnimated {
     }
 
     @Override
-    public Light getSun() {
-        Light sun = super.getSun();
-        return new LightSource(sun.getPosition(), sun.getIntensity() * getSkyIntensity(), sun.getColor());
-    }
-
-    @Override
     public Vector3f getCameraAttachmentPoint() {
-        return super.getCameraAttachmentPoint().add(0, getScaleInterpolated().y() * 2, 0, new Vector3f());
+        return super.getCameraAttachmentPoint().add(0, getScale().y() * 2, 0, new Vector3f());
     }
 
 }

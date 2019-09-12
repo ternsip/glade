@@ -13,14 +13,12 @@ public class VolumetricInterpolated {
     private final Volumetric prevVolumetric = new Volumetric();
     private final Timer tickTimer = new Timer();
 
-    public void setFromVolumetric(Volumetric volumetric) {
+    public void updateWithVolumetric(Volumetric volumetric) {
         if (volumetric.getLastTimeChanged() > getCurVolumetric().getLastTimeChanged()) {
             getPrevVolumetric().setFromVolumetric(getCurVolumetric());
-            getCurVolumetric().setFromVolumetric(volumetric);
             getTickTimer().drop();
-        } else {
-            getCurVolumetric().setFromVolumetric(volumetric);
         }
+        getCurVolumetric().setFromVolumetric(volumetric);
     }
 
     public Vector3fc getPositionInterpolated() {
@@ -35,30 +33,14 @@ public class VolumetricInterpolated {
         return interpolate(getCurVolumetric().getRotation(), getPrevVolumetric().getRotation(), getTimeMultiplier());
     }
 
-    public boolean isVisible() {
+    public boolean isVisibleInterpolated() {
         // TODO make fade away effect (alpha 0f-1f) interpolated
         return getCurVolumetric().isVisible();
     }
 
-    public void setPosition(Vector3fc position) {
-        getCurVolumetric().setPosition(position);
-    }
-
-    public void setScale(Vector3fc scale) {
-        getCurVolumetric().setScale(scale);
-    }
-
-    public void setRotation(Vector3fc rotation) {
-        getCurVolumetric().setRotation(rotation);
-    }
-
-    public void setVisible(boolean visible) {
-        getCurVolumetric().setVisible(visible);
-    }
-
     private float getTimeMultiplier() {
         long timeGap = getCurVolumetric().getLastTimeChanged() - getPrevVolumetric().getLastTimeChanged();
-        return timeGap <= 0 ? 0 : Maths.bound(0f, 1f, (timeGap - getTickTimer().spent()) / ((float)timeGap));
+        return timeGap <= 0 ? 0 : Maths.bound(0f, 1f, (timeGap - getTickTimer().spent()) / ((float) timeGap));
     }
 
     private static Vector3fc interpolate(Vector3fc a, Vector3fc b, float blend) {

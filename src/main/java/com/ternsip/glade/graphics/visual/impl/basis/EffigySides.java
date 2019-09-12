@@ -5,13 +5,18 @@ import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.shader.impl.ChunkShader;
 import com.ternsip.glade.graphics.visual.base.Effigy;
+import com.ternsip.glade.graphics.visual.base.LightSource;
 import com.ternsip.glade.graphics.visual.base.SideConstructor;
+import com.ternsip.glade.universe.common.Light;
+import com.ternsip.glade.universe.entities.impl.EntitySun;
 import com.ternsip.glade.universe.parts.chunks.BlocksUpdate;
 import lombok.Getter;
+import lombok.Setter;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 
 @Getter
+@Setter
 public class EffigySides extends Effigy<ChunkShader> {
 
     public static final long TIME_PERIOD_MILLISECONDS = 60_000L;
@@ -36,7 +41,7 @@ public class EffigySides extends Effigy<ChunkShader> {
         getShader().getViewMatrix().load(getViewMatrix());
         getShader().getTransformationMatrix().load(getTransformationMatrix());
         getShader().getTime().load((System.currentTimeMillis() % TIME_PERIOD_MILLISECONDS) / TIME_PERIOD_DIVISOR);
-        getShader().getSun().load(getUniverse().getEntityClientRepository().getSun());
+        getShader().getSun().load(getSun());
         getShader().getSamplers().loadDefault();
         for (Mesh mesh : getSideConstructor().getMeshes()) {
             mesh.render();
@@ -72,6 +77,11 @@ public class EffigySides extends Effigy<ChunkShader> {
     @Override
     public Object getModelKey() {
         return this;
+    }
+
+    public Light getSun() {
+        EntitySun sun = getUniverse().getEntityClientRepository().getSun();
+        return new LightSource(sun.getPositionInterpolated(), sun.getColor(), sun.getIntensity());
     }
 
 }

@@ -6,11 +6,13 @@ import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.shader.base.MeshAttributes;
 import com.ternsip.glade.graphics.shader.impl.SkyboxShader;
 import com.ternsip.glade.graphics.visual.base.Effigy;
+import com.ternsip.glade.graphics.visual.base.LightSource;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 import java.util.Collections;
 
@@ -66,11 +68,14 @@ public class EffigySky extends Effigy<SkyboxShader> {
             SIZE, -SIZE, SIZE
     };
 
+    private float intensity = 1;
+    private Vector3fc color = new Vector3f(1);
+
     @Override
     public void render() {
         getShader().start();
         getShader().getProjectionMatrix().load(getProjectionMatrix());
-        getShader().getSun().load(getUniverse().getEntityClientRepository().getSun());
+        getShader().getSun().load(new LightSource(getPosition(), getColor(), getIntensity()));
         getShader().getViewMatrix().load(getViewMatrix());
         getModel().getMeshes().get(0).render();
         getShader().stop();

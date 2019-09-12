@@ -10,7 +10,7 @@ import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
 @Getter
-public class EntitySun extends Entity<EffigySky> implements Light {
+public class EntitySun extends Entity<EffigySky> {
 
     private final Vector2f origin = new Vector2f(0, 0);
     private final Vector2f radius = new Vector2f(1, 1);
@@ -23,13 +23,15 @@ public class EntitySun extends Entity<EffigySky> implements Light {
     private float delta = 0.001f;
 
     @Override
-    public void update(EffigySky effigy) {
-        super.update(effigy);
+    public EffigySky getEffigy() {
+        return new EffigySky();
     }
 
     @Override
-    public EffigySky getEffigy() {
-        return new EffigySky();
+    public void update(EffigySky effigy) {
+        super.update(effigy);
+        effigy.setIntensity(getIntensity());
+        effigy.setColor(getColor());
     }
 
     @Override
@@ -40,7 +42,6 @@ public class EntitySun extends Entity<EffigySky> implements Light {
         setPosition(getCorePosition());
     }
 
-    @Override
     public float getIntensity() {
         return 1;
         //return (float) Math.max(0.2, 1 - abs(1 / 3.0 - phase) * 3); TODO temporary

@@ -143,6 +143,7 @@ public class EntityPlayer extends Entity<EffigyBoy> {
         getVolumetric().setPosition(volumetric.getPosition());
         getVolumetric().setScale(volumetric.getScale());
         getVolumetric().setLastTimeChanged(volumetric.getLastTimeChanged());
+        getVolumetricInterpolated().updateWithVolumetric(getVolumetric());
     }
 
     @Override

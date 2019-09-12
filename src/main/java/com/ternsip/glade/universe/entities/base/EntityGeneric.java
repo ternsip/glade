@@ -1,7 +1,6 @@
-package com.ternsip.glade.universe.entities.impl;
+package com.ternsip.glade.universe.entities.base;
 
 import com.ternsip.glade.graphics.visual.base.Effigy;
-import com.ternsip.glade.universe.entities.base.Entity;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -22,7 +21,6 @@ public class EntityGeneric extends Entity {
     public Effigy getEffigy() {
         return effigySupplier.get();
     }
-
 
     @FunctionalInterface
     public interface EffigySupplier extends Supplier<Effigy>, Serializable {

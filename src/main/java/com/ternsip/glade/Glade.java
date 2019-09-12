@@ -34,6 +34,7 @@ import com.ternsip.glade.graphics.interfaces.IGraphics;
 // TODO Player inventory based on UI
 // TODO Item repository (blocks, tools)
 // TODO Add Free look camera
+// TODO be careful with @Delegate sometimes it breaks navigation or debugger, also recursive delegate does not allowed
 public class Glade {
 
     public static void main(String[] args) {

@@ -1,4 +1,4 @@
-package com.ternsip.glade.universe.entities.impl;
+package com.ternsip.glade.universe.entities.base;
 
 import lombok.Getter;
 import org.joml.Vector3f;
@@ -22,4 +22,5 @@ public class EntityGenericRotating extends EntityGeneric {
         super.serverUpdate();
         setRotation(getRotation().add(getRotationSpeed(), new Vector3f()));
     }
+
 }
