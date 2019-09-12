@@ -88,14 +88,6 @@ public class Maths {
         return matrix;
     }
 
-    public static Vector3fc interpolate(Vector3fc a, Vector3fc b, float blend) {
-        return new Vector3f(
-                a.x() + (b.x() - a.x()) * blend,
-                a.y() + (b.y() - a.y()) * blend,
-                a.z() + (b.z() - a.z()) * blend
-        );
-    }
-
     /**
      * Interpolates between two quaternion rotations and returns the resulting
      * quaternion rotation. The interpolation method here is "nlerp", or

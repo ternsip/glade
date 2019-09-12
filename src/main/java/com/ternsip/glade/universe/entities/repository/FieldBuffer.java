@@ -1,6 +1,5 @@
 package com.ternsip.glade.universe.entities.repository;
 
-import com.sun.xml.internal.ws.util.StringUtils;
 import com.ternsip.glade.common.logic.Utils;
 import com.ternsip.glade.network.ClientSide;
 import com.ternsip.glade.network.ServerSide;
@@ -8,6 +7,7 @@ import com.ternsip.glade.universe.entities.base.Entity;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.StringUtils;
 import org.reflections.ReflectionUtils;
 
 import java.lang.annotation.Annotation;
@@ -74,7 +74,7 @@ public final class FieldBuffer {
         if (method.isAnnotationPresent(annotationClass)) {
             return true;
         }
-        String fieldName = StringUtils.decapitalize(method.getName().replaceAll("^set", ""));
+        String fieldName = StringUtils.uncapitalize(method.getName().replaceAll("^set", ""));
         try {
             Field field = Utils.findFieldInHierarchy(fieldName, clazz);
             return field.isAnnotationPresent(annotationClass);
@@ -101,7 +101,7 @@ public final class FieldBuffer {
             String getterNameGet = setterName.replaceAll("^set", "get");
             String getterNameIs = setterName.replaceAll("^set", "is");
             String getterName = nameToMethod.containsKey(getterNameGet) ? getterNameGet : getterNameIs;
-            String fieldName = StringUtils.decapitalize(setterName.replaceAll("^set", ""));
+            String fieldName = StringUtils.uncapitalize(setterName.replaceAll("^set", ""));
             Method getter = nameToMethod.get(getterName);
             if (getter == null) {
                 throw new IllegalArgumentException(String.format("Getter does not exists for setter %s!", setterName));
