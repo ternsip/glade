@@ -32,8 +32,8 @@ public class EntitySides extends Entity<EffigySides> {
     @Override
     public void update(EffigySides effigy) {
         super.update(effigy);
-        if (!getUniverse().getBlocks().getBlocksUpdates().isEmpty()) {
-            effigy.applyBlockUpdate(getUniverse().getBlocks().getBlocksUpdates().poll());
+        if (!getUniverseServer().getBlocks().getBlocksUpdates().isEmpty()) {
+            effigy.applyBlockUpdate(getUniverseServer().getBlocks().getBlocksUpdates().poll());
         }
     }
 
@@ -52,11 +52,12 @@ public class EntitySides extends Entity<EffigySides> {
     }
 
     private void moveObserver() {
-        Vector3fc cameraPos = getUniverse().getEntityClientRepository().getCameraTarget().getPosition();
+        // TODO sometimes it crashes with nullpointer
+        Vector3fc cameraPos = getUniverseClient().getEntityClientRepository().getCameraTarget().getPosition();
         Vector3ic newPos = new Vector3i((int) cameraPos.x(), (int) cameraPos.y(), (int) cameraPos.z());
-        int viewDistance = getUniverse().getBalance().getViewDistance();
+        int viewDistance = 4; // TODO receive this from client options (make options class)
         if (!getObserverPos().equals(newPos) || getObserverViewDistance() != viewDistance) {
-            getUniverse().getClient().send(new BlocksObserverChangedPacket(new Vector3i(getObserverPos()), newPos, getObserverViewDistance(), viewDistance));
+            getUniverseClient().getClient().send(new BlocksObserverChangedPacket(new Vector3i(getObserverPos()), newPos, getObserverViewDistance(), viewDistance));
             getObserverPos().set(newPos);
             setObserverViewDistance(viewDistance);
         }

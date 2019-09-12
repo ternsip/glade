@@ -13,6 +13,7 @@
       <w>skybox</w>
       <w>teleport</w>
       <w>threadable</w>
+      <w>tickrate</w>
       <w>vbos</w>
       <w>viewless</w>
       <w>voxels</w>

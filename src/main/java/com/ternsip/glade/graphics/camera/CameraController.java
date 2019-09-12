@@ -4,7 +4,7 @@ import com.ternsip.glade.common.events.base.Callback;
 import com.ternsip.glade.common.events.display.CursorPosEvent;
 import com.ternsip.glade.common.events.display.ScrollEvent;
 import com.ternsip.glade.graphics.interfaces.IGraphics;
-import com.ternsip.glade.universe.interfaces.IUniverse;
+import com.ternsip.glade.universe.interfaces.IUniverseClient;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.*;
@@ -17,7 +17,7 @@ import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1;
 
 @Setter
 @Getter
-public class CameraController implements IGraphics, IUniverse {
+public class CameraController implements IGraphics, IUniverseClient {
 
     private static final float MIN_DISTANCE_FROM_TARGET = 0.1f;
     private static final float MAX_DISTANCE_FROM_TARGET = 320;
@@ -46,16 +46,17 @@ public class CameraController implements IGraphics, IUniverse {
         camera.setPosition(getEyePosition());
         camera.setViewMatrix(getViewMatrix());
 
+        // TODO make aim take this third person value (instead of pushing it) via update(effigy)
         if (isThirdPerson()) {
             getGraphics().getWindowData().enableCursor();
-            getUniverse().getEntityClientRepository().getAim().setVisible(false);
+            getUniverseClient().getEntityClientRepository().getAim().setVisible(false);
         } else {
             getGraphics().getWindowData().disableCursor();
-            getUniverse().getEntityClientRepository().getAim().setVisible(true);
+            getUniverseClient().getEntityClientRepository().getAim().setVisible(true);
         }
-        getUniverse().getSoundRepository().setListenerPosition(getEyePosition());
-        getUniverse().getSoundRepository().setListenerOrientationFront(getLookDirection());
-        getUniverse().getSoundRepository().setListenerOrientationUp(getUpDirection());
+        getUniverseClient().getSoundRepository().setListenerPosition(getEyePosition());
+        getUniverseClient().getSoundRepository().setListenerOrientationFront(getLookDirection());
+        getUniverseClient().getSoundRepository().setListenerOrientationUp(getUpDirection());
     }
 
     public Vector3fc getEyePosition() {

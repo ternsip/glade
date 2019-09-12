@@ -1,7 +1,6 @@
 package com.ternsip.glade.universe.entities.repository;
 
 import com.ternsip.glade.universe.entities.base.Entity;
-import com.ternsip.glade.universe.interfaces.IUniverse;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,7 +11,7 @@ import java.util.stream.Collectors;
 
 @Getter
 @Setter
-public abstract class EntityRepository implements IUniverse {
+public abstract class EntityRepository {
 
     private final ConcurrentHashMap<UUID, Entity> uuidToEntity = new ConcurrentHashMap<>();
 
@@ -26,7 +25,16 @@ public abstract class EntityRepository implements IUniverse {
     }
 
     public final void applyEntitiesChanges(EntitiesChanges changes) {
-        changes.forEach((uuid, fieldValues) -> getFieldBuffer().applyChanges(fieldValues, getUuidToEntity().get(uuid)));
+        changes.forEach((uuid, fieldValues) -> {
+            Entity entity = getUuidToEntity().get(uuid);
+            if (entity == null) {
+                // TODO fix sending data to unprepared connections
+                throw new IllegalArgumentException(String.format("No such entity with id %s", uuid));
+            }
+            getFieldBuffer().applyChanges(fieldValues, entity);
+        });
     }
+
+    public abstract void finish();
 
 }

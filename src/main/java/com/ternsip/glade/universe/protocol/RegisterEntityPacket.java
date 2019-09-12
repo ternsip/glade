@@ -3,11 +3,11 @@ package com.ternsip.glade.universe.protocol;
 import com.ternsip.glade.common.logic.Utils;
 import com.ternsip.glade.network.Connection;
 import com.ternsip.glade.network.NetworkSide;
-import com.ternsip.glade.network.Packet;
 import com.ternsip.glade.universe.entities.base.Entity;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.reflections.ReflectionUtils;
 
 import java.io.Serializable;
@@ -21,7 +21,8 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Getter
-public class RegisterEntityPacket extends Packet {
+@Slf4j
+public class RegisterEntityPacket extends ClientPacket {
 
     private static final Map<Class<? extends Entity>, Set<Field>> CLASS_TO_SERIALIZABLE_FIELDS = new HashMap<>();
     private final Class<? extends Entity> clazz;
@@ -57,7 +58,12 @@ public class RegisterEntityPacket extends Packet {
 
     @Override
     public void apply(Connection connection) {
-        constructNewEntity().register();
+        if (!getUniverseClient().getEntityClientRepository().getUuidToEntity().containsKey(getUuid())) {
+            constructNewEntity().register();
+        } else {
+            // TODO throw an exception here, this situation should not happen
+            log.debug(String.format("Entity already exists %s", getUuid()));
+        }
     }
 
     @SneakyThrows

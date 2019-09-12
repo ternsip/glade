@@ -36,7 +36,7 @@ public class EntityCubeSelection extends Entity<EffigyCube> {
     public void serverUpdate() {
         super.serverUpdate();
         LineSegmentf segment = getPlayer().getEyeSegment();
-        Vector3ic pos = getUniverse().getBlocks().traverse(segment, block -> block != Block.AIR);
+        Vector3ic pos = getUniverseServer().getBlocks().traverse(segment, block -> block != Block.AIR);
         if (pos != null) {
             setVisible(true);
             setPosition(new Vector3f(pos));

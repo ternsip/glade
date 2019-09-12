@@ -5,7 +5,8 @@ import com.ternsip.glade.graphics.visual.base.Effigy;
 import com.ternsip.glade.network.ClientSide;
 import com.ternsip.glade.network.NetworkSide;
 import com.ternsip.glade.network.ServerSide;
-import com.ternsip.glade.universe.interfaces.IUniverse;
+import com.ternsip.glade.universe.interfaces.IUniverseClient;
+import com.ternsip.glade.universe.interfaces.IUniverseServer;
 import lombok.Getter;
 import lombok.experimental.Delegate;
 import org.joml.Vector3fc;
@@ -16,7 +17,7 @@ import java.util.UUID;
  * Class should be thread safe
  */
 @Getter
-public abstract class Entity<T extends Effigy> implements IUniverse {
+public abstract class Entity<T extends Effigy> implements IUniverseClient, IUniverseServer {
 
     @Delegate
     private transient final VolumetricInterpolated volumetricInterpolated = new VolumetricInterpolated();
@@ -29,17 +30,17 @@ public abstract class Entity<T extends Effigy> implements IUniverse {
 
     public void register() {
         if (getNetworkSide() == NetworkSide.CLIENT) {
-            getUniverse().getEntityClientRepository().register(this);
+            getUniverseClient().getEntityClientRepository().register(this);
         } else {
-            getUniverse().getEntityServerRepository().register(this);
+            getUniverseServer().getEntityServerRepository().register(this);
         }
     }
 
     public void unregister() {
         if (getNetworkSide() == NetworkSide.CLIENT) {
-            getUniverse().getEntityClientRepository().unregister(getUuid());
+            getUniverseClient().getEntityClientRepository().unregister(getUuid());
         } else {
-            getUniverse().getEntityServerRepository().register(this);
+            getUniverseServer().getEntityServerRepository().register(this);
         }
     }
 

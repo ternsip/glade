@@ -1,6 +1,5 @@
 package com.ternsip.glade.universe.audio;
 
-import com.ternsip.glade.universe.interfaces.IUniverse;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.Vector3f;
@@ -12,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Getter
 @Setter
-public class SoundRepository implements IUniverse {
+public class SoundRepository {
 
     private final Set<Sound> sounds = Collections.newSetFromMap(new ConcurrentHashMap<>());
 

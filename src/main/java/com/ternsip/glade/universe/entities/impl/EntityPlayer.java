@@ -59,7 +59,7 @@ public class EntityPlayer extends Entity<EffigyBoy> {
     public void register() {
         super.register();
         if (getNetworkSide() == NetworkSide.CLIENT) {
-            getUniverse().getEventSnapReceiver().registerCallback(KeyEvent.class, keyCallback);
+            getUniverseClient().getEventSnapReceiver().registerCallback(KeyEvent.class, keyCallback);
         }
     }
 
@@ -67,7 +67,7 @@ public class EntityPlayer extends Entity<EffigyBoy> {
     public void unregister() {
         super.unregister();
         if (getNetworkSide() == NetworkSide.CLIENT) {
-            getUniverse().getEventSnapReceiver().unregisterCallback(KeyEvent.class, keyCallback);
+            getUniverseClient().getEventSnapReceiver().unregisterCallback(KeyEvent.class, keyCallback);
         }
     }
 
@@ -94,19 +94,19 @@ public class EntityPlayer extends Entity<EffigyBoy> {
         super.clientUpdate();
         Vector3f move = new Vector3f(0);
         setVisible(isThirdPerson());
-        if (!isThirdPerson() || (getUniverse().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_1) && getUniverse().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_2))) {
+        if (!isThirdPerson() || (getUniverseClient().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_1) && getUniverseClient().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_2))) {
             setRotation(new Vector3f(0, getCameraYRotation(), 0));
         }
-        if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_W) || getUniverse().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_1) && getUniverse().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_2)) {
+        if (getUniverseClient().getEventSnapReceiver().isKeyDown(GLFW_KEY_W) || getUniverseClient().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_1) && getUniverseClient().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_2)) {
             move.add(FRONT_DIRECTION);
         }
-        if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_S)) {
+        if (getUniverseClient().getEventSnapReceiver().isKeyDown(GLFW_KEY_S)) {
             move.add(BACK_DIRECTION);
         }
-        if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_D)) {
+        if (getUniverseClient().getEventSnapReceiver().isKeyDown(GLFW_KEY_D)) {
             move.add(RIGHT_DIRECTION);
         }
-        if (getUniverse().getEventSnapReceiver().isKeyDown(GLFW_KEY_A)) {
+        if (getUniverseClient().getEventSnapReceiver().isKeyDown(GLFW_KEY_A)) {
             move.add(LEFT_DIRECTION);
         }
         setMoveEffort(normalizeOrEmpty(move).mul(getVelocity(), new Vector3f()));
@@ -115,7 +115,7 @@ public class EntityPlayer extends Entity<EffigyBoy> {
     @Override
     public void serverUpdate() {
         Vector3f moveDirection = getMoveEffort().rotate(Maths.getRotationQuaternion(getRotation()), new Vector3f());
-        getCurrentVelocity().add(getUniverse().getBalance().getGravity());
+        getCurrentVelocity().add(getUniverseServer().getBalance().getGravity());
         Vector3fc cPos = getPosition();
         Vector3fc nPos = new Vector3f(cPos)
                 .add(getCurrentVelocity())
@@ -177,26 +177,26 @@ public class EntityPlayer extends Entity<EffigyBoy> {
 
         if (action == Action.DESTROY_BLOCK_UNDER) {
             Vector3ic blockUnder = getBlockPositionStandingOn();
-            if (getUniverse().getBlocks().isBlockExists(blockUnder)) {
-                getUniverse().getBlocks().setBlock(blockUnder, Block.AIR);
+            if (getUniverseServer().getBlocks().isBlockExists(blockUnder)) {
+                getUniverseServer().getBlocks().setBlock(blockUnder, Block.AIR);
             }
         }
 
         if (action == Action.DESTROY_SELECTED_BLOCK) {
-            Vector3ic blockPositionLooking = getUniverse().getBlocks().traverse(getEyeSegment(), (block) -> block != Block.AIR);
-            if (blockPositionLooking != null && getUniverse().getBlocks().isBlockExists(blockPositionLooking)) {
-                getUniverse().getBlocks().setBlock(blockPositionLooking, Block.AIR);
+            Vector3ic blockPositionLooking = getUniverseServer().getBlocks().traverse(getEyeSegment(), (block) -> block != Block.AIR);
+            if (blockPositionLooking != null && getUniverseServer().getBlocks().isBlockExists(blockPositionLooking)) {
+                getUniverseServer().getBlocks().setBlock(blockPositionLooking, Block.AIR);
             }
         }
     }
 
     private float getSkyIntensity() {
         Vector3ic blockPos = round(getPosition());
-        return getUniverse().getBlocks().isBlockExists(blockPos) ? getUniverse().getBlocks().getSkyLight(blockPos) / (float) MAX_LIGHT_LEVEL : 1;
+        return getUniverseServer().getBlocks().isBlockExists(blockPos) ? getUniverseServer().getBlocks().getSkyLight(blockPos) / (float) MAX_LIGHT_LEVEL : 1;
     }
 
     private Vector3fc tryToMove(Vector3fc startPosition, Vector3fc endPosition) {
-        List<Collision> collisions = getUniverse().getCollisions().collideSegment(new LineSegmentf(startPosition, endPosition));
+        List<Collision> collisions = getUniverseServer().getCollisions().collideSegment(new LineSegmentf(startPosition, endPosition));
         if (!collisions.isEmpty()) {
             Vector3fc intersection = collisions.get(0).getPosition();
             Vector3f shift = Maths.normalizeOrEmpty(new Vector3f(startPosition).sub(endPosition)).mul(2 * EPS, new Vector3f());
@@ -207,23 +207,23 @@ public class EntityPlayer extends Entity<EffigyBoy> {
 
     private void handleKeyEvent(KeyEvent event) {
         if (event.getKey() == GLFW_KEY_R && event.getAction() == GLFW_PRESS) {
-            getUniverse().getClient().send(new PlayerActionPacket(this, Action.RESPAWN));
+            getUniverseClient().getClient().send(new PlayerActionPacket(this, Action.RESPAWN));
         }
 
         if (event.getKey() == GLFW_KEY_T && event.getAction() == GLFW_PRESS) {
-            getUniverse().getClient().send(new PlayerActionPacket(this, Action.TELEPORT_FAR));
+            getUniverseClient().getClient().send(new PlayerActionPacket(this, Action.TELEPORT_FAR));
         }
 
         if (event.getKey() == GLFW_KEY_SPACE && event.getAction() == GLFW_PRESS) {
-            getUniverse().getClient().send(new PlayerActionPacket(this, Action.JUMP));
+            getUniverseClient().getClient().send(new PlayerActionPacket(this, Action.JUMP));
         }
 
         if (event.getKey() == GLFW_KEY_B && event.getAction() == GLFW_PRESS) {
-            getUniverse().getClient().send(new PlayerActionPacket(this, Action.DESTROY_BLOCK_UNDER));
+            getUniverseClient().getClient().send(new PlayerActionPacket(this, Action.DESTROY_BLOCK_UNDER));
         }
 
         if (event.getKey() == GLFW_KEY_Q && event.getAction() == GLFW_PRESS) {
-            getUniverse().getClient().send(new PlayerActionPacket(this, Action.DESTROY_SELECTED_BLOCK));
+            getUniverseClient().getClient().send(new PlayerActionPacket(this, Action.DESTROY_SELECTED_BLOCK));
         }
     }
 

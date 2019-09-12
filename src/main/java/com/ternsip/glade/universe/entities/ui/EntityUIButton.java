@@ -53,9 +53,9 @@ public class EntityUIButton extends EntityUI {
         getBackground().register();
         getBrowseOverlay().register();
         getPressOverlay().register();
-        getUniverse().getEventSnapReceiver().registerCallback(CursorPosEvent.class, getCursorPosCallback());
-        getUniverse().getEventSnapReceiver().registerCallback(MouseButtonEvent.class, getMouseButtonCallback());
-        getUniverse().getEventSnapReceiver().registerCallback(CursorVisibilityEvent.class, getCursorVisibilityCallback());
+        getUniverseClient().getEventSnapReceiver().registerCallback(CursorPosEvent.class, getCursorPosCallback());
+        getUniverseClient().getEventSnapReceiver().registerCallback(MouseButtonEvent.class, getMouseButtonCallback());
+        getUniverseClient().getEventSnapReceiver().registerCallback(CursorVisibilityEvent.class, getCursorVisibilityCallback());
     }
 
     @Override
@@ -64,9 +64,9 @@ public class EntityUIButton extends EntityUI {
         getBackground().unregister();
         getBrowseOverlay().unregister();
         getPressOverlay().unregister();
-        getUniverse().getEventSnapReceiver().unregisterCallback(CursorPosEvent.class, getCursorPosCallback());
-        getUniverse().getEventSnapReceiver().unregisterCallback(MouseButtonEvent.class, getMouseButtonCallback());
-        getUniverse().getEventSnapReceiver().unregisterCallback(CursorVisibilityEvent.class, getCursorVisibilityCallback());
+        getUniverseClient().getEventSnapReceiver().unregisterCallback(CursorPosEvent.class, getCursorPosCallback());
+        getUniverseClient().getEventSnapReceiver().unregisterCallback(MouseButtonEvent.class, getMouseButtonCallback());
+        getUniverseClient().getEventSnapReceiver().unregisterCallback(CursorVisibilityEvent.class, getCursorVisibilityCallback());
     }
 
     @Override

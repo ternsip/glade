@@ -4,7 +4,7 @@ import com.ternsip.glade.common.events.base.EventSnapReceiver;
 import com.ternsip.glade.common.logic.LazyWrapper;
 
 /**
- * Be aware that this snap receiver is for graphical thread
+ * TODO Be aware that this snap receiver is for graphical thread
  */
 public interface IEventSnapReceiver {
 

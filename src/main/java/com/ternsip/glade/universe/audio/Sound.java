@@ -1,6 +1,6 @@
 package com.ternsip.glade.universe.audio;
 
-import com.ternsip.glade.universe.interfaces.IUniverse;
+import com.ternsip.glade.universe.interfaces.IUniverseClient;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.joml.Vector3f;
@@ -13,7 +13,7 @@ import java.io.File;
  */
 @RequiredArgsConstructor
 @Getter
-public class Sound implements IUniverse {
+public class Sound implements IUniverseClient {
 
     private final File file;
     private final Vector3fc position;
@@ -32,15 +32,15 @@ public class Sound implements IUniverse {
     }
 
     public Vector3fc getPosition() {
-        return isLocal() ? getUniverse().getSoundRepository().getListenerPosition() : position;
+        return isLocal() ? getUniverseClient().getSoundRepository().getListenerPosition() : position;
     }
 
     public void register() {
-        getUniverse().getSoundRepository().register(this);
+        getUniverseClient().getSoundRepository().register(this);
     }
 
     public void unregister() {
-        getUniverse().getSoundRepository().unregister(this);
+        getUniverseClient().getSoundRepository().unregister(this);
     }
 
 }

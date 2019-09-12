@@ -1,20 +1,19 @@
 package com.ternsip.glade.universe.protocol;
 
 import com.ternsip.glade.network.Connection;
-import com.ternsip.glade.network.Packet;
 import com.ternsip.glade.universe.entities.repository.EntitiesChanges;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public class EntitiesChangedClientPacket extends Packet {
+public class EntitiesChangedClientPacket extends ClientPacket {
 
     private final EntitiesChanges changes;
 
     @Override
     public void apply(Connection connection) {
-        getUniverse().getEntityClientRepository().applyEntitiesChanges(getChanges());
+        getUniverseClient().getEntityClientRepository().applyEntitiesChanges(getChanges());
     }
 
 }

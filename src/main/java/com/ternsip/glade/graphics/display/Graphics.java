@@ -1,7 +1,8 @@
 package com.ternsip.glade.graphics.display;
 
 import com.ternsip.glade.graphics.interfaces.*;
-import com.ternsip.glade.universe.interfaces.IUniverse;
+import com.ternsip.glade.universe.interfaces.IUniverseClient;
+import com.ternsip.glade.universe.interfaces.IUniverseServer;
 import lombok.Getter;
 
 /**
@@ -10,7 +11,7 @@ import lombok.Getter;
  * In general words it is graphical representation of the universe state
  */
 @Getter
-public class Graphics implements IUniverse, IEventSnapReceiver, IFrameBuffers, IWindowData, ITextureRepository,
+public class Graphics implements IUniverseClient, IUniverseServer, IEventSnapReceiver, IFrameBuffers, IWindowData, ITextureRepository,
         IModelRepository, IShaderRepository, ICamera, ICameraController, IEffigyRepository, ITexturePackRepository,
         IAudioRepository {
 
@@ -28,7 +29,7 @@ public class Graphics implements IUniverse, IEventSnapReceiver, IFrameBuffers, I
     }
 
     private void loop() {
-        while (getWindowData().isActive() && isUniverseThreadActive()) {
+        while (getWindowData().isActive() && isUniverseClientThreadActive()) {
             getFrameBuffers().bindBuffer();
             getWindowData().clear();
             getEventSnapReceiver().update();
@@ -42,7 +43,7 @@ public class Graphics implements IUniverse, IEventSnapReceiver, IFrameBuffers, I
     }
 
     private void finish() {
-        getUniverse().getEventSnapReceiver().getApplicationActive().set(false);
+        getUniverseClient().stop();
         getModelRepository().finish();
         getShaderRepository().finish();
         getTextureRepository().finish();

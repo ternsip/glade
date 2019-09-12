@@ -4,6 +4,7 @@ import com.ternsip.glade.common.logic.Timer;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.impl.EntityDummy;
 import com.ternsip.glade.universe.entities.impl.EntitySun;
+import com.ternsip.glade.universe.interfaces.IUniverseClient;
 import com.ternsip.glade.universe.protocol.EntitiesChangedServerPacket;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,10 +13,10 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class EntityClientRepository extends EntityRepository {
+public class EntityClientRepository extends EntityRepository implements IUniverseClient {
 
     private final FieldBuffer fieldBuffer = new FieldBuffer(false);
-    private final Timer networkTimer = new Timer(250);
+    private final Timer networkTimer = new Timer(50); // TODO get this value as a tickrate from options/balance
 
     private Entity aim = new EntityDummy();
     private Entity cameraTarget = new EntityDummy();
@@ -34,10 +35,13 @@ public class EntityClientRepository extends EntityRepository {
         if (getNetworkTimer().isOver()) {
             EntitiesChanges entitiesChanges = findEntitiesChanges();
             if (!entitiesChanges.isEmpty()) {
-                getUniverse().getClient().send(new EntitiesChangedServerPacket(entitiesChanges));
+                getUniverseClient().getClient().send(new EntitiesChangedServerPacket(entitiesChanges));
             }
             getNetworkTimer().drop();
         }
     }
 
+    @Override
+    public void finish() {
+    }
 }

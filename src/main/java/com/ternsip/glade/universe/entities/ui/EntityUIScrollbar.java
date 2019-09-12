@@ -69,7 +69,7 @@ public class EntityUIScrollbar extends EntityUI {
         getButtonUp().register();
         getButtonDown().register();
         getBackground().register();
-        getUniverse().getEventSnapReceiver().registerCallback(CursorPosEvent.class, getCursorPosCallback());
+        getUniverseClient().getEventSnapReceiver().registerCallback(CursorPosEvent.class, getCursorPosCallback());
     }
 
     @Override
@@ -80,7 +80,7 @@ public class EntityUIScrollbar extends EntityUI {
         getButtonUp().unregister();
         getButtonDown().unregister();
         getBackground().unregister();
-        getUniverse().getEventSnapReceiver().unregisterCallback(CursorPosEvent.class, getCursorPosCallback());
+        getUniverseClient().getEventSnapReceiver().unregisterCallback(CursorPosEvent.class, getCursorPosCallback());
     }
 
     @Override

@@ -4,18 +4,16 @@ import com.ternsip.glade.common.logic.Threadable;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigyAxis;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigyDynamicText;
 import com.ternsip.glade.graphics.visual.impl.test.*;
-import com.ternsip.glade.universe.bindings.Bind;
 import com.ternsip.glade.universe.collisions.impl.ChunksObstacle;
 import com.ternsip.glade.universe.collisions.impl.GroundObstacle;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.base.EntityGeneric;
 import com.ternsip.glade.universe.entities.base.EntityGenericRotating;
-import com.ternsip.glade.universe.entities.impl.*;
-import com.ternsip.glade.universe.entities.ui.EntityUIMenu;
+import com.ternsip.glade.universe.entities.impl.EntityCubeSelection;
+import com.ternsip.glade.universe.entities.impl.EntityPlayer;
+import com.ternsip.glade.universe.entities.impl.EntitySun;
 import com.ternsip.glade.universe.interfaces.*;
 import com.ternsip.glade.universe.protocol.CameraTargetPacket;
-import com.ternsip.glade.universe.protocol.ConsoleMessagePacket;
-import com.ternsip.glade.universe.protocol.SunPacket;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -26,66 +24,42 @@ import java.io.File;
 
 @Getter
 @Setter
-// TODO split on interfaces and check in entities that called correct one
-public class Universe implements Threadable, INetworkServer, INetworkClient, IBlocksRepository, IBindings, ICollisions, IBalance,
-        ISoundRepository, IEntityClientRepository, IEntityServerRepository, IEventSnapReceiver {
-
-    private final String name = "universe";
+public class UniverseServer implements Threadable, INetworkServer, IBlocksRepository, ICollisions, IBalance, IEntityServerRepository {
 
     @Override
     public void init() {
-        spawnMenu();
         startServer();
-        startClient();
+        spawnEntities();
     }
 
     @Override
     public void update() {
-        if (!getEventSnapReceiver().isApplicationActive()) {
-            IUniverse.stopUniverseThread();
-        }
-        getEventSnapReceiver().update();
-        getEntityClientRepository().update();
         getEntityServerRepository().update();
         getCollisions().update();
+        getServer().getNetworkServerEventReceiver().update();
     }
 
     @SneakyThrows
     @Override
     public void finish() {
         stopBlocksThread();
-        getBindings().finish();
-        stopClientThread();
+        getEntityServerRepository().finish();
         stopServerThread();
-    }
-
-    public void startClient() {
-        getClient().connect("localhost", 6789);
-        spawnClientEntities();
     }
 
     public void startServer() {
         getServer().bind(6789);
     }
 
-    private void spawnMenu() {
-        EntityUIMenu entityUIMenu = new EntityUIMenu();
-        entityUIMenu.register();
-        entityUIMenu.toggle();
-        getBindings().addBindCallback(Bind.TOGGLE_MENU, entityUIMenu::toggle);
-        new EntityStatistics2D(new File("fonts/default.png"), new Vector4f(1, 1, 0, 1), true).register();
+    public void stop() {
+        IUniverseServer.stopUniverseServerThread();
     }
 
-    private void spawnClientEntities() {
-        Entity aim = new EntitySprite(new File("tools/aim.png"), true, true);
-        aim.setScale(new Vector3f(0.01f));
-        aim.register();
-        getEntityClientRepository().setAim(aim);
+    private void spawnEntities() {
 
         EntitySun sun = new EntitySun();
         sun.register();
         getEntityServerRepository().setSun(sun);
-        getServer().sendAll(new SunPacket(sun.getUuid())); // TODO wrap inside
 
         Entity cube = new EntityGeneric(() -> new EffigyCube());
         cube.register();
@@ -145,9 +119,8 @@ public class Universe implements Threadable, INetworkServer, INetworkClient, IBl
             }
         }
 
+        // TODO make it client-side
         new EntityGeneric(() -> new EffigyAxis()).register();
-
-        getBindings().addBindCallback(Bind.TEST_BUTTON, () -> getClient().send(new ConsoleMessagePacket("HELLO 123")));
 
         EntityPlayer entityPlayer = new EntityPlayer();
         entityPlayer.register();
@@ -157,8 +130,6 @@ public class Universe implements Threadable, INetworkServer, INetworkClient, IBl
 
         EntityCubeSelection entityCubeSelection = new EntityCubeSelection(entityPlayer);
         entityCubeSelection.register();
-
-        new EntitySides().register();
     }
 
 }

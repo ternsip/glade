@@ -1,14 +1,13 @@
 package com.ternsip.glade.universe.protocol;
 
 import com.ternsip.glade.network.Connection;
-import com.ternsip.glade.network.Packet;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.joml.Vector3ic;
 
 @RequiredArgsConstructor
 @Getter
-public class BlocksObserverChangedPacket extends Packet {
+public class BlocksObserverChangedPacket extends ServerPacket {
 
     private final Vector3ic prevPos;
     private final Vector3ic nextPos;
@@ -17,6 +16,6 @@ public class BlocksObserverChangedPacket extends Packet {
 
     @Override
     public void apply(Connection connection) {
-        getUniverse().getBlocks().processMovement(getPrevPos(), getNextPos(), getPrevViewDistance(), getNextViewDistance());
+        getUniverseServer().getBlocks().processMovement(getPrevPos(), getNextPos(), getPrevViewDistance(), getNextViewDistance());
     }
 }

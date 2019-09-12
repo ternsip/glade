@@ -1,7 +1,7 @@
 package com.ternsip.glade.universe.collisions.impl;
 
 import com.ternsip.glade.universe.collisions.base.Obstacle;
-import com.ternsip.glade.universe.interfaces.IUniverse;
+import com.ternsip.glade.universe.interfaces.IUniverseServer;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.joml.*;
@@ -10,7 +10,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Getter
-public class ChunksObstacle implements Obstacle, IUniverse {
+public class ChunksObstacle implements Obstacle, IUniverseServer {
 
     private static final float BLOCK_SAVE_DELTA = 1e-4f;
     private static final float CUBE_SIZE = 1;
@@ -19,7 +19,7 @@ public class ChunksObstacle implements Obstacle, IUniverse {
 
     @Override
     public Vector3fc collideSegment(LineSegmentf segment) {
-        List<Vector3ic> positions = getUniverse().getBlocks().traverseFull(segment, block -> true);
+        List<Vector3ic> positions = getUniverseServer().getBlocks().traverseFull(segment, block -> true);
         Vector3fc start = new Vector3f(segment.aX, segment.aY, segment.aZ);
         Vector3f closest = new Vector3f(segment.bX, segment.bY, segment.bZ);
         for (Vector3ic pos : positions) {
@@ -38,7 +38,7 @@ public class ChunksObstacle implements Obstacle, IUniverse {
     }
 
     private Vector3fc collideBlockSafe(LineSegmentf segment, Vector3ic pos) {
-        if (getUniverse().getBlocks().isBlockExists(pos) && !getUniverse().getBlocks().getBlock(pos).isObstacle()) {
+        if (getUniverseServer().getBlocks().isBlockExists(pos) && !getUniverseServer().getBlocks().getBlock(pos).isObstacle()) {
             return null;
         }
         AABBf aabb = new AABBf(

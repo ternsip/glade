@@ -1,5 +1,6 @@
 package com.ternsip.glade.network;
 
+import com.ternsip.glade.common.events.network.OnClientConnect;
 import com.ternsip.glade.common.logic.ThreadWrapper;
 import com.ternsip.glade.common.logic.Threadable;
 import lombok.Getter;
@@ -7,17 +8,16 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Slf4j
 @Getter
 @Setter
-public class NetworkServer implements Threadable {
+public class NetworkServer implements Threadable, INetworkServerEventReceiver {
 
     private final long RETRY_INTERVAL = 500L;
 
-    private final ArrayList<Connection> connections = new ArrayList<>();
+    private final ConcurrentLinkedQueue<Connection> connections = new ConcurrentLinkedQueue<>();
     private final ConcurrentLinkedQueue<Packet> packets = new ConcurrentLinkedQueue<>();
 
     private ServerHolder serverHolder = new ServerHolder();
@@ -47,7 +47,7 @@ public class NetworkServer implements Threadable {
                 } catch (Exception e) {
                     if (connection.isActive()) {
                         String errMsg = String.format("Error while accepting data from client %s", e.getMessage());
-                        log.error(errMsg);
+                        log.error(errMsg, e); // TODO do not write stack trace, its only for testing purposes (and use debug mod)
                         log.debug(errMsg, e);
                     }
                 }
@@ -85,11 +85,13 @@ public class NetworkServer implements Threadable {
         public void update() {
             if (getServerHolder().isActive()) {
                 try {
-                    getConnections().add(getServerHolder().accept());
+                    Connection connection = getServerHolder().accept();
+                    getConnections().add(connection);
+                    getNetworkServerEventReceiver().registerEvent(OnClientConnect.class, new OnClientConnect(connection));
                 } catch (Exception e) {
                     if (getServerHolder().isActive()) {
                         String errMsg = String.format("Error while accepting new connection to server %s", e.getMessage());
-                        log.error(errMsg);
+                        log.error(errMsg, e); // TODO do not write stack trace, its only for testing purposes (and use debug mod)
                         log.debug(errMsg, e);
                     }
                 }

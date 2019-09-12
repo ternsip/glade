@@ -11,6 +11,7 @@ public interface IBlocksRepository {
         BLOCKS_THREAD.stop();
     }
 
+    // TODO Rename to getBlocksRepository
     default BlocksRepository getBlocks() {
         return BLOCKS_THREAD.getObjective();
     }

@@ -35,9 +35,10 @@ public class EntityStatistics2D extends EntityDynamicText2D {
         Vector3fc eye = graphics.getCameraController().getTarget();
         Vector3fc direction = graphics.getCameraController().getLookDirection().mul(10, new Vector3f());
         LineSegmentf segment = new LineSegmentf(eye, eye.add(direction, new Vector3f()));
-        Vector3ic pos = getUniverse().getBlocks().traverse(segment, block -> block != Block.AIR);
+        // TODO Critical bug (using server on client), Probably need to make texts client-server
+        Vector3ic pos = getUniverseServer().getBlocks().traverse(segment, block -> block != Block.AIR);
         if (pos != null) {
-            Block block = getUniverse().getBlocks().getBlock(pos);
+            Block block = getUniverseServer().getBlocks().getBlock(pos);
             sb.append("Block: ").append(block.getName().toLowerCase()).append(" ");
             sb.append(String.format("pos: x=%s, y=%s, z=%s", pos.x(), pos.y(), pos.z())).append(System.lineSeparator());
         }
