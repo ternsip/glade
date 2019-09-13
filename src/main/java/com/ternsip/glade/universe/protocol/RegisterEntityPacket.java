@@ -1,6 +1,7 @@
 package com.ternsip.glade.universe.protocol;
 
 import com.ternsip.glade.common.logic.Utils;
+import com.ternsip.glade.network.ClientPacket;
 import com.ternsip.glade.network.Connection;
 import com.ternsip.glade.network.NetworkSide;
 import com.ternsip.glade.universe.entities.base.Entity;
@@ -61,8 +62,7 @@ public class RegisterEntityPacket extends ClientPacket {
         if (!getUniverseClient().getEntityClientRepository().getUuidToEntity().containsKey(getUuid())) {
             constructNewEntity().register();
         } else {
-            // TODO throw an exception here, this situation should not happen
-            log.debug(String.format("Entity already exists %s", getUuid()));
+            throw new IllegalArgumentException(String.format("Entity already exists %s", getUuid()));
         }
     }
 

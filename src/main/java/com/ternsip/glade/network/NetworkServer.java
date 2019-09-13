@@ -4,11 +4,15 @@ import com.ternsip.glade.common.events.network.OnClientConnect;
 import com.ternsip.glade.common.logic.ThreadWrapper;
 import com.ternsip.glade.common.logic.Threadable;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.function.Function;
 
 @Slf4j
 @Getter
@@ -17,8 +21,8 @@ public class NetworkServer implements Threadable, INetworkServerEventReceiver {
 
     private final long RETRY_INTERVAL = 500L;
 
-    private final ConcurrentLinkedQueue<Connection> connections = new ConcurrentLinkedQueue<>();
-    private final ConcurrentLinkedQueue<Packet> packets = new ConcurrentLinkedQueue<>();
+    private final Set<Connection> connections = ConcurrentHashMap.newKeySet();
+    private final ConcurrentLinkedQueue<PacketToSend> packetsToSend = new ConcurrentLinkedQueue<>();
 
     private ServerHolder serverHolder = new ServerHolder();
     private ThreadWrapper<Acceptor> acceptorThread;
@@ -41,8 +45,8 @@ public class NetworkServer implements Threadable, INetworkServerEventReceiver {
             getConnections().forEach(connection -> {
                 try {
                     if (connection.getInput().available() > 0) {
-                        Packet packet = connection.readPacket();
-                        packet.apply(connection);
+                        ServerPacket serverPacket = (ServerPacket) connection.readObject();
+                        serverPacket.apply(connection);
                     }
                 } catch (Exception e) {
                     if (connection.isActive()) {
@@ -67,8 +71,8 @@ public class NetworkServer implements Threadable, INetworkServerEventReceiver {
         getServerHolder().close();
     }
 
-    public void sendAll(Packet packet) {
-        getPackets().add(packet);
+    public void send(ClientPacket packet, Function<Connection, Boolean> connectionCondition) {
+        getPacketsToSend().add(new PacketToSend(packet, connectionCondition));
     }
 
     @SneakyThrows
@@ -91,7 +95,7 @@ public class NetworkServer implements Threadable, INetworkServerEventReceiver {
                 } catch (Exception e) {
                     if (getServerHolder().isActive()) {
                         String errMsg = String.format("Error while accepting new connection to server %s", e.getMessage());
-                        log.error(errMsg, e); // TODO do not write stack trace, its only for testing purposes (and use debug mod)
+                        log.error(errMsg);
                         log.debug(errMsg, e);
                     }
                 }
@@ -111,10 +115,17 @@ public class NetworkServer implements Threadable, INetworkServerEventReceiver {
 
         @Override
         public void update() {
-            while (getServerHolder().isActive() && !getPackets().isEmpty()) {
-                Packet packet = getPackets().poll();
+            while (getServerHolder().isActive()) {
+                PacketToSend packetToSend = getPacketsToSend().poll();
+                if (packetToSend == null) {
+                    continue;
+                }
                 try {
-                    getConnections().forEach(connection -> connection.writePacket(packet));
+                    getConnections().forEach(connection -> {
+                        if (packetToSend.getConnectionCondition().apply(connection)) {
+                            connection.writeObject( packetToSend.getClientPacket());
+                        }
+                    });
                 } catch (Exception e) {
                     String errMsg = String.format("Error while sending packet from server %s", e.getMessage());
                     log.error(errMsg);
@@ -125,6 +136,15 @@ public class NetworkServer implements Threadable, INetworkServerEventReceiver {
 
         @Override
         public void finish() {}
+
+    }
+
+    @RequiredArgsConstructor
+    @Getter
+    private static class PacketToSend {
+
+        private final ClientPacket clientPacket;
+        private final Function<Connection, Boolean> connectionCondition;
 
     }
 

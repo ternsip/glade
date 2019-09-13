@@ -1,5 +1,6 @@
 package com.ternsip.glade.universe.protocol;
 
+import com.ternsip.glade.network.ClientPacket;
 import com.ternsip.glade.network.Connection;
 import com.ternsip.glade.universe.entities.impl.EntitySun;
 import lombok.Getter;

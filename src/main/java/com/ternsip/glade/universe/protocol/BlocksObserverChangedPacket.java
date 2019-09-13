@@ -1,6 +1,7 @@
 package com.ternsip.glade.universe.protocol;
 
 import com.ternsip.glade.network.Connection;
+import com.ternsip.glade.network.ServerPacket;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.joml.Vector3ic;

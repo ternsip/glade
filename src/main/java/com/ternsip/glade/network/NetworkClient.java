@@ -17,7 +17,7 @@ public class NetworkClient implements Threadable, INetworkClientEventReceiver {
 
     private final long RETRY_INTERVAL = 500L;
     private final int MAX_CONNECTION_ATTEMPTS = 10;
-    private final ConcurrentLinkedQueue<Packet> packets = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<ServerPacket> packets = new ConcurrentLinkedQueue<>();
 
     private ThreadWrapper<Sender> senderThread;
     private Connection connection = new Connection();
@@ -29,7 +29,7 @@ public class NetworkClient implements Threadable, INetworkClientEventReceiver {
                 return;
             } catch (Exception e) {
                 String errMsg = String.format("Unable to connect to %s:%s, Attempt: #%s, Reason: %s retrying...", host, port, attempt, e.getMessage());
-                log.error(errMsg, e); // TODO do not write stack trace, its only for testing purposes (and use debug mod)
+                log.error(errMsg);
                 log.debug(errMsg, e);
                 snooze();
             }
@@ -46,12 +46,12 @@ public class NetworkClient implements Threadable, INetworkClientEventReceiver {
     public void update() {
         if (getConnection().isActive()) {
             try {
-                Packet packet = getConnection().readPacket();
-                packet.apply(getConnection());
+                ClientPacket clientPacket = (ClientPacket) getConnection().readObject();
+                clientPacket.apply(getConnection());
             } catch (Exception e) {
                 if (getConnection().isActive()) {
                     String errMsg = String.format("Error while accepting data from server %s", e.getMessage());
-                    log.error(errMsg, e); // TODO do not write stack trace, its only for testing purposes (and use debug mod)
+                    log.error(errMsg);
                     log.debug(errMsg, e);
                 }
             }
@@ -64,9 +64,8 @@ public class NetworkClient implements Threadable, INetworkClientEventReceiver {
     @Override
     public void finish() {}
 
-    // TODO make server send only client packets and vise versa
-    public void send(Packet packet) {
-        getPackets().add(packet);
+    public void send(ServerPacket serverPacket) {
+        getPackets().add(serverPacket);
     }
 
     public void stop() {
@@ -87,9 +86,9 @@ public class NetworkClient implements Threadable, INetworkClientEventReceiver {
         @Override
         public void update() {
             while (getConnection().isActive() && !getPackets().isEmpty()) {
-                Packet packet = getPackets().poll();
+                ServerPacket serverPacket = getPackets().poll();
                 try {
-                    getConnection().writePacket(packet);
+                    getConnection().writeObject(serverPacket);
                 } catch (Exception e) {
                     String errMsg = String.format("Error while sending packet from client %s", e.getMessage());
                     log.error(errMsg);

@@ -12,6 +12,7 @@ import com.ternsip.glade.graphics.interfaces.IGraphics;
  * - try to avoid memory buffers if possible
  * - check memory buffers' explicit free calls
  * - check data that you send to GPU i.e. number of vertices/textures/indices/colors etc.
+ * - in case you want to debug errors - use debug mode
  *
  * @author Ternsip
  */
@@ -36,6 +37,7 @@ import com.ternsip.glade.graphics.interfaces.IGraphics;
 // TODO Add Free look camera
 // TODO be careful with @Delegate sometimes it breaks navigation or debugger, also recursive delegate does not allowed
 // TODO thing about Only Server side entities
+// TODO handle client-server shutdown without errors
 public class Glade {
 
     public static void main(String[] args) {

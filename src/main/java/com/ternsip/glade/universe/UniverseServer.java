@@ -13,7 +13,6 @@ import com.ternsip.glade.universe.entities.impl.EntityCubeSelection;
 import com.ternsip.glade.universe.entities.impl.EntityPlayer;
 import com.ternsip.glade.universe.entities.impl.EntitySun;
 import com.ternsip.glade.universe.interfaces.*;
-import com.ternsip.glade.universe.protocol.CameraTargetPacket;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -126,7 +125,7 @@ public class UniverseServer implements Threadable, INetworkServer, IBlocksReposi
         entityPlayer.register();
         entityPlayer.setPosition(new Vector3f(50, 90, 50));
         entityPlayer.setScale(new Vector3f(1, 1, 1));
-        getServer().sendAll(new CameraTargetPacket(entityPlayer.getUuid()));
+        getEntityServerRepository().setCameraTarget(entityPlayer);
 
         EntityCubeSelection entityCubeSelection = new EntityCubeSelection(entityPlayer);
         entityCubeSelection.register();

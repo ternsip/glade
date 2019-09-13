@@ -36,13 +36,13 @@ public class Connection {
     }
 
     @SneakyThrows
-    public Packet readPacket() {
-        return ((Packet) new ObjectInputStream(getInput()).readObject());
+    public Object readObject() {
+        return new ObjectInputStream(getInput()).readObject();
     }
 
     @SneakyThrows
-    public void writePacket(Packet packet) {
-        new ObjectOutputStream(getOutput()).writeObject(packet);
+    public void writeObject(Object object) {
+        new ObjectOutputStream(getOutput()).writeObject(object);
     }
 
     @SneakyThrows
