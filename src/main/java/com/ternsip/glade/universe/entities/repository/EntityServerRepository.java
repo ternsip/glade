@@ -2,6 +2,7 @@ package com.ternsip.glade.universe.entities.repository;
 
 import com.ternsip.glade.common.events.base.Callback;
 import com.ternsip.glade.common.events.network.OnClientConnect;
+import com.ternsip.glade.common.events.network.OnClientDisconnect;
 import com.ternsip.glade.common.logic.Timer;
 import com.ternsip.glade.network.Connection;
 import com.ternsip.glade.universe.collisions.base.Obstacle;
@@ -26,10 +27,12 @@ public class EntityServerRepository extends EntityRepository implements IUnivers
 
     private EntitySun sun = new EntitySun();
     private Entity cameraTarget = new EntityDummy();
-    private Callback<OnClientConnect> onClientConnectCallback = this::onClientConnectToServer;
+    private Callback<OnClientConnect> onClientConnectCallback = this::onClientConnect;
+    private Callback<OnClientDisconnect> onClientDisconnectCallback = this::onClientDisconnect;
 
     public EntityServerRepository() {
         getUniverseServer().getServer().getNetworkServerEventReceiver().registerCallback(OnClientConnect.class, getOnClientConnectCallback());
+        getUniverseServer().getServer().getNetworkServerEventReceiver().registerCallback(OnClientDisconnect.class, getOnClientDisconnectCallback());
     }
 
     public void register(Entity entity) {
@@ -61,9 +64,10 @@ public class EntityServerRepository extends EntityRepository implements IUnivers
 
     public void finish() {
         getUniverseServer().getServer().getNetworkServerEventReceiver().unregisterCallback(OnClientConnect.class, getOnClientConnectCallback());
+        getUniverseServer().getServer().getNetworkServerEventReceiver().unregisterCallback(OnClientDisconnect.class, getOnClientDisconnectCallback());
     }
 
-    private void onClientConnectToServer(OnClientConnect onClientConnect) {
+    private void onClientConnect(OnClientConnect onClientConnect) {
         // TODO put this into one packet
         for (Entity entity : getUuidToEntity().values()) {
             getUniverseServer().getServer().send(new RegisterEntityPacket(entity), connection -> connection == onClientConnect.getConnection());
@@ -71,6 +75,10 @@ public class EntityServerRepository extends EntityRepository implements IUnivers
         getUniverseServer().getServer().send(new SetSunPacket(sun.getUuid()), connection -> connection == onClientConnect.getConnection());
         getUniverseServer().getServer().send(new CameraTargetPacket(getCameraTarget().getUuid()), connection -> connection == onClientConnect.getConnection());
         getInitiatedConnections().add(onClientConnect.getConnection());
+    }
+
+    private void onClientDisconnect(OnClientDisconnect onClientConnect) {
+        getInitiatedConnections().remove(onClientConnect.getConnection());
     }
 
     public void setSun(EntitySun sun) {

@@ -1,6 +1,7 @@
 package com.ternsip.glade.network;
 
 import com.ternsip.glade.common.events.network.OnClientConnect;
+import com.ternsip.glade.common.events.network.OnClientDisconnect;
 import com.ternsip.glade.common.logic.ThreadWrapper;
 import com.ternsip.glade.common.logic.Threadable;
 import lombok.Getter;
@@ -99,6 +100,9 @@ public class NetworkServer implements Threadable, INetworkServerEventReceiver {
                         log.debug(errMsg, e);
                     }
                 }
+                getConnections().stream()
+                        .filter(connection -> !connection.isActive())
+                        .forEach(connection -> getNetworkServerEventReceiver().registerEvent(OnClientDisconnect.class, new OnClientDisconnect(connection)));
                 getConnections().removeIf(connection -> !connection.isActive());
             }
         }
@@ -121,11 +125,9 @@ public class NetworkServer implements Threadable, INetworkServerEventReceiver {
                     continue;
                 }
                 try {
-                    getConnections().forEach(connection -> {
-                        if (packetToSend.getConnectionCondition().apply(connection)) {
-                            connection.writeObject( packetToSend.getClientPacket());
-                        }
-                    });
+                    getConnections().stream()
+                            .filter(connection -> packetToSend.getConnectionCondition().apply(connection))
+                            .forEach(connection -> connection.writeObject(packetToSend.getClientPacket()));
                 } catch (Exception e) {
                     String errMsg = String.format("Error while sending packet from server %s", e.getMessage());
                     log.error(errMsg);
