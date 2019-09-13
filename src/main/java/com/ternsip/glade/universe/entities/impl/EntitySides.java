@@ -32,6 +32,7 @@ public class EntitySides extends Entity<EffigySides> {
     @Override
     public void update(EffigySides effigy) {
         super.update(effigy);
+        // TODO fix critical bug using server on client (you can see unloaded chunks)
         if (!getUniverseServer().getBlocks().getBlocksUpdates().isEmpty()) {
             effigy.applyBlockUpdate(getUniverseServer().getBlocks().getBlocksUpdates().poll());
         }
