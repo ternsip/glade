@@ -32,6 +32,7 @@ public class EntityServerStatistics extends Entity<Effigy> {
     public void update(Effigy effigy) {
         super.update(effigy);
         Vector3fc eye = effigy.getGraphics().getCameraController().getTarget();
+        // TODO take eye length from options
         Vector3fc direction = effigy.getGraphics().getCameraController().getLookDirection().mul(10, new Vector3f());
         setEyeSegment(new LineSegmentf(eye, eye.add(direction, new Vector3f())));
     }

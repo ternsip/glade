@@ -52,7 +52,7 @@ public class NetworkServer implements Threadable, INetworkServerEventReceiver {
                 } catch (Exception e) {
                     if (connection.isActive()) {
                         String errMsg = String.format("Error while accepting data from client %s", e.getMessage());
-                        log.error(errMsg, e); // TODO do not write stack trace, its only for testing purposes (and use debug mod)
+                        log.error(errMsg);
                         log.debug(errMsg, e);
                     }
                 }
