@@ -50,7 +50,7 @@ public class BlocksUpdate implements Serializable {
             int x = ois.readInt();
             int y = ois.readInt();
             int z = ois.readInt();
-            BlockSide blockSide = (BlockSide) ois.readObject();
+            BlockSide blockSide = BlockSide.getSideByIndex(ois.readInt());
             this.sidesToRemove.add(new SidePosition(x, y, z, blockSide));
         }
         int sidesToAddSize = ois.readInt();
@@ -59,7 +59,7 @@ public class BlocksUpdate implements Serializable {
             int x = ois.readInt();
             int y = ois.readInt();
             int z = ois.readInt();
-            BlockSide blockSide = (BlockSide) ois.readObject();
+            BlockSide blockSide = BlockSide.getSideByIndex(ois.readInt());
             byte skyLight = ois.readByte();
             byte emitLight = ois.readByte();
             Block block = Block.getBlockByIndex(ois.readInt());
@@ -73,7 +73,7 @@ public class BlocksUpdate implements Serializable {
             oos.writeInt(sidePosition.getX());
             oos.writeInt(sidePosition.getY());
             oos.writeInt(sidePosition.getZ());
-            oos.writeObject(sidePosition.getSide());
+            oos.writeInt(sidePosition.getSide().getIndex());
         }
         oos.writeInt(getSidesToAdd().size());
         for (Side side : getSidesToAdd()) {
@@ -82,7 +82,7 @@ public class BlocksUpdate implements Serializable {
             oos.writeInt(sidePosition.getX());
             oos.writeInt(sidePosition.getY());
             oos.writeInt(sidePosition.getZ());
-            oos.writeObject(sidePosition.getSide());
+            oos.writeInt(sidePosition.getSide().getIndex());
             oos.writeByte(sideData.getSkyLight());
             oos.writeByte(sideData.getEmitLight());
             oos.writeInt(sideData.getBlock().getIndex());
