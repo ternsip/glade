@@ -1,14 +1,16 @@
 package com.ternsip.glade.universe.interfaces;
 
-import com.ternsip.glade.common.logic.ThreadWrapper;
+import com.ternsip.glade.common.logic.LazyThreadWrapper;
 import com.ternsip.glade.universe.parts.chunks.BlocksRepository;
 
 public interface IBlocksRepository {
 
-    ThreadWrapper<BlocksRepository> BLOCKS_THREAD = new ThreadWrapper<>(BlocksRepository::new);
+    LazyThreadWrapper<BlocksRepository> BLOCKS_THREAD = new LazyThreadWrapper<>(BlocksRepository::new);
 
     default void stopBlocksThread() {
-        BLOCKS_THREAD.stop();
+        if (BLOCKS_THREAD.isInitialized()) {
+            BLOCKS_THREAD.getThreadWrapper().stop();
+        }
     }
 
     // TODO Rename to getBlocksRepository

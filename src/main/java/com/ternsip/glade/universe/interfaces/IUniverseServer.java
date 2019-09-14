@@ -1,24 +1,33 @@
 package com.ternsip.glade.universe.interfaces;
 
-import com.ternsip.glade.common.logic.ThreadWrapper;
+import com.ternsip.glade.common.logic.LazyThreadWrapper;
 import com.ternsip.glade.universe.UniverseServer;
 
 public interface IUniverseServer {
 
-    ThreadWrapper<UniverseServer> UNIVERSE_SERVER_THREAD = new ThreadWrapper<>(UniverseServer::new, 1000L / 128);
+    LazyThreadWrapper<UniverseServer> UNIVERSE_SERVER_THREAD = new LazyThreadWrapper<>(UniverseServer::new, 1000L / 128);
 
     static void stopUniverseServerThread() {
-        UNIVERSE_SERVER_THREAD.stop();
+        if (UNIVERSE_SERVER_THREAD.isInitialized()) {
+            UNIVERSE_SERVER_THREAD.getThreadWrapper().stop();
+        }
+    }
+
+    static void run() {
+        UNIVERSE_SERVER_THREAD.getObjective().startServer();
     }
 
     default boolean isUniverseServerThreadActive() {
-        return UNIVERSE_SERVER_THREAD.isActive();
+        return UNIVERSE_SERVER_THREAD.getThreadWrapper().isActive();
     }
 
     default UniverseServer getUniverseServer() {
-        if (Thread.currentThread() != UNIVERSE_SERVER_THREAD.getThread() &&
-                Thread.currentThread() != INetworkServer.SERVER_THREAD.getThread() &&
-                Thread.currentThread() != IBlocksRepository.BLOCKS_THREAD.getThread()) {
+        Thread currentThread = Thread.currentThread();
+        if (currentThread != UNIVERSE_SERVER_THREAD.getThreadWrapper().getThread() &&
+                currentThread != IBlocksRepository.BLOCKS_THREAD.getThreadWrapper().getThread() &&
+                currentThread != INetworkServer.SERVER_THREAD.getThreadWrapper().getThread() &&
+                currentThread != INetworkServer.SERVER_THREAD.getObjective().getAcceptorThread().getThread() &&
+                currentThread != INetworkServer.SERVER_THREAD.getObjective().getSenderThread().getThread()) {
             throw new IllegalArgumentException("You can not call server from this thread");
         }
         return UNIVERSE_SERVER_THREAD.getObjective();

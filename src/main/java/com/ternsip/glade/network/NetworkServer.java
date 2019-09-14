@@ -4,6 +4,7 @@ import com.ternsip.glade.common.events.network.OnClientConnect;
 import com.ternsip.glade.common.events.network.OnClientDisconnect;
 import com.ternsip.glade.common.logic.ThreadWrapper;
 import com.ternsip.glade.common.logic.Threadable;
+import com.ternsip.glade.universe.interfaces.IUniverseServer;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -18,7 +19,7 @@ import java.util.function.Function;
 @Slf4j
 @Getter
 @Setter
-public class NetworkServer implements Threadable, INetworkServerEventReceiver {
+public class NetworkServer implements Threadable, IUniverseServer {
 
     private final long RETRY_INTERVAL = 500L;
 
@@ -92,7 +93,7 @@ public class NetworkServer implements Threadable, INetworkServerEventReceiver {
                 try {
                     Connection connection = getServerHolder().accept();
                     getConnections().add(connection);
-                    getNetworkServerEventReceiver().registerEvent(OnClientConnect.class, new OnClientConnect(connection));
+                    getUniverseServer().getNetworkServerEventReceiver().registerEvent(OnClientConnect.class, new OnClientConnect(connection));
                 } catch (Exception e) {
                     if (getServerHolder().isActive()) {
                         String errMsg = String.format("Error while accepting new connection to server %s", e.getMessage());
@@ -102,7 +103,7 @@ public class NetworkServer implements Threadable, INetworkServerEventReceiver {
                 }
                 getConnections().stream()
                         .filter(connection -> !connection.isActive())
-                        .forEach(connection -> getNetworkServerEventReceiver().registerEvent(OnClientDisconnect.class, new OnClientDisconnect(connection)));
+                        .forEach(connection -> getUniverseServer().getNetworkServerEventReceiver().registerEvent(OnClientDisconnect.class, new OnClientDisconnect(connection)));
                 getConnections().removeIf(connection -> !connection.isActive());
             }
         }

@@ -4,6 +4,7 @@ import com.ternsip.glade.common.logic.Threadable;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigyAxis;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigyDynamicText;
 import com.ternsip.glade.graphics.visual.impl.test.*;
+import com.ternsip.glade.network.INetworkServerEventReceiver;
 import com.ternsip.glade.universe.collisions.impl.ChunksObstacle;
 import com.ternsip.glade.universe.collisions.impl.GroundObstacle;
 import com.ternsip.glade.universe.entities.base.Entity;
@@ -24,11 +25,10 @@ import java.io.File;
 
 @Getter
 @Setter
-public class UniverseServer implements Threadable, INetworkServer, IBlocksRepository, ICollisions, IBalance, IEntityServerRepository {
+public class UniverseServer implements Threadable, INetworkServer, IBlocksRepository, ICollisions, IBalance, IEntityServerRepository, INetworkServerEventReceiver {
 
     @Override
     public void init() {
-        startServer();
         spawnEntities();
     }
 
@@ -36,7 +36,7 @@ public class UniverseServer implements Threadable, INetworkServer, IBlocksReposi
     public void update() {
         getEntityServerRepository().update();
         getCollisions().update();
-        getServer().getNetworkServerEventReceiver().update();
+        getNetworkServerEventReceiver().update();
     }
 
     @SneakyThrows

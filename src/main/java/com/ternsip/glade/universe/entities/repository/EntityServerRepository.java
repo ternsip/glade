@@ -9,10 +9,7 @@ import com.ternsip.glade.universe.collisions.base.Obstacle;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.impl.EntityDummy;
 import com.ternsip.glade.universe.interfaces.IUniverseServer;
-import com.ternsip.glade.universe.protocol.CameraTargetPacket;
-import com.ternsip.glade.universe.protocol.EntitiesChangedClientPacket;
-import com.ternsip.glade.universe.protocol.RegisterEntityPacket;
-import com.ternsip.glade.universe.protocol.UnregisterEntityPacket;
+import com.ternsip.glade.universe.protocol.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,8 +29,8 @@ public class EntityServerRepository extends EntityRepository implements IUnivers
     private Callback<OnClientDisconnect> onClientDisconnectCallback = this::onClientDisconnect;
 
     public EntityServerRepository() {
-        getUniverseServer().getServer().getNetworkServerEventReceiver().registerCallback(OnClientConnect.class, getOnClientConnectCallback());
-        getUniverseServer().getServer().getNetworkServerEventReceiver().registerCallback(OnClientDisconnect.class, getOnClientDisconnectCallback());
+        getUniverseServer().getNetworkServerEventReceiver().registerCallback(OnClientConnect.class, getOnClientConnectCallback());
+        getUniverseServer().getNetworkServerEventReceiver().registerCallback(OnClientDisconnect.class, getOnClientDisconnectCallback());
     }
 
     @Override
@@ -68,15 +65,12 @@ public class EntityServerRepository extends EntityRepository implements IUnivers
     @Override
     public void finish() {
         super.finish();
-        getUniverseServer().getServer().getNetworkServerEventReceiver().unregisterCallback(OnClientConnect.class, getOnClientConnectCallback());
-        getUniverseServer().getServer().getNetworkServerEventReceiver().unregisterCallback(OnClientDisconnect.class, getOnClientDisconnectCallback());
+        getUniverseServer().getNetworkServerEventReceiver().unregisterCallback(OnClientConnect.class, getOnClientConnectCallback());
+        getUniverseServer().getNetworkServerEventReceiver().unregisterCallback(OnClientDisconnect.class, getOnClientDisconnectCallback());
     }
 
     private void onClientConnect(OnClientConnect onClientConnect) {
-        // TODO put this into one packet
-        for (Entity entity : getUuidToEntity().values()) {
-            getUniverseServer().getServer().send(new RegisterEntityPacket(entity), connection -> connection == onClientConnect.getConnection());
-        }
+        getUniverseServer().getServer().send(new InitiateConnectionPacket(getUuidToEntity().values()), connection -> connection == onClientConnect.getConnection());
         getUniverseServer().getServer().send(new CameraTargetPacket(getCameraTarget().getUuid()), connection -> connection == onClientConnect.getConnection());
         getInitiatedConnections().add(onClientConnect.getConnection());
     }

@@ -1,6 +1,10 @@
 package com.ternsip.glade;
 
+import com.google.common.collect.Sets;
 import com.ternsip.glade.graphics.interfaces.IGraphics;
+import com.ternsip.glade.universe.interfaces.IUniverseServer;
+
+import java.util.Set;
 
 /**
  * The main entry point of the application
@@ -41,7 +45,12 @@ import com.ternsip.glade.graphics.interfaces.IGraphics;
 public class Glade {
 
     public static void main(String[] args) {
-        IGraphics.run();
+        Set<String> input = Sets.newHashSet(args);
+        if (input.contains("--server")) {
+            IUniverseServer.run();
+        } else {
+            IGraphics.run();
+        }
     }
 
 }

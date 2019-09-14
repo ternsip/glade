@@ -17,9 +17,11 @@ public interface IUniverseClient {
     }
 
     default UniverseClient getUniverseClient() {
-        if (Thread.currentThread() != UNIVERSE_CLIENT_THREAD.getThread() &&
-                Thread.currentThread() != IGraphics.MAIN_THREAD &&
-                Thread.currentThread() != INetworkClient.CLIENT_THREAD.getThread()
+        Thread thread = Thread.currentThread();
+        if (thread != UNIVERSE_CLIENT_THREAD.getThread() &&
+                thread != IGraphics.MAIN_THREAD &&
+                thread != INetworkClient.CLIENT_THREAD.getThreadWrapper().getThread() &&
+                thread != INetworkClient.CLIENT_THREAD.getObjective().getSenderThread().getThread()
         ) {
             throw new IllegalArgumentException("You can not call server from this thread");
         }

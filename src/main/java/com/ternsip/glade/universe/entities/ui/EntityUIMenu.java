@@ -1,6 +1,7 @@
 package com.ternsip.glade.universe.entities.ui;
 
 import com.ternsip.glade.universe.audio.Sound;
+import com.ternsip.glade.universe.interfaces.IUniverseServer;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.Vector3f;
@@ -42,13 +43,16 @@ public class EntityUIMenu extends EntityUI {
         this.connectButton.setScale(new Vector3f(0.1f, 0.05f, 1));
         this.connectButton.setPosition(new Vector3f(0, 0.25f, 0));
         this.connectButton.getOnPress().add(() -> new Sound(CLICK_SOUND).register());
-        this.connectButton.getOnClick().add(() -> getUniverseClient().startClient());
+        this.connectButton.getOnClick().add(() -> {
+            getUniverseClient().startClient();
+            this.toggle();
+        });
 
         this.hostButton = new EntityUITextButton(BUTTON_BACKGROUND, BROWSE_OVERLAY, PRESS_OVERLAY, FONT, TEXT_COLOR, "Host", true);
         this.hostButton.setScale(new Vector3f(0.1f, 0.05f, 1));
         this.hostButton.setPosition(new Vector3f(0, 0, 0));
         this.hostButton.getOnPress().add(() -> new Sound(CLICK_SOUND).register());
-        this.hostButton.getOnClick().add(() -> getUniverseServer().startServer());
+        this.hostButton.getOnClick().add(IUniverseServer::run);
 
         this.optionsButton = new EntityUITextButton(BUTTON_BACKGROUND, BROWSE_OVERLAY, PRESS_OVERLAY, FONT, TEXT_COLOR, "Options", true);
         this.optionsButton.setScale(new Vector3f(0.1f, 0.05f, 1));

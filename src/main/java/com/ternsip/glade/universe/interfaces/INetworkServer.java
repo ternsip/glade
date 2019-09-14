@@ -1,16 +1,18 @@
 package com.ternsip.glade.universe.interfaces;
 
-import com.ternsip.glade.common.logic.ThreadWrapper;
+import com.ternsip.glade.common.logic.LazyThreadWrapper;
 import com.ternsip.glade.network.NetworkServer;
 
 public interface INetworkServer {
 
-    ThreadWrapper<NetworkServer> SERVER_THREAD = new ThreadWrapper<>(NetworkServer::new, 1000L / 128);
+    LazyThreadWrapper<NetworkServer> SERVER_THREAD = new LazyThreadWrapper<>(NetworkServer::new, 1000L / 128);
 
     default void stopServerThread() {
-        getServer().stop();
-        SERVER_THREAD.stop();
-        SERVER_THREAD.join();
+        if (SERVER_THREAD.isInitialized()) {
+            getServer().stop();
+            SERVER_THREAD.getThreadWrapper().stop();
+            SERVER_THREAD.getThreadWrapper().join();
+        }
     }
 
     default NetworkServer getServer() {

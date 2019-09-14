@@ -1,7 +1,9 @@
 package com.ternsip.glade.network;
 
+import com.ternsip.glade.common.events.network.OnConnectedToServer;
 import com.ternsip.glade.common.logic.ThreadWrapper;
 import com.ternsip.glade.common.logic.Threadable;
+import com.ternsip.glade.universe.interfaces.IUniverseClient;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -13,7 +15,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @Slf4j
 @Getter
 @Setter
-public class NetworkClient implements Threadable, INetworkClientEventReceiver {
+public class NetworkClient implements Threadable, IUniverseClient {
 
     private final long RETRY_INTERVAL = 500L;
     private final int MAX_CONNECTION_ATTEMPTS = 10;
@@ -25,7 +27,9 @@ public class NetworkClient implements Threadable, INetworkClientEventReceiver {
     public void connect(String host, int port) {
         for (int attempt = 0; attempt < MAX_CONNECTION_ATTEMPTS; ++attempt) {
             try {
-                setConnection(new Connection(new Socket(host, port)));
+                Connection connection = new Connection(new Socket(host, port));
+                setConnection(connection);
+                getUniverseClient().getNetworkClientEventReceiver().registerEvent(OnConnectedToServer.class, new OnConnectedToServer(connection, false));
                 return;
             } catch (Exception e) {
                 String errMsg = String.format("Unable to connect to %s:%s, Attempt: #%s, Reason: %s retrying...", host, port, attempt, e.getMessage());

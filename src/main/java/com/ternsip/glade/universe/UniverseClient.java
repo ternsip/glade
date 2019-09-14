@@ -1,6 +1,9 @@
 package com.ternsip.glade.universe;
 
+import com.ternsip.glade.common.events.base.Callback;
+import com.ternsip.glade.common.events.network.OnConnectedToServer;
 import com.ternsip.glade.common.logic.Threadable;
+import com.ternsip.glade.network.INetworkClientEventReceiver;
 import com.ternsip.glade.universe.bindings.Bind;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.impl.EntitySides;
@@ -19,24 +22,27 @@ import java.io.File;
 
 @Getter
 @Setter
-public class UniverseClient implements Threadable, IUniverseServer, INetworkClient, IBindings, ISoundRepository, IEntityClientRepository, IEventSnapReceiver {
+public class UniverseClient implements Threadable, INetworkClient, IBindings, ISoundRepository, IEntityClientRepository, IEventSnapReceiver, INetworkClientEventReceiver {
+
+    private Callback<OnConnectedToServer> onConnectedToServerCallback = this::whenConnected;
 
     @Override
     public void init() {
-        spawnEntities();
-        startClient();
+        spawnMenu();
+        getNetworkClientEventReceiver().registerCallback(OnConnectedToServer.class, onConnectedToServerCallback);
     }
 
     @Override
     public void update() {
         getEventSnapReceiver().update();
         getEntityClientRepository().update();
-        getClient().getNetworkClientEventReceiver().update(); // TODO thing about updating it on network side (origin)
+        getNetworkClientEventReceiver().update();
     }
 
     @SneakyThrows
     @Override
     public void finish() {
+        getNetworkClientEventReceiver().unregisterCallback(OnConnectedToServer.class, onConnectedToServerCallback);
         getBindings().finish();
         getEntityClientRepository().finish();
         stopClientThread();
@@ -51,11 +57,13 @@ public class UniverseClient implements Threadable, IUniverseServer, INetworkClie
         IUniverseClient.stopUniverseClientThread();
     }
 
-    private void spawnEntities() {
+    private void spawnMenu() {
         EntityUIMenu entityUIMenu = new EntityUIMenu();
         entityUIMenu.register();
-        entityUIMenu.toggle();
         getBindings().addBindCallback(Bind.TOGGLE_MENU, entityUIMenu::toggle);
+    }
+
+    private void spawnEntities() {
         new EntityStatistics2D(new File("fonts/default.png"), new Vector4f(1, 1, 0, 1), true).register();
 
         Entity aim = new EntitySprite(new File("tools/aim.png"), true, true);
@@ -66,6 +74,12 @@ public class UniverseClient implements Threadable, IUniverseServer, INetworkClie
         getBindings().addBindCallback(Bind.TEST_BUTTON, () -> getClient().send(new ConsoleMessagePacket("HELLO 123")));
 
         new EntitySides().register();
+    }
+
+    private void whenConnected(OnConnectedToServer onConnectedToServer) {
+        if (onConnectedToServer.isPostProcessed()) {
+            spawnEntities();
+        }
     }
 
 }
