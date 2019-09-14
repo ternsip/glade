@@ -11,7 +11,9 @@ public interface IGraphics {
     }
 
     default Graphics getGraphics() {
-        GRAPHICS.checkThreadSafety();
+        if (Thread.currentThread() != GRAPHICS.getRootThread()) {
+            throw new IllegalArgumentException("It is not thread safe to get display not from the main thread");
+        }
         return GRAPHICS;
     }
 

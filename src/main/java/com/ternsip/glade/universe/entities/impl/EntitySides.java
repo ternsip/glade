@@ -2,6 +2,7 @@ package com.ternsip.glade.universe.entities.impl;
 
 import com.ternsip.glade.common.logic.Timer;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigySides;
+import com.ternsip.glade.network.ClientSide;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.parts.chunks.BlocksUpdate;
 import com.ternsip.glade.universe.protocol.BlocksObserverChangedPacket;
@@ -17,6 +18,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 @RequiredArgsConstructor
 @Getter
 @Setter
+@ClientSide
 public class EntitySides extends Entity<EffigySides> {
 
     private transient final Timer timer = new Timer(250);
@@ -54,7 +56,6 @@ public class EntitySides extends Entity<EffigySides> {
     }
 
     private void moveObserver() {
-        // TODO sometimes it crashes with nullpointer
         Vector3fc cameraPos = getUniverseClient().getEntityClientRepository().getCameraTarget().getPosition();
         Vector3ic newPos = new Vector3i((int) cameraPos.x(), (int) cameraPos.y(), (int) cameraPos.z());
         int viewDistance = 4; // TODO receive this from client options (make options class)

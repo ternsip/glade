@@ -22,12 +22,6 @@ public class Graphics implements IUniverseClient, IUniverseServer, IEventSnapRec
         finish();
     }
 
-    public void checkThreadSafety() {
-        if (Thread.currentThread() != getRootThread()) {
-            throw new IllegalArgumentException("It is not thread safe to get display not from the main thread");
-        }
-    }
-
     private void loop() {
         while (getWindowData().isActive() && isUniverseClientThreadActive()) {
             getFrameBuffers().bindBuffer();

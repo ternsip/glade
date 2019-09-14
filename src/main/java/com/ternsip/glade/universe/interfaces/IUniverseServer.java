@@ -11,13 +11,21 @@ public interface IUniverseServer {
         UNIVERSE_SERVER_THREAD.stop();
     }
 
+    static Thread getRootThread() {
+        return UNIVERSE_SERVER_THREAD.getObjective().getRootThread();
+    }
+
     default boolean isUniverseServerThreadActive() {
         return UNIVERSE_SERVER_THREAD.isActive();
     }
 
     // TODO add checking thread client or server to not call one from another
     default UniverseServer getUniverseServer() {
-        return UNIVERSE_SERVER_THREAD.getObjective();
+        UniverseServer universeServer = UNIVERSE_SERVER_THREAD.getObjective();
+        if (Thread.currentThread() == IUniverseClient.getRootThread()) {
+            throw new IllegalArgumentException("You can not call client from server thread");
+        }
+        return universeServer;
     }
 
 }
