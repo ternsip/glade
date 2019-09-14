@@ -21,7 +21,7 @@ public class PlayerActionPacket extends ServerPacket {
 
     @Override
     public void apply(Connection connection) {
-        EntityPlayer entityPlayer = (EntityPlayer) getUniverseServer().getEntityServerRepository().getUuidToEntity().get(getEntityUuid());
+        EntityPlayer entityPlayer = (EntityPlayer) getUniverseServer().getEntityServerRepository().getEntityByUUID(getEntityUuid());
         entityPlayer.handleAction(getAction());
     }
 

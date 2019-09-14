@@ -30,13 +30,13 @@ public class EffigyRepository implements IUniverseClient, IGraphics {
 
     @SuppressWarnings("unchecked")
     private void updateEntities() {
-        Collection<Entity> entities = getUniverseClient().getEntityClientRepository().getUuidToEntity().values();
+        // TODO make this concurrent hashset
+        Collection<Entity> entities = getUniverseClient().getEntityClientRepository().getEntities();
         entities.forEach(e -> getEntityToEffigy().computeIfAbsent(e, x -> e.getEffigy()));
         getEntityToEffigy().entrySet().removeIf(entry -> {
             Entity entity = entry.getKey();
             Effigy effigy = entry.getValue();
             if (!entities.contains(entity)) {
-                entity.unregister();
                 effigy.finish();
                 return true;
             }

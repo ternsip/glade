@@ -2,8 +2,8 @@ package com.ternsip.glade.universe.entities.impl;
 
 import com.ternsip.glade.common.logic.Timer;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigySides;
-import com.ternsip.glade.network.ClientSide;
 import com.ternsip.glade.universe.entities.base.Entity;
+import com.ternsip.glade.universe.parts.chunks.BlocksUpdate;
 import com.ternsip.glade.universe.protocol.BlocksObserverChangedPacket;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -12,13 +12,15 @@ import org.joml.Vector3fc;
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
 
+import java.util.concurrent.ConcurrentLinkedDeque;
+
 @RequiredArgsConstructor
 @Getter
 @Setter
-@ClientSide
 public class EntitySides extends Entity<EffigySides> {
 
-    private final Timer timer = new Timer(250);
+    private transient final Timer timer = new Timer(250);
+    private transient final ConcurrentLinkedDeque<BlocksUpdate> blocksUpdates = new ConcurrentLinkedDeque<>();
 
     private final Vector3i observerPos = new Vector3i(-1000);
     private int observerViewDistance = 0;
@@ -32,9 +34,8 @@ public class EntitySides extends Entity<EffigySides> {
     @Override
     public void update(EffigySides effigy) {
         super.update(effigy);
-        // TODO fix critical bug using server on client (you can see unloaded chunks)
-        if (!getUniverseServer().getBlocks().getBlocksUpdates().isEmpty()) {
-            effigy.applyBlockUpdate(getUniverseServer().getBlocks().getBlocksUpdates().poll());
+        if (!getBlocksUpdates().isEmpty()) {
+            effigy.applyBlockUpdate(getBlocksUpdates().poll());
         }
     }
 

@@ -58,7 +58,6 @@ public class UniverseServer implements Threadable, INetworkServer, IBlocksReposi
 
         EntitySun sun = new EntitySun();
         sun.register();
-        getEntityServerRepository().setSun(sun);
 
         Entity cube = new EntityGeneric(() -> new EffigyCube());
         cube.register();

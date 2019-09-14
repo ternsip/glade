@@ -2,11 +2,12 @@ package com.ternsip.glade.universe.parts.chunks;
 
 import com.ternsip.glade.common.logic.Timer;
 import com.ternsip.glade.common.logic.*;
+import com.ternsip.glade.universe.interfaces.IUniverseServer;
 import com.ternsip.glade.universe.parts.blocks.Block;
 import com.ternsip.glade.universe.parts.blocks.BlockSide;
 import com.ternsip.glade.universe.parts.generators.ChunkGenerator;
+import com.ternsip.glade.universe.protocol.BlocksUpdatePacket;
 import com.ternsip.glade.universe.storage.Storage;
-import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.joml.*;
@@ -22,7 +23,7 @@ import java.util.stream.Collectors;
 import static com.ternsip.glade.common.logic.Maths.frac;
 
 @Slf4j
-public class BlocksRepository implements Threadable {
+public class BlocksRepository implements Threadable, IUniverseServer {
 
     public static final int CHUNKS_X = 8;
     public static final int CHUNKS_Z = 8;
@@ -42,9 +43,6 @@ public class BlocksRepository implements Threadable {
     private final Set<Chunk> loadedChunks = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private final ConcurrentLinkedDeque<ChangeBlocksRequest> changeBlocksRequests = new ConcurrentLinkedDeque<>();
     private final ConcurrentLinkedDeque<MovementRequest> movementRequests = new ConcurrentLinkedDeque<>();
-
-    @Getter
-    private final ConcurrentLinkedDeque<BlocksUpdate> blocksUpdates = new ConcurrentLinkedDeque<>();
 
     public BlocksRepository() {
         this.storage = new Storage("blocks_meta");
@@ -284,12 +282,16 @@ public class BlocksRepository implements Threadable {
         int scz = Maths.bound(0, CHUNKS_Z - 1, startNextChunkZ);
         int ecx = Maths.bound(0, CHUNKS_X - 1, endNextChunkX);
         int ecz = Maths.bound(0, CHUNKS_Z - 1, endNextChunkZ);
+        List<BlocksUpdate> blocksUpdates = new ArrayList<>();
         for (int cx = scx; cx <= ecx; ++cx) {
             for (int cz = scz; cz <= ecz; ++cz) {
                 if (cx < startPrevChunkX || cx > endPrevChunkX || cz < startPrevChunkZ || cz > endPrevChunkZ) {
                     blocksUpdates.add(new BlocksUpdate(getChunk(cx, cz).sides, additive));
                 }
             }
+        }
+        if (!blocksUpdates.isEmpty()) {
+            getUniverseServer().getServer().send(new BlocksUpdatePacket(blocksUpdates), connection -> true);
         }
     }
 
@@ -486,7 +488,7 @@ public class BlocksRepository implements Threadable {
         }
 
         if (collectChanges && !blocksUpdate.isEmpty()) {
-            getBlocksUpdates().add(blocksUpdate);
+            getUniverseServer().getServer().send(new BlocksUpdatePacket(Collections.singletonList(blocksUpdate)), connection -> true);
         }
 
         relaxChunks();

@@ -15,7 +15,7 @@ public class CameraTargetPacket extends ClientPacket {
 
     @Override
     public void apply(Connection connection) {
-        getUniverseClient().getEntityClientRepository().setCameraTarget(getUniverseClient().getEntityClientRepository().getUuidToEntity().get(getUuid()));
+        getUniverseClient().getEntityClientRepository().setCameraTarget(getUniverseClient().getEntityClientRepository().getEntityByUUID(getUuid()));
     }
 
 }

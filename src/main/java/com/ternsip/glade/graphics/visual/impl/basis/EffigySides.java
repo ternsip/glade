@@ -80,7 +80,7 @@ public class EffigySides extends Effigy<ChunkShader> {
     }
 
     public Light getSun() {
-        EntitySun sun = getUniverseClient().getEntityClientRepository().getSun();
+        EntitySun sun = getUniverseClient().getEntityClientRepository().getEntitySun();
         return new LightSource(sun.getPositionInterpolated(), sun.getColor(), sun.getIntensity());
     }
 

@@ -59,7 +59,7 @@ public class RegisterEntityPacket extends ClientPacket {
 
     @Override
     public void apply(Connection connection) {
-        if (!getUniverseClient().getEntityClientRepository().getUuidToEntity().containsKey(getUuid())) {
+        if (!getUniverseClient().getEntityClientRepository().isEntityExists(getUuid())) {
             constructNewEntity().register();
         } else {
             throw new IllegalArgumentException(String.format("Entity already exists %s", getUuid()));

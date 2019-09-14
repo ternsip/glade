@@ -38,7 +38,7 @@ public class Sides implements Serializable {
             BlockSide blockSide = (BlockSide) ois.readObject();
             byte skyLight = ois.readByte();
             byte emitLight = ois.readByte();
-            Block block = (Block) ois.readObject();
+            Block block = Block.getBlockByIndex(ois.readInt());
             SidePosition sidePosition = new SidePosition(x, y, z, blockSide);
             SideData sideData = new SideData(skyLight, emitLight, block);
             this.sides.put(sidePosition, sideData);
@@ -56,7 +56,7 @@ public class Sides implements Serializable {
             oos.writeObject(sidePosition.getSide());
             oos.writeByte(sideData.getSkyLight());
             oos.writeByte(sideData.getEmitLight());
-            oos.writeObject(sideData.getBlock());
+            oos.writeInt(sideData.getBlock().getIndex());
         }
     }
 
