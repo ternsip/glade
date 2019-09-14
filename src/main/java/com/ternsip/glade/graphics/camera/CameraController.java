@@ -37,8 +37,8 @@ public class CameraController implements IGraphics, IUniverseClient {
     private Callback<CursorPosEvent> cursorPosCallback = this::recalculateRotation;
 
     public CameraController() {
-        getGraphics().getEventSnapReceiver().registerCallback(ScrollEvent.class, scrollCallback);
-        getGraphics().getEventSnapReceiver().registerCallback(CursorPosEvent.class, cursorPosCallback);
+        getGraphics().getEventSnapReceiverGraphics().registerCallback(ScrollEvent.class, scrollCallback);
+        getGraphics().getEventSnapReceiverGraphics().registerCallback(CursorPosEvent.class, cursorPosCallback);
     }
 
     public void update() {
@@ -72,8 +72,8 @@ public class CameraController implements IGraphics, IUniverseClient {
     }
 
     public void finish() {
-        getGraphics().getEventSnapReceiver().unregisterCallback(ScrollEvent.class, scrollCallback);
-        getGraphics().getEventSnapReceiver().unregisterCallback(CursorPosEvent.class, cursorPosCallback);
+        getGraphics().getEventSnapReceiverGraphics().unregisterCallback(ScrollEvent.class, scrollCallback);
+        getGraphics().getEventSnapReceiverGraphics().unregisterCallback(CursorPosEvent.class, cursorPosCallback);
     }
 
     public boolean isThirdPerson() {
@@ -89,7 +89,7 @@ public class CameraController implements IGraphics, IUniverseClient {
     }
 
     private void recalculateRotation(CursorPosEvent event) {
-        if (!isThirdPerson() || getGraphics().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_1)) {
+        if (!isThirdPerson() || getGraphics().getEventSnapReceiverGraphics().isMouseDown(GLFW_MOUSE_BUTTON_1)) {
             float nx = limitAngle(getRotation().x() + (float) (event.getDy() * ROTATION_MULTIPLIER_X), MAX_ROTATION_DELTA_X);
             float ny = limitAngle(getRotation().y() + (float) (event.getDx() * ROTATION_MULTIPLIER_Y), MAX_ROTATION_DELTA_Y);
             setRotation(new Vector2f(nx, ny));

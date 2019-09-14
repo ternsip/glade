@@ -25,7 +25,7 @@ public class Camera implements IGraphics {
     private Matrix4fc viewMatrix = new Matrix4f();
 
     public Camera() {
-        getGraphics().getEventSnapReceiver().registerCallback(ResizeEvent.class, e -> this.recalculateProjectionMatrices(e.getWidth(), e.getHeight()));
+        getGraphics().getEventSnapReceiverGraphics().registerCallback(ResizeEvent.class, e -> this.recalculateProjectionMatrices(e.getWidth(), e.getHeight()));
         recalculateProjectionMatrices(getGraphics().getWindowData().getWidth(), getGraphics().getWindowData().getHeight());
     }
 

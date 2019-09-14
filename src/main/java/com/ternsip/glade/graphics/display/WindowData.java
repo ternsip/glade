@@ -36,7 +36,7 @@ public class WindowData implements IUniverseClient, IGraphics {
 
     public WindowData() {
 
-        getGraphics().getEventSnapReceiver().registerCallback(ErrorEvent.class, this::handleError);
+        getGraphics().getEventSnapReceiverGraphics().registerCallback(ErrorEvent.class, this::handleError);
 
         registerErrorEvent();
 
@@ -84,7 +84,7 @@ public class WindowData implements IUniverseClient, IGraphics {
 
         registerEvent(ResizeEvent.class, new ResizeEvent(getWidth(), getHeight()));
 
-        getGraphics().getEventSnapReceiver().registerCallback(ResizeEvent.class, this::handleResize);
+        getGraphics().getEventSnapReceiverGraphics().registerCallback(ResizeEvent.class, this::handleResize);
     }
 
     public int getWidth() {
@@ -213,7 +213,7 @@ public class WindowData implements IUniverseClient, IGraphics {
     }
 
     private <T extends Event> void registerEvent(Class<T> clazz, T event) {
-        getGraphics().getEventSnapReceiver().registerEvent(clazz, event);
+        getGraphics().getEventSnapReceiverGraphics().registerEvent(clazz, event);
         getUniverseClient().getEventSnapReceiver().registerEvent(clazz, event);
     }
 

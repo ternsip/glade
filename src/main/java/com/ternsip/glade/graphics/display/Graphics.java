@@ -11,7 +11,7 @@ import lombok.Getter;
  * In general words it is graphical representation of the universe state
  */
 @Getter
-public class Graphics implements IUniverseClient, IUniverseServer, IEventSnapReceiver, IFrameBuffers, IWindowData, ITextureRepository,
+public class Graphics implements IUniverseClient, IUniverseServer, IEventSnapReceiverGraphics, IFrameBuffers, IWindowData, ITextureRepository,
         IModelRepository, IShaderRepository, ICamera, ICameraController, IEffigyRepository, ITexturePackRepository,
         IAudioRepository {
 
@@ -32,7 +32,7 @@ public class Graphics implements IUniverseClient, IUniverseServer, IEventSnapRec
         while (getWindowData().isActive() && isUniverseClientThreadActive()) {
             getFrameBuffers().bindBuffer();
             getWindowData().clear();
-            getEventSnapReceiver().update();
+            getEventSnapReceiverGraphics().update();
             getEffigyRepository().render();
             getWindowData().getFpsCounter().updateFps();
             getFrameBuffers().resolveBuffer();
