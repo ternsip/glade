@@ -1,6 +1,7 @@
 package com.ternsip.glade.universe.interfaces;
 
 import com.ternsip.glade.common.logic.ThreadWrapper;
+import com.ternsip.glade.graphics.interfaces.IGraphics;
 import com.ternsip.glade.universe.UniverseClient;
 
 public interface IUniverseClient {
@@ -11,20 +12,18 @@ public interface IUniverseClient {
         UNIVERSE_CLIENT_THREAD.stop();
     }
 
-    static Thread getRootThread() {
-        return UNIVERSE_CLIENT_THREAD.getObjective().getRootThread();
-    }
-
     default boolean isUniverseClientThreadActive() {
         return UNIVERSE_CLIENT_THREAD.isActive();
     }
 
     default UniverseClient getUniverseClient() {
-        UniverseClient universeClient = UNIVERSE_CLIENT_THREAD.getObjective();
-        if (Thread.currentThread() == IUniverseServer.getRootThread()) {
-            throw new IllegalArgumentException("You can not call Server from client thread");
+        if (Thread.currentThread() != UNIVERSE_CLIENT_THREAD.getThread() &&
+                Thread.currentThread() != IGraphics.MAIN_THREAD &&
+                Thread.currentThread() != INetworkClient.CLIENT_THREAD.getThread()
+        ) {
+            throw new IllegalArgumentException("You can not call server from this thread");
         }
-        return universeClient;
+        return UNIVERSE_CLIENT_THREAD.getObjective();
     }
 
 }

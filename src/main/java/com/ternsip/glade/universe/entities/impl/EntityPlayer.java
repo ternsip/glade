@@ -55,6 +55,9 @@ public class EntityPlayer extends Entity<EffigyBoy> {
     @ClientSide
     private LineSegmentf eyeSegment = new LineSegmentf();
 
+    @ServerSide
+    private float skyIntensity = 0;
+
     @Override
     public void register() {
         super.register();
@@ -128,6 +131,8 @@ public class EntityPlayer extends Entity<EffigyBoy> {
         if (isOnTheGround()) {
             getCurrentVelocity().y = 0;
         }
+        Vector3ic blockPos = round(getPosition());
+        setSkyIntensity(getUniverseServer().getBlocks().isBlockExists(blockPos) ? getUniverseServer().getBlocks().getSkyLight(blockPos) / (float) MAX_LIGHT_LEVEL : 1);
     }
 
     @ServerSide
@@ -188,11 +193,6 @@ public class EntityPlayer extends Entity<EffigyBoy> {
                 getUniverseServer().getBlocks().setBlock(blockPositionLooking, Block.AIR);
             }
         }
-    }
-
-    private float getSkyIntensity() {
-        Vector3ic blockPos = round(getPosition());
-        return getUniverseServer().getBlocks().isBlockExists(blockPos) ? getUniverseServer().getBlocks().getSkyLight(blockPos) / (float) MAX_LIGHT_LEVEL : 1;
     }
 
     private Vector3fc tryToMove(Vector3fc startPosition, Vector3fc endPosition) {

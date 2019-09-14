@@ -13,6 +13,8 @@ import java.util.function.Supplier;
 public class ThreadWrapper<T extends Threadable> {
 
     private final Task<T> task;
+
+    @Getter
     private final Thread thread;
 
     public ThreadWrapper(Supplier<T> supplier, long timeout) {

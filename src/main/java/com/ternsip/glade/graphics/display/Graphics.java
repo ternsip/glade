@@ -2,7 +2,6 @@ package com.ternsip.glade.graphics.display;
 
 import com.ternsip.glade.graphics.interfaces.*;
 import com.ternsip.glade.universe.interfaces.IUniverseClient;
-import com.ternsip.glade.universe.interfaces.IUniverseServer;
 import lombok.Getter;
 
 /**
@@ -11,11 +10,9 @@ import lombok.Getter;
  * In general words it is graphical representation of the universe state
  */
 @Getter
-public class Graphics implements IUniverseClient, IUniverseServer, IEventSnapReceiverGraphics, IFrameBuffers, IWindowData, ITextureRepository,
+public class Graphics implements IUniverseClient, IEventSnapReceiverGraphics, IFrameBuffers, IWindowData, ITextureRepository,
         IModelRepository, IShaderRepository, ICamera, ICameraController, IEffigyRepository, ITexturePackRepository,
         IAudioRepository {
-
-    private final Thread rootThread = Thread.currentThread();
 
     public void run() {
         loop();

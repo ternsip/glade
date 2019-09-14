@@ -26,8 +26,6 @@ import java.io.File;
 @Setter
 public class UniverseServer implements Threadable, INetworkServer, IBlocksRepository, ICollisions, IBalance, IEntityServerRepository {
 
-    private final Thread rootThread = Thread.currentThread();
-
     @Override
     public void init() {
         startServer();

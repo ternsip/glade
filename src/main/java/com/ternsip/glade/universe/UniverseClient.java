@@ -21,8 +21,6 @@ import java.io.File;
 @Setter
 public class UniverseClient implements Threadable, IUniverseServer, INetworkClient, IBindings, ISoundRepository, IEntityClientRepository, IEventSnapReceiver {
 
-    private final Thread rootThread = Thread.currentThread();
-
     @Override
     public void init() {
         spawnEntities();

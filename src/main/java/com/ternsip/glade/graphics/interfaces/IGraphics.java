@@ -4,6 +4,7 @@ import com.ternsip.glade.graphics.display.Graphics;
 
 public interface IGraphics {
 
+    Thread MAIN_THREAD = Thread.currentThread();
     Graphics GRAPHICS = new Graphics();
 
     static void run() {
@@ -11,8 +12,8 @@ public interface IGraphics {
     }
 
     default Graphics getGraphics() {
-        if (Thread.currentThread() != GRAPHICS.getRootThread()) {
-            throw new IllegalArgumentException("It is not thread safe to get display not from the main thread");
+        if (Thread.currentThread() != MAIN_THREAD) {
+            throw new IllegalArgumentException("You should call graphics only from the main thread");
         }
         return GRAPHICS;
     }
