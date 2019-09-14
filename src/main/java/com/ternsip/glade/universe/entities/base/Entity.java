@@ -48,7 +48,10 @@ public abstract class Entity<T extends Effigy> implements IUniverseClient, IUniv
         effigy.setFromVolumetricInterpolated(getVolumetricInterpolated());
     }
 
-    // This method can be called only in graphics, it should be supplied
+    /**
+     * This method will be called only once in graphical thread
+     * It should be supplied by entity
+     */
     public abstract T getEffigy();
 
     public NetworkSide findNetworkSide() {

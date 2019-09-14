@@ -11,6 +11,7 @@ import com.ternsip.glade.universe.entities.base.EntityGeneric;
 import com.ternsip.glade.universe.entities.base.EntityGenericRotating;
 import com.ternsip.glade.universe.entities.impl.EntityCubeSelection;
 import com.ternsip.glade.universe.entities.impl.EntityPlayer;
+import com.ternsip.glade.universe.entities.impl.EntityServerStatistics;
 import com.ternsip.glade.universe.entities.impl.EntitySun;
 import com.ternsip.glade.universe.interfaces.*;
 import lombok.Getter;
@@ -55,6 +56,9 @@ public class UniverseServer implements Threadable, INetworkServer, IBlocksReposi
     }
 
     private void spawnEntities() {
+
+        EntityServerStatistics entityServerStatistics = new EntityServerStatistics();
+        entityServerStatistics.register();
 
         EntitySun sun = new EntitySun();
         sun.register();

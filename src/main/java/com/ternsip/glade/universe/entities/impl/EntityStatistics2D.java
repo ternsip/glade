@@ -32,16 +32,10 @@ public class EntityStatistics2D extends EntityDynamicText2D {
         sb.append("FPS : ").append(graphics.getWindowData().getFpsCounter().getFps()).append(System.lineSeparator());
         sb.append("Entities : ").append(graphics.getEffigyRepository().getLastSeenNumberOfEntitiesInFrustum()).append(System.lineSeparator());
         sb.append("TickRate : ").append(getUpdatesPerSecond()).append(System.lineSeparator());
-        Vector3fc eye = graphics.getCameraController().getTarget();
-        Vector3fc direction = graphics.getCameraController().getLookDirection().mul(10, new Vector3f());
-        LineSegmentf segment = new LineSegmentf(eye, eye.add(direction, new Vector3f()));
-        // TODO Critical bug (using server on client), Probably need to make texts client-server
-        Vector3ic pos = getUniverseServer().getBlocks().traverse(segment, block -> block != Block.AIR);
-        if (pos != null) {
-            Block block = getUniverseServer().getBlocks().getBlock(pos);
-            sb.append("Block: ").append(block.getName().toLowerCase()).append(" ");
-            sb.append(String.format("pos: x=%s, y=%s, z=%s", pos.x(), pos.y(), pos.z())).append(System.lineSeparator());
-        }
+        Block lookingAtBlock = getUniverseClient().getEntityClientRepository().getSpecialEntity(EntityServerStatistics.class).getLookingAtBlock();
+        Vector3ic lookingAtBlockPosition = getUniverseClient().getEntityClientRepository().getSpecialEntity(EntityServerStatistics.class).getLookingAtBlockPosition();
+        sb.append("Block: ").append(lookingAtBlock.getName().toLowerCase()).append(" ");
+        sb.append(String.format("pos: x=%s, y=%s, z=%s", lookingAtBlockPosition.x(), lookingAtBlockPosition.y(), lookingAtBlockPosition.z())).append(System.lineSeparator());
         setText(sb.toString());
         effigy.alignOnScreen(new Vector2i(0, 0), new Vector2i(75, 75));
     }
