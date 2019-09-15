@@ -29,7 +29,7 @@ public class UniverseClient implements Threadable, INetworkClient, IBindings, IS
     @Override
     public void init() {
         spawnMenu();
-        getNetworkClientEventReceiver().registerCallback(OnConnectedToServer.class, onConnectedToServerCallback);
+        getNetworkClientEventReceiver().registerCallback(OnConnectedToServer.class, getOnConnectedToServerCallback());
     }
 
     @Override
@@ -42,7 +42,7 @@ public class UniverseClient implements Threadable, INetworkClient, IBindings, IS
     @SneakyThrows
     @Override
     public void finish() {
-        getNetworkClientEventReceiver().unregisterCallback(OnConnectedToServer.class, onConnectedToServerCallback);
+        getNetworkClientEventReceiver().unregisterCallback(OnConnectedToServer.class, getOnConnectedToServerCallback());
         getBindings().finish();
         getEntityClientRepository().finish();
         stopClientThread();
