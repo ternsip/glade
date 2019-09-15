@@ -17,6 +17,7 @@ import java.util.Set;
  * - check memory buffers' explicit free calls
  * - check data that you send to GPU i.e. number of vertices/textures/indices/colors etc.
  * - in case you want to debug errors - use debug mode
+ * - be careful with @Delegate sometimes it breaks navigation or debugger, also recursive delegate does not allowed
  *
  * @author Ternsip
  */
@@ -39,7 +40,6 @@ import java.util.Set;
 // TODO Player inventory based on UI
 // TODO Item repository (blocks, tools)
 // TODO Add Free look camera
-// TODO be careful with @Delegate sometimes it breaks navigation or debugger, also recursive delegate does not allowed
 // TODO handle client-server shutdown without errors
 public class Glade {
 
