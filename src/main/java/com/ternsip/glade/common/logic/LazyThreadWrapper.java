@@ -18,6 +18,10 @@ public class LazyThreadWrapper<T extends Threadable> {
         this.wrapper = new LazyWrapper<>(() -> new ThreadWrapper<T>(supplier, timeout));
     }
 
+    public void touch() {
+        getObjective();
+    }
+
     public boolean isInitialized() {
         return getWrapper().isInitialized();
     }

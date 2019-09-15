@@ -26,9 +26,11 @@ public abstract class Entity<T extends Effigy> implements IUniverseClient, IUniv
     private final Volumetric volumetric = new Volumetric();
 
     private final UUID uuid = UUID.randomUUID();
-    private final NetworkSide networkSide = findNetworkSide();
+    private transient final NetworkSide networkExpectedSide = findNetworkExpectedSide();
+    private transient final NetworkSide networkSide = findNetworkSide();
 
     public void register() {
+        checkSideValidity();
         if (getNetworkSide() == NetworkSide.CLIENT) {
             getUniverseClient().getEntityClientRepository().register(this);
         } else {
@@ -37,6 +39,7 @@ public abstract class Entity<T extends Effigy> implements IUniverseClient, IUniv
     }
 
     public void unregister() {
+        checkSideValidity();
         if (getNetworkSide() == NetworkSide.CLIENT) {
             getUniverseClient().getEntityClientRepository().unregister(getUuid());
         } else {
@@ -54,11 +57,18 @@ public abstract class Entity<T extends Effigy> implements IUniverseClient, IUniv
      */
     public abstract T getEffigy();
 
-    public NetworkSide findNetworkSide() {
+    public NetworkSide findNetworkExpectedSide() {
         if (Utils.isAnnotationPresentInHierarchy(getClass(), ClientSide.class)) {
             return NetworkSide.CLIENT;
         }
-        return NetworkSide.SERVER;
+        if (Utils.isAnnotationPresentInHierarchy(getClass(), ServerSide.class)) {
+            return NetworkSide.SERVER;
+        }
+        return NetworkSide.BOTH;
+    }
+
+    public NetworkSide findNetworkSide() {
+        return isClientThread() ? NetworkSide.CLIENT : NetworkSide.SERVER;
     }
 
     public void clientUpdate() {
@@ -95,6 +105,12 @@ public abstract class Entity<T extends Effigy> implements IUniverseClient, IUniv
         getVolumetric().setVisible(visible);
         getVolumetric().updateTime();
         getVolumetricInterpolated().updateWithVolumetric(getVolumetric());
+    }
+
+    private void checkSideValidity() {
+        if (getNetworkExpectedSide() != NetworkSide.BOTH && getNetworkExpectedSide() != getNetworkSide()) {
+            throw new IllegalArgumentException("This is not valid network side for this entity");
+        }
     }
 
 }

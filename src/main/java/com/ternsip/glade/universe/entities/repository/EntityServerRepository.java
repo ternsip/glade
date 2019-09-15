@@ -5,6 +5,7 @@ import com.ternsip.glade.common.events.network.OnClientConnect;
 import com.ternsip.glade.common.events.network.OnClientDisconnect;
 import com.ternsip.glade.common.logic.Timer;
 import com.ternsip.glade.network.Connection;
+import com.ternsip.glade.network.NetworkSide;
 import com.ternsip.glade.universe.collisions.base.Obstacle;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.impl.EntityDummy;
@@ -15,6 +16,7 @@ import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -39,7 +41,9 @@ public class EntityServerRepository extends EntityRepository implements IUnivers
         if (entity instanceof Obstacle) {
             getUniverseServer().getCollisions().add((Obstacle) entity);
         }
-        getUniverseServer().getServer().send(new RegisterEntityPacket(entity), connection -> getInitiatedConnections().contains(connection));
+        if (entity.getNetworkExpectedSide() != NetworkSide.SERVER) {
+            getUniverseServer().getServer().send(new RegisterEntityPacket(entity), connection -> getInitiatedConnections().contains(connection));
+        }
     }
 
     @Override
@@ -48,7 +52,9 @@ public class EntityServerRepository extends EntityRepository implements IUnivers
         if (entity instanceof Obstacle) {
             getUniverseServer().getCollisions().remove((Obstacle) entity);
         }
-        getUniverseServer().getServer().send(new UnregisterEntityPacket(entity.getUuid()), connection -> getInitiatedConnections().contains(connection));
+        if (entity.getNetworkExpectedSide() != NetworkSide.SERVER) {
+            getUniverseServer().getServer().send(new UnregisterEntityPacket(entity.getUuid()), connection -> getInitiatedConnections().contains(connection));
+        }
     }
 
     public void update() {
@@ -70,7 +76,7 @@ public class EntityServerRepository extends EntityRepository implements IUnivers
     }
 
     private void onClientConnect(OnClientConnect onClientConnect) {
-        getUniverseServer().getServer().send(new InitiateConnectionPacket(getUuidToEntity().values()), connection -> connection == onClientConnect.getConnection());
+        getUniverseServer().getServer().send(new InitiateConnectionPacket(getUuidToEntity().values().stream().filter(e -> e.getNetworkExpectedSide() != NetworkSide.SERVER).collect(Collectors.toSet())), connection -> connection == onClientConnect.getConnection());
         getUniverseServer().getServer().send(new CameraTargetPacket(getCameraTarget().getUuid()), connection -> connection == onClientConnect.getConnection());
         getInitiatedConnections().add(onClientConnect.getConnection());
     }

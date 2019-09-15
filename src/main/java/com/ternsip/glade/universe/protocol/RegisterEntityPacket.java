@@ -3,7 +3,6 @@ package com.ternsip.glade.universe.protocol;
 import com.ternsip.glade.common.logic.Utils;
 import com.ternsip.glade.network.ClientPacket;
 import com.ternsip.glade.network.Connection;
-import com.ternsip.glade.network.NetworkSide;
 import com.ternsip.glade.universe.entities.base.Entity;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +36,6 @@ public class RegisterEntityPacket extends ClientPacket {
                 .computeIfAbsent(entity.getClass(), k -> findAllSerializableFields(entity.getClass()))
                 .stream()
                 .collect(HashMap::new, (m, field) -> m.put(field.getName(), Utils.cloneThroughJson(getFieldValueSilently(field, entity))), HashMap::putAll);
-        this.initialValues.put("networkSide", NetworkSide.CLIENT);
     }
 
     @SneakyThrows

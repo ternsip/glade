@@ -2,7 +2,7 @@ package com.ternsip.glade.network;
 
 import com.ternsip.glade.common.events.network.OnClientConnect;
 import com.ternsip.glade.common.events.network.OnClientDisconnect;
-import com.ternsip.glade.common.logic.ThreadWrapper;
+import com.ternsip.glade.common.logic.LazyThreadWrapper;
 import com.ternsip.glade.common.logic.Threadable;
 import com.ternsip.glade.universe.interfaces.IUniverseServer;
 import lombok.Getter;
@@ -27,8 +27,8 @@ public class NetworkServer implements Threadable, IUniverseServer {
     private final ConcurrentLinkedQueue<PacketToSend> packetsToSend = new ConcurrentLinkedQueue<>();
 
     private ServerHolder serverHolder = new ServerHolder();
-    private ThreadWrapper<Acceptor> acceptorThread;
-    private ThreadWrapper<Sender> senderThread;
+    private LazyThreadWrapper<Acceptor> acceptorThread = new LazyThreadWrapper<>(Acceptor::new);
+    private LazyThreadWrapper<Sender> senderThread = new LazyThreadWrapper<>(Sender::new);
 
     @SneakyThrows
     public void bind(int port) {
@@ -37,8 +37,8 @@ public class NetworkServer implements Threadable, IUniverseServer {
 
     @Override
     public void init() {
-        setAcceptorThread(new ThreadWrapper<>(Acceptor::new));
-        setSenderThread(new ThreadWrapper<>(Sender::new));
+        getAcceptorThread().touch();
+        getSenderThread().touch();
     }
 
     @Override
@@ -63,8 +63,8 @@ public class NetworkServer implements Threadable, IUniverseServer {
     public void finish() {}
 
     public void stop() {
-        getAcceptorThread().stop();
-        getSenderThread().stop();
+        getAcceptorThread().getThreadWrapper().stop();
+        getSenderThread().getThreadWrapper().stop();
         getConnections().forEach(this::disconnectClient);
         if (getServerHolder().isActive()) {
             getServerHolder().close();

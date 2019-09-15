@@ -17,15 +17,18 @@ public interface IUniverseClient {
     }
 
     default UniverseClient getUniverseClient() {
-        Thread thread = Thread.currentThread();
-        if (thread != UNIVERSE_CLIENT_THREAD.getThread() &&
-                thread != IGraphics.MAIN_THREAD &&
-                thread != INetworkClient.CLIENT_THREAD.getThreadWrapper().getThread() &&
-                thread != INetworkClient.CLIENT_THREAD.getObjective().getSenderThread().getThread()
-        ) {
-            throw new IllegalArgumentException("You can not call server from this thread");
+        if (!isClientThread()) {
+            throw new IllegalArgumentException("You can not call client from this thread");
         }
         return UNIVERSE_CLIENT_THREAD.getObjective();
+    }
+
+    default boolean isClientThread() {
+        Thread thread = Thread.currentThread();
+        return thread == UNIVERSE_CLIENT_THREAD.getThread() ||
+                thread == IGraphics.MAIN_THREAD ||
+                thread == INetworkClient.CLIENT_THREAD.getThreadWrapper().getThread() ||
+                thread == INetworkClient.CLIENT_THREAD.getObjective().getSenderThread().getThreadWrapper().getThread();
     }
 
 }

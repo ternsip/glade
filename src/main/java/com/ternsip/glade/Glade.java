@@ -40,7 +40,6 @@ import java.util.Set;
 // TODO Item repository (blocks, tools)
 // TODO Add Free look camera
 // TODO be careful with @Delegate sometimes it breaks navigation or debugger, also recursive delegate does not allowed
-// TODO thing about Only Server side entities
 // TODO handle client-server shutdown without errors
 public class Glade {
 

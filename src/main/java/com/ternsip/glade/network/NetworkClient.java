@@ -2,7 +2,7 @@ package com.ternsip.glade.network;
 
 import com.ternsip.glade.common.events.network.OnConnectedToServer;
 import com.ternsip.glade.common.events.network.OnDisconnectedFromServer;
-import com.ternsip.glade.common.logic.ThreadWrapper;
+import com.ternsip.glade.common.logic.LazyThreadWrapper;
 import com.ternsip.glade.common.logic.Threadable;
 import com.ternsip.glade.universe.interfaces.IUniverseClient;
 import lombok.Getter;
@@ -22,7 +22,7 @@ public class NetworkClient implements Threadable, IUniverseClient {
     private final int MAX_CONNECTION_ATTEMPTS = 10;
     private final ConcurrentLinkedQueue<ServerPacket> packets = new ConcurrentLinkedQueue<>();
 
-    private ThreadWrapper<Sender> senderThread;
+    private LazyThreadWrapper<Sender> senderThread = new LazyThreadWrapper<>(Sender::new);
     private Connection connection = new Connection();
 
     public void connect(String host, int port) {
@@ -42,7 +42,7 @@ public class NetworkClient implements Threadable, IUniverseClient {
 
     @Override
     public void init() {
-        setSenderThread(new ThreadWrapper<>(Sender::new));
+        getSenderThread().touch();
     }
 
     @Override
@@ -67,7 +67,7 @@ public class NetworkClient implements Threadable, IUniverseClient {
     }
 
     public void stop() {
-        getSenderThread().stop();
+        getSenderThread().getThreadWrapper().stop();
         disconnect();
     }
 

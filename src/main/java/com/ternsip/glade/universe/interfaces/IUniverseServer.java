@@ -22,15 +22,19 @@ public interface IUniverseServer {
     }
 
     default UniverseServer getUniverseServer() {
-        Thread currentThread = Thread.currentThread();
-        if (currentThread != UNIVERSE_SERVER_THREAD.getThreadWrapper().getThread() &&
-                currentThread != IBlocksRepository.BLOCKS_THREAD.getThreadWrapper().getThread() &&
-                currentThread != INetworkServer.SERVER_THREAD.getThreadWrapper().getThread() &&
-                currentThread != INetworkServer.SERVER_THREAD.getObjective().getAcceptorThread().getThread() &&
-                currentThread != INetworkServer.SERVER_THREAD.getObjective().getSenderThread().getThread()) {
+        if (!isServerThread()) {
             throw new IllegalArgumentException("You can not call server from this thread");
         }
         return UNIVERSE_SERVER_THREAD.getObjective();
+    }
+
+    default boolean isServerThread() {
+        Thread currentThread = Thread.currentThread();
+        return currentThread == UNIVERSE_SERVER_THREAD.getThreadWrapper().getThread() ||
+                currentThread == IBlocksRepository.BLOCKS_THREAD.getThreadWrapper().getThread() ||
+                currentThread == INetworkServer.SERVER_THREAD.getThreadWrapper().getThread() ||
+                currentThread == INetworkServer.SERVER_THREAD.getObjective().getAcceptorThread().getThreadWrapper().getThread() ||
+                currentThread == INetworkServer.SERVER_THREAD.getObjective().getSenderThread().getThreadWrapper().getThread();
     }
 
 }
