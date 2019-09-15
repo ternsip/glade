@@ -51,11 +51,7 @@ public class NetworkServer implements Threadable, IUniverseServer {
                         serverPacket.apply(connection);
                     }
                 } catch (Exception e) {
-                    if (connection.isActive()) {
-                        String errMsg = String.format("Error while accepting data from client %s", e.getMessage());
-                        log.error(errMsg);
-                        log.debug(errMsg, e);
-                    }
+                    disconnectClient(connection, e);
                 }
             });
         } else {
@@ -69,8 +65,10 @@ public class NetworkServer implements Threadable, IUniverseServer {
     public void stop() {
         getAcceptorThread().stop();
         getSenderThread().stop();
-        getConnections().forEach(Connection::close);
-        getServerHolder().close();
+        getConnections().forEach(this::disconnectClient);
+        if (getServerHolder().isActive()) {
+            getServerHolder().close();
+        }
     }
 
     public void send(ClientPacket packet, Function<Connection, Boolean> connectionCondition) {
@@ -82,6 +80,29 @@ public class NetworkServer implements Threadable, IUniverseServer {
         Thread.sleep(RETRY_INTERVAL);
     }
 
+    private void addConnection(Connection connection) {
+        getConnections().add(connection);
+        getUniverseServer().getNetworkServerEventReceiver().registerEvent(OnClientConnect.class, new OnClientConnect(connection));
+    }
+
+    private void disconnectClient(Connection connection) {
+        if (connection.isActive()) {
+            connection.close();
+            getUniverseServer().getNetworkServerEventReceiver().registerEvent(OnClientDisconnect.class, new OnClientDisconnect(connection));
+            getConnections().remove(connection);
+        }
+    }
+
+    private void disconnectClient(Connection connection, Exception e) {
+        if (!connection.isActive()) {
+            throw new IllegalArgumentException("Connection is not active. This situation should not happen.");
+        }
+        String errMsg = String.format("Client disconnected from server %s - %s", e.getClass().getSimpleName(), e.getMessage());
+        log.error(errMsg);
+        log.debug(errMsg, e);
+        disconnectClient(connection);
+    }
+
     public class Acceptor implements Threadable {
 
         @Override
@@ -91,9 +112,7 @@ public class NetworkServer implements Threadable, IUniverseServer {
         public void update() {
             if (getServerHolder().isActive()) {
                 try {
-                    Connection connection = getServerHolder().accept();
-                    getConnections().add(connection);
-                    getUniverseServer().getNetworkServerEventReceiver().registerEvent(OnClientConnect.class, new OnClientConnect(connection));
+                    addConnection(getServerHolder().accept());
                 } catch (Exception e) {
                     if (getServerHolder().isActive()) {
                         String errMsg = String.format("Error while accepting new connection to server %s", e.getMessage());
@@ -101,10 +120,6 @@ public class NetworkServer implements Threadable, IUniverseServer {
                         log.debug(errMsg, e);
                     }
                 }
-                getConnections().stream()
-                        .filter(connection -> !connection.isActive())
-                        .forEach(connection -> getUniverseServer().getNetworkServerEventReceiver().registerEvent(OnClientDisconnect.class, new OnClientDisconnect(connection)));
-                getConnections().removeIf(connection -> !connection.isActive());
             }
         }
 
@@ -120,25 +135,28 @@ public class NetworkServer implements Threadable, IUniverseServer {
 
         @Override
         public void update() {
-            while (getServerHolder().isActive()) {
+            while (getServerHolder().isActive() && !getPacketsToSend().isEmpty()) {
                 PacketToSend packetToSend = getPacketsToSend().poll();
                 if (packetToSend == null) {
                     continue;
                 }
-                try {
-                    getConnections().stream()
-                            .filter(connection -> packetToSend.getConnectionCondition().apply(connection))
-                            .forEach(connection -> connection.writeObject(packetToSend.getClientPacket()));
-                } catch (Exception e) {
-                    String errMsg = String.format("Error while sending packet from server %s", e.getMessage());
-                    log.error(errMsg);
-                    log.debug(errMsg, e);
-                }
+                getConnections().forEach(connection -> sendPacket(packetToSend, connection));
             }
         }
 
         @Override
         public void finish() {}
+
+        private void sendPacket(PacketToSend packetToSend, Connection connection) {
+            if (!packetToSend.getConnectionCondition().apply(connection)) {
+                return;
+            }
+            try {
+                connection.writeObject(packetToSend.getClientPacket());
+            } catch (Exception e) {
+                disconnectClient(connection, e);
+            }
+        }
 
     }
 

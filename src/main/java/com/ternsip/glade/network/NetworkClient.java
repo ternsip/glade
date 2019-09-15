@@ -1,6 +1,7 @@
 package com.ternsip.glade.network;
 
 import com.ternsip.glade.common.events.network.OnConnectedToServer;
+import com.ternsip.glade.common.events.network.OnDisconnectedFromServer;
 import com.ternsip.glade.common.logic.ThreadWrapper;
 import com.ternsip.glade.common.logic.Threadable;
 import com.ternsip.glade.universe.interfaces.IUniverseClient;
@@ -27,9 +28,7 @@ public class NetworkClient implements Threadable, IUniverseClient {
     public void connect(String host, int port) {
         for (int attempt = 0; attempt < MAX_CONNECTION_ATTEMPTS; ++attempt) {
             try {
-                Connection connection = new Connection(new Socket(host, port));
-                setConnection(connection);
-                getUniverseClient().getNetworkClientEventReceiver().registerEvent(OnConnectedToServer.class, new OnConnectedToServer(connection, false));
+                establishConnection(new Connection(new Socket(host, port)));
                 return;
             } catch (Exception e) {
                 String errMsg = String.format("Unable to connect to %s:%s, Attempt: #%s, Reason: %s retrying...", host, port, attempt, e.getMessage());
@@ -53,13 +52,8 @@ public class NetworkClient implements Threadable, IUniverseClient {
                 ClientPacket clientPacket = (ClientPacket) getConnection().readObject();
                 clientPacket.apply(getConnection());
             } catch (Exception e) {
-                if (getConnection().isActive()) {
-                    String errMsg = String.format("Error while accepting data from server %s", e.getMessage());
-                    log.error(errMsg);
-                    log.debug(errMsg, e);
-                }
+                disconnect(e);
             }
-
         } else {
             snooze();
         }
@@ -74,12 +68,34 @@ public class NetworkClient implements Threadable, IUniverseClient {
 
     public void stop() {
         getSenderThread().stop();
-        getConnection().close();
+        disconnect();
     }
 
     @SneakyThrows
     private void snooze() {
         Thread.sleep(RETRY_INTERVAL);
+    }
+
+    private void establishConnection(Connection connection) {
+        setConnection(connection);
+        getUniverseClient().getNetworkClientEventReceiver().registerEvent(OnConnectedToServer.class, new OnConnectedToServer(connection, false));
+    }
+
+    private void disconnect() {
+        if (getConnection().isActive()) {
+            getConnection().close();
+            getUniverseClient().getNetworkClientEventReceiver().registerEvent(OnDisconnectedFromServer.class, new OnDisconnectedFromServer());
+        }
+    }
+
+    private void disconnect(Exception e) {
+        if (!getConnection().isActive()) {
+            throw new IllegalArgumentException("Connection is not active. This situation should not happen.");
+        }
+        String errMsg = String.format("Disconnected from server %s - %s", e.getClass().getSimpleName(), e.getMessage());
+        log.error(errMsg);
+        log.debug(errMsg, e);
+        disconnect();
     }
 
     public class Sender implements Threadable {
@@ -91,12 +107,13 @@ public class NetworkClient implements Threadable, IUniverseClient {
         public void update() {
             while (getConnection().isActive() && !getPackets().isEmpty()) {
                 ServerPacket serverPacket = getPackets().poll();
+                if (serverPacket == null) {
+                    continue;
+                }
                 try {
                     getConnection().writeObject(serverPacket);
                 } catch (Exception e) {
-                    String errMsg = String.format("Error while sending packet from client %s", e.getMessage());
-                    log.error(errMsg);
-                    log.debug(errMsg, e);
+                    disconnect(e);
                 }
             }
         }
