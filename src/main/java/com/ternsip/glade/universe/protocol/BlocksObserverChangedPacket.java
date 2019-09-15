@@ -17,6 +17,6 @@ public class BlocksObserverChangedPacket extends ServerPacket {
 
     @Override
     public void apply(Connection connection) {
-        getUniverseServer().getBlocks().processMovement(getPrevPos(), getNextPos(), getPrevViewDistance(), getNextViewDistance());
+        getUniverseServer().getBlocksRepository().processMovement(getPrevPos(), getNextPos(), getPrevViewDistance(), getNextViewDistance());
     }
 }

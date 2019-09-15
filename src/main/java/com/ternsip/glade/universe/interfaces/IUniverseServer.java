@@ -31,7 +31,7 @@ public interface IUniverseServer {
     default boolean isServerThread() {
         Thread currentThread = Thread.currentThread();
         return currentThread == UNIVERSE_SERVER_THREAD.getThreadWrapper().getThread() ||
-                currentThread == IBlocksRepository.BLOCKS_THREAD.getThreadWrapper().getThread() ||
+                currentThread == IBlocksRepository.BLOCKS_REPOSITORY_THREAD.getThreadWrapper().getThread() ||
                 currentThread == INetworkServer.SERVER_THREAD.getThreadWrapper().getThread() ||
                 currentThread == INetworkServer.SERVER_THREAD.getObjective().getAcceptorThread().getThreadWrapper().getThread() ||
                 currentThread == INetworkServer.SERVER_THREAD.getObjective().getSenderThread().getThreadWrapper().getThread();

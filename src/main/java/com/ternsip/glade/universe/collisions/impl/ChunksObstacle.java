@@ -19,7 +19,7 @@ public class ChunksObstacle implements Obstacle, IUniverseServer {
 
     @Override
     public Vector3fc collideSegment(LineSegmentf segment) {
-        List<Vector3ic> positions = getUniverseServer().getBlocks().traverseFull(segment, block -> true);
+        List<Vector3ic> positions = getUniverseServer().getBlocksRepository().traverseFull(segment, block -> true);
         Vector3fc start = new Vector3f(segment.aX, segment.aY, segment.aZ);
         Vector3f closest = new Vector3f(segment.bX, segment.bY, segment.bZ);
         for (Vector3ic pos : positions) {
@@ -38,7 +38,7 @@ public class ChunksObstacle implements Obstacle, IUniverseServer {
     }
 
     private Vector3fc collideBlockSafe(LineSegmentf segment, Vector3ic pos) {
-        if (getUniverseServer().getBlocks().isBlockExists(pos) && !getUniverseServer().getBlocks().getBlock(pos).isObstacle()) {
+        if (getUniverseServer().getBlocksRepository().isBlockExists(pos) && !getUniverseServer().getBlocksRepository().getBlock(pos).isObstacle()) {
             return null;
         }
         AABBf aabb = new AABBf(

@@ -132,7 +132,7 @@ public class EntityPlayer extends Entity<EffigyBoy> {
             getCurrentVelocity().y = 0;
         }
         Vector3ic blockPos = round(getPosition());
-        setSkyIntensity(getUniverseServer().getBlocks().isBlockExists(blockPos) ? getUniverseServer().getBlocks().getSkyLight(blockPos) / (float) MAX_LIGHT_LEVEL : 1);
+        setSkyIntensity(getUniverseServer().getBlocksRepository().isBlockExists(blockPos) ? getUniverseServer().getBlocksRepository().getSkyLight(blockPos) / (float) MAX_LIGHT_LEVEL : 1);
     }
 
     @ServerSide
@@ -182,15 +182,15 @@ public class EntityPlayer extends Entity<EffigyBoy> {
 
         if (action == Action.DESTROY_BLOCK_UNDER) {
             Vector3ic blockUnder = getBlockPositionStandingOn();
-            if (getUniverseServer().getBlocks().isBlockExists(blockUnder)) {
-                getUniverseServer().getBlocks().setBlock(blockUnder, Block.AIR);
+            if (getUniverseServer().getBlocksRepository().isBlockExists(blockUnder)) {
+                getUniverseServer().getBlocksRepository().setBlock(blockUnder, Block.AIR);
             }
         }
 
         if (action == Action.DESTROY_SELECTED_BLOCK) {
-            Vector3ic blockPositionLooking = getUniverseServer().getBlocks().traverse(getEyeSegment(), (block) -> block != Block.AIR);
-            if (blockPositionLooking != null && getUniverseServer().getBlocks().isBlockExists(blockPositionLooking)) {
-                getUniverseServer().getBlocks().setBlock(blockPositionLooking, Block.AIR);
+            Vector3ic blockPositionLooking = getUniverseServer().getBlocksRepository().traverse(getEyeSegment(), (block) -> block != Block.AIR);
+            if (blockPositionLooking != null && getUniverseServer().getBlocksRepository().isBlockExists(blockPositionLooking)) {
+                getUniverseServer().getBlocksRepository().setBlock(blockPositionLooking, Block.AIR);
             }
         }
     }

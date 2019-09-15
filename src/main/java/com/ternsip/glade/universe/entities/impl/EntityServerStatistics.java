@@ -40,9 +40,9 @@ public class EntityServerStatistics extends Entity<Effigy> {
     @Override
     public void serverUpdate() {
         super.serverUpdate();
-        Vector3ic pos = getUniverseServer().getBlocks().traverse(getEyeSegment(), block -> block != Block.AIR);
+        Vector3ic pos = getUniverseServer().getBlocksRepository().traverse(getEyeSegment(), block -> block != Block.AIR);
         if (pos != null) {
-            setLookingAtBlock(getUniverseServer().getBlocks().getBlock(pos));
+            setLookingAtBlock(getUniverseServer().getBlocksRepository().getBlock(pos));
             setLookingAtBlockPosition(new Vector3i(pos));
         } else {
             setLookingAtBlockPosition(new Vector3i((int)getEyeSegment().aX, (int)getEyeSegment().aY, (int)getEyeSegment().aZ));

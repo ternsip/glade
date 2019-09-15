@@ -35,7 +35,6 @@ import java.util.Set;
 // TODO Sort effigies in shader type order in order to reduce bandwidth in CPU-GPU shader rebinding
 // TODO Add camera collision with collidable
 // TODO ?? Add Combine collidable and block traversal (name blocksRepository collidable)
-// TODO Blocks or BlocksRepository
 // TODO Better collisions with playaer (push out from shape AABB)
 // TODO Player inventory based on UI
 // TODO Item repository (blocks, tools)
