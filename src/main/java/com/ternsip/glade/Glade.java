@@ -41,6 +41,7 @@ import java.util.Set;
 // TODO Add Free look camera
 // TODO handle client-server shutdown without errors
 // TODO Add multiplayer ability (right now its only one player)
+// TODO add log messages to important processes
 public class Glade {
 
     public static void main(String[] args) {
