@@ -41,6 +41,7 @@ import java.util.Set;
 // TODO Item repository (blocks, tools)
 // TODO Add Free look camera
 // TODO handle client-server shutdown without errors
+// TODO Add multiplayer ability (right now its only one player)
 public class Glade {
 
     public static void main(String[] args) {
