@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public abstract class EntityRepository {
 
     private final ConcurrentHashMap<UUID, Entity> uuidToEntity = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<Class<?>, EntitiesHolder> classToEntities = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Class<?>, EntitiesHolder> classToEntitiesHolder = new ConcurrentHashMap<>();
 
     public abstract FieldBuffer getFieldBuffer();
 
@@ -26,7 +26,7 @@ public abstract class EntityRepository {
 
     public void unregister(Entity entity) {
         getUuidToEntity().remove(entity.getUuid());
-        getClassToEntities().get(entity.getClass()).remove(entity);
+        getEntitiesHolderByClass(entity.getClass()).remove(entity);
     }
 
     public void unregister(UUID uuid) {
@@ -65,7 +65,7 @@ public abstract class EntityRepository {
 
     @SuppressWarnings("unchecked")
     public final <T extends Entity> EntitiesHolder<T> getEntitiesHolderByClass(Class<T> clazz) {
-        return (EntitiesHolder<T>) getClassToEntities().computeIfAbsent(clazz, k -> new EntitiesHolder<>());
+        return (EntitiesHolder<T>) getClassToEntitiesHolder().computeIfAbsent(clazz, k -> new EntitiesHolder<>());
     }
 
     public final <T extends Entity> Set<T> getEntitiesByClass(Class<T> clazz) {
