@@ -2,6 +2,7 @@ package com.ternsip.glade.universe.protocol;
 
 import com.ternsip.glade.network.ClientPacket;
 import com.ternsip.glade.network.Connection;
+import com.ternsip.glade.universe.entities.impl.EntitySides;
 import com.ternsip.glade.universe.parts.chunks.BlocksUpdate;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,6 @@ public class BlocksUpdatePacket extends ClientPacket {
 
     @Override
     public void apply(Connection connection) {
-        getUniverseClient().getEntityClientRepository().getEntitySides().getBlocksUpdates().addAll(getBlocksUpdate());
+        getUniverseClient().getEntityClientRepository().getEntityByClass(EntitySides.class).getBlocksUpdates().addAll(getBlocksUpdate());
     }
 }

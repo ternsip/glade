@@ -42,6 +42,7 @@ import java.util.Set;
 // TODO handle client-server shutdown without errors
 // TODO Add multiplayer ability (right now its only one player)
 // TODO add log messages to important processes
+// TODO add background in return for red color
 public class Glade {
 
     public static void main(String[] args) {

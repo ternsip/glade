@@ -32,8 +32,8 @@ public class EntityStatistics2D extends EntityDynamicText2D {
         sb.append("FPS : ").append(graphics.getWindowData().getFpsCounter().getFps()).append(System.lineSeparator());
         sb.append("Entities : ").append(graphics.getEffigyRepository().getLastSeenNumberOfEntitiesInFrustum()).append(System.lineSeparator());
         sb.append("TickRate : ").append(getUpdatesPerSecond()).append(System.lineSeparator());
-        Block lookingAtBlock = getUniverseClient().getEntityClientRepository().getSpecialEntity(EntityServerStatistics.class).getLookingAtBlock();
-        Vector3ic lookingAtBlockPosition = getUniverseClient().getEntityClientRepository().getSpecialEntity(EntityServerStatistics.class).getLookingAtBlockPosition();
+        Block lookingAtBlock = getUniverseClient().getEntityClientRepository().getEntityByClass(EntityServerStatistics.class).getLookingAtBlock();
+        Vector3ic lookingAtBlockPosition = getUniverseClient().getEntityClientRepository().getEntityByClass(EntityServerStatistics.class).getLookingAtBlockPosition();
         sb.append("Block: ").append(lookingAtBlock.getName().toLowerCase()).append(" ");
         sb.append(String.format("pos: x=%s, y=%s, z=%s", lookingAtBlockPosition.x(), lookingAtBlockPosition.y(), lookingAtBlockPosition.z())).append(System.lineSeparator());
         setText(sb.toString());

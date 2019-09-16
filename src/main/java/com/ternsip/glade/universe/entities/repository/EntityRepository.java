@@ -1,15 +1,12 @@
 package com.ternsip.glade.universe.entities.repository;
 
 import com.ternsip.glade.universe.entities.base.Entity;
-import com.ternsip.glade.universe.entities.impl.EntitySides;
-import com.ternsip.glade.universe.entities.impl.EntitySun;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -18,23 +15,18 @@ import java.util.stream.Collectors;
 public abstract class EntityRepository {
 
     private final ConcurrentHashMap<UUID, Entity> uuidToEntity = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<Class<? extends Entity>, Entity> classToAnyEntity = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Class<?>, EntitiesHolder> classToEntities = new ConcurrentHashMap<>();
 
     public abstract FieldBuffer getFieldBuffer();
 
     public void register(Entity entity) {
         getUuidToEntity().put(entity.getUuid(), entity);
-        getClassToAnyEntity().put(entity.getClass(), entity);
+        getEntitiesHolderByClass(entity.getClass()).add(entity);
     }
 
     public void unregister(Entity entity) {
-        getClassToAnyEntity().remove(entity.getClass());
         getUuidToEntity().remove(entity.getUuid());
-        getUuidToEntity().values().forEach(e -> {
-            if (entity.getClass() == entity.getClass()) {
-                getClassToAnyEntity().put(entity.getClass(), entity);
-            }
-        });
+        getClassToEntities().get(entity.getClass()).remove(entity);
     }
 
     public void unregister(UUID uuid) {
@@ -72,20 +64,36 @@ public abstract class EntityRepository {
     }
 
     @SuppressWarnings("unchecked")
-    public final <T> T getSpecialEntity(Class<T> clazz) {
-        T entity = (T) getClassToAnyEntity().get(clazz);
-        if (entity == null) {
-            throw new IllegalArgumentException(String.format("Entity does not exist %s", clazz));
+    public final <T extends Entity> EntitiesHolder<T> getEntitiesHolderByClass(Class<T> clazz) {
+        return (EntitiesHolder<T>) getClassToEntities().computeIfAbsent(clazz, k -> new EntitiesHolder<>());
+    }
+
+    public final <T extends Entity> Set<T> getEntitiesByClass(Class<T> clazz) {
+        return getEntitiesHolderByClass(clazz).getEntities();
+    }
+
+    public final <T extends Entity> T getEntityByClass(Class<T> clazz) {
+        return getEntitiesByClass(clazz).stream()
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(String.format("Entity does not exist %s", clazz)));
+    }
+
+    @RequiredArgsConstructor
+    @Getter
+    public static class EntitiesHolder<T extends Entity> {
+
+        private final Set<T> entities = Collections.newSetFromMap(new ConcurrentHashMap<>());
+
+        @SuppressWarnings("unchecked")
+        public void add(Entity entity) {
+            getEntities().add((T) entity);
         }
-        return entity;
-    }
 
-    public EntitySun getEntitySun() {
-        return getSpecialEntity(EntitySun.class);
-    }
+        @SuppressWarnings("unchecked")
+        public void remove(Entity entity) {
+            getEntities().remove((T)entity);
+        }
 
-    public EntitySides getEntitySides() {
-        return getSpecialEntity(EntitySides.class);
     }
 
 }
