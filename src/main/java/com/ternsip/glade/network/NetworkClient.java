@@ -1,6 +1,6 @@
 package com.ternsip.glade.network;
 
-import com.ternsip.glade.common.events.network.OnConnectedToServer;
+import com.ternsip.glade.common.events.network.OnConnectToServer;
 import com.ternsip.glade.common.events.network.OnDisconnectedFromServer;
 import com.ternsip.glade.common.logic.LazyThreadWrapper;
 import com.ternsip.glade.common.logic.Threadable;
@@ -78,7 +78,7 @@ public class NetworkClient implements Threadable, IUniverseClient {
 
     private void establishConnection(Connection connection) {
         setConnection(connection);
-        getUniverseClient().getNetworkClientEventReceiver().registerEvent(OnConnectedToServer.class, new OnConnectedToServer(connection, false));
+        getUniverseClient().getNetworkClientEventReceiver().registerEvent(OnConnectToServer.class, new OnConnectToServer(connection));
     }
 
     private void disconnect() {

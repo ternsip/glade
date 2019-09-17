@@ -77,9 +77,7 @@ public class UniverseClient implements Threadable, INetworkClient, IBindings, IS
     }
 
     private void whenConnected(OnConnectedToServer onConnectedToServer) {
-        if (onConnectedToServer.isPostProcessed()) {
-            spawnEntities();
-        }
+        spawnEntities();
     }
 
 }

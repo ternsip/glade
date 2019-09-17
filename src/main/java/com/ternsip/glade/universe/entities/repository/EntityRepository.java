@@ -1,5 +1,6 @@
 package com.ternsip.glade.universe.entities.repository;
 
+import com.ternsip.glade.network.NetworkSide;
 import com.ternsip.glade.universe.entities.base.Entity;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -34,8 +35,7 @@ public abstract class EntityRepository {
     }
 
     public final EntitiesChanges findEntitiesChanges() {
-        Map<UUID, FieldValues> uuidToChanges = getUuidToEntity().entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, e -> getFieldBuffer().pullChanges(e.getValue())));
+        Map<UUID, FieldValues> uuidToChanges = getOnlyTransferableEntities().stream().collect(Collectors.toMap(Entity::getUuid, e -> getFieldBuffer().pullChanges(e)));
         uuidToChanges.entrySet().removeIf(e -> e.getValue().isEmpty());
         return new EntitiesChanges(uuidToChanges);
     }
@@ -54,7 +54,7 @@ public abstract class EntityRepository {
     public final Entity getEntityByUUID(UUID uuid) {
         Entity entity = getUuidToEntity().get(uuid);
         if (entity == null) {
-            throw new IllegalArgumentException(String.format("Entity does not exist %s", uuid));
+            throw new IllegalArgumentException(String.format("Entity does not exist with UUID - %s", uuid));
         }
         return entity;
     }
@@ -75,7 +75,13 @@ public abstract class EntityRepository {
     public final <T extends Entity> T getEntityByClass(Class<T> clazz) {
         return getEntitiesByClass(clazz).stream()
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(String.format("Entity does not exist %s", clazz)));
+                .orElseThrow(() -> new IllegalArgumentException(String.format("Entity does not exist with class - %s", clazz)));
+    }
+
+    public final Set<Entity> getOnlyTransferableEntities() {
+        return getUuidToEntity().values().stream()
+                .filter(e -> e.getNetworkExpectedSide() == NetworkSide.BOTH)
+                .collect(Collectors.toSet());
     }
 
     @RequiredArgsConstructor

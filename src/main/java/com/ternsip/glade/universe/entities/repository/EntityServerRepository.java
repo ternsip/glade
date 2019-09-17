@@ -8,15 +8,16 @@ import com.ternsip.glade.network.Connection;
 import com.ternsip.glade.network.NetworkSide;
 import com.ternsip.glade.universe.collisions.base.Obstacle;
 import com.ternsip.glade.universe.entities.base.Entity;
-import com.ternsip.glade.universe.entities.impl.EntityDummy;
 import com.ternsip.glade.universe.interfaces.IUniverseServer;
-import com.ternsip.glade.universe.protocol.*;
+import com.ternsip.glade.universe.protocol.EntitiesChangedClientPacket;
+import com.ternsip.glade.universe.protocol.InitiateConnectionPacket;
+import com.ternsip.glade.universe.protocol.RegisterEntityPacket;
+import com.ternsip.glade.universe.protocol.UnregisterEntityPacket;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -26,7 +27,6 @@ public class EntityServerRepository extends EntityRepository implements IUnivers
     private final Timer networkTimer = new Timer(50); // TODO get this value as a tickrate from options/balance
     private final Set<Connection> initiatedConnections = new HashSet<>();
 
-    private Entity cameraTarget = new EntityDummy();
     private Callback<OnClientConnect> onClientConnectCallback = this::onClientConnect;
     private Callback<OnClientDisconnect> onClientDisconnectCallback = this::onClientDisconnect;
 
@@ -41,7 +41,7 @@ public class EntityServerRepository extends EntityRepository implements IUnivers
         if (entity instanceof Obstacle) {
             getUniverseServer().getCollisions().add((Obstacle) entity);
         }
-        if (entity.getNetworkExpectedSide() != NetworkSide.SERVER) {
+        if (entity.getNetworkExpectedSide() == NetworkSide.BOTH) {
             getUniverseServer().getServer().send(new RegisterEntityPacket(entity), connection -> getInitiatedConnections().contains(connection));
         }
     }
@@ -52,7 +52,7 @@ public class EntityServerRepository extends EntityRepository implements IUnivers
         if (entity instanceof Obstacle) {
             getUniverseServer().getCollisions().remove((Obstacle) entity);
         }
-        if (entity.getNetworkExpectedSide() != NetworkSide.SERVER) {
+        if (entity.getNetworkExpectedSide() == NetworkSide.BOTH) {
             getUniverseServer().getServer().send(new UnregisterEntityPacket(entity.getUuid()), connection -> getInitiatedConnections().contains(connection));
         }
     }
@@ -75,19 +75,13 @@ public class EntityServerRepository extends EntityRepository implements IUnivers
         }
     }
 
-    public void setCameraTarget(Entity entity) {
-        this.cameraTarget = entity;
-        getUniverseServer().getServer().send(new CameraTargetPacket(entity.getUuid()), connection -> getInitiatedConnections().contains(connection));
-    }
-
     private void onClientConnect(OnClientConnect onClientConnect) {
-        getUniverseServer().getServer().send(new InitiateConnectionPacket(getUuidToEntity().values().stream().filter(e -> e.getNetworkExpectedSide() != NetworkSide.SERVER).collect(Collectors.toSet())), connection -> connection == onClientConnect.getConnection());
-        getUniverseServer().getServer().send(new CameraTargetPacket(getCameraTarget().getUuid()), connection -> connection == onClientConnect.getConnection());
+        getUniverseServer().getServer().send(new InitiateConnectionPacket(getOnlyTransferableEntities()), connection -> connection == onClientConnect.getConnection());
         getInitiatedConnections().add(onClientConnect.getConnection());
     }
 
-    private void onClientDisconnect(OnClientDisconnect onClientConnect) {
-        getInitiatedConnections().remove(onClientConnect.getConnection());
+    private void onClientDisconnect(OnClientDisconnect onClientDisconnect) {
+        getInitiatedConnections().remove(onClientDisconnect.getConnection());
     }
 
 }

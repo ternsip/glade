@@ -24,7 +24,7 @@ public class InitiateConnectionPacket extends ClientPacket {
     @Override
     public void apply(Connection connection) {
         getEntitiesToRegisterPackets().forEach(e -> e.apply(connection));
-        getUniverseClient().getNetworkClientEventReceiver().registerEvent(OnConnectedToServer.class, new OnConnectedToServer(connection, true));
+        getUniverseClient().getNetworkClientEventReceiver().registerEvent(OnConnectedToServer.class, new OnConnectedToServer(connection));
     }
 
 }

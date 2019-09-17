@@ -71,12 +71,14 @@ public class EntityPlayer extends Entity<EffigyBoy> {
     public void onClientRegister() {
         super.onClientRegister();
         getUniverseClient().getEventSnapReceiver().registerCallback(KeyEvent.class, getKeyCallback());
+        getUniverseClient().getEntityClientRepository().setCameraTarget(this);
     }
 
     @Override
     public void onClientUnregister() {
         super.onClientUnregister();
         getUniverseClient().getEventSnapReceiver().unregisterCallback(KeyEvent.class, getKeyCallback());
+        getUniverseClient().getEntityClientRepository().setCameraTarget(new EntityDummy());
     }
 
     @Override

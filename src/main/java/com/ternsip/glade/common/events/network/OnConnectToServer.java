@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public class OnConnectedToServer implements Event {
+public class OnConnectToServer implements Event {
 
     private final Connection connection;
 

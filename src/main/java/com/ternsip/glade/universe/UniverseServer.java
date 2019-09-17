@@ -10,8 +10,7 @@ import com.ternsip.glade.universe.collisions.impl.GroundObstacle;
 import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.base.EntityGeneric;
 import com.ternsip.glade.universe.entities.base.EntityGenericRotating;
-import com.ternsip.glade.universe.entities.impl.EntityCubeSelection;
-import com.ternsip.glade.universe.entities.impl.EntityPlayer;
+import com.ternsip.glade.universe.entities.impl.EntityServerPlayers;
 import com.ternsip.glade.universe.entities.impl.EntityServerStatistics;
 import com.ternsip.glade.universe.entities.impl.EntitySun;
 import com.ternsip.glade.universe.interfaces.*;
@@ -124,14 +123,8 @@ public class UniverseServer implements Threadable, INetworkServer, IBlocksReposi
         // TODO make it client-side
         new EntityGeneric(() -> new EffigyAxis()).register();
 
-        EntityPlayer entityPlayer = new EntityPlayer();
-        entityPlayer.register();
-        entityPlayer.setPosition(new Vector3f(50, 90, 50));
-        entityPlayer.setScale(new Vector3f(1, 1, 1));
-        getEntityServerRepository().setCameraTarget(entityPlayer);
+        new EntityServerPlayers().register();
 
-        EntityCubeSelection entityCubeSelection = new EntityCubeSelection(entityPlayer);
-        entityCubeSelection.register();
     }
 
 }
