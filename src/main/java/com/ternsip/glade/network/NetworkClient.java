@@ -2,7 +2,6 @@ package com.ternsip.glade.network;
 
 import com.ternsip.glade.common.events.network.OnConnectToServer;
 import com.ternsip.glade.common.events.network.OnDisconnectedFromServer;
-import com.ternsip.glade.common.logic.LazyThreadWrapper;
 import com.ternsip.glade.common.logic.Threadable;
 import com.ternsip.glade.universe.interfaces.IUniverseClient;
 import lombok.Getter;
@@ -11,7 +10,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.Socket;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Slf4j
 @Getter
@@ -20,9 +18,7 @@ public class NetworkClient implements Threadable, IUniverseClient {
 
     private final long RETRY_INTERVAL = 500L;
     private final int MAX_CONNECTION_ATTEMPTS = 10;
-    private final ConcurrentLinkedQueue<ServerPacket> packets = new ConcurrentLinkedQueue<>();
 
-    private LazyThreadWrapper<Sender> senderThread = new LazyThreadWrapper<>(Sender::new);
     private Connection connection = new Connection();
 
     public void connect(String host, int port) {
@@ -42,7 +38,6 @@ public class NetworkClient implements Threadable, IUniverseClient {
 
     @Override
     public void init() {
-        getSenderThread().touch();
     }
 
     @Override
@@ -62,12 +57,15 @@ public class NetworkClient implements Threadable, IUniverseClient {
     @Override
     public void finish() {}
 
-    public void send(ServerPacket serverPacket) {
-        getPackets().add(serverPacket);
+    public synchronized void send(ServerPacket serverPacket) {
+        try {
+            getConnection().writeObject(serverPacket);
+        } catch (Exception e) {
+            disconnect(e);
+        }
     }
 
     public void stop() {
-        getSenderThread().getThreadWrapper().stop();
         disconnect();
     }
 
@@ -96,31 +94,6 @@ public class NetworkClient implements Threadable, IUniverseClient {
         log.error(errMsg);
         log.debug(errMsg, e);
         disconnect();
-    }
-
-    public class Sender implements Threadable {
-
-        @Override
-        public void init() {}
-
-        @Override
-        public void update() {
-            while (getConnection().isActive() && !getPackets().isEmpty()) {
-                ServerPacket serverPacket = getPackets().poll();
-                if (serverPacket == null) {
-                    continue;
-                }
-                try {
-                    getConnection().writeObject(serverPacket);
-                } catch (Exception e) {
-                    disconnect(e);
-                }
-            }
-        }
-
-        @Override
-        public void finish() {}
-
     }
 
 }

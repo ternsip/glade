@@ -2,7 +2,6 @@ package com.ternsip.glade.universe.protocol;
 
 import com.ternsip.glade.network.Connection;
 import com.ternsip.glade.network.ServerPacket;
-import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.impl.EntityPlayer;
 import lombok.Getter;
 
@@ -14,8 +13,8 @@ public class PlayerActionPacket extends ServerPacket {
     private final UUID entityUuid;
     private final EntityPlayer.Action action;
 
-    public PlayerActionPacket(Entity entity, EntityPlayer.Action action) {
-        this.entityUuid = entity.getUuid();
+    public PlayerActionPacket(EntityPlayer entityPlayer, EntityPlayer.Action action) {
+        this.entityUuid = entityPlayer.getUuid();
         this.action = action;
     }
 

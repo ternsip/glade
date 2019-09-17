@@ -6,14 +6,12 @@ import com.ternsip.glade.common.logic.LazyThreadWrapper;
 import com.ternsip.glade.common.logic.Threadable;
 import com.ternsip.glade.universe.interfaces.IUniverseServer;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Function;
 
 @Slf4j
@@ -24,11 +22,9 @@ public class NetworkServer implements Threadable, IUniverseServer {
     private final long RETRY_INTERVAL = 500L;
 
     private final Set<Connection> connections = ConcurrentHashMap.newKeySet();
-    private final ConcurrentLinkedQueue<PacketToSend> packetsToSend = new ConcurrentLinkedQueue<>();
 
     private ServerHolder serverHolder = new ServerHolder();
     private LazyThreadWrapper<Acceptor> acceptorThread = new LazyThreadWrapper<>(Acceptor::new);
-    private LazyThreadWrapper<Sender> senderThread = new LazyThreadWrapper<>(Sender::new);
 
     @SneakyThrows
     public void bind(int port) {
@@ -38,7 +34,6 @@ public class NetworkServer implements Threadable, IUniverseServer {
     @Override
     public void init() {
         getAcceptorThread().touch();
-        getSenderThread().touch();
     }
 
     @Override
@@ -46,7 +41,7 @@ public class NetworkServer implements Threadable, IUniverseServer {
         if (getServerHolder().isActive()) {
             getConnections().forEach(connection -> {
                 try {
-                    if (connection.getInput().available() > 0) {
+                    if (connection.isAvailable()) {
                         ServerPacket serverPacket = (ServerPacket) connection.readObject();
                         serverPacket.apply(connection);
                     }
@@ -64,15 +59,26 @@ public class NetworkServer implements Threadable, IUniverseServer {
 
     public void stop() {
         getAcceptorThread().getThreadWrapper().stop();
-        getSenderThread().getThreadWrapper().stop();
         getConnections().forEach(this::disconnectClient);
         if (getServerHolder().isActive()) {
             getServerHolder().close();
         }
     }
 
-    public void send(ClientPacket packet, Function<Connection, Boolean> connectionCondition) {
-        getPacketsToSend().add(new PacketToSend(packet, connectionCondition));
+    public synchronized void send(ClientPacket clientPacket, Function<Connection, Boolean> connectionCondition) {
+        getConnections().forEach(connection -> {
+            if (connectionCondition.apply(connection)) {
+                send(clientPacket, connection);
+            }
+        });
+    }
+
+    public synchronized void send(ClientPacket clientPacket, Connection connection) {
+        try {
+            connection.writeObject(clientPacket);
+        } catch (Exception e) {
+            disconnectClient(connection, e);
+        }
     }
 
     @SneakyThrows
@@ -103,15 +109,6 @@ public class NetworkServer implements Threadable, IUniverseServer {
         disconnectClient(connection);
     }
 
-    @RequiredArgsConstructor
-    @Getter
-    private static class PacketToSend {
-
-        private final ClientPacket clientPacket;
-        private final Function<Connection, Boolean> connectionCondition;
-
-    }
-
     public class Acceptor implements Threadable {
 
         @Override
@@ -136,38 +133,5 @@ public class NetworkServer implements Threadable, IUniverseServer {
         public void finish() {}
 
     }
-
-    public class Sender implements Threadable {
-
-        @Override
-        public void init() {}
-
-        @Override
-        public void update() {
-            while (getServerHolder().isActive() && !getPacketsToSend().isEmpty()) {
-                PacketToSend packetToSend = getPacketsToSend().poll();
-                if (packetToSend == null) {
-                    continue;
-                }
-                getConnections().forEach(connection -> sendPacket(packetToSend, connection));
-            }
-        }
-
-        @Override
-        public void finish() {}
-
-        private void sendPacket(PacketToSend packetToSend, Connection connection) {
-            if (!packetToSend.getConnectionCondition().apply(connection)) {
-                return;
-            }
-            try {
-                connection.writeObject(packetToSend.getClientPacket());
-            } catch (Exception e) {
-                disconnectClient(connection, e);
-            }
-        }
-
-    }
-
 
 }

@@ -20,12 +20,12 @@ public abstract class EntityRepository {
 
     public abstract FieldBuffer getFieldBuffer();
 
-    public void register(Entity entity) {
+    public <T extends Entity> void register(T entity) {
         getUuidToEntity().put(entity.getUuid(), entity);
         getEntitiesHolderByClass(entity.getClass()).add(entity);
     }
 
-    public void unregister(Entity entity) {
+    public <T extends Entity> void unregister(T entity) {
         getUuidToEntity().remove(entity.getUuid());
         getEntitiesHolderByClass(entity.getClass()).remove(entity);
     }

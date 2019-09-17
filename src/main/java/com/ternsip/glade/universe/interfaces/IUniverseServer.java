@@ -37,8 +37,7 @@ public interface IUniverseServer {
         return thread == UNIVERSE_SERVER_THREAD.getThreadWrapper().getThread() ||
                 thread == IBlocksRepository.BLOCKS_REPOSITORY_THREAD.getThreadWrapper().getThread() ||
                 thread == INetworkServer.SERVER_THREAD.getThreadWrapper().getThread() ||
-                thread == INetworkServer.SERVER_THREAD.getObjective().getAcceptorThread().getThreadWrapper().getThread() ||
-                thread == INetworkServer.SERVER_THREAD.getObjective().getSenderThread().getThreadWrapper().getThread();
+                thread == INetworkServer.SERVER_THREAD.getObjective().getAcceptorThread().getThreadWrapper().getThread();
     }
 
 }

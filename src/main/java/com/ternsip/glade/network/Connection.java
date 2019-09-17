@@ -4,10 +4,8 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.net.Socket;
 
 @Slf4j
@@ -15,20 +13,20 @@ import java.net.Socket;
 public class Connection {
 
     private final Socket socket;
-    private final InputStream input;
-    private final OutputStream output;
+
+    @Getter(lazy = true)
+    private final ObjectInputStream input = getInputBlocking();
+
+    @Getter(lazy = true)
+    private final ObjectOutputStream output = getOutputBlocking();
 
     public Connection() {
-        socket = null;
-        input = null;
-        output = null;
+        this.socket = null;
     }
 
     @SneakyThrows
     public Connection(Socket socket) {
         this.socket = socket;
-        this.input = socket.getInputStream();
-        this.output = socket.getOutputStream();
     }
 
     public boolean isActive() {
@@ -37,12 +35,12 @@ public class Connection {
 
     @SneakyThrows
     public Object readObject() {
-        return new ObjectInputStream(getInput()).readObject();
+        return getInput().readObject();
     }
 
     @SneakyThrows
     public void writeObject(Object object) {
-        new ObjectOutputStream(getOutput()).writeObject(object);
+        getOutput().writeObject(object);
     }
 
     @SneakyThrows
@@ -52,4 +50,18 @@ public class Connection {
         getSocket().close();
     }
 
+    @SneakyThrows
+    public ObjectInputStream getInputBlocking() {
+        return new ObjectInputStream(getSocket().getInputStream());
+    }
+
+    @SneakyThrows
+    public ObjectOutputStream getOutputBlocking() {
+        return new ObjectOutputStream(getSocket().getOutputStream());
+    }
+
+    @SneakyThrows
+    public boolean isAvailable() {
+        return getSocket().getInputStream().available() > 0;
+    }
 }

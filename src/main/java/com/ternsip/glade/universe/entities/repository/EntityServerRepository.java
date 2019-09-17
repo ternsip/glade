@@ -36,24 +36,24 @@ public class EntityServerRepository extends EntityRepository implements IUnivers
     }
 
     @Override
-    public void register(Entity entity) {
+    public <T extends Entity> void register(T entity) {
         super.register(entity);
         if (entity instanceof Obstacle) {
             getUniverseServer().getCollisions().add((Obstacle) entity);
         }
         if (entity.getNetworkExpectedSide() == NetworkSide.BOTH) {
-            getUniverseServer().getServer().send(new RegisterEntityPacket(entity), connection -> getInitiatedConnections().contains(connection));
+            getInitiatedConnections().forEach(connection -> getUniverseServer().getServer().send(new RegisterEntityPacket(entity), connection));
         }
     }
 
     @Override
-    public void unregister(Entity entity) {
+    public <T extends Entity> void unregister(T entity) {
         super.unregister(entity);
         if (entity instanceof Obstacle) {
             getUniverseServer().getCollisions().remove((Obstacle) entity);
         }
         if (entity.getNetworkExpectedSide() == NetworkSide.BOTH) {
-            getUniverseServer().getServer().send(new UnregisterEntityPacket(entity.getUuid()), connection -> getInitiatedConnections().contains(connection));
+            getInitiatedConnections().forEach(connection -> getUniverseServer().getServer().send(new UnregisterEntityPacket(entity.getUuid()), connection));
         }
     }
 
@@ -76,7 +76,10 @@ public class EntityServerRepository extends EntityRepository implements IUnivers
     }
 
     private void onClientConnect(OnClientConnect onClientConnect) {
-        getUniverseServer().getServer().send(new InitiateConnectionPacket(getOnlyTransferableEntities()), connection -> connection == onClientConnect.getConnection());
+        getUniverseServer().getServer().send(
+                new InitiateConnectionPacket(getOnlyTransferableEntities()),
+                connection -> connection == onClientConnect.getConnection()
+        );
         getInitiatedConnections().add(onClientConnect.getConnection());
     }
 

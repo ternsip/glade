@@ -179,25 +179,21 @@ public class EntityPlayer extends Entity<EffigyBoy> {
             setRotation(new Vector3f(0, 0, 0));
             setPosition(new Vector3f(50, 90, 50));
         }
-
         if (action == Action.TELEPORT_FAR) {
             setRotation(new Vector3f(0, 0, 0));
             setPosition(new Vector3f(512, 90, 512));
         }
-
         if (action == Action.JUMP) {
             if (isOnTheGround()) {
                 getCurrentVelocity().add(new Vector3f(0, getJumpPower(), 0));
             }
         }
-
         if (action == Action.DESTROY_BLOCK_UNDER) {
             Vector3ic blockUnder = getBlockPositionStandingOn();
             if (getUniverseServer().getBlocksRepository().isBlockExists(blockUnder)) {
                 getUniverseServer().getBlocksRepository().setBlock(blockUnder, Block.AIR);
             }
         }
-
         if (action == Action.DESTROY_SELECTED_BLOCK) {
             Vector3ic blockPositionLooking = getUniverseServer().getBlocksRepository().traverse(getEyeSegment(), (block) -> block != Block.AIR);
             if (blockPositionLooking != null && getUniverseServer().getBlocksRepository().isBlockExists(blockPositionLooking)) {
@@ -220,19 +216,15 @@ public class EntityPlayer extends Entity<EffigyBoy> {
         if (event.getKey() == GLFW_KEY_R && event.getAction() == GLFW_PRESS) {
             getUniverseClient().getClient().send(new PlayerActionPacket(this, Action.RESPAWN));
         }
-
         if (event.getKey() == GLFW_KEY_T && event.getAction() == GLFW_PRESS) {
             getUniverseClient().getClient().send(new PlayerActionPacket(this, Action.TELEPORT_FAR));
         }
-
         if (event.getKey() == GLFW_KEY_SPACE && event.getAction() == GLFW_PRESS) {
             getUniverseClient().getClient().send(new PlayerActionPacket(this, Action.JUMP));
         }
-
         if (event.getKey() == GLFW_KEY_B && event.getAction() == GLFW_PRESS) {
             getUniverseClient().getClient().send(new PlayerActionPacket(this, Action.DESTROY_BLOCK_UNDER));
         }
-
         if (event.getKey() == GLFW_KEY_Q && event.getAction() == GLFW_PRESS) {
             getUniverseClient().getClient().send(new PlayerActionPacket(this, Action.DESTROY_SELECTED_BLOCK));
         }

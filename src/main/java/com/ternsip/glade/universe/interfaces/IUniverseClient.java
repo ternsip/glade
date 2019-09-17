@@ -33,8 +33,7 @@ public interface IUniverseClient {
         Thread thread = Thread.currentThread();
         return thread == UNIVERSE_CLIENT_THREAD.getThreadWrapper().getThread() ||
                 thread == IGraphics.MAIN_THREAD ||
-                thread == INetworkClient.CLIENT_THREAD.getThreadWrapper().getThread() ||
-                thread == INetworkClient.CLIENT_THREAD.getObjective().getSenderThread().getThreadWrapper().getThread();
+                thread == INetworkClient.CLIENT_THREAD.getThreadWrapper().getThread();
     }
 
 }

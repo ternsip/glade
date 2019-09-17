@@ -5,7 +5,6 @@ import com.ternsip.glade.network.ClientPacket;
 import com.ternsip.glade.network.Connection;
 import com.ternsip.glade.universe.entities.base.Entity;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.reflections.ReflectionUtils;
@@ -19,7 +18,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 @Getter
 @Slf4j
 public class RegisterEntityPacket extends ClientPacket {
