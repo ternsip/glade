@@ -103,6 +103,15 @@ public class NetworkServer implements Threadable, IUniverseServer {
         disconnectClient(connection);
     }
 
+    @RequiredArgsConstructor
+    @Getter
+    private static class PacketToSend {
+
+        private final ClientPacket clientPacket;
+        private final Function<Connection, Boolean> connectionCondition;
+
+    }
+
     public class Acceptor implements Threadable {
 
         @Override
@@ -157,15 +166,6 @@ public class NetworkServer implements Threadable, IUniverseServer {
                 disconnectClient(connection, e);
             }
         }
-
-    }
-
-    @RequiredArgsConstructor
-    @Getter
-    private static class PacketToSend {
-
-        private final ClientPacket clientPacket;
-        private final Function<Connection, Boolean> connectionCondition;
 
     }
 

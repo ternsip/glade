@@ -6,7 +6,9 @@ import com.ternsip.glade.graphics.visual.impl.basis.EffigyDynamicText;
 import com.ternsip.glade.universe.parts.blocks.Block;
 import lombok.Getter;
 import lombok.Setter;
-import org.joml.*;
+import org.joml.Vector2i;
+import org.joml.Vector3ic;
+import org.joml.Vector4fc;
 
 import java.io.File;
 

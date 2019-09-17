@@ -91,7 +91,7 @@ public abstract class EntityRepository {
 
         @SuppressWarnings("unchecked")
         public void remove(Entity entity) {
-            getEntities().remove((T)entity);
+            getEntities().remove((T) entity);
         }
 
     }

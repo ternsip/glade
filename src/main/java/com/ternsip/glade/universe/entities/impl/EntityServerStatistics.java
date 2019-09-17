@@ -24,17 +24,17 @@ public class EntityServerStatistics extends Entity<Effigy> {
     private Vector3i lookingAtBlockPosition = new Vector3i(0);
 
     @Override
-    public Effigy getEffigy() {
-        return new EffigyDummy();
-    }
-
-    @Override
     public void update(Effigy effigy) {
         super.update(effigy);
         Vector3fc eye = effigy.getGraphics().getCameraController().getTarget();
         // TODO take eye length from options
         Vector3fc direction = effigy.getGraphics().getCameraController().getLookDirection().mul(10, new Vector3f());
         setEyeSegment(new LineSegmentf(eye, eye.add(direction, new Vector3f())));
+    }
+
+    @Override
+    public Effigy getEffigy() {
+        return new EffigyDummy();
     }
 
     @Override
@@ -45,7 +45,7 @@ public class EntityServerStatistics extends Entity<Effigy> {
             setLookingAtBlock(getUniverseServer().getBlocksRepository().getBlock(pos));
             setLookingAtBlockPosition(new Vector3i(pos));
         } else {
-            setLookingAtBlockPosition(new Vector3i((int)getEyeSegment().aX, (int)getEyeSegment().aY, (int)getEyeSegment().aZ));
+            setLookingAtBlockPosition(new Vector3i((int) getEyeSegment().aX, (int) getEyeSegment().aY, (int) getEyeSegment().aZ));
             setLookingAtBlock(Block.AIR);
         }
     }

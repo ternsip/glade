@@ -57,6 +57,13 @@ public class EntityServerRepository extends EntityRepository implements IUnivers
         }
     }
 
+    @Override
+    public void finish() {
+        super.finish();
+        getUniverseServer().getNetworkServerEventReceiver().unregisterCallback(OnClientConnect.class, getOnClientConnectCallback());
+        getUniverseServer().getNetworkServerEventReceiver().unregisterCallback(OnClientDisconnect.class, getOnClientDisconnectCallback());
+    }
+
     public void update() {
         getUuidToEntity().values().forEach(Entity::serverUpdate);
         if (getNetworkTimer().isOver()) {
@@ -68,11 +75,9 @@ public class EntityServerRepository extends EntityRepository implements IUnivers
         }
     }
 
-    @Override
-    public void finish() {
-        super.finish();
-        getUniverseServer().getNetworkServerEventReceiver().unregisterCallback(OnClientConnect.class, getOnClientConnectCallback());
-        getUniverseServer().getNetworkServerEventReceiver().unregisterCallback(OnClientDisconnect.class, getOnClientDisconnectCallback());
+    public void setCameraTarget(Entity entity) {
+        this.cameraTarget = entity;
+        getUniverseServer().getServer().send(new CameraTargetPacket(entity.getUuid()), connection -> getInitiatedConnections().contains(connection));
     }
 
     private void onClientConnect(OnClientConnect onClientConnect) {
@@ -83,11 +88,6 @@ public class EntityServerRepository extends EntityRepository implements IUnivers
 
     private void onClientDisconnect(OnClientDisconnect onClientConnect) {
         getInitiatedConnections().remove(onClientConnect.getConnection());
-    }
-
-    public void setCameraTarget(Entity entity) {
-        this.cameraTarget = entity;
-        getUniverseServer().getServer().send(new CameraTargetPacket(entity.getUuid()), connection -> getInitiatedConnections().contains(connection));
     }
 
 }
