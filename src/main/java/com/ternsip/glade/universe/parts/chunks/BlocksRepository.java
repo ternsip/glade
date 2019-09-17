@@ -68,8 +68,8 @@ public class BlocksRepository implements Threadable, IUniverseServer {
                 .collect(Collectors.toList());
     }
 
-    public void processMovement(Vector3ic prevPos, Vector3ic nextPos, int prevViewDistance, int nextViewDistance) {
-        movementRequests.add(new MovementRequest(prevPos, nextPos, prevViewDistance, nextViewDistance));
+    public void processMovement(Vector3ic prevPos, Vector3ic nextPos) {
+        movementRequests.add(new MovementRequest(prevPos, nextPos));
         unlock();
     }
 
@@ -246,22 +246,21 @@ public class BlocksRepository implements Threadable, IUniverseServer {
     }
 
     private void processMovementRequest(MovementRequest movementRequest) {
-        int prevLength = movementRequest.getPrevViewDistance() - 1;
-        int nextLength = movementRequest.getNextViewDistance() - 1;
+        int viewDistance = getUniverseServer().getBalance().getViewDistance();
 
         int middlePrevChunkX = movementRequest.getPrevPos().x() / Chunk.SIZE_X;
         int middlePrevChunkZ = movementRequest.getPrevPos().z() / Chunk.SIZE_Z;
-        int startPrevChunkX = middlePrevChunkX - prevLength;
-        int startPrevChunkZ = middlePrevChunkZ - prevLength;
-        int endPrevChunkX = middlePrevChunkX + prevLength;
-        int endPrevChunkZ = middlePrevChunkZ + prevLength;
+        int startPrevChunkX = middlePrevChunkX - viewDistance;
+        int startPrevChunkZ = middlePrevChunkZ - viewDistance;
+        int endPrevChunkX = middlePrevChunkX + viewDistance;
+        int endPrevChunkZ = middlePrevChunkZ + viewDistance;
 
         int middleNextChunkX = movementRequest.getNextPos().x() / Chunk.SIZE_X;
         int middleNextChunkZ = movementRequest.getNextPos().z() / Chunk.SIZE_Z;
-        int startNextChunkX = middleNextChunkX - nextLength;
-        int startNextChunkZ = middleNextChunkZ - nextLength;
-        int endNextChunkX = middleNextChunkX + nextLength;
-        int endNextChunkZ = middleNextChunkZ + nextLength;
+        int startNextChunkX = middleNextChunkX - viewDistance;
+        int startNextChunkZ = middleNextChunkZ - viewDistance;
+        int endNextChunkX = middleNextChunkX + viewDistance;
+        int endNextChunkZ = middleNextChunkZ + viewDistance;
 
         if (startNextChunkX == startPrevChunkX && startNextChunkZ == startPrevChunkZ) {
             return;

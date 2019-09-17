@@ -3,6 +3,7 @@ package com.ternsip.glade.universe.entities.impl;
 import com.ternsip.glade.common.events.base.Callback;
 import com.ternsip.glade.common.events.display.KeyEvent;
 import com.ternsip.glade.common.logic.Maths;
+import com.ternsip.glade.common.logic.Timer;
 import com.ternsip.glade.graphics.visual.impl.test.EffigyBoy;
 import com.ternsip.glade.network.ClientSide;
 import com.ternsip.glade.network.NetworkSide;
@@ -28,8 +29,11 @@ import static org.lwjgl.glfw.GLFW.*;
 public class EntityPlayer extends Entity<EffigyBoy> {
 
     private static final float ARM_LENGTH = 5f;
-    private final Callback<KeyEvent> keyCallback = this::handleKeyEvent;
-    private boolean thirdPerson = false;
+
+    private transient final Timer blocksUpdateCheckTimer = new Timer(250);
+    private transient final Callback<KeyEvent> keyCallback = this::handleKeyEvent;
+    private transient boolean thirdPerson = false;
+    private transient Vector3ic previousPosition = new Vector3i(-1000);
 
     @ServerSide
     private Vector3f currentVelocity = new Vector3f(0);
@@ -63,6 +67,9 @@ public class EntityPlayer extends Entity<EffigyBoy> {
         super.register();
         if (getNetworkSide() == NetworkSide.CLIENT) {
             getUniverseClient().getEventSnapReceiver().registerCallback(KeyEvent.class, keyCallback);
+        }
+        if (getNetworkSide() == NetworkSide.SERVER) {
+            updateBlocksAround();
         }
     }
 
@@ -133,6 +140,10 @@ public class EntityPlayer extends Entity<EffigyBoy> {
         }
         Vector3ic blockPos = round(getPosition());
         setSkyIntensity(getUniverseServer().getBlocksRepository().isBlockExists(blockPos) ? getUniverseServer().getBlocksRepository().getSkyLight(blockPos) / (float) MAX_LIGHT_LEVEL : 1);
+        if (getBlocksUpdateCheckTimer().isOver()) {
+            updateBlocksAround();
+            getBlocksUpdateCheckTimer().drop();
+        }
     }
 
     @ServerSide
@@ -224,6 +235,14 @@ public class EntityPlayer extends Entity<EffigyBoy> {
 
         if (event.getKey() == GLFW_KEY_Q && event.getAction() == GLFW_PRESS) {
             getUniverseClient().getClient().send(new PlayerActionPacket(this, Action.DESTROY_SELECTED_BLOCK));
+        }
+    }
+
+    private void updateBlocksAround() {
+        Vector3ic newPos = new Vector3i((int) getPosition().x(), (int) getPosition().y(), (int) getPosition().z());
+        if (!getPreviousPosition().equals(newPos)) {
+            getUniverseServer().getBlocksRepository().processMovement(new Vector3i(getPreviousPosition()), newPos);
+            setPreviousPosition(newPos);
         }
     }
 
