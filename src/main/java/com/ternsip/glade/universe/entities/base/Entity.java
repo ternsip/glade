@@ -32,19 +32,35 @@ public abstract class Entity<T extends Effigy> implements IUniverseClient, IUniv
     public void register() {
         checkSideValidity();
         if (getNetworkSide() == NetworkSide.CLIENT) {
-            getUniverseClient().getEntityClientRepository().register(this);
+            onClientRegister();
         } else {
-            getUniverseServer().getEntityServerRepository().register(this);
+            onServerRegister();
         }
     }
 
     public void unregister() {
         checkSideValidity();
         if (getNetworkSide() == NetworkSide.CLIENT) {
-            getUniverseClient().getEntityClientRepository().unregister(getUuid());
+            onClientUnregister();
         } else {
-            getUniverseServer().getEntityServerRepository().unregister(this);
+            onServerUnregister();
         }
+    }
+
+    public void onServerRegister() {
+        getUniverseServer().getEntityServerRepository().register(this);
+    }
+
+    public void onClientRegister() {
+        getUniverseClient().getEntityClientRepository().register(this);
+    }
+
+    public void onServerUnregister() {
+        getUniverseServer().getEntityServerRepository().unregister(this);
+    }
+
+    public void onClientUnregister() {
+        getUniverseClient().getEntityClientRepository().unregister(getUuid());
     }
 
     public void update(T effigy) {

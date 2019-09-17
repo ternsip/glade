@@ -6,7 +6,6 @@ import com.ternsip.glade.common.logic.Maths;
 import com.ternsip.glade.common.logic.Timer;
 import com.ternsip.glade.graphics.visual.impl.test.EffigyBoy;
 import com.ternsip.glade.network.ClientSide;
-import com.ternsip.glade.network.NetworkSide;
 import com.ternsip.glade.network.ServerSide;
 import com.ternsip.glade.universe.collisions.base.Collision;
 import com.ternsip.glade.universe.entities.base.Entity;
@@ -63,22 +62,21 @@ public class EntityPlayer extends Entity<EffigyBoy> {
     private float skyIntensity = 0;
 
     @Override
-    public void register() {
-        super.register();
-        if (getNetworkSide() == NetworkSide.CLIENT) {
-            getUniverseClient().getEventSnapReceiver().registerCallback(KeyEvent.class, keyCallback);
-        }
-        if (getNetworkSide() == NetworkSide.SERVER) {
-            updateBlocksAround();
-        }
+    public void onServerRegister() {
+        super.onServerRegister();
+        updateBlocksAround();
     }
 
     @Override
-    public void unregister() {
-        super.unregister();
-        if (getNetworkSide() == NetworkSide.CLIENT) {
-            getUniverseClient().getEventSnapReceiver().unregisterCallback(KeyEvent.class, keyCallback);
-        }
+    public void onClientRegister() {
+        super.onClientRegister();
+        getUniverseClient().getEventSnapReceiver().registerCallback(KeyEvent.class, getKeyCallback());
+    }
+
+    @Override
+    public void onClientUnregister() {
+        super.onClientUnregister();
+        getUniverseClient().getEventSnapReceiver().unregisterCallback(KeyEvent.class, getKeyCallback());
     }
 
     @Override
