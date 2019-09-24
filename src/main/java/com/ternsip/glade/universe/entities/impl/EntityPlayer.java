@@ -40,14 +40,14 @@ public class EntityPlayer extends GraphicalEntity<EffigyBoy> {
     @Override
     public void register() {
         super.register();
-        getUniverseClient().getEventSnapReceiver().registerCallback(KeyEvent.class, getKeyCallback());
+        getUniverseClient().getEventIOReceiver().registerCallback(KeyEvent.class, getKeyCallback());
         getUniverseClient().getEntityClientRepository().setCameraTarget(this);
     }
 
     @Override
     public void unregister() {
         super.unregister();
-        getUniverseClient().getEventSnapReceiver().unregisterCallback(KeyEvent.class, getKeyCallback());
+        getUniverseClient().getEventIOReceiver().unregisterCallback(KeyEvent.class, getKeyCallback());
         getUniverseClient().getEntityClientRepository().setCameraTarget(null);
     }
 
@@ -74,19 +74,19 @@ public class EntityPlayer extends GraphicalEntity<EffigyBoy> {
         super.update();
         Vector3f move = new Vector3f(0);
         setVisible(isThirdPerson());
-        if (!isThirdPerson() || (getUniverseClient().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_1) && getUniverseClient().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_2))) {
+        if (!isThirdPerson() || (getUniverseClient().getEventIOReceiver().isMouseDown(GLFW_MOUSE_BUTTON_1) && getUniverseClient().getEventIOReceiver().isMouseDown(GLFW_MOUSE_BUTTON_2))) {
             setRotation(new Vector3f(0, getCameraYRotation(), 0));
         }
-        if (getUniverseClient().getEventSnapReceiver().isKeyDown(GLFW_KEY_W) || getUniverseClient().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_1) && getUniverseClient().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_2)) {
+        if (getUniverseClient().getEventIOReceiver().isKeyDown(GLFW_KEY_W) || getUniverseClient().getEventIOReceiver().isMouseDown(GLFW_MOUSE_BUTTON_1) && getUniverseClient().getEventIOReceiver().isMouseDown(GLFW_MOUSE_BUTTON_2)) {
             move.add(FRONT_DIRECTION);
         }
-        if (getUniverseClient().getEventSnapReceiver().isKeyDown(GLFW_KEY_S)) {
+        if (getUniverseClient().getEventIOReceiver().isKeyDown(GLFW_KEY_S)) {
             move.add(BACK_DIRECTION);
         }
-        if (getUniverseClient().getEventSnapReceiver().isKeyDown(GLFW_KEY_D)) {
+        if (getUniverseClient().getEventIOReceiver().isKeyDown(GLFW_KEY_D)) {
             move.add(RIGHT_DIRECTION);
         }
-        if (getUniverseClient().getEventSnapReceiver().isKeyDown(GLFW_KEY_A)) {
+        if (getUniverseClient().getEventIOReceiver().isKeyDown(GLFW_KEY_A)) {
             move.add(LEFT_DIRECTION);
         }
         setMoveEffort(normalizeOrEmpty(move).mul(getVelocity(), new Vector3f()));

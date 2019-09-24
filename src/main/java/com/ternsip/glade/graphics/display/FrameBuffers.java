@@ -24,7 +24,7 @@ public class FrameBuffers implements IGraphics {
     public FrameBuffers() {
         maxSamples = glGetInteger(GL_MAX_SAMPLES);
         samples = 4;
-        getGraphics().getEventSnapReceiverGraphics().registerCallback(ResizeEvent.class, (resizeEvent) -> resizeFBOs());
+        getGraphics().getEventIOReceiverGraphics().registerCallback(ResizeEvent.class, (resizeEvent) -> resizeFBOs());
         resetSize();
         createFBOs();
     }

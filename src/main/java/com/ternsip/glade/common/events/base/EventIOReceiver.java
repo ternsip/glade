@@ -7,13 +7,12 @@ import lombok.Getter;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 
 @Getter
-// TODO rename this because it uses keyboard and mouse
-public class EventSnapReceiver extends EventReceiver {
+public class EventIOReceiver extends EventReceiver {
 
     private final boolean[] keyPressed = new boolean[512];
     private final boolean[] mouseButtonPressed = new boolean[8];
 
-    public EventSnapReceiver() {
+    public EventIOReceiver() {
         super();
         registerCallback(KeyEvent.class, (KeyEvent keyEvent) -> {
             keyPressed[keyEvent.getKey()] = keyEvent.getAction() != GLFW_RELEASE;

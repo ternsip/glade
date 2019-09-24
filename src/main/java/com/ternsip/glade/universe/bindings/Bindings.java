@@ -23,7 +23,7 @@ public class Bindings implements IUniverseClient {
         for (Bind bind : Bind.values()) {
             keyStateToBind.put(bind.getDefaultKeyState(), bind);
         }
-        getUniverseClient().getEventSnapReceiver().registerCallback(KeyEvent.class, keyCallback);
+        getUniverseClient().getEventIOReceiver().registerCallback(KeyEvent.class, keyCallback);
     }
 
     public void load() {
@@ -43,7 +43,7 @@ public class Bindings implements IUniverseClient {
     }
 
     public void finish() {
-        getUniverseClient().getEventSnapReceiver().unregisterCallback(KeyEvent.class, keyCallback);
+        getUniverseClient().getEventIOReceiver().unregisterCallback(KeyEvent.class, keyCallback);
     }
 
     private void handleKeyEvent(KeyEvent event) {

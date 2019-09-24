@@ -146,19 +146,19 @@ public class EntityUIEditBox extends EntityUI {
     }
 
     private void registerCallbacks() {
-        getUniverseClient().getEventSnapReceiver().registerCallback(CursorPosEvent.class, getCursorPosCallback());
-        getUniverseClient().getEventSnapReceiver().registerCallback(MouseButtonEvent.class, getMouseButtonCallback());
-        getUniverseClient().getEventSnapReceiver().registerCallback(CursorVisibilityEvent.class, getCursorVisibilityCallback());
-        getUniverseClient().getEventSnapReceiver().registerCallback(KeyEvent.class, getKeyEventCallback());
-        getUniverseClient().getEventSnapReceiver().registerCallback(CharEvent.class, getCharEventCallback());
+        getUniverseClient().getEventIOReceiver().registerCallback(CursorPosEvent.class, getCursorPosCallback());
+        getUniverseClient().getEventIOReceiver().registerCallback(MouseButtonEvent.class, getMouseButtonCallback());
+        getUniverseClient().getEventIOReceiver().registerCallback(CursorVisibilityEvent.class, getCursorVisibilityCallback());
+        getUniverseClient().getEventIOReceiver().registerCallback(KeyEvent.class, getKeyEventCallback());
+        getUniverseClient().getEventIOReceiver().registerCallback(CharEvent.class, getCharEventCallback());
     }
 
     private void unregisterCallbacks() {
-        getUniverseClient().getEventSnapReceiver().unregisterCallback(CursorPosEvent.class, getCursorPosCallback());
-        getUniverseClient().getEventSnapReceiver().unregisterCallback(MouseButtonEvent.class, getMouseButtonCallback());
-        getUniverseClient().getEventSnapReceiver().unregisterCallback(CursorVisibilityEvent.class, getCursorVisibilityCallback());
-        getUniverseClient().getEventSnapReceiver().unregisterCallback(KeyEvent.class, getKeyEventCallback());
-        getUniverseClient().getEventSnapReceiver().unregisterCallback(CharEvent.class, getCharEventCallback());
+        getUniverseClient().getEventIOReceiver().unregisterCallback(CursorPosEvent.class, getCursorPosCallback());
+        getUniverseClient().getEventIOReceiver().unregisterCallback(MouseButtonEvent.class, getMouseButtonCallback());
+        getUniverseClient().getEventIOReceiver().unregisterCallback(CursorVisibilityEvent.class, getCursorVisibilityCallback());
+        getUniverseClient().getEventIOReceiver().unregisterCallback(KeyEvent.class, getKeyEventCallback());
+        getUniverseClient().getEventIOReceiver().unregisterCallback(CharEvent.class, getCharEventCallback());
     }
 
     private void handleKeyEvent(KeyEvent event) {

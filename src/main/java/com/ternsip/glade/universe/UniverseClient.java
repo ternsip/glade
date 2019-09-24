@@ -21,7 +21,7 @@ import java.io.File;
 
 @Getter
 @Setter
-public class UniverseClient implements Threadable, INetworkClient, IBindings, ISoundRepository, IEntityClientRepository, IEventSnapReceiver, INetworkClientEventReceiver {
+public class UniverseClient implements Threadable, INetworkClient, IBindings, ISoundRepository, IEntityClientRepository, IEventIOReceiver, INetworkClientEventReceiver {
 
     private Callback<OnConnectedToServer> onConnectedToServerCallback = this::whenConnected;
 
@@ -33,7 +33,7 @@ public class UniverseClient implements Threadable, INetworkClient, IBindings, IS
 
     @Override
     public void update() {
-        getEventSnapReceiver().update();
+        getEventIOReceiver().update();
         getEntityClientRepository().update();
         getNetworkClientEventReceiver().update();
     }
