@@ -40,9 +40,10 @@ import java.util.Set;
 // TODO Item repository (blocks, tools)
 // TODO Add Free look camera
 // TODO handle client-server shutdown without errors
-// TODO Add multiplayer ability (right now its only one player)
+// TODO Add multiplayer ability (right now its only one player) - Entity per connection
 // TODO add log messages to important processes
-// TODO add background in return for red color
+// TODO work with nullable effigy
+// TODO use stream to write data via network for entities
 public class Glade {
 
     public static void main(String[] args) {

@@ -1,8 +1,7 @@
 package com.ternsip.glade.universe.entities.impl;
 
 import com.ternsip.glade.graphics.visual.impl.basis.EffigySides;
-import com.ternsip.glade.network.ClientSide;
-import com.ternsip.glade.universe.entities.base.Entity;
+import com.ternsip.glade.universe.entities.base.GraphicalEntity;
 import com.ternsip.glade.universe.parts.chunks.BlocksUpdate;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +13,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 @RequiredArgsConstructor
 @Getter
 @Setter
-@ClientSide
-public class EntitySides extends Entity<EffigySides> {
+public class EntitySides extends GraphicalEntity<EffigySides> {
 
     private transient final ConcurrentLinkedDeque<BlocksUpdate> blocksUpdates = new ConcurrentLinkedDeque<>();
 

@@ -15,6 +15,7 @@ public class UnregisterEntityPacket extends ClientPacket {
 
     @Override
     public void apply(Connection connection) {
+        getUniverseClient().getEntityClientRepository().unregisterTransferable(getUuid());
         getUniverseClient().getEntityClientRepository().unregister(getUuid());
     }
 

@@ -1,9 +1,7 @@
 package com.ternsip.glade.universe.entities.impl;
 
-import com.ternsip.glade.graphics.visual.base.Effigy;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigySprite;
-import com.ternsip.glade.network.ClientSide;
-import com.ternsip.glade.universe.entities.base.Entity;
+import com.ternsip.glade.universe.entities.base.GraphicalEntity;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -11,15 +9,14 @@ import java.io.File;
 
 @RequiredArgsConstructor
 @Getter
-@ClientSide
-public class EntitySprite extends Entity {
+public class EntitySprite extends GraphicalEntity<EffigySprite> {
 
     private final File file;
     private final boolean ortho;
     private final boolean useAspect;
 
     @Override
-    public Effigy getEffigy() {
+    public EffigySprite getEffigy() {
         return new EffigySprite(getFile(), isOrtho(), isUseAspect());
     }
 

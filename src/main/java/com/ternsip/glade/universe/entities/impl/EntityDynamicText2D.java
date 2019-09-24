@@ -1,8 +1,7 @@
 package com.ternsip.glade.universe.entities.impl;
 
 import com.ternsip.glade.graphics.visual.impl.basis.EffigyDynamicText;
-import com.ternsip.glade.network.ClientSide;
-import com.ternsip.glade.universe.entities.base.Entity;
+import com.ternsip.glade.universe.entities.base.GraphicalEntity;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.Vector4fc;
@@ -11,8 +10,7 @@ import java.io.File;
 
 @Getter
 @Setter
-@ClientSide
-public class EntityDynamicText2D extends Entity<EffigyDynamicText> {
+public class EntityDynamicText2D extends GraphicalEntity<EffigyDynamicText> {
 
     private final File file;
     private final Vector4fc color;

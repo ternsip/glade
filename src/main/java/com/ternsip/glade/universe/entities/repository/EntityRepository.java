@@ -1,47 +1,43 @@
 package com.ternsip.glade.universe.entities.repository;
 
-import com.ternsip.glade.network.NetworkSide;
-import com.ternsip.glade.universe.entities.base.Entity;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import com.ternsip.glade.universe.entities.base.EntityBase;
+import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
-import java.util.*;
+import java.io.*;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
+@Slf4j
 @Getter(value = AccessLevel.PROTECTED)
 @Setter
-public abstract class EntityRepository {
+public abstract class EntityRepository<K extends EntityBase> {
 
-    private final ConcurrentHashMap<UUID, Entity> uuidToEntity = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<Class<?>, EntitiesHolder> classToEntitiesHolder = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<UUID, K> uuidToEntity = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Class, K> classToEntity = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<UUID, K> uuidToTransferable = new ConcurrentHashMap<>();
 
-    public abstract FieldBuffer getFieldBuffer();
-
-    public <T extends Entity> void register(T entity) {
+    public <T extends K> void register(T entity) {
         getUuidToEntity().put(entity.getUuid(), entity);
-        getEntitiesHolderByClass(entity.getClass()).add(entity);
+        getClassToEntity().put(entity.getClass(), entity);
     }
 
-    public <T extends Entity> void unregister(T entity) {
+    public <T extends K> void unregister(T entity) {
         getUuidToEntity().remove(entity.getUuid());
-        getEntitiesHolderByClass(entity.getClass()).remove(entity);
+        getClassToEntity().remove(entity.getClass());
+    }
+
+    public <T extends K> void registerTransferable(T entity) {
+        getUuidToTransferable().put(entity.getUuid(), entity);
+    }
+
+    public <T extends K> void unregisterTransferable(UUID uuid) {
+        getUuidToTransferable().remove(uuid);
     }
 
     public void unregister(UUID uuid) {
         unregister(getEntityByUUID(uuid));
-    }
-
-    public final EntitiesChanges findEntitiesChanges() {
-        Map<UUID, FieldValues> uuidToChanges = getOnlyTransferableEntities().stream().collect(Collectors.toMap(Entity::getUuid, e -> getFieldBuffer().pullChanges(e)));
-        uuidToChanges.entrySet().removeIf(e -> e.getValue().isEmpty());
-        return new EntitiesChanges(uuidToChanges);
-    }
-
-    public final void applyEntitiesChanges(EntitiesChanges changes) {
-        changes.forEach((uuid, fieldValues) -> getFieldBuffer().applyChanges(fieldValues, getEntityByUUID(uuid)));
     }
 
     public void finish() {
@@ -51,54 +47,69 @@ public abstract class EntityRepository {
         return getUuidToEntity().containsKey(uuid);
     }
 
-    public final Entity getEntityByUUID(UUID uuid) {
-        Entity entity = getUuidToEntity().get(uuid);
+    public final K getEntityByUUID(UUID uuid) {
+        K entity = getUuidToEntity().get(uuid);
         if (entity == null) {
-            throw new IllegalArgumentException(String.format("Entity does not exist with UUID - %s", uuid));
+            throw new IllegalArgumentException(String.format("Entity with UUID - %s does not exist", uuid));
         }
         return entity;
     }
 
-    public final Collection<Entity> getEntities() {
-        return getUuidToEntity().values();
-    }
-
     @SuppressWarnings("unchecked")
-    public final <T extends Entity> EntitiesHolder<T> getEntitiesHolderByClass(Class<T> clazz) {
-        return (EntitiesHolder<T>) getClassToEntitiesHolder().computeIfAbsent(clazz, k -> new EntitiesHolder<>());
+    public final <T extends K> T getEntityByClass(Class<T> clazz) {
+        if (!getClassToEntity().containsKey(clazz)) {
+            throw new IllegalArgumentException(String.format("Entity with class - %s does not exist", clazz));
+        }
+        return (T)getClassToEntity().get(clazz);
     }
 
-    public final <T extends Entity> Set<T> getEntitiesByClass(Class<T> clazz) {
-        return getEntitiesHolderByClass(clazz).getEntities();
+    @SneakyThrows
+    public EntitiesState getEntitiesState() {
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+            try (ObjectOutputStream oos = new ObjectOutputStream(bos)) {
+                getUuidToTransferable().size();
+                int processedEntities = 0;
+                for (Map.Entry<UUID, K> entry : getUuidToTransferable().entrySet()) {
+                    oos.writeLong(entry.getKey().getMostSignificantBits());
+                    oos.writeLong(entry.getKey().getLeastSignificantBits());
+                    entry.getValue().writeToStream(oos);
+                    processedEntities++;
+                }
+                oos.flush();
+                return new EntitiesState(bos.toByteArray(), processedEntities);
+            }
+        }
     }
 
-    public final <T extends Entity> T getEntityByClass(Class<T> clazz) {
-        return getEntitiesByClass(clazz).stream()
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(String.format("Entity does not exist with class - %s", clazz)));
-    }
 
-    public final Set<Entity> getOnlyTransferableEntities() {
-        return getUuidToEntity().values().stream()
-                .filter(e -> e.getNetworkExpectedSide() == NetworkSide.BOTH)
-                .collect(Collectors.toSet());
+    @SneakyThrows
+    public void applyEntitiesState(EntitiesState entitiesState) {
+        try (ByteArrayInputStream bis = new ByteArrayInputStream(entitiesState.getData())) {
+            try (ObjectInputStream ois = new ObjectInputStream(bis)) {
+                K lastEntity = null;
+                for (int i = 0; i < entitiesState.getSize(); ++i) {
+                    try {
+                        UUID uuid = new UUID(ois.readLong(), ois.readLong());
+                        if (getUuidToTransferable().containsKey(uuid)) {
+                            lastEntity = getUuidToTransferable().get(uuid);
+                            lastEntity.readFromStream(ois);
+                        } else {
+                            throw new IllegalArgumentException(String.format("Entity with uuid - %s missing", uuid));
+                        }
+                    } catch (Exception e) {
+                        throw new IllegalArgumentException(String.format("Broken entity: %s - %s", lastEntity, e.getMessage()), e);
+                    }
+                }
+            }
+        }
     }
 
     @RequiredArgsConstructor
     @Getter
-    public static class EntitiesHolder<T extends Entity> {
+    public static class EntitiesState implements Serializable {
 
-        private final Set<T> entities = Collections.newSetFromMap(new ConcurrentHashMap<>());
-
-        @SuppressWarnings("unchecked")
-        public void add(Entity entity) {
-            getEntities().add((T) entity);
-        }
-
-        @SuppressWarnings("unchecked")
-        public void remove(Entity entity) {
-            getEntities().remove((T) entity);
-        }
+        private final byte[] data;
+        private final int size;
 
     }
 

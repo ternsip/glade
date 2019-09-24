@@ -2,83 +2,53 @@ package com.ternsip.glade.universe.entities.impl;
 
 import com.ternsip.glade.common.events.base.Callback;
 import com.ternsip.glade.common.events.display.KeyEvent;
-import com.ternsip.glade.common.logic.Maths;
-import com.ternsip.glade.common.logic.Timer;
 import com.ternsip.glade.graphics.visual.impl.test.EffigyBoy;
-import com.ternsip.glade.network.ClientSide;
-import com.ternsip.glade.network.ServerSide;
-import com.ternsip.glade.universe.collisions.base.Collision;
-import com.ternsip.glade.universe.entities.base.Entity;
-import com.ternsip.glade.universe.entities.base.Volumetric;
-import com.ternsip.glade.universe.parts.blocks.Block;
+import com.ternsip.glade.universe.entities.base.GraphicalEntity;
 import com.ternsip.glade.universe.protocol.PlayerActionPacket;
 import lombok.Getter;
 import lombok.Setter;
-import org.joml.*;
+import org.joml.LineSegmentf;
+import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
-import java.lang.Math;
-import java.util.List;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 import static com.ternsip.glade.common.logic.Maths.*;
-import static com.ternsip.glade.universe.parts.chunks.BlocksRepository.MAX_LIGHT_LEVEL;
 import static org.lwjgl.glfw.GLFW.*;
 
 @Getter
 @Setter
-public class EntityPlayer extends Entity<EffigyBoy> {
+public class EntityPlayer extends GraphicalEntity<EffigyBoy> {
 
     private static final float ARM_LENGTH = 5f;
-
-    private transient final Timer blocksUpdateCheckTimer = new Timer(250);
     private transient final Callback<KeyEvent> keyCallback = this::handleKeyEvent;
     private transient boolean thirdPerson = false;
-    private transient Vector3ic previousPosition = new Vector3i(-1000);
 
-    @ServerSide
-    private Vector3f currentVelocity = new Vector3f(0);
-
-    @ClientSide
     private Vector3f moveEffort = new Vector3f(0);
-
-    @ClientSide
     private float velocity = 0.1f;
-
-    @ServerSide
-    private float jumpPower = 0.3f;
-
-    @ServerSide
-    private boolean onTheGround = false;
-
-    @ServerSide
-    private float height = 2;
-
-    @ClientSide
     private float cameraYRotation = 0;
-
-    @ClientSide
     private LineSegmentf eyeSegment = new LineSegmentf();
 
-    @ServerSide
+    private Vector3f currentVelocity = new Vector3f(0);
+    private float jumpPower = 0.3f;
+    private boolean onTheGround = false;
+    private float height = 2;
     private float skyIntensity = 0;
 
     @Override
-    public void onServerRegister() {
-        super.onServerRegister();
-        updateBlocksAround();
-    }
-
-    @Override
-    public void onClientRegister() {
-        super.onClientRegister();
+    public void register() {
+        super.register();
         getUniverseClient().getEventSnapReceiver().registerCallback(KeyEvent.class, getKeyCallback());
         getUniverseClient().getEntityClientRepository().setCameraTarget(this);
     }
 
     @Override
-    public void onClientUnregister() {
-        super.onClientUnregister();
+    public void unregister() {
+        super.unregister();
         getUniverseClient().getEventSnapReceiver().unregisterCallback(KeyEvent.class, getKeyCallback());
-        getUniverseClient().getEntityClientRepository().setCameraTarget(new EntityDummy());
+        getUniverseClient().getEntityClientRepository().setCameraTarget(null);
     }
 
     @Override
@@ -100,8 +70,8 @@ public class EntityPlayer extends Entity<EffigyBoy> {
     }
 
     @Override
-    public void clientUpdate() {
-        super.clientUpdate();
+    public void update() {
+        super.update();
         Vector3f move = new Vector3f(0);
         setVisible(isThirdPerson());
         if (!isThirdPerson() || (getUniverseClient().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_1) && getUniverseClient().getEventSnapReceiver().isMouseDown(GLFW_MOUSE_BUTTON_2))) {
@@ -123,129 +93,55 @@ public class EntityPlayer extends Entity<EffigyBoy> {
     }
 
     @Override
-    public void serverUpdate() {
-        Vector3f moveDirection = getMoveEffort().rotate(Maths.getRotationQuaternion(getRotation()), new Vector3f());
-        getCurrentVelocity().add(getUniverseServer().getBalance().getGravity());
-        Vector3fc cPos = getPosition();
-        Vector3fc nPos = new Vector3f(cPos)
-                .add(getCurrentVelocity())
-                .add(moveDirection);
-        Vector3fc tryX = tryToMove(cPos, new Vector3f(nPos.x(), cPos.y(), cPos.z()));
-        Vector3fc tryY = tryToMove(tryX, new Vector3f(tryX.x(), nPos.y(), cPos.z()));
-        Vector3fc tryZ = tryToMove(tryY, new Vector3f(tryY.x(), tryY.y(), nPos.z()));
-        setPosition(tryZ);
-        setOnTheGround(tryToMove(cPos, new Vector3f(cPos).add(DOWN_DIRECTION)).equals(cPos, 5 * EPS));
-        if (isOnTheGround()) {
-            getCurrentVelocity().y = 0;
-        }
-        Vector3ic blockPos = round(getPosition());
-        setSkyIntensity(getUniverseServer().getBlocksRepository().isBlockExists(blockPos) ? getUniverseServer().getBlocksRepository().getSkyLight(blockPos) / (float) MAX_LIGHT_LEVEL : 1);
-        if (getBlocksUpdateCheckTimer().isOver()) {
-            updateBlocksAround();
-            getBlocksUpdateCheckTimer().drop();
-        }
-    }
-
-    @ServerSide
-    public void setVolumetric(Volumetric volumetric) {
-        getVolumetric().setPosition(volumetric.getPosition());
-        getVolumetric().setScale(volumetric.getScale());
-        getVolumetric().setLastTimeChanged(volumetric.getLastTimeChanged());
-        getVolumetricInterpolated().updateWithVolumetric(getVolumetric());
-    }
-
-    @Override
-    @ClientSide
-    public void setRotation(Vector3fc rotation) {
-        getVolumetric().setRotation(rotation);
-    }
-
-    @Override
-    @ClientSide
-    public void setVisible(boolean visible) {
-        getVolumetric().setVisible(visible);
-    }
-
-    public Vector3i getBlockPositionStandingOn() {
-        return new Vector3i(
-                (int) Math.floor(getPosition().x()),
-                (int) Math.floor(getPosition().y()) - 1,
-                (int) Math.floor(getPosition().z())
+    public void readFromStream(ObjectInputStream ois) throws IOException {
+        getCurrentVelocity().set(ois.readFloat(), ois.readFloat(), ois.readFloat());
+        setJumpPower(ois.readFloat());
+        setOnTheGround(ois.readBoolean());
+        setHeight(ois.readFloat());
+        setSkyIntensity(ois.readFloat());
+        getVolumetricInterpolated().update(
+                ois.readFloat(), ois.readFloat(), ois.readFloat(),
+                getRotation().x(), getRotation().y(), getRotation().z(),
+                ois.readFloat(), ois.readFloat(), ois.readFloat(),
+                isVisible()
         );
     }
 
-    public void handleAction(Action action) {
-        if (action == Action.RESPAWN) {
-            setRotation(new Vector3f(0, 0, 0));
-            setPosition(new Vector3f(50, 90, 50));
-        }
-        if (action == Action.TELEPORT_FAR) {
-            setRotation(new Vector3f(0, 0, 0));
-            setPosition(new Vector3f(512, 90, 512));
-        }
-        if (action == Action.JUMP) {
-            if (isOnTheGround()) {
-                getCurrentVelocity().add(new Vector3f(0, getJumpPower(), 0));
-            }
-        }
-        if (action == Action.DESTROY_BLOCK_UNDER) {
-            Vector3ic blockUnder = getBlockPositionStandingOn();
-            if (getUniverseServer().getBlocksRepository().isBlockExists(blockUnder)) {
-                getUniverseServer().getBlocksRepository().setBlock(blockUnder, Block.AIR);
-            }
-        }
-        if (action == Action.DESTROY_SELECTED_BLOCK) {
-            Vector3ic blockPositionLooking = getUniverseServer().getBlocksRepository().traverse(getEyeSegment(), (block) -> block != Block.AIR);
-            if (blockPositionLooking != null && getUniverseServer().getBlocksRepository().isBlockExists(blockPositionLooking)) {
-                getUniverseServer().getBlocksRepository().setBlock(blockPositionLooking, Block.AIR);
-            }
-        }
-    }
-
-    private Vector3fc tryToMove(Vector3fc startPosition, Vector3fc endPosition) {
-        List<Collision> collisions = getUniverseServer().getCollisions().collideSegment(new LineSegmentf(startPosition, endPosition));
-        if (!collisions.isEmpty()) {
-            Vector3fc intersection = collisions.get(0).getPosition();
-            Vector3f shift = Maths.normalizeOrEmpty(new Vector3f(startPosition).sub(endPosition)).mul(2 * EPS, new Vector3f());
-            return shift.add(intersection);
-        }
-        return endPosition;
+    @Override
+    public void writeToStream(ObjectOutputStream oos) throws IOException {
+        oos.writeFloat(getMoveEffort().x());
+        oos.writeFloat(getMoveEffort().y());
+        oos.writeFloat(getMoveEffort().z());
+        oos.writeFloat(getVelocity());
+        oos.writeFloat(getCameraYRotation());
+        oos.writeFloat(getEyeSegment().aX);
+        oos.writeFloat(getEyeSegment().aY);
+        oos.writeFloat(getEyeSegment().aZ);
+        oos.writeFloat(getEyeSegment().bX);
+        oos.writeFloat(getEyeSegment().bY);
+        oos.writeFloat(getEyeSegment().bZ);
+        oos.writeFloat(getRotation().x());
+        oos.writeFloat(getRotation().y());
+        oos.writeFloat(getRotation().z());
+        oos.writeBoolean(isVisible());
     }
 
     private void handleKeyEvent(KeyEvent event) {
         if (event.getKey() == GLFW_KEY_R && event.getAction() == GLFW_PRESS) {
-            getUniverseClient().getClient().send(new PlayerActionPacket(this, Action.RESPAWN));
+            getUniverseClient().getClient().send(new PlayerActionPacket(this, EntityPlayerServer.Action.RESPAWN));
         }
         if (event.getKey() == GLFW_KEY_T && event.getAction() == GLFW_PRESS) {
-            getUniverseClient().getClient().send(new PlayerActionPacket(this, Action.TELEPORT_FAR));
+            getUniverseClient().getClient().send(new PlayerActionPacket(this, EntityPlayerServer.Action.TELEPORT_FAR));
         }
         if (event.getKey() == GLFW_KEY_SPACE && event.getAction() == GLFW_PRESS) {
-            getUniverseClient().getClient().send(new PlayerActionPacket(this, Action.JUMP));
+            getUniverseClient().getClient().send(new PlayerActionPacket(this, EntityPlayerServer.Action.JUMP));
         }
         if (event.getKey() == GLFW_KEY_B && event.getAction() == GLFW_PRESS) {
-            getUniverseClient().getClient().send(new PlayerActionPacket(this, Action.DESTROY_BLOCK_UNDER));
+            getUniverseClient().getClient().send(new PlayerActionPacket(this, EntityPlayerServer.Action.DESTROY_BLOCK_UNDER));
         }
         if (event.getKey() == GLFW_KEY_Q && event.getAction() == GLFW_PRESS) {
-            getUniverseClient().getClient().send(new PlayerActionPacket(this, Action.DESTROY_SELECTED_BLOCK));
+            getUniverseClient().getClient().send(new PlayerActionPacket(this, EntityPlayerServer.Action.DESTROY_SELECTED_BLOCK));
         }
-    }
-
-    private void updateBlocksAround() {
-        Vector3ic newPos = new Vector3i((int) getPosition().x(), (int) getPosition().y(), (int) getPosition().z());
-        if (!getPreviousPosition().equals(newPos)) {
-            getUniverseServer().getBlocksRepository().processMovement(new Vector3i(getPreviousPosition()), newPos);
-            setPreviousPosition(newPos);
-        }
-    }
-
-    public enum Action {
-
-        JUMP,
-        RESPAWN,
-        TELEPORT_FAR,
-        DESTROY_BLOCK_UNDER,
-        DESTROY_SELECTED_BLOCK,
-
     }
 
 }

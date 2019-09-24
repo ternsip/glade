@@ -3,7 +3,8 @@ package com.ternsip.glade.universe.protocol;
 import com.ternsip.glade.common.logic.Utils;
 import com.ternsip.glade.network.ClientPacket;
 import com.ternsip.glade.network.Connection;
-import com.ternsip.glade.universe.entities.base.Entity;
+import com.ternsip.glade.universe.entities.base.EntityClient;
+import com.ternsip.glade.universe.entities.base.EntityServer;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -15,25 +16,25 @@ import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Getter
 @Slf4j
 public class RegisterEntityPacket extends ClientPacket {
 
-    private static final Map<Class<? extends Entity>, Set<Field>> CLASS_TO_SERIALIZABLE_FIELDS = new HashMap<>();
-    private final Class<? extends Entity> clazz;
-    private final UUID uuid;
+    private static final Map<Class<? extends EntityClient>, Set<Field>> CLASS_TO_SERIALIZABLE_FIELDS = new HashMap<>();
+
+    private final Class<? extends EntityClient> clazz;
     private final Map<String, Object> initialValues;
 
-    public RegisterEntityPacket(Entity entity) {
+    public RegisterEntityPacket(EntityServer entityServer) {
+        EntityClient entity = entityServer.getEntityClient();
         this.clazz = entity.getClass();
-        this.uuid = entity.getUuid();
         this.initialValues = CLASS_TO_SERIALIZABLE_FIELDS
                 .computeIfAbsent(entity.getClass(), k -> findAllSerializableFields(entity.getClass()))
                 .stream()
                 .collect(HashMap::new, (m, field) -> m.put(field.getName(), Utils.cloneThroughJson(getFieldValueSilently(field, entity))), HashMap::putAll);
+        this.initialValues.put("uuid", entityServer.getUuid());
     }
 
     @SneakyThrows
@@ -46,7 +47,7 @@ public class RegisterEntityPacket extends ClientPacket {
         field.set(object, value);
     }
 
-    private static Set<Field> findAllSerializableFields(Class<? extends Entity> clazz) {
+    private static Set<Field> findAllSerializableFields(Class<? extends EntityClient> clazz) {
         return ReflectionUtils.getAllFields(clazz).stream()
                 .filter(field -> Serializable.class.isAssignableFrom(field.getType()) && !Modifier.isTransient(field.getModifiers()))
                 .peek(field -> field.setAccessible(true))
@@ -55,19 +56,20 @@ public class RegisterEntityPacket extends ClientPacket {
 
     @Override
     public void apply(Connection connection) {
-        if (!getUniverseClient().getEntityClientRepository().isEntityExists(getUuid())) {
-            constructNewEntity().register();
-        } else {
-            throw new IllegalArgumentException(String.format("Entity already exists %s", getUuid()));
+        EntityClient entity = constructNewEntity();
+        if (getUniverseClient().getEntityClientRepository().isEntityExists(entity.getUuid())) {
+            throw new IllegalArgumentException(String.format("Entity already exists %s", entity.getUuid()));
         }
+        entity.register();
+        getUniverseClient().getEntityClientRepository().registerTransferable(entity);
     }
 
     @SneakyThrows
-    private Entity constructNewEntity() {
-        Entity entity = clazz.getDeclaredConstructor().newInstance();
+    private EntityClient constructNewEntity() {
+        EntityClient entity = getClazz().getDeclaredConstructor().newInstance();
         if (!getInitialValues().isEmpty()) {
             CLASS_TO_SERIALIZABLE_FIELDS
-                    .computeIfAbsent(clazz, k -> findAllSerializableFields(clazz))
+                    .computeIfAbsent(getClazz(), k -> findAllSerializableFields(getClazz()))
                     .forEach(field -> {
                         Object value = getInitialValues().get(field.getName());
                         setFieldValueSilently(field, entity, value);

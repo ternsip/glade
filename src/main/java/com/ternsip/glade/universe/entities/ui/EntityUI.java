@@ -1,8 +1,7 @@
 package com.ternsip.glade.universe.entities.ui;
 
 import com.ternsip.glade.graphics.visual.impl.basis.EffigySprite;
-import com.ternsip.glade.network.ClientSide;
-import com.ternsip.glade.universe.entities.base.Entity;
+import com.ternsip.glade.universe.entities.base.GraphicalEntity;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.Vector2f;
@@ -11,8 +10,7 @@ import org.joml.Vector3fc;
 
 @Getter
 @Setter
-@ClientSide
-public class EntityUI extends Entity<EffigySprite> {
+public class EntityUI extends GraphicalEntity<EffigySprite> {
 
     private boolean useAspect;
     private float ratioX = 1;

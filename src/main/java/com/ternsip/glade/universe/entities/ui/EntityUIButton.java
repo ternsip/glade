@@ -70,8 +70,8 @@ public class EntityUIButton extends EntityUI {
     }
 
     @Override
-    public void clientUpdate() {
-        super.clientUpdate();
+    public void update() {
+        super.update();
 
         Vector3fc scale = getVisualScale();
         Vector3fc position = getVisualPosition();

@@ -3,36 +3,34 @@ package com.ternsip.glade.universe.entities.base;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
-import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
 
-public class Volumetric implements VolumetricSetters, Serializable {
+public class Volumetric {
 
     private final Vector3f position = new Vector3f(0, 0, 0);
     private final Vector3f scale = new Vector3f(1, 1, 1);
     private final Vector3f rotation = new Vector3f(0, 0, 0);
     private final AtomicBoolean visible = new AtomicBoolean(true);
-    private final AtomicLong lastTimeChanged = new AtomicLong(getCurrentTime());
+
+    public void setFromValues(float px, float py, float pz, float rx, float ry, float rz, float sx, float sy, float sz, boolean visible) {
+        this.position.set(px, py, pz);
+        this.rotation.set(rx, ry, rz);
+        this.scale.set(sx, sy, sz);
+        this.visible.set(visible);
+    }
 
     public void setFromVolumetric(Volumetric volumetric) {
-        setPosition(volumetric.getPosition());
-        setRotation(volumetric.getRotation());
-        setScale(volumetric.getScale());
-        setVisible(volumetric.isVisible());
-        setLastTimeChanged(volumetric.getLastTimeChanged());
+        this.position.set(volumetric.getPosition());
+        this.rotation.set(volumetric.getRotation());
+        this.scale.set(volumetric.getScale());
+        this.visible.set(volumetric.isVisible());
     }
 
     public void setFromVolumetricInterpolated(VolumetricInterpolated volumetricInterpolated) {
-        setPosition(volumetricInterpolated.getPositionInterpolated());
-        setRotation(volumetricInterpolated.getRotationInterpolated());
-        setScale(volumetricInterpolated.getScaleInterpolated());
-        setVisible(volumetricInterpolated.isVisibleInterpolated());
-        setLastTimeChanged(volumetricInterpolated.getCurVolumetric().getLastTimeChanged());
-    }
-
-    public void updateTime() {
-        setLastTimeChanged(getCurrentTime());
+        this.position.set(volumetricInterpolated.getPositionInterpolated());
+        this.rotation.set(volumetricInterpolated.getRotationInterpolated());
+        this.scale.set(volumetricInterpolated.getScaleInterpolated());
+        this.visible.set(volumetricInterpolated.isVisibleInterpolated());
     }
 
     public Vector3fc getPosition() {
@@ -66,18 +64,5 @@ public class Volumetric implements VolumetricSetters, Serializable {
     public void setVisible(boolean visible) {
         this.visible.set(visible);
     }
-
-    public long getLastTimeChanged() {
-        return lastTimeChanged.get();
-    }
-
-    public void setLastTimeChanged(long time) {
-        this.lastTimeChanged.set(time);
-    }
-
-    private long getCurrentTime() {
-        return System.currentTimeMillis();
-    }
-
 
 }

@@ -30,8 +30,8 @@ public class EntityUIPicture extends EntityUI {
     }
 
     @Override
-    public void clientUpdate() {
-        super.clientUpdate();
+    public void update() {
+        super.update();
         getPicture().setScale(getVisualScale());
         getPicture().setRotation(getVisualRotation());
         getPicture().setPosition(getVisualPosition());

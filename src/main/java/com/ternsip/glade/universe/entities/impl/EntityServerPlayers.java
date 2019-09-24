@@ -3,62 +3,56 @@ package com.ternsip.glade.universe.entities.impl;
 import com.ternsip.glade.common.events.base.Callback;
 import com.ternsip.glade.common.events.network.OnClientConnect;
 import com.ternsip.glade.common.events.network.OnClientDisconnect;
-import com.ternsip.glade.graphics.visual.base.Effigy;
-import com.ternsip.glade.graphics.visual.base.EffigyDummy;
 import com.ternsip.glade.network.Connection;
-import com.ternsip.glade.network.ServerSide;
-import com.ternsip.glade.universe.entities.base.Entity;
+import com.ternsip.glade.universe.entities.base.EntityClient;
+import com.ternsip.glade.universe.entities.base.EntityServer;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.joml.Vector3f;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
 @RequiredArgsConstructor
 @Getter
 @Setter
-@ServerSide
-public class EntityServerPlayers extends Entity {
+public class EntityServerPlayers extends EntityServer {
 
     private Callback<OnClientConnect> onClientConnectCallback = this::onClientConnect;
     private Callback<OnClientDisconnect> onClientDisconnectCallback = this::onClientDisconnect;
     private Map<Connection, PlayerSession> connectionToPlayerSession = new HashMap<>();
 
     @Override
-    public void onServerRegister() {
-        super.onServerRegister();
+    public void register() {
+        super.register();
         getUniverseServer().getNetworkServerEventReceiver().registerCallback(OnClientConnect.class, getOnClientConnectCallback());
         getUniverseServer().getNetworkServerEventReceiver().registerCallback(OnClientDisconnect.class, getOnClientDisconnectCallback());
     }
 
     @Override
-    public void onServerUnregister() {
-        super.onServerUnregister();
+    public void unregister() {
+        super.unregister();
         getUniverseServer().getNetworkServerEventReceiver().unregisterCallback(OnClientConnect.class, getOnClientConnectCallback());
         getUniverseServer().getNetworkServerEventReceiver().unregisterCallback(OnClientDisconnect.class, getOnClientDisconnectCallback());
     }
 
+    @Nullable
     @Override
-    public Effigy getEffigy() {
-        return new EffigyDummy();
-    }
-
-    @Override
-    public void serverUpdate() {
-        super.serverUpdate();
+    protected EntityClient produceEntityClient() {
+        return null;
     }
 
     private void onClientConnect(OnClientConnect onClientConnect) {
-        EntityPlayer entityPlayer = new EntityPlayer();
-        entityPlayer.setPosition(new Vector3f(50, 90, 50));
-        entityPlayer.setScale(new Vector3f(1, 1, 1));
-        entityPlayer.register();
+        EntityPlayerServer entityPlayerServer = new EntityPlayerServer();
+        entityPlayerServer.setPosition(new Vector3f(50, 90, 50));
+        entityPlayerServer.setScale(new Vector3f(1, 1, 1));
+        entityPlayerServer.register();
 
-        EntityCubeSelection entityCubeSelection = new EntityCubeSelection(entityPlayer);
-        entityCubeSelection.register();
-        PlayerSession playerSession = new PlayerSession(entityPlayer, entityCubeSelection);
+        EntityCubeSelectionServer entityCubeSelectionServer = new EntityCubeSelectionServer(entityPlayerServer);
+        entityCubeSelectionServer.register();
+        PlayerSession playerSession = new PlayerSession(entityPlayerServer, entityCubeSelectionServer);
         getConnectionToPlayerSession().put(onClientConnect.getConnection(), playerSession);
     }
 
@@ -70,8 +64,8 @@ public class EntityServerPlayers extends Entity {
     @Getter
     public static class PlayerSession {
 
-        private final EntityPlayer entityPlayer;
-        private final EntityCubeSelection entityCubeSelection;
+        private final EntityPlayerServer entityPlayerServer;
+        private final EntityCubeSelectionServer entityCubeSelectionServer;
 
     }
 

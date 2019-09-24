@@ -5,7 +5,6 @@ import com.ternsip.glade.common.events.network.OnConnectedToServer;
 import com.ternsip.glade.common.logic.Threadable;
 import com.ternsip.glade.network.INetworkClientEventReceiver;
 import com.ternsip.glade.universe.bindings.Bind;
-import com.ternsip.glade.universe.entities.base.Entity;
 import com.ternsip.glade.universe.entities.impl.EntitySides;
 import com.ternsip.glade.universe.entities.impl.EntitySprite;
 import com.ternsip.glade.universe.entities.impl.EntityStatistics2D;
@@ -66,7 +65,7 @@ public class UniverseClient implements Threadable, INetworkClient, IBindings, IS
     private void spawnEntities() {
         new EntityStatistics2D(new File("fonts/default.png"), new Vector4f(1, 1, 0, 1), true).register();
 
-        Entity aim = new EntitySprite(new File("tools/aim.png"), true, true);
+        EntitySprite aim = new EntitySprite(new File("tools/aim.png"), true, true);
         aim.setScale(new Vector3f(0.01f));
         aim.register();
         getEntityClientRepository().setAim(aim);

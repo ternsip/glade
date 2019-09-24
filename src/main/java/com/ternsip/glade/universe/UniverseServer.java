@@ -7,12 +7,10 @@ import com.ternsip.glade.graphics.visual.impl.test.*;
 import com.ternsip.glade.network.INetworkServerEventReceiver;
 import com.ternsip.glade.universe.collisions.impl.ChunksObstacle;
 import com.ternsip.glade.universe.collisions.impl.GroundObstacle;
-import com.ternsip.glade.universe.entities.base.Entity;
-import com.ternsip.glade.universe.entities.base.EntityGeneric;
-import com.ternsip.glade.universe.entities.base.EntityGenericRotating;
+import com.ternsip.glade.universe.entities.base.EntityGenericServer;
 import com.ternsip.glade.universe.entities.impl.EntityServerPlayers;
-import com.ternsip.glade.universe.entities.impl.EntityServerStatistics;
-import com.ternsip.glade.universe.entities.impl.EntitySun;
+import com.ternsip.glade.universe.entities.impl.EntityStatisticsServer;
+import com.ternsip.glade.universe.entities.impl.EntitySunServer;
 import com.ternsip.glade.universe.interfaces.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -56,64 +54,64 @@ public class UniverseServer implements Threadable, INetworkServer, IBlocksReposi
 
     private void spawnEntities() {
 
-        EntityServerStatistics entityServerStatistics = new EntityServerStatistics();
-        entityServerStatistics.register();
+        EntityStatisticsServer entityStatisticsServer = new EntityStatisticsServer();
+        entityStatisticsServer.register();
 
-        EntitySun sun = new EntitySun();
+        EntitySunServer sun = new EntitySunServer();
         sun.register();
 
-        Entity cube = new EntityGeneric(() -> new EffigyCube());
+        EntityGenericServer cube = new EntityGenericServer(EffigyCube::new);
         cube.register();
 
-        Entity lamp = new EntityGeneric(() -> new EffigyLamp());
+        EntityGenericServer lamp = new EntityGenericServer(EffigyLamp::new);
         lamp.register();
         lamp.register();
         lamp.setPosition(new Vector3f(-60f, 0, -60));
         lamp.setScale(new Vector3f(40, 40, 40));
 
-        Entity bottle = new EntityGeneric(() -> new EffigyBottle());
+        EntityGenericServer bottle = new EntityGenericServer(EffigyBottle::new);
         bottle.register();
         bottle.setPosition(new Vector3f(-30f, 0, -20));
         bottle.setScale(new Vector3f(5, 5, 5));
 
-        Entity zebra = new EntityGeneric(() -> new EffigyZebra());
+        EntityGenericServer zebra = new EntityGenericServer(EffigyZebra::new);
         zebra.register();
         zebra.setPosition(new Vector3f(-20f, 0, -20));
         zebra.setScale(new Vector3f(30, 30, 30));
 
-        Entity wolf = new EntityGeneric(() -> new EffigyWolf());
+        EntityGenericServer wolf = new EntityGenericServer(EffigyWolf::new);
         wolf.register();
         wolf.setPosition(new Vector3f(-140f, 0, -40));
         wolf.setScale(new Vector3f(30, 30, 30));
 
-        Entity hagrid = new EntityGenericRotating(() -> new EffigyHagrid(), new Vector3f(0, 0.01f, 0));
+        EntityGenericServer hagrid = new EntityGenericServer(EffigyHagrid::new, new Vector3f(0, 0.01f, 0));
         hagrid.register();
         hagrid.setPosition(new Vector3f(20f, 2, 2));
         hagrid.setScale(new Vector3f(15, 15, 15));
 
-        Entity spider = new EntityGeneric(() -> new EffigySpider());
+        EntityGenericServer spider = new EntityGenericServer(EffigySpider::new);
         spider.register();
         spider.setPosition(new Vector3f(20f, 2, -20));
         spider.setScale(new Vector3f(5, 5, 5));
 
-        Entity warrior = new EntityGeneric(() -> new EffigyWarrior());
+        EntityGenericServer warrior = new EntityGenericServer(EffigyWarrior::new);
         warrior.register();
         warrior.setPosition(new Vector3f(-20f, 2, 2));
         warrior.setScale(new Vector3f(10, 10, 10));
 
-        Entity dude = new EntityGeneric(() -> new EffigyDude());
+        EntityGenericServer dude = new EntityGenericServer(EffigyDude::new);
         dude.register();
         dude.setPosition(new Vector3f(-20f, 0, -20));
         dude.setScale(new Vector3f(10f, 10f, 10f));
 
-        new EntityGenericRotating(() -> new EffigyDynamicText(new File("fonts/default.png"), false, false, new Vector4f(0, 0, 1, 1), "Hello world!"), new Vector3f(0, 0.1f, 0)).register();
+        new EntityGenericServer(() -> new EffigyDynamicText(new File("fonts/default.png"), false, false, new Vector4f(0, 0, 1, 1), "Hello world!"), new Vector3f(0, 0.1f, 0)).register();
 
         getCollisions().add(new GroundObstacle());
         getCollisions().add(new ChunksObstacle());
 
         for (int i = 0; i < 10; ++i) {
             for (int j = 0; j < 10; ++j) {
-                Entity hagrid1 = new EntityGenericRotating(() -> new EffigyHagrid(), new Vector3f(0, 0.01f, 0));
+                EntityGenericServer hagrid1 = new EntityGenericServer(EffigyHagrid::new, new Vector3f(0, 0.01f, 0));
                 hagrid1.register();
                 hagrid1.setPosition(new Vector3f(20f + 15 * i, 2, 2 + 15 * j));
                 hagrid1.setScale(new Vector3f(15, 15, 15));
@@ -121,7 +119,7 @@ public class UniverseServer implements Threadable, INetworkServer, IBlocksReposi
         }
 
         // TODO make it client-side
-        new EntityGeneric(() -> new EffigyAxis()).register();
+        new EntityGenericServer(EffigyAxis::new).register();
 
         new EntityServerPlayers().register();
 
