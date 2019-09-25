@@ -90,7 +90,7 @@ public class EntityPlayerServer extends GraphicalEntityServer {
         return new EntityPlayer(); // TODO handle different connections
     }
 
-    public Vector3i getBlockPositionStandingOn() {
+    private Vector3i getBlockPositionStandingOn() {
         return new Vector3i(
                 (int) Math.floor(getPosition().x()),
                 (int) Math.floor(getPosition().y()) - 1,
