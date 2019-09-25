@@ -5,10 +5,9 @@ import lombok.Getter;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 
 @Getter
-public abstract class EntityClient extends EntityBase implements Serializable, IUniverseClient {
+public abstract class EntityClient extends EntityBase implements IUniverseClient {
 
     public void register() {
         getUniverseClient().getEntityClientRepository().register(this);
