@@ -86,12 +86,6 @@ public class EntityPlayerServer extends GraphicalEntityServer {
 
     @Override
     public void writeToStream(ObjectOutputStream oos) throws IOException {
-        oos.writeFloat(getCurrentVelocity().x());
-        oos.writeFloat(getCurrentVelocity().y());
-        oos.writeFloat(getCurrentVelocity().z());
-        oos.writeFloat(getJumpPower());
-        oos.writeBoolean(isOnTheGround());
-        oos.writeFloat(getHeight());
         oos.writeFloat(getSkyIntensity());
         oos.writeFloat(getPosition().x());
         oos.writeFloat(getPosition().y());

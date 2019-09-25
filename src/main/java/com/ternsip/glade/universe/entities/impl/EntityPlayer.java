@@ -31,10 +31,6 @@ public class EntityPlayer extends GraphicalEntity<EffigyBoy> {
     private float cameraYRotation = 0;
     private LineSegmentf eyeSegment = new LineSegmentf();
 
-    private Vector3f currentVelocity = new Vector3f(0);
-    private float jumpPower = 0.3f;
-    private boolean onTheGround = false;
-    private float height = 2;
     private float skyIntensity = 0;
 
     @Override
@@ -94,10 +90,6 @@ public class EntityPlayer extends GraphicalEntity<EffigyBoy> {
 
     @Override
     public void readFromStream(ObjectInputStream ois) throws IOException {
-        getCurrentVelocity().set(ois.readFloat(), ois.readFloat(), ois.readFloat());
-        setJumpPower(ois.readFloat());
-        setOnTheGround(ois.readBoolean());
-        setHeight(ois.readFloat());
         setSkyIntensity(ois.readFloat());
         getVolumetricInterpolated().update(
                 ois.readFloat(), ois.readFloat(), ois.readFloat(),
