@@ -15,21 +15,16 @@ import com.ternsip.glade.universe.protocol.RegisterEntityPacket;
 import com.ternsip.glade.universe.protocol.UnregisterEntityPacket;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Getter
-@Setter
+@Getter(value = AccessLevel.PRIVATE)
 public class EntityServerRepository extends EntityRepository<EntityServer> implements IUniverseServer {
 
-    @Getter(value = AccessLevel.PRIVATE)
     private final Timer networkTimer = new Timer(50); // TODO get this value as a tickrate from options/balance
-
-    @Getter(value = AccessLevel.PRIVATE)
     private final Set<Connection> initiatedConnections = new HashSet<>();
 
     private Callback<OnClientConnect> onClientConnectCallback = this::onClientConnect;

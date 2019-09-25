@@ -94,7 +94,6 @@ public abstract class EntityRepository<K extends EntityBase> {
         }
     }
 
-
     @SneakyThrows
     public void applyEntitiesState(EntitiesState entitiesState) {
         try (ByteArrayInputStream bis = new ByteArrayInputStream(entitiesState.getData())) {
