@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.joml.Vector3f;
 
-import java.io.IOException;
 import java.io.ObjectInputStream;
 
 @Getter
@@ -29,16 +28,16 @@ public class EntitySun extends GraphicalEntity<EffigySky> {
         return new EffigySky();
     }
 
-    public float getIntensity() {
-        return 1;
-        //return (float) Math.max(0.2, 1 - abs(1 / 3.0 - phase) * 3); TODO temporary, also this can be decided by server
-    }
-
     @Override
     public void readFromStream(ObjectInputStream ois) throws Exception {
         super.readFromStream(ois);
         setPhase(ois.readFloat());
         setDelta(ois.readFloat());
+    }
+
+    public float getIntensity() {
+        return 1;
+        //return (float) Math.max(0.2, 1 - abs(1 / 3.0 - phase) * 3); TODO temporary, also this can be decided by server
     }
 
 }

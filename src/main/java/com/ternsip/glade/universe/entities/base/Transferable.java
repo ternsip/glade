@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 public interface Transferable {
 
     void readFromStream(ObjectInputStream ois) throws Exception;
+
     void writeToStream(ObjectOutputStream oos) throws Exception;
 
 }

@@ -4,7 +4,6 @@ import com.ternsip.glade.graphics.visual.base.Effigy;
 import lombok.Getter;
 import lombok.experimental.Delegate;
 
-import java.io.IOException;
 import java.io.ObjectInputStream;
 
 @Getter

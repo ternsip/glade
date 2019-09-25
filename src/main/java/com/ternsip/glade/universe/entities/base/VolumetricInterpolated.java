@@ -39,36 +39,36 @@ public class VolumetricInterpolated {
         return getLastVolumetric().isVisible();
     }
 
-    public void setPosition(Vector3fc position) {
-        getLastVolumetric().setPosition(position);
-    }
-
-    public void setScale(Vector3fc scale) {
-        getLastVolumetric().setScale(scale);
-    }
-
-    public void setRotation(Vector3fc rotation) {
-        getLastVolumetric().setRotation(rotation);
-    }
-
-    public void setVisible(boolean visible) {
-        getLastVolumetric().setVisible(visible);
-    }
-
     public Vector3fc getPosition() {
         return getLastVolumetric().getPosition();
+    }
+
+    public void setPosition(Vector3fc position) {
+        getLastVolumetric().setPosition(position);
     }
 
     public Vector3fc getScale() {
         return getLastVolumetric().getScale();
     }
 
+    public void setScale(Vector3fc scale) {
+        getLastVolumetric().setScale(scale);
+    }
+
     public Vector3fc getRotation() {
         return getLastVolumetric().getRotation();
     }
 
+    public void setRotation(Vector3fc rotation) {
+        getLastVolumetric().setRotation(rotation);
+    }
+
     public boolean isVisible() {
         return getLastVolumetric().isVisible();
+    }
+
+    public void setVisible(boolean visible) {
+        getLastVolumetric().setVisible(visible);
     }
 
     private Vector3fc interpolate(Vector3fc last, Vector3fc prev) {

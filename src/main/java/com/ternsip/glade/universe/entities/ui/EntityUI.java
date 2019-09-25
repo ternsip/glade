@@ -23,6 +23,18 @@ public class EntityUI extends GraphicalEntity<EffigySprite> {
     }
 
     @Override
+    public void setPosition(Vector3fc position) {
+        super.setPosition(position);
+        setUiCenter(new Vector2f(getPosition().x(), getPosition().y()));
+    }
+
+    @Override
+    public void setScale(Vector3fc scale) {
+        super.setScale(scale);
+        setUiSize(new Vector2f(getScale().x(), getScale().y()));
+    }
+
+    @Override
     public void update(EffigySprite effigy) {
         setRatioX(effigy.getRatioX());
         setRatioY(effigy.getRatioY());
@@ -33,18 +45,6 @@ public class EntityUI extends GraphicalEntity<EffigySprite> {
         EffigySprite effigySprite = new EffigySprite(null, true, true);
         effigySprite.setVisible(false);
         return effigySprite;
-    }
-
-    @Override
-    public void setPosition(Vector3fc position) {
-        super.setPosition(position);
-        setUiCenter(new Vector2f(getPosition().x(), getPosition().y()));
-    }
-
-    @Override
-    public void setScale(Vector3fc scale) {
-        super.setScale(scale);
-        setUiSize(new Vector2f(getScale().x(), getScale().y()));
     }
 
     public Vector3fc getVisualScale() {

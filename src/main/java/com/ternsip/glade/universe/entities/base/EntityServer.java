@@ -4,7 +4,6 @@ import com.ternsip.glade.universe.interfaces.IUniverseServer;
 import lombok.Getter;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
@@ -30,12 +29,12 @@ public abstract class EntityServer extends EntityBase implements IUniverseServer
     @Override
     public void writeToStream(ObjectOutputStream oos) throws Exception {}
 
-    @Nullable
-    protected abstract EntityClient produceEntityClient();
-
     public boolean isTransferable() {
         return getEntityClient() != null;
     }
+
+    @Nullable
+    protected abstract EntityClient produceEntityClient();
 
 
 }

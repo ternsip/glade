@@ -13,7 +13,9 @@ public abstract class EntityBase implements Transferable {
     private final UUID uuid = UUID.randomUUID();
 
     public abstract void register();
+
     public abstract void unregister();
+
     public abstract void update();
 
 }

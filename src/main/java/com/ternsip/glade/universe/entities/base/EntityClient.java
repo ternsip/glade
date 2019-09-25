@@ -28,6 +28,4 @@ public abstract class EntityClient extends EntityBase implements Serializable, I
     public void writeToStream(ObjectOutputStream oos) throws Exception {}
 
 
-
-
 }
