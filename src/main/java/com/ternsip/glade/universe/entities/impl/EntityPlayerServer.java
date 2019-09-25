@@ -27,14 +27,11 @@ public class EntityPlayerServer extends GraphicalEntityServer {
     private transient Vector3ic previousPosition = new Vector3i(-1000);
 
     private Vector3f moveEffort = new Vector3f(0);
-    private float velocity = 0.1f;
-    private float cameraYRotation = 0;
     private LineSegmentf eyeSegment = new LineSegmentf();
 
     private Vector3f currentVelocity = new Vector3f(0);
     private float jumpPower = 0.3f;
     private boolean onTheGround = false;
-    private float height = 2;
     private float skyIntensity = 0;
 
     @Override
@@ -70,8 +67,6 @@ public class EntityPlayerServer extends GraphicalEntityServer {
     @Override
     public void readFromStream(ObjectInputStream ois) throws Exception {
         getMoveEffort().readExternal(ois);
-        setVelocity(ois.readFloat());
-        setCameraYRotation(ois.readFloat());
         getEyeSegment().readExternal(ois);
         getVolumetric().setRotation(new Vector3f(ois.readFloat(), ois.readFloat(), ois.readFloat()));
         getVolumetric().setVisible(ois.readBoolean());

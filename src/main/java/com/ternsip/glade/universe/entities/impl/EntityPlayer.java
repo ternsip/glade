@@ -101,8 +101,6 @@ public class EntityPlayer extends GraphicalEntity<EffigyBoy> {
     @Override
     public void writeToStream(ObjectOutputStream oos) throws Exception {
         getMoveEffort().writeExternal(oos);
-        oos.writeFloat(getVelocity());
-        oos.writeFloat(getCameraYRotation());
         getEyeSegment().writeExternal(oos);
         oos.writeFloat(getRotation().x());
         oos.writeFloat(getRotation().y());
