@@ -1,10 +1,12 @@
 package com.ternsip.glade.universe.entities.repository;
 
 import com.ternsip.glade.universe.entities.base.EntityBase;
+import com.ternsip.glade.universe.entities.base.GraphicalEntity;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
+import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,15 +19,22 @@ public abstract class EntityRepository<K extends EntityBase> {
     private final ConcurrentHashMap<UUID, K> uuidToEntity = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Class, K> classToEntity = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<UUID, K> uuidToTransferable = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<UUID, GraphicalEntity> uuidToGraphicalEntity = new ConcurrentHashMap<>();
 
     public <T extends K> void register(T entity) {
         getUuidToEntity().put(entity.getUuid(), entity);
         getClassToEntity().put(entity.getClass(), entity);
+        if (entity instanceof GraphicalEntity) {
+            getUuidToGraphicalEntity().put(entity.getUuid(), (GraphicalEntity) entity);
+        }
     }
 
     public <T extends K> void unregister(T entity) {
         getUuidToEntity().remove(entity.getUuid());
         getClassToEntity().remove(entity.getClass());
+        if (entity instanceof GraphicalEntity) {
+            getUuidToGraphicalEntity().remove(entity.getUuid());
+        }
     }
 
     public <T extends K> void registerTransferable(T entity) {
@@ -61,6 +70,10 @@ public abstract class EntityRepository<K extends EntityBase> {
             throw new IllegalArgumentException(String.format("Entity with class - %s does not exist", clazz));
         }
         return (T)getClassToEntity().get(clazz);
+    }
+
+    public Collection<GraphicalEntity> getGraphicalEntities() {
+        return getUuidToGraphicalEntity().values();
     }
 
     @SneakyThrows
