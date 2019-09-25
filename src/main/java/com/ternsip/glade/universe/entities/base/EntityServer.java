@@ -25,10 +25,10 @@ public abstract class EntityServer extends EntityBase implements IUniverseServer
     }
 
     @Override
-    public void readFromStream(ObjectInputStream ois) throws IOException {}
+    public void readFromStream(ObjectInputStream ois) throws Exception {}
 
     @Override
-    public void writeToStream(ObjectOutputStream oos) throws IOException {}
+    public void writeToStream(ObjectOutputStream oos) throws Exception {}
 
     @Nullable
     protected abstract EntityClient produceEntityClient();

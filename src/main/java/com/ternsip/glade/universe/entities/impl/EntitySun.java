@@ -35,7 +35,7 @@ public class EntitySun extends GraphicalEntity<EffigySky> {
     }
 
     @Override
-    public void readFromStream(ObjectInputStream ois) throws IOException {
+    public void readFromStream(ObjectInputStream ois) throws Exception {
         super.readFromStream(ois);
         setPhase(ois.readFloat());
         setDelta(ois.readFloat());

@@ -10,7 +10,6 @@ import org.joml.Vector3f;
 import org.joml.Vector3fc;
 import org.joml.Vector3i;
 
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
@@ -37,14 +36,14 @@ public class EntityStatistics extends GraphicalEntity<EffigyDummy> {
     }
 
     @Override
-    public void readFromStream(ObjectInputStream ois) throws IOException {
+    public void readFromStream(ObjectInputStream ois) throws Exception {
         super.readFromStream(ois);
         setLookingAtBlock(Block.getBlockByIndex(ois.readInt()));
         getLookingAtBlockPosition().set(ois.readInt(), ois.readInt(), ois.readInt());
     }
 
     @Override
-    public void writeToStream(ObjectOutputStream oos) throws IOException {
+    public void writeToStream(ObjectOutputStream oos) throws Exception {
         super.writeToStream(oos);
         oos.writeFloat(getEyeSegment().aX);
         oos.writeFloat(getEyeSegment().aY);

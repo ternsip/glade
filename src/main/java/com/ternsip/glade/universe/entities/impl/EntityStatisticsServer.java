@@ -10,7 +10,6 @@ import org.joml.Vector3i;
 import org.joml.Vector3ic;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
@@ -42,7 +41,7 @@ public class EntityStatisticsServer extends GraphicalEntityServer {
     }
 
     @Override
-    public void readFromStream(ObjectInputStream ois) throws IOException {
+    public void readFromStream(ObjectInputStream ois) throws Exception {
         super.readFromStream(ois);
         getEyeSegment().aX = ois.readFloat();
         getEyeSegment().aY = ois.readFloat();
@@ -53,7 +52,7 @@ public class EntityStatisticsServer extends GraphicalEntityServer {
     }
 
     @Override
-    public void writeToStream(ObjectOutputStream oos) throws IOException {
+    public void writeToStream(ObjectOutputStream oos) throws Exception {
         super.writeToStream(oos);
         oos.writeInt(getLookingAtBlock().getIndex());
         oos.writeInt(getLookingAtBlockPosition().x());

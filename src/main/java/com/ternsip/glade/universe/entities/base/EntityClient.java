@@ -3,7 +3,6 @@ package com.ternsip.glade.universe.entities.base;
 import com.ternsip.glade.universe.interfaces.IUniverseClient;
 import lombok.Getter;
 
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -23,10 +22,10 @@ public abstract class EntityClient extends EntityBase implements Serializable, I
     }
 
     @Override
-    public void readFromStream(ObjectInputStream ois) throws IOException {}
+    public void readFromStream(ObjectInputStream ois) throws Exception {}
 
     @Override
-    public void writeToStream(ObjectOutputStream oos) throws IOException {}
+    public void writeToStream(ObjectOutputStream oos) throws Exception {}
 
 
 

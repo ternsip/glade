@@ -11,7 +11,6 @@ import lombok.Setter;
 import org.joml.*;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.Math;
@@ -69,23 +68,18 @@ public class EntityPlayerServer extends GraphicalEntityServer {
     }
 
     @Override
-    public void readFromStream(ObjectInputStream ois) throws IOException {
-        getMoveEffort().set(ois.readFloat(), ois.readFloat(), ois.readFloat());
+    public void readFromStream(ObjectInputStream ois) throws Exception {
+        getMoveEffort().readExternal(ois);
         setVelocity(ois.readFloat());
         setCameraYRotation(ois.readFloat());
-        getEyeSegment().aX = ois.readFloat();
-        getEyeSegment().aY = ois.readFloat();
-        getEyeSegment().aZ = ois.readFloat();
-        getEyeSegment().bX = ois.readFloat();
-        getEyeSegment().bY = ois.readFloat();
-        getEyeSegment().bZ = ois.readFloat();
+        getEyeSegment().readExternal(ois);
         getVolumetric().setRotation(new Vector3f(ois.readFloat(), ois.readFloat(), ois.readFloat()));
         getVolumetric().setVisible(ois.readBoolean());
         // TODO what if player only rotates, what another player could see (bug because not refreshed in time)
     }
 
     @Override
-    public void writeToStream(ObjectOutputStream oos) throws IOException {
+    public void writeToStream(ObjectOutputStream oos) throws Exception {
         oos.writeFloat(getSkyIntensity());
         oos.writeFloat(getPosition().x());
         oos.writeFloat(getPosition().y());

@@ -11,7 +11,6 @@ import org.joml.LineSegmentf;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
@@ -89,7 +88,7 @@ public class EntityPlayer extends GraphicalEntity<EffigyBoy> {
     }
 
     @Override
-    public void readFromStream(ObjectInputStream ois) throws IOException {
+    public void readFromStream(ObjectInputStream ois) throws Exception {
         setSkyIntensity(ois.readFloat());
         getVolumetricInterpolated().update(
                 ois.readFloat(), ois.readFloat(), ois.readFloat(),
@@ -100,18 +99,11 @@ public class EntityPlayer extends GraphicalEntity<EffigyBoy> {
     }
 
     @Override
-    public void writeToStream(ObjectOutputStream oos) throws IOException {
-        oos.writeFloat(getMoveEffort().x());
-        oos.writeFloat(getMoveEffort().y());
-        oos.writeFloat(getMoveEffort().z());
+    public void writeToStream(ObjectOutputStream oos) throws Exception {
+        getMoveEffort().writeExternal(oos);
         oos.writeFloat(getVelocity());
         oos.writeFloat(getCameraYRotation());
-        oos.writeFloat(getEyeSegment().aX);
-        oos.writeFloat(getEyeSegment().aY);
-        oos.writeFloat(getEyeSegment().aZ);
-        oos.writeFloat(getEyeSegment().bX);
-        oos.writeFloat(getEyeSegment().bY);
-        oos.writeFloat(getEyeSegment().bZ);
+        getEyeSegment().writeExternal(oos);
         oos.writeFloat(getRotation().x());
         oos.writeFloat(getRotation().y());
         oos.writeFloat(getRotation().z());
@@ -123,6 +115,7 @@ public class EntityPlayer extends GraphicalEntity<EffigyBoy> {
             getUniverseClient().getClient().send(new PlayerActionPacket(this, EntityPlayerServer.Action.RESPAWN));
         }
         if (event.getKey() == GLFW_KEY_T && event.getAction() == GLFW_PRESS) {
+            // TODO sometimes does not work by some reason
             getUniverseClient().getClient().send(new PlayerActionPacket(this, EntityPlayerServer.Action.TELEPORT_FAR));
         }
         if (event.getKey() == GLFW_KEY_SPACE && event.getAction() == GLFW_PRESS) {

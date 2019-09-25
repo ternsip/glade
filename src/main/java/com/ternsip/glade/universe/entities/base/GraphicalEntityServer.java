@@ -3,7 +3,6 @@ package com.ternsip.glade.universe.entities.base;
 import lombok.Getter;
 import lombok.experimental.Delegate;
 
-import java.io.IOException;
 import java.io.ObjectOutputStream;
 
 @Getter
@@ -13,7 +12,7 @@ public abstract class GraphicalEntityServer extends EntityServer {
     private final Volumetric volumetric = new Volumetric();
 
     @Override
-    public void writeToStream(ObjectOutputStream oos) throws IOException {
+    public void writeToStream(ObjectOutputStream oos) throws Exception {
         oos.writeFloat(getPosition().x());
         oos.writeFloat(getPosition().y());
         oos.writeFloat(getPosition().z());

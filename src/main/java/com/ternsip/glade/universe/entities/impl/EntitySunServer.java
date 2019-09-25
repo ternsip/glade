@@ -42,7 +42,7 @@ public class EntitySunServer extends GraphicalEntityServer {
     }
 
     @Override
-    public void writeToStream(ObjectOutputStream oos) throws IOException {
+    public void writeToStream(ObjectOutputStream oos) throws Exception {
         super.writeToStream(oos);
         oos.writeFloat(getPhase());
         oos.writeFloat(getDelta());

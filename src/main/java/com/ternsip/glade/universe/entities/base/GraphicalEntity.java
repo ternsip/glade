@@ -24,7 +24,7 @@ public abstract class GraphicalEntity<T extends Effigy> extends EntityClient {
     public abstract T getEffigy();
 
     @Override
-    public void readFromStream(ObjectInputStream ois) throws IOException {
+    public void readFromStream(ObjectInputStream ois) throws Exception {
         getVolumetricInterpolated().update(
                 ois.readFloat(), ois.readFloat(), ois.readFloat(),
                 ois.readFloat(), ois.readFloat(), ois.readFloat(),
