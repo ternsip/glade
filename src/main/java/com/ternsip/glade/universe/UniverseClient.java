@@ -3,8 +3,10 @@ package com.ternsip.glade.universe;
 import com.ternsip.glade.common.events.base.Callback;
 import com.ternsip.glade.common.events.network.OnConnectedToServer;
 import com.ternsip.glade.common.logic.Threadable;
+import com.ternsip.glade.graphics.visual.impl.basis.EffigyAxis;
 import com.ternsip.glade.network.INetworkClientEventReceiver;
 import com.ternsip.glade.universe.bindings.Bind;
+import com.ternsip.glade.universe.entities.base.EntityGeneric;
 import com.ternsip.glade.universe.entities.impl.EntitySides;
 import com.ternsip.glade.universe.entities.impl.EntitySprite;
 import com.ternsip.glade.universe.entities.impl.EntityStatistics2D;
@@ -69,6 +71,8 @@ public class UniverseClient implements Threadable, INetworkClient, IBindings, IS
         aim.setScale(new Vector3f(0.01f));
         aim.register();
         getEntityClientRepository().setAim(aim);
+
+        new EntityGeneric(EffigyAxis::new).register();
 
         getBindings().addBindCallback(Bind.TEST_BUTTON, () -> getClient().send(new ConsoleMessageServerPacket("HELLO 123")));
 

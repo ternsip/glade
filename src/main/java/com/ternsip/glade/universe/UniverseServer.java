@@ -1,7 +1,6 @@
 package com.ternsip.glade.universe;
 
 import com.ternsip.glade.common.logic.Threadable;
-import com.ternsip.glade.graphics.visual.impl.basis.EffigyAxis;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigyDynamicText;
 import com.ternsip.glade.graphics.visual.impl.test.*;
 import com.ternsip.glade.network.INetworkServerEventReceiver;
@@ -113,9 +112,6 @@ public class UniverseServer implements Threadable, INetworkServer, IBlocksReposi
                 hagrid1.setScale(new Vector3f(15, 15, 15));
             }
         }
-
-        // TODO make it client-side
-        new EntityGenericServer(EffigyAxis::new).register();
 
         new EntityPlayersControllerServer().register();
 

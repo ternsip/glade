@@ -13,6 +13,11 @@ import java.util.Arrays;
 public class EffigyAxis extends EffigyAnimated {
 
     @Override
+    public float getSkyIntensity() {
+        return 1;
+    }
+
+    @Override
     public Matrix4fc getTransformationMatrix() {
         Vector3fc totalScale = getAdjustedScale().mul(getAnimation().getModel().getNormalizingScale());
         Matrix4fc view = getGraphics().getCamera().getViewMatrix();
@@ -41,5 +46,4 @@ public class EffigyAxis extends EffigyAnimated {
     public boolean isGraphicalInsideFrustum() {
         return true;
     }
-
 }
