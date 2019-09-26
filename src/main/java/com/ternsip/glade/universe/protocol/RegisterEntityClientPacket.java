@@ -20,15 +20,15 @@ import java.util.stream.Collectors;
 
 @Getter
 @Slf4j
-public class RegisterEntityPacket extends ClientPacket {
+public class RegisterEntityClientPacket extends ClientPacket {
 
     private static final Map<Class<? extends EntityClient>, Set<Field>> CLASS_TO_SERIALIZABLE_FIELDS = new HashMap<>();
 
     private final Class<? extends EntityClient> clazz;
     private final Map<String, Object> initialValues;
 
-    public RegisterEntityPacket(EntityServer entityServer) {
-        EntityClient entity = entityServer.getEntityClient();
+    public RegisterEntityClientPacket(EntityServer entityServer, Connection connection) {
+        EntityClient entity = entityServer.getEntityClient(connection);
         this.clazz = entity.getClass();
         this.initialValues = CLASS_TO_SERIALIZABLE_FIELDS
                 .computeIfAbsent(entity.getClass(), k -> findAllSerializableFields(entity.getClass()))
@@ -61,7 +61,6 @@ public class RegisterEntityPacket extends ClientPacket {
             throw new IllegalArgumentException(String.format("Entity already exists %s", entity.getUuid()));
         }
         entity.register();
-        getUniverseClient().getEntityClientRepository().registerTransferable(entity);
     }
 
     @SneakyThrows

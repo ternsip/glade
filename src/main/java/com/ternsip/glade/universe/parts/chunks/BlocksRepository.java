@@ -6,7 +6,7 @@ import com.ternsip.glade.universe.interfaces.IUniverseServer;
 import com.ternsip.glade.universe.parts.blocks.Block;
 import com.ternsip.glade.universe.parts.blocks.BlockSide;
 import com.ternsip.glade.universe.parts.generators.ChunkGenerator;
-import com.ternsip.glade.universe.protocol.BlocksUpdatePacket;
+import com.ternsip.glade.universe.protocol.BlocksUpdateClientPacket;
 import com.ternsip.glade.universe.storage.Storage;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -290,7 +290,7 @@ public class BlocksRepository implements Threadable, IUniverseServer {
             }
         }
         if (!blocksUpdates.isEmpty()) {
-            getUniverseServer().getServer().send(new BlocksUpdatePacket(blocksUpdates), connection -> true);
+            getUniverseServer().getServer().send(new BlocksUpdateClientPacket(blocksUpdates), getUniverseServer().getEntityServerRepository().getConnectionInitiatedCondition());
         }
     }
 
@@ -487,7 +487,7 @@ public class BlocksRepository implements Threadable, IUniverseServer {
         }
 
         if (collectChanges && !blocksUpdate.isEmpty()) {
-            getUniverseServer().getServer().send(new BlocksUpdatePacket(Collections.singletonList(blocksUpdate)), connection -> true);
+            getUniverseServer().getServer().send(new BlocksUpdateClientPacket(Collections.singletonList(blocksUpdate)), getUniverseServer().getEntityServerRepository().getConnectionInitiatedCondition());
         }
 
         relaxChunks();

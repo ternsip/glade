@@ -7,7 +7,6 @@ import com.ternsip.glade.universe.entities.base.EntityClient;
 import com.ternsip.glade.universe.entities.base.EntityGeneric;
 import com.ternsip.glade.universe.entities.base.GraphicalEntity;
 import com.ternsip.glade.universe.interfaces.IUniverseClient;
-import com.ternsip.glade.universe.protocol.EntitiesStateServerPacket;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,10 +23,6 @@ public class EntityClientRepository extends EntityRepository<EntityClient> imple
 
     public void update() {
         getUuidToEntity().values().forEach(EntityBase::update);
-        if (getNetworkTimer().isOver() && !getUuidToTransferable().isEmpty()) {
-            getUniverseClient().getClient().send(new EntitiesStateServerPacket(getEntitiesState()));
-            getNetworkTimer().drop();
-        }
     }
 
 }

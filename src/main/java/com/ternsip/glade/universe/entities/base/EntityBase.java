@@ -8,7 +8,7 @@ import java.util.UUID;
  * Class should be thread safe
  */
 @Getter
-public abstract class EntityBase implements Transferable {
+public abstract class EntityBase {
 
     private final UUID uuid = UUID.randomUUID();
 

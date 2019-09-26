@@ -2,16 +2,16 @@ package com.ternsip.glade.universe.entities.impl;
 
 import com.ternsip.glade.common.logic.Maths;
 import com.ternsip.glade.common.logic.Timer;
+import com.ternsip.glade.network.Connection;
 import com.ternsip.glade.universe.collisions.base.Collision;
 import com.ternsip.glade.universe.entities.base.EntityClient;
 import com.ternsip.glade.universe.entities.base.GraphicalEntityServer;
 import com.ternsip.glade.universe.parts.blocks.Block;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.joml.*;
 
-import javax.annotation.Nullable;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.Math;
 import java.util.List;
@@ -19,12 +19,15 @@ import java.util.List;
 import static com.ternsip.glade.common.logic.Maths.*;
 import static com.ternsip.glade.universe.parts.chunks.BlocksRepository.MAX_LIGHT_LEVEL;
 
+@RequiredArgsConstructor
 @Getter
 @Setter
 public class EntityPlayerServer extends GraphicalEntityServer {
 
     private transient final Timer blocksUpdateCheckTimer = new Timer(250);
     private transient Vector3ic previousPosition = new Vector3i(-1000);
+
+    private final Connection allowedConnection;
 
     private Vector3f moveEffort = new Vector3f(0);
     private LineSegmentf eyeSegment = new LineSegmentf();
@@ -65,29 +68,14 @@ public class EntityPlayerServer extends GraphicalEntityServer {
     }
 
     @Override
-    public void readFromStream(ObjectInputStream ois) throws Exception {
-        getMoveEffort().readExternal(ois);
-        getEyeSegment().readExternal(ois);
-        getVolumetric().setRotation(new Vector3f(ois.readFloat(), ois.readFloat(), ois.readFloat()));
-        getVolumetric().setVisible(ois.readBoolean());
-        // TODO what if player only rotates, what another player could see (bug because not refreshed in time)
-    }
-
-    @Override
     public void writeToStream(ObjectOutputStream oos) throws Exception {
+        super.writeToStream(oos);
         oos.writeFloat(getSkyIntensity());
-        oos.writeFloat(getPosition().x());
-        oos.writeFloat(getPosition().y());
-        oos.writeFloat(getPosition().z());
-        oos.writeFloat(getScale().x());
-        oos.writeFloat(getScale().y());
-        oos.writeFloat(getScale().z());
     }
 
-    @Nullable
     @Override
-    protected EntityClient produceEntityClient() {
-        return new EntityPlayer(); // TODO handle different connections
+    public EntityClient getEntityClient(Connection connection) {
+        return connection == getAllowedConnection() ? new EntityPlayer() : new EntityAnotherPlayer();
     }
 
     private Vector3i getBlockPositionStandingOn() {

@@ -181,13 +181,13 @@ public class Utils {
     }
 
     @SneakyThrows
-    public static Method findDeclaredMethodInHierarchy(Class<?> objectClass, String methodName) {
+    public static Method findDeclaredMethodInHierarchy(Class<?> objectClass, String methodName, Class<?>... parameterTypes) {
         Class<?> targetClass = objectClass;
         while (targetClass != null) {
             try {
-                return objectClass.getDeclaredMethod(methodName);
+                return targetClass.getDeclaredMethod(methodName, parameterTypes);
             } catch (NoSuchMethodException e) {
-                targetClass = objectClass.getSuperclass();
+                targetClass = targetClass.getSuperclass();
             }
         }
         String msg = String.format("Can't find method %s anywhere in the class %s", methodName, objectClass.getName());

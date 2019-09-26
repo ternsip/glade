@@ -11,7 +11,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Getter
-public class BlocksUpdatePacket extends ClientPacket {
+public class BlocksUpdateClientPacket extends ClientPacket {
 
     private final List<BlocksUpdate> blocksUpdate;
 

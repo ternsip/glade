@@ -10,16 +10,15 @@ import com.ternsip.glade.universe.entities.base.EntityBase;
 import com.ternsip.glade.universe.entities.base.EntityServer;
 import com.ternsip.glade.universe.interfaces.IUniverseServer;
 import com.ternsip.glade.universe.protocol.EntitiesStateClientPacket;
-import com.ternsip.glade.universe.protocol.InitiateConnectionPacket;
-import com.ternsip.glade.universe.protocol.RegisterEntityPacket;
-import com.ternsip.glade.universe.protocol.UnregisterEntityPacket;
+import com.ternsip.glade.universe.protocol.InitiateConnectionClientPacket;
+import com.ternsip.glade.universe.protocol.RegisterEntityClientPacket;
+import com.ternsip.glade.universe.protocol.UnregisterEntityClientPacket;
 import lombok.AccessLevel;
 import lombok.Getter;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 
 @Getter(value = AccessLevel.PRIVATE)
 public class EntityServerRepository extends EntityRepository<EntityServer> implements IUniverseServer {
@@ -36,26 +35,24 @@ public class EntityServerRepository extends EntityRepository<EntityServer> imple
     }
 
     @Override
-    public <T extends EntityServer> void register(T entity) {
+    public synchronized <T extends EntityServer> void register(T entity) {
         super.register(entity);
         if (entity instanceof Obstacle) {
             getUniverseServer().getCollisions().add((Obstacle) entity);
         }
         if (entity.isTransferable()) {
-            getInitiatedConnections().forEach(connection -> getUniverseServer().getServer().send(new RegisterEntityPacket(entity), connection));
-            registerTransferable(entity);
+            getInitiatedConnections().forEach(connection -> getUniverseServer().getServer().send(new RegisterEntityClientPacket(entity, connection), connection));
         }
     }
 
     @Override
-    public <T extends EntityServer> void unregister(T entity) {
+    public synchronized <T extends EntityServer> void unregister(T entity) {
         super.unregister(entity);
         if (entity instanceof Obstacle) {
             getUniverseServer().getCollisions().remove((Obstacle) entity);
         }
         if (entity.isTransferable()) {
-            unregisterTransferable(entity.getUuid());
-            getInitiatedConnections().forEach(connection -> getUniverseServer().getServer().send(new UnregisterEntityPacket(entity.getUuid()), connection));
+            getUniverseServer().getServer().send(new UnregisterEntityClientPacket(entity), getConnectionInitiatedCondition());
         }
     }
 
@@ -66,24 +63,25 @@ public class EntityServerRepository extends EntityRepository<EntityServer> imple
         getUniverseServer().getNetworkServerEventReceiver().unregisterCallback(OnClientDisconnect.class, getOnClientDisconnectCallback());
     }
 
-    public void update() {
+    public synchronized void update() {
         getUuidToEntity().values().forEach(EntityBase::update);
-        if (getNetworkTimer().isOver() && !getUuidToTransferable().isEmpty()) {
-            getUniverseServer().getServer().send(new EntitiesStateClientPacket(getEntitiesState()), connection -> getInitiatedConnections().contains(connection));
+        if (getUniverseServer().getServer().getServerHolder().isActive() && getNetworkTimer().isOver()) {
+           getUniverseServer().getServer().send(new EntitiesStateClientPacket(getUuidToEntity().values()), getConnectionInitiatedCondition());
             getNetworkTimer().drop();
         }
     }
 
-    private void onClientConnect(OnClientConnect onClientConnect) {
-        Collection<RegisterEntityPacket> subPackets = getUuidToTransferable().values().stream().map(RegisterEntityPacket::new).collect(Collectors.toList());
-        getUniverseServer().getServer().send(new InitiateConnectionPacket(subPackets), connection -> connection == onClientConnect.getConnection());
+    public Function<Connection, Boolean> getConnectionInitiatedCondition() {
+        return connection -> getInitiatedConnections().contains(connection);
+    }
+
+    private synchronized void onClientConnect(OnClientConnect onClientConnect) {
+        getUniverseServer().getServer().send(new InitiateConnectionClientPacket(getUuidToEntity().values(), onClientConnect.getConnection()), onClientConnect.getConnection());
         getInitiatedConnections().add(onClientConnect.getConnection());
     }
 
-    private void onClientDisconnect(OnClientDisconnect onClientDisconnect) {
+    private synchronized void onClientDisconnect(OnClientDisconnect onClientDisconnect) {
         getInitiatedConnections().remove(onClientDisconnect.getConnection());
     }
-
-
 
 }

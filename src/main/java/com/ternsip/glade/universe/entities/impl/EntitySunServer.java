@@ -1,5 +1,6 @@
 package com.ternsip.glade.universe.entities.impl;
 
+import com.ternsip.glade.network.Connection;
 import com.ternsip.glade.universe.entities.base.EntityClient;
 import com.ternsip.glade.universe.entities.base.GraphicalEntityServer;
 import lombok.Getter;
@@ -7,8 +8,6 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
-import javax.annotation.Nullable;
-import java.io.IOException;
 import java.io.ObjectOutputStream;
 
 @Getter
@@ -27,9 +26,8 @@ public class EntitySunServer extends GraphicalEntityServer {
         setPosition(getCorePosition());
     }
 
-    @Nullable
     @Override
-    protected EntityClient produceEntityClient() {
+    public EntityClient getEntityClient(Connection connection) {
         return new EntitySun();
     }
 

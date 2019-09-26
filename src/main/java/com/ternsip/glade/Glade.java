@@ -44,6 +44,7 @@ import java.util.Set;
 // TODO add log messages to important processes
 // TODO work with nullable effigy
 // TODO use stream to write data via network for entities
+// TODO add packet receive limitation (implement inside network server)
 public class Glade {
 
     public static void main(String[] args) {

@@ -1,16 +1,17 @@
 package com.ternsip.glade.universe.entities.base;
 
+import com.ternsip.glade.common.logic.Utils;
+import com.ternsip.glade.network.Connection;
 import com.ternsip.glade.universe.interfaces.IUniverseServer;
-import lombok.Getter;
 
-import javax.annotation.Nullable;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class EntityServer extends EntityBase implements IUniverseServer {
 
-    @Getter(lazy = true)
-    private final EntityClient entityClient = produceEntityClient();
+    private static final Map<Class, Boolean> CLASS_IS_TRANSFERABLE = new HashMap<>();
 
     public void register() {
         getUniverseServer().getEntityServerRepository().register(this);
@@ -23,18 +24,18 @@ public abstract class EntityServer extends EntityBase implements IUniverseServer
     public void update() {
     }
 
-    @Override
-    public void readFromStream(ObjectInputStream ois) throws Exception {}
-
-    @Override
     public void writeToStream(ObjectOutputStream oos) throws Exception {}
 
     public boolean isTransferable() {
-        return getEntityClient() != null;
+        return CLASS_IS_TRANSFERABLE.computeIfAbsent(getClass(), k -> {
+            Method realMethod = Utils.findDeclaredMethodInHierarchy(getClass(), "getEntityClient", Connection.class);
+            Method originalMethod = Utils.findDeclaredMethodInHierarchy(EntityServer.class, "getEntityClient", Connection.class);
+            return !realMethod.equals(originalMethod);
+        });
     }
 
-    @Nullable
-    protected abstract EntityClient produceEntityClient();
-
+    public EntityClient getEntityClient(Connection connection) {
+        return null;
+    }
 
 }

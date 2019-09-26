@@ -2,9 +2,11 @@ package com.ternsip.glade.universe.entities.impl;
 
 import com.ternsip.glade.common.events.base.Callback;
 import com.ternsip.glade.common.events.display.KeyEvent;
+import com.ternsip.glade.common.logic.Timer;
 import com.ternsip.glade.graphics.visual.impl.test.EffigyBoy;
 import com.ternsip.glade.universe.entities.base.GraphicalEntity;
-import com.ternsip.glade.universe.protocol.PlayerActionPacket;
+import com.ternsip.glade.universe.protocol.PlayerActionServerPacket;
+import com.ternsip.glade.universe.protocol.PlayerStateServerPacket;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.LineSegmentf;
@@ -12,7 +14,6 @@ import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 
 import static com.ternsip.glade.common.logic.Maths.*;
 import static org.lwjgl.glfw.GLFW.*;
@@ -22,6 +23,7 @@ import static org.lwjgl.glfw.GLFW.*;
 public class EntityPlayer extends GraphicalEntity<EffigyBoy> {
 
     private static final float ARM_LENGTH = 5f;
+    private transient final Timer stateSenderTimer = new Timer(50);// TODO get this value as a tickrate from options/balance
     private transient final Callback<KeyEvent> keyCallback = this::handleKeyEvent;
     private transient boolean thirdPerson = false;
 
@@ -30,7 +32,7 @@ public class EntityPlayer extends GraphicalEntity<EffigyBoy> {
     private float cameraYRotation = 0;
     private LineSegmentf eyeSegment = new LineSegmentf();
 
-    private float skyIntensity = 0;
+    private float skyIntensity = 0; // TODO make it for all entities
 
     @Override
     public void register() {
@@ -85,45 +87,49 @@ public class EntityPlayer extends GraphicalEntity<EffigyBoy> {
             move.add(LEFT_DIRECTION);
         }
         setMoveEffort(normalizeOrEmpty(move).mul(getVelocity(), new Vector3f()));
+        if (getStateSenderTimer().isOver()) {
+            getUniverseClient().getClient().send(new PlayerStateServerPacket(getUuid(), getMoveEffort(), getEyeSegment(), new Vector3f(getRotation())));
+            getStateSenderTimer().drop();
+        }
     }
 
     @Override
     public void readFromStream(ObjectInputStream ois) throws Exception {
+        float px = ois.readFloat();
+        float py = ois.readFloat();
+        float pz = ois.readFloat();
+        float rx = ois.readFloat();
+        float ry = ois.readFloat();
+        float rz = ois.readFloat();
+        float sx = ois.readFloat();
+        float sy = ois.readFloat();
+        float sz = ois.readFloat();
+        boolean visible = ois.readBoolean();
         setSkyIntensity(ois.readFloat());
         getVolumetricInterpolated().update(
-                ois.readFloat(), ois.readFloat(), ois.readFloat(),
+                px, py, pz,
                 getRotation().x(), getRotation().y(), getRotation().z(),
-                ois.readFloat(), ois.readFloat(), ois.readFloat(),
+                sx, sy, sz,
                 isVisible()
         );
     }
 
-    @Override
-    public void writeToStream(ObjectOutputStream oos) throws Exception {
-        getMoveEffort().writeExternal(oos);
-        getEyeSegment().writeExternal(oos);
-        oos.writeFloat(getRotation().x());
-        oos.writeFloat(getRotation().y());
-        oos.writeFloat(getRotation().z());
-        oos.writeBoolean(isVisible());
-    }
-
     private void handleKeyEvent(KeyEvent event) {
         if (event.getKey() == GLFW_KEY_R && event.getAction() == GLFW_PRESS) {
-            getUniverseClient().getClient().send(new PlayerActionPacket(this, EntityPlayerServer.Action.RESPAWN));
+            getUniverseClient().getClient().send(new PlayerActionServerPacket(getUuid(), EntityPlayerServer.Action.RESPAWN));
         }
         if (event.getKey() == GLFW_KEY_T && event.getAction() == GLFW_PRESS) {
             // TODO sometimes does not work by some reason
-            getUniverseClient().getClient().send(new PlayerActionPacket(this, EntityPlayerServer.Action.TELEPORT_FAR));
+            getUniverseClient().getClient().send(new PlayerActionServerPacket(getUuid(), EntityPlayerServer.Action.TELEPORT_FAR));
         }
         if (event.getKey() == GLFW_KEY_SPACE && event.getAction() == GLFW_PRESS) {
-            getUniverseClient().getClient().send(new PlayerActionPacket(this, EntityPlayerServer.Action.JUMP));
+            getUniverseClient().getClient().send(new PlayerActionServerPacket(getUuid(), EntityPlayerServer.Action.JUMP));
         }
         if (event.getKey() == GLFW_KEY_B && event.getAction() == GLFW_PRESS) {
-            getUniverseClient().getClient().send(new PlayerActionPacket(this, EntityPlayerServer.Action.DESTROY_BLOCK_UNDER));
+            getUniverseClient().getClient().send(new PlayerActionServerPacket(getUuid(), EntityPlayerServer.Action.DESTROY_BLOCK_UNDER));
         }
         if (event.getKey() == GLFW_KEY_Q && event.getAction() == GLFW_PRESS) {
-            getUniverseClient().getClient().send(new PlayerActionPacket(this, EntityPlayerServer.Action.DESTROY_SELECTED_BLOCK));
+            getUniverseClient().getClient().send(new PlayerActionServerPacket(getUuid(), EntityPlayerServer.Action.DESTROY_SELECTED_BLOCK));
         }
     }
 

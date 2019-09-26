@@ -1,10 +1,9 @@
 package com.ternsip.glade.universe.entities.base;
 
+import com.ternsip.glade.network.Connection;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.joml.Vector3f;
-
-import javax.annotation.Nullable;
 
 @RequiredArgsConstructor
 @Getter
@@ -18,9 +17,8 @@ public class EntityGenericServer extends GraphicalEntityServer {
         this.rotationSpeed = new Vector3f(0);
     }
 
-    @Nullable
     @Override
-    protected EntityClient produceEntityClient() {
+    public EntityClient getEntityClient(Connection connection) {
         return new EntityGeneric(getEffigySupplier(), getRotationSpeed());
     }
 }

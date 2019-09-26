@@ -10,7 +10,7 @@ import com.ternsip.glade.universe.entities.impl.EntitySprite;
 import com.ternsip.glade.universe.entities.impl.EntityStatistics2D;
 import com.ternsip.glade.universe.entities.ui.EntityUIMenu;
 import com.ternsip.glade.universe.interfaces.*;
-import com.ternsip.glade.universe.protocol.ConsoleMessagePacket;
+import com.ternsip.glade.universe.protocol.ConsoleMessageServerPacket;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -70,7 +70,7 @@ public class UniverseClient implements Threadable, INetworkClient, IBindings, IS
         aim.register();
         getEntityClientRepository().setAim(aim);
 
-        getBindings().addBindCallback(Bind.TEST_BUTTON, () -> getClient().send(new ConsoleMessagePacket("HELLO 123")));
+        getBindings().addBindCallback(Bind.TEST_BUTTON, () -> getClient().send(new ConsoleMessageServerPacket("HELLO 123")));
 
         new EntitySides().register();
     }

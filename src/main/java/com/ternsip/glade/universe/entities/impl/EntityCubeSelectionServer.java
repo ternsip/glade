@@ -1,6 +1,7 @@
 package com.ternsip.glade.universe.entities.impl;
 
 import com.ternsip.glade.graphics.visual.impl.test.EffigyCube;
+import com.ternsip.glade.network.Connection;
 import com.ternsip.glade.universe.entities.base.EntityClient;
 import com.ternsip.glade.universe.entities.base.EntityGeneric;
 import com.ternsip.glade.universe.entities.base.GraphicalEntityServer;
@@ -10,8 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.joml.LineSegmentf;
 import org.joml.Vector3f;
 import org.joml.Vector3ic;
-
-import javax.annotation.Nullable;
 
 @RequiredArgsConstructor
 @Getter
@@ -32,9 +31,8 @@ public class EntityCubeSelectionServer extends GraphicalEntityServer {
         }
     }
 
-    @Nullable
     @Override
-    protected EntityClient produceEntityClient() {
+    public EntityClient getEntityClient(Connection connection) {
         return new EntityGeneric(EffigyCube::new);
     }
 }
