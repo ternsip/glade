@@ -8,12 +8,14 @@ import com.ternsip.glade.graphics.shader.base.ShaderProgram;
 import com.ternsip.glade.universe.entities.base.Volumetric;
 import com.ternsip.glade.universe.interfaces.IUniverseClient;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.Delegate;
 import org.joml.*;
 
 import java.lang.Math;
 
 @Getter
+@Setter
 public abstract class Effigy<SHADER extends ShaderProgram> implements IGraphics, IUniverseClient {
 
     @Delegate
@@ -24,6 +26,8 @@ public abstract class Effigy<SHADER extends ShaderProgram> implements IGraphics,
 
     @Getter(lazy = true)
     private final SHADER shader = getGraphics().getShaderRepository().getShader(this);
+
+    private float skyIntensity = 1;
 
     public Matrix4fc getTransformationMatrix() {
         Vector3fc totalScale = getAdjustedScale().mul(getModel().getNormalizingScale());

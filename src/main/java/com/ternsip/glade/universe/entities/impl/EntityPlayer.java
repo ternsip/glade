@@ -32,8 +32,6 @@ public class EntityPlayer extends GraphicalEntity<EffigyBoy> {
     private float cameraYRotation = 0;
     private LineSegmentf eyeSegment = new LineSegmentf();
 
-    private float skyIntensity = 0; // TODO make it for all entities
-
     @Override
     public void register() {
         super.register();
@@ -58,7 +56,6 @@ public class EntityPlayer extends GraphicalEntity<EffigyBoy> {
             Vector3fc direction = effigy.getGraphics().getCameraController().getLookDirection().mul(ARM_LENGTH, new Vector3f());
             setEyeSegment(new LineSegmentf(eye, eye.add(direction, new Vector3f())));
         }
-        effigy.setSkyIntensity(getSkyIntensity());
     }
 
     @Override
@@ -105,13 +102,13 @@ public class EntityPlayer extends GraphicalEntity<EffigyBoy> {
         float sy = ois.readFloat();
         float sz = ois.readFloat();
         boolean visible = ois.readBoolean();
-        setSkyIntensity(ois.readFloat());
         getVolumetricInterpolated().update(
                 px, py, pz,
                 getRotation().x(), getRotation().y(), getRotation().z(),
                 sx, sy, sz,
                 isVisible()
         );
+        setSkyIntensity(ois.readFloat());
     }
 
     private void handleKeyEvent(KeyEvent event) {

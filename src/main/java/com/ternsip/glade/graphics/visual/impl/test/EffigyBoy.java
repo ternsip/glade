@@ -14,8 +14,6 @@ import java.io.File;
 @Setter
 public class EffigyBoy extends EffigyAnimated {
 
-    public float skyIntensity = 0;
-
     public Model loadModel() {
         return ModelLoader.loadModel(Settings
                 .builder()

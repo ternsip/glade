@@ -2,18 +2,23 @@ package com.ternsip.glade.universe.entities.base;
 
 import com.ternsip.glade.graphics.visual.base.Effigy;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.Delegate;
 
 import java.io.ObjectInputStream;
 
 @Getter
+@Setter
 public abstract class GraphicalEntity<T extends Effigy> extends EntityClient {
 
     @Delegate
     private final VolumetricInterpolated volumetricInterpolated = new VolumetricInterpolated();
 
+    private float skyIntensity;
+
     public void update(T effigy) {
         effigy.setFromVolumetricInterpolated(getVolumetricInterpolated());
+        effigy.setSkyIntensity(getSkyIntensity());
     }
 
     /**
@@ -30,6 +35,7 @@ public abstract class GraphicalEntity<T extends Effigy> extends EntityClient {
                 ois.readFloat(), ois.readFloat(), ois.readFloat(),
                 ois.readBoolean()
         );
+        setSkyIntensity(ois.readFloat());
     }
 
 }

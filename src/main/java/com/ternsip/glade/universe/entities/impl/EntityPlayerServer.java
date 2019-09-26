@@ -17,7 +17,6 @@ import java.lang.Math;
 import java.util.List;
 
 import static com.ternsip.glade.common.logic.Maths.*;
-import static com.ternsip.glade.universe.parts.chunks.BlocksRepository.MAX_LIGHT_LEVEL;
 
 @RequiredArgsConstructor
 @Getter
@@ -35,7 +34,6 @@ public class EntityPlayerServer extends GraphicalEntityServer {
     private Vector3f currentVelocity = new Vector3f(0);
     private float jumpPower = 0.3f;
     private boolean onTheGround = false;
-    private float skyIntensity = 0;
 
     @Override
     public void register() {
@@ -45,6 +43,7 @@ public class EntityPlayerServer extends GraphicalEntityServer {
 
     @Override
     public void update() {
+        super.update();
         Vector3f moveDirection = getMoveEffort().rotate(Maths.getRotationQuaternion(getRotation()), new Vector3f());
         getCurrentVelocity().add(getUniverseServer().getBalance().getGravity());
         Vector3fc cPos = getPosition();
@@ -59,8 +58,6 @@ public class EntityPlayerServer extends GraphicalEntityServer {
         if (isOnTheGround()) {
             getCurrentVelocity().y = 0;
         }
-        Vector3ic blockPos = round(getPosition());
-        setSkyIntensity(getUniverseServer().getBlocksRepository().isBlockExists(blockPos) ? getUniverseServer().getBlocksRepository().getSkyLight(blockPos) / (float) MAX_LIGHT_LEVEL : 1);
         if (getBlocksUpdateCheckTimer().isOver()) {
             updateBlocksAround();
             getBlocksUpdateCheckTimer().drop();
@@ -70,7 +67,6 @@ public class EntityPlayerServer extends GraphicalEntityServer {
     @Override
     public void writeToStream(ObjectOutputStream oos) throws Exception {
         super.writeToStream(oos);
-        oos.writeFloat(getSkyIntensity());
     }
 
     @Override

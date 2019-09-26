@@ -57,10 +57,6 @@ public abstract class EffigyAnimated extends Effigy<AnimationShader> {
         return new LightSource(sun.getPositionInterpolated(), sun.getColor(), sun.getIntensity() * getSkyIntensity());
     }
 
-    public float getSkyIntensity() {
-        return 1;
-    }
-
     private void updateAnimation() {
         getAnimation().update();
     }
