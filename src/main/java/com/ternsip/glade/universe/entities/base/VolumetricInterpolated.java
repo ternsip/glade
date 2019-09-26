@@ -15,11 +15,11 @@ public class VolumetricInterpolated {
     private final AtomicLong lastTime = new AtomicLong(getCurrentTime());
     private final AtomicLong prevTime = new AtomicLong(getCurrentTime());
 
-    public void update(float px, float py, float pz, float rx, float ry, float rz, float sx, float sy, float sz, boolean visible) {
+    public void update(float px, float py, float pz, float rx, float ry, float rz, float sx, float sy, float sz, boolean visible, float skyIntensity, float emitIntensity) {
         getPrevVolumetric().setFromVolumetric(getLastVolumetric());
         getPrevTime().set(getLastTime().get());
         getLastTime().set(getCurrentTime());
-        getLastVolumetric().setFromValues(px, py, pz, rx, ry, rz, sx, sy, sz, visible);
+        getLastVolumetric().setFromValues(px, py, pz, rx, ry, rz, sx, sy, sz, visible, skyIntensity, emitIntensity);
     }
 
     public Vector3fc getPositionInterpolated() {
@@ -37,6 +37,22 @@ public class VolumetricInterpolated {
     public boolean isVisibleInterpolated() {
         // TODO make fade away effect (alpha 0f-1f) interpolated
         return getLastVolumetric().isVisible();
+    }
+
+    public float getSkyIntensity() {
+        return getLastVolumetric().getSkyIntensity();
+    }
+
+    public void setSkyIntensity(float skyIntensity) {
+        getLastVolumetric().setSkyIntensity(skyIntensity);
+    }
+
+    public float getEmitIntensity() {
+        return getLastVolumetric().getEmitIntensity();
+    }
+
+    public void setEmitIntensity(float emitIntensity) {
+        getLastVolumetric().setEmitIntensity(emitIntensity);
     }
 
     public Vector3fc getPosition() {

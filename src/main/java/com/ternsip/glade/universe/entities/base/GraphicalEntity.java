@@ -14,11 +14,10 @@ public abstract class GraphicalEntity<T extends Effigy> extends EntityClient {
     @Delegate
     private final VolumetricInterpolated volumetricInterpolated = new VolumetricInterpolated();
 
-    private float skyIntensity;
-
     public void update(T effigy) {
         effigy.setFromVolumetricInterpolated(getVolumetricInterpolated());
         effigy.setSkyIntensity(getSkyIntensity());
+        effigy.setEmitIntensity(getEmitIntensity());
     }
 
     /**
@@ -33,9 +32,10 @@ public abstract class GraphicalEntity<T extends Effigy> extends EntityClient {
                 ois.readFloat(), ois.readFloat(), ois.readFloat(),
                 ois.readFloat(), ois.readFloat(), ois.readFloat(),
                 ois.readFloat(), ois.readFloat(), ois.readFloat(),
-                ois.readBoolean()
+                ois.readBoolean(),
+                ois.readFloat(),
+                ois.readFloat()
         );
-        setSkyIntensity(ois.readFloat());
     }
 
 }

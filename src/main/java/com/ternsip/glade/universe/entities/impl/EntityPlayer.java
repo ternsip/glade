@@ -102,13 +102,16 @@ public class EntityPlayer extends GraphicalEntity<EffigyBoy> {
         float sy = ois.readFloat();
         float sz = ois.readFloat();
         boolean visible = ois.readBoolean();
+        float skyIntensity = ois.readFloat();
+        float emitIntensity = ois.readFloat();
         getVolumetricInterpolated().update(
                 px, py, pz,
                 getRotation().x(), getRotation().y(), getRotation().z(),
                 sx, sy, sz,
-                isVisible()
+                isVisible(),
+                skyIntensity,
+                emitIntensity
         );
-        setSkyIntensity(ois.readFloat());
     }
 
     private void handleKeyEvent(KeyEvent event) {

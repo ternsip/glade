@@ -17,8 +17,6 @@ public abstract class GraphicalEntityServer extends EntityServer {
     @Delegate
     private final Volumetric volumetric = new Volumetric();
 
-    private float skyIntensity;
-
     @Override
     public void update() {
         super.update();
@@ -39,6 +37,7 @@ public abstract class GraphicalEntityServer extends EntityServer {
         oos.writeFloat(getScale().z());
         oos.writeBoolean(isVisible());
         oos.writeFloat(getSkyIntensity());
+        oos.writeFloat(getEmitIntensity());
     }
 
 }
