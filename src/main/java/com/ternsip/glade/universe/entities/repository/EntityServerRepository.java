@@ -66,7 +66,7 @@ public class EntityServerRepository extends EntityRepository<EntityServer> imple
     public synchronized void update() {
         getUuidToEntity().values().forEach(EntityBase::update);
         if (getUniverseServer().getServer().getServerHolder().isActive() && getNetworkTimer().isOver()) {
-           getUniverseServer().getServer().send(new EntitiesStateClientPacket(getUuidToEntity().values()), getConnectionInitiatedCondition());
+            getUniverseServer().getServer().send(new EntitiesStateClientPacket(getUuidToEntity().values()), getConnectionInitiatedCondition());
             getNetworkTimer().drop();
         }
     }

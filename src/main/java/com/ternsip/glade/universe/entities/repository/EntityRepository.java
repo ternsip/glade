@@ -60,7 +60,7 @@ public abstract class EntityRepository<K extends EntityBase> {
         if (!getClassToEntity().containsKey(clazz)) {
             throw new IllegalArgumentException(String.format("Entity with class - %s does not exist", clazz));
         }
-        return (T)getClassToEntity().get(clazz);
+        return (T) getClassToEntity().get(clazz);
     }
 
     public Collection<GraphicalEntity> getGraphicalEntities() {

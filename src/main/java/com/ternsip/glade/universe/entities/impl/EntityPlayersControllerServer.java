@@ -16,7 +16,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public class EntityServerPlayers extends EntityServer {
+public class EntityPlayersControllerServer extends EntityServer {
 
     private Callback<OnClientConnect> onClientConnectCallback = this::onClientConnect;
     private Callback<OnClientDisconnect> onClientDisconnectCallback = this::onClientDisconnect;

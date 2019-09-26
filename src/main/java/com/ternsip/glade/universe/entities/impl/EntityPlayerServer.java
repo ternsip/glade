@@ -16,7 +16,8 @@ import java.io.ObjectOutputStream;
 import java.lang.Math;
 import java.util.List;
 
-import static com.ternsip.glade.common.logic.Maths.*;
+import static com.ternsip.glade.common.logic.Maths.DOWN_DIRECTION;
+import static com.ternsip.glade.common.logic.Maths.EPS;
 
 @RequiredArgsConstructor
 @Getter
@@ -24,13 +25,10 @@ import static com.ternsip.glade.common.logic.Maths.*;
 public class EntityPlayerServer extends GraphicalEntityServer {
 
     private transient final Timer blocksUpdateCheckTimer = new Timer(250);
-    private transient Vector3ic previousPosition = new Vector3i(-1000);
-
     private final Connection allowedConnection;
-
+    private transient Vector3ic previousPosition = new Vector3i(-1000);
     private Vector3f moveEffort = new Vector3f(0);
     private LineSegmentf eyeSegment = new LineSegmentf();
-
     private Vector3f currentVelocity = new Vector3f(0);
     private float jumpPower = 0.3f;
     private boolean onTheGround = false;
@@ -39,6 +37,11 @@ public class EntityPlayerServer extends GraphicalEntityServer {
     public void register() {
         super.register();
         updateBlocksAround();
+    }
+
+    @Override
+    public EntityClient getEntityClient(Connection connection) {
+        return connection == getAllowedConnection() ? new EntityPlayer() : new EntityAnotherPlayer();
     }
 
     @Override
@@ -69,19 +72,6 @@ public class EntityPlayerServer extends GraphicalEntityServer {
         super.writeToStream(oos);
     }
 
-    @Override
-    public EntityClient getEntityClient(Connection connection) {
-        return connection == getAllowedConnection() ? new EntityPlayer() : new EntityAnotherPlayer();
-    }
-
-    private Vector3i getBlockPositionStandingOn() {
-        return new Vector3i(
-                (int) Math.floor(getPosition().x()),
-                (int) Math.floor(getPosition().y()) - 1,
-                (int) Math.floor(getPosition().z())
-        );
-    }
-
     public void handleAction(Action action) {
         if (action == Action.RESPAWN) {
             setRotation(new Vector3f(0, 0, 0));
@@ -108,6 +98,14 @@ public class EntityPlayerServer extends GraphicalEntityServer {
                 getUniverseServer().getBlocksRepository().setBlock(blockPositionLooking, Block.AIR);
             }
         }
+    }
+
+    private Vector3i getBlockPositionStandingOn() {
+        return new Vector3i(
+                (int) Math.floor(getPosition().x()),
+                (int) Math.floor(getPosition().y()) - 1,
+                (int) Math.floor(getPosition().z())
+        );
     }
 
     private Vector3fc tryToMove(Vector3fc startPosition, Vector3fc endPosition) {

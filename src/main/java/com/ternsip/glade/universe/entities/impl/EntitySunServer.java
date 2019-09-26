@@ -27,6 +27,13 @@ public class EntitySunServer extends GraphicalEntityServer {
     }
 
     @Override
+    public void writeToStream(ObjectOutputStream oos) throws Exception {
+        super.writeToStream(oos);
+        oos.writeFloat(getPhase());
+        oos.writeFloat(getDelta());
+    }
+
+    @Override
     public EntityClient getEntityClient(Connection connection) {
         return new EntitySun();
     }
@@ -37,13 +44,6 @@ public class EntitySunServer extends GraphicalEntityServer {
                 origin.y() + (float) Math.sin(phase * 2f * Math.PI) * radius.y(),
                 0
         );
-    }
-
-    @Override
-    public void writeToStream(ObjectOutputStream oos) throws Exception {
-        super.writeToStream(oos);
-        oos.writeFloat(getPhase());
-        oos.writeFloat(getDelta());
     }
 
 }

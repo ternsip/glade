@@ -47,23 +47,6 @@ public class EntityPlayer extends GraphicalEntity<EffigyBoy> {
     }
 
     @Override
-    public void update(EffigyBoy effigy) {
-        super.update(effigy);
-        setThirdPerson(effigy.getGraphics().getCameraController().isThirdPerson());
-        setCameraYRotation(effigy.getGraphics().getCameraController().getRotation().y());
-        if (!isThirdPerson()) {
-            Vector3fc eye = effigy.getGraphics().getCameraController().getTarget();
-            Vector3fc direction = effigy.getGraphics().getCameraController().getLookDirection().mul(ARM_LENGTH, new Vector3f());
-            setEyeSegment(new LineSegmentf(eye, eye.add(direction, new Vector3f())));
-        }
-    }
-
-    @Override
-    public EffigyBoy getEffigy() {
-        return new EffigyBoy();
-    }
-
-    @Override
     public void update() {
         super.update();
         Vector3f move = new Vector3f(0);
@@ -88,6 +71,23 @@ public class EntityPlayer extends GraphicalEntity<EffigyBoy> {
             getUniverseClient().getClient().send(new PlayerStateServerPacket(getUuid(), getMoveEffort(), getEyeSegment(), new Vector3f(getRotation())));
             getStateSenderTimer().drop();
         }
+    }
+
+    @Override
+    public void update(EffigyBoy effigy) {
+        super.update(effigy);
+        setThirdPerson(effigy.getGraphics().getCameraController().isThirdPerson());
+        setCameraYRotation(effigy.getGraphics().getCameraController().getRotation().y());
+        if (!isThirdPerson()) {
+            Vector3fc eye = effigy.getGraphics().getCameraController().getTarget();
+            Vector3fc direction = effigy.getGraphics().getCameraController().getLookDirection().mul(ARM_LENGTH, new Vector3f());
+            setEyeSegment(new LineSegmentf(eye, eye.add(direction, new Vector3f())));
+        }
+    }
+
+    @Override
+    public EffigyBoy getEffigy() {
+        return new EffigyBoy();
     }
 
     @Override
