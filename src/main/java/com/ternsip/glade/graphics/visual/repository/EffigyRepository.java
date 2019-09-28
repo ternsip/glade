@@ -30,7 +30,6 @@ public class EffigyRepository implements IUniverseClient, IGraphics {
 
     @SuppressWarnings("unchecked")
     private void updateEntities() {
-        // TODO make this concurrent hashset
         Collection<GraphicalEntity> entities = getUniverseClient().getEntityClientRepository().getGraphicalEntities();
         entities.forEach(e -> getEntityToEffigy().computeIfAbsent(e, x -> e.getEffigy()));
         getEntityToEffigy().entrySet().removeIf(entry -> {
