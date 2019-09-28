@@ -32,7 +32,6 @@ import java.util.Set;
 // TODO Add fog and underwater fog effect
 // TODO Add ambient sounds for underwater, forest, sky,
 // TODO Add Particle effects
-// TODO Sort effigies in shader type order in order to reduce bandwidth in CPU-GPU shader rebinding
 // TODO Add camera collision with collidable
 // TODO ?? Add Combine collidable and block traversal (name blocksRepository collidable)
 // TODO Better collisions with playaer (push out from shape AABB)

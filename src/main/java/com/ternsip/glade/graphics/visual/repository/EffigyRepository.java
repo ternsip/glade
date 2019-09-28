@@ -6,13 +6,17 @@ import com.ternsip.glade.universe.entities.base.GraphicalEntity;
 import com.ternsip.glade.universe.interfaces.IUniverseClient;
 import lombok.Getter;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Getter
 public class EffigyRepository implements IUniverseClient, IGraphics {
 
+    /**
+     * It is possible to create shader class order in order to reduce bandwidth to GPU due to binding different shader classes
+     * Each time you bind another shader class it takes time.
+     * It is not guaranteed to this approach will increase the performance
+     * Do not sort effigies every render step in case you decide to implement that.
+     */
     private final Map<GraphicalEntity, Effigy> entityToEffigy = new HashMap<>();
 
     private long lastSeenNumberOfEntitiesInFrustum = 0;
