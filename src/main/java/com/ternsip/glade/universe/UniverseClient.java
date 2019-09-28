@@ -7,6 +7,7 @@ import com.ternsip.glade.graphics.visual.impl.basis.EffigyAxis;
 import com.ternsip.glade.network.INetworkClientEventReceiver;
 import com.ternsip.glade.universe.bindings.Bind;
 import com.ternsip.glade.universe.entities.base.EntityGeneric;
+import com.ternsip.glade.universe.entities.impl.EntityCameraEffects;
 import com.ternsip.glade.universe.entities.impl.EntitySides;
 import com.ternsip.glade.universe.entities.impl.EntitySprite;
 import com.ternsip.glade.universe.entities.impl.EntityStatistics2D;
@@ -65,6 +66,7 @@ public class UniverseClient implements Threadable, INetworkClient, IBindings, IB
     }
 
     private void spawnEntities() {
+        new EntityCameraEffects().register();
         new EntityStatistics2D(new File("fonts/default.png"), new Vector4f(1, 1, 0, 1), true).register();
 
         EntitySprite aim = new EntitySprite(new File("tools/aim.png"), true, true);

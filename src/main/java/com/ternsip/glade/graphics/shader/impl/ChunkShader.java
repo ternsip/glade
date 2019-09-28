@@ -35,7 +35,7 @@ public final class ChunkShader extends ShaderProgram {
     private final UniformLight sun = new UniformLight();
     private final UniformFloat time = new UniformFloat();
     private final UniformSamplers2DArray samplers = new UniformSamplers2DArray(MAX_SAMPLERS);
-    private final UniformVec4 fogColor = new UniformVec4();
+    private final UniformVec3 fogColor = new UniformVec3();
     private final UniformFloat fogDensity = new UniformFloat();
     private final UniformFloat fogGradient = new UniformFloat();
 

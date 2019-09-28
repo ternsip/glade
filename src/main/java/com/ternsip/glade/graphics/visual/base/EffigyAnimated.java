@@ -4,6 +4,7 @@ import com.ternsip.glade.graphics.general.Animation;
 import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.shader.impl.AnimationShader;
 import com.ternsip.glade.universe.common.Light;
+import com.ternsip.glade.universe.entities.impl.EntityCameraEffects;
 import com.ternsip.glade.universe.entities.impl.EntitySun;
 import lombok.Getter;
 import lombok.Setter;
@@ -42,9 +43,10 @@ public abstract class EffigyAnimated extends Effigy<AnimationShader> {
             getShader().getDisplacementMap().load(mesh.getMaterial().getDisplacementMap());
             getShader().getLightMap().load(mesh.getMaterial().getLightMap());
             getShader().getReflectionMap().load(mesh.getMaterial().getReflectionMap());
-            getShader().getFogColor().load(getUniverseClient().getBalance().getFogColor());
-            getShader().getFogDensity().load(getUniverseClient().getBalance().getFogDensity());
-            getShader().getFogGradient().load(getUniverseClient().getBalance().getFogGradient());
+            boolean isUnderwater = getUniverseClient().getEntityClientRepository().getEntityByClass(EntityCameraEffects.class).isUnderWater();
+            getShader().getFogColor().load(isUnderwater ? getUniverseClient().getBalance().getUnderwaterFogColor() : getUniverseClient().getBalance().getFogColor());
+            getShader().getFogDensity().load(isUnderwater ? getUniverseClient().getBalance().getUnderwaterFogDensity() : getUniverseClient().getBalance().getFogDensity());
+            getShader().getFogGradient().load(isUnderwater ? getUniverseClient().getBalance().getUnderwaterFogGradient() : getUniverseClient().getBalance().getFogGradient());
             mesh.render();
         }
         getShader().stop();

@@ -44,7 +44,7 @@ public final class AnimationShader extends ShaderProgram {
     private final UniformTextureAddress lightMap = new UniformTextureAddress();
     private final UniformTextureAddress reflectionMap = new UniformTextureAddress();
 
-    private final UniformVec4 fogColor = new UniformVec4();
+    private final UniformVec3 fogColor = new UniformVec3();
     private final UniformFloat fogDensity = new UniformFloat();
     private final UniformFloat fogGradient = new UniformFloat();
 

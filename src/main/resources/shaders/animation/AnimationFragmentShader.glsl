@@ -32,7 +32,7 @@ uniform TextureData opacityMap;
 uniform TextureData displacementMap;
 uniform TextureData lightMap;
 uniform TextureData reflectionMap;
-uniform vec4 fogColor;
+uniform vec3 fogColor;
 
 uniform Light sun;
 
@@ -75,7 +75,7 @@ void main(void){
     vec4 specularTexColor = getTextureColor(specularMap, false);
     vec3 specColour = vec3(0, 0, 0);
 
-    out_colour = vec4((diffuseColor + ambientColor + emmissiveColor + specColour) * texColor.xyz, texColor.a);
-    out_colour = mix(fogColor, out_colour, visibility);
+    vec3 totalColor = (diffuseColor + ambientColor + emmissiveColor + specColour) * mix(fogColor, texColor.xyz, visibility);
+    out_colour = vec4(totalColor, texColor.a);
 
 }
