@@ -6,7 +6,9 @@ import com.ternsip.glade.universe.entities.base.GraphicalEntity;
 import com.ternsip.glade.universe.interfaces.IUniverseClient;
 import lombok.Getter;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 @Getter
 public class EffigyRepository implements IUniverseClient, IGraphics {
