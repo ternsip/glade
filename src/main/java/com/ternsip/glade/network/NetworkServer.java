@@ -42,20 +42,7 @@ public class NetworkServer implements Threadable, IUniverseServer {
     public void update() {
         if (getServerHolder().isActive()) {
             removeInactiveConnections();
-            getConnections().forEach(connection -> {
-                try {
-                    if (connection.isAvailable()) {
-                        ServerPacket serverPacket = (ServerPacket) connection.readObject();
-                        serverPacket.apply(connection);
-                    }
-                } catch (SocketException | EOFException e) {
-                    handleClientTermination(connection, e);
-                } catch (Exception e) {
-                    String errMsg = String.format("Can not apply %s packet from client (%s) - %s", e.getClass().getSimpleName(), connection, e.getMessage());
-                    log.error(errMsg);
-                    log.debug(errMsg, e);
-                }
-            });
+            getConnections().forEach(this::receive);
         } else {
             snooze();
         }
@@ -79,6 +66,21 @@ public class NetworkServer implements Threadable, IUniverseServer {
         getConnections().forEach(this::disconnectClient);
         if (getServerHolder().isActive()) {
             getServerHolder().close();
+        }
+    }
+
+    private void receive(Connection connection) {
+        try {
+            if (connection.isAvailable()) {
+                ServerPacket serverPacket = (ServerPacket) connection.readObject();
+                serverPacket.apply(connection);
+            }
+        } catch (SocketException | EOFException e) {
+            handleClientTermination(connection, e);
+        } catch (Exception e) {
+            String errMsg = String.format("Can not apply %s packet from client (%s) - %s", e.getClass().getSimpleName(), connection, e.getMessage());
+            log.error(errMsg);
+            log.debug(errMsg, e);
         }
     }
 
