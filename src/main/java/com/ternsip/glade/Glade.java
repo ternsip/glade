@@ -29,7 +29,7 @@ import java.util.Set;
 // TODO handle network block sides inconsistency (like non-existent sides or packet loss)
 // TODO Add block placing on cursor
 // TODO Add trees and structures and wand for selecting the area
-// TODO Add fog and underwater fog effect
+// TODO Add underwater fog effect
 // TODO Add ambient sounds for underwater, forest, sky,
 // TODO Add Particle effects
 // TODO Add camera collision with collidable
