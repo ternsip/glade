@@ -10,6 +10,8 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.EOFException;
+import java.net.SocketException;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -39,19 +41,34 @@ public class NetworkServer implements Threadable, IUniverseServer {
     @Override
     public void update() {
         if (getServerHolder().isActive()) {
+            removeInactiveConnections();
             getConnections().forEach(connection -> {
                 try {
                     if (connection.isAvailable()) {
                         ServerPacket serverPacket = (ServerPacket) connection.readObject();
                         serverPacket.apply(connection);
                     }
+                } catch (SocketException | EOFException e) {
+                    handleClientTermination(connection, e);
                 } catch (Exception e) {
-                    disconnectClient(connection, e);
+                    String errMsg = String.format("Can not apply %s packet from client (%s) - %s", e.getClass().getSimpleName(), connection, e.getMessage());
+                    log.error(errMsg);
+                    log.debug(errMsg, e);
                 }
             });
         } else {
             snooze();
         }
+    }
+
+    private void removeInactiveConnections() {
+        getConnections().removeIf(connection -> {
+            if (!connection.isActive()) {
+                getUniverseServer().getNetworkServerEventReceiver().registerEvent(OnClientDisconnect.class, new OnClientDisconnect(connection));
+                return true;
+            }
+            return false;
+        });
     }
 
     @Override
@@ -76,8 +93,12 @@ public class NetworkServer implements Threadable, IUniverseServer {
     public synchronized void send(ClientPacket clientPacket, Connection connection) {
         try {
             connection.writeObject(clientPacket);
+        } catch (SocketException | EOFException e) {
+            handleClientTermination(connection, e);
         } catch (Exception e) {
-            disconnectClient(connection, e);
+            String errMsg = String.format("Error while sending packet %s packet to client (%s) - %s", e.getClass().getSimpleName(), connection, e.getMessage());
+            log.error(errMsg);
+            log.debug(errMsg, e);
         }
     }
 
@@ -96,17 +117,15 @@ public class NetworkServer implements Threadable, IUniverseServer {
             connection.close();
             getUniverseServer().getNetworkServerEventReceiver().registerEvent(OnClientDisconnect.class, new OnClientDisconnect(connection));
             getConnections().remove(connection);
+            log.info(String.format("Client %s has been disconnected", connection));
+        } else {
+            throw new IllegalArgumentException(String.format("Can not disconnect client because connection %s is not active", connection));
         }
     }
 
-    private void disconnectClient(Connection connection, Exception e) {
-        if (!connection.isActive()) {
-            throw new IllegalArgumentException("Connection is not active. This situation should not happen.");
-        }
-        String errMsg = String.format("Client disconnected from server %s - %s", e.getClass().getSimpleName(), e.getMessage());
-        log.error(errMsg);
-        log.debug(errMsg, e);
+    private void handleClientTermination(Connection connection, Exception e) {
         disconnectClient(connection);
+        log.debug("Connection to client has been terminated", e);
     }
 
     public class Acceptor implements Threadable {

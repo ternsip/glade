@@ -9,7 +9,9 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.EOFException;
 import java.net.Socket;
+import java.net.SocketException;
 
 @Slf4j
 @Getter
@@ -46,8 +48,12 @@ public class NetworkClient implements Threadable, IUniverseClient {
             try {
                 ClientPacket clientPacket = (ClientPacket) getConnection().readObject();
                 clientPacket.apply(getConnection());
+            } catch (SocketException | EOFException e) {
+                handleTermination(e);
             } catch (Exception e) {
-                disconnect(e);
+                String errMsg = String.format("Can not apply packet %s from server - %s", e.getClass().getSimpleName(), e.getMessage());
+                log.error(errMsg);
+                log.debug(errMsg, e);
             }
         } else {
             snooze();
@@ -60,13 +66,19 @@ public class NetworkClient implements Threadable, IUniverseClient {
     public synchronized void send(ServerPacket serverPacket) {
         try {
             getConnection().writeObject(serverPacket);
+        } catch (SocketException | EOFException e) {
+            handleTermination(e);
         } catch (Exception e) {
-            disconnect(e);
+            String errMsg = String.format("Error while sending packet %s to server - %s", e.getClass().getSimpleName(), e.getMessage());
+            log.error(errMsg);
+            log.debug(errMsg, e);
         }
     }
 
     public void stop() {
-        disconnect();
+        if (getConnection().isActive()) {
+            disconnect();
+        }
     }
 
     @SneakyThrows
@@ -83,17 +95,17 @@ public class NetworkClient implements Threadable, IUniverseClient {
         if (getConnection().isActive()) {
             getConnection().close();
             getUniverseClient().getNetworkClientEventReceiver().registerEvent(OnDisconnectedFromServer.class, new OnDisconnectedFromServer());
+            log.info("Disconnected from server");
+        } else {
+            throw new IllegalArgumentException(String.format("Can not disconnect because connection %s is not active", getConnection()));
         }
     }
 
-    private void disconnect(Exception e) {
-        if (!getConnection().isActive()) {
-            throw new IllegalArgumentException("Connection is not active. This situation should not happen.");
+    private void handleTermination(Exception e) {
+        if (getConnection().isActive()) {
+            disconnect();
+            log.debug("Connection to server has been terminated", e);
         }
-        String errMsg = String.format("Disconnected from server %s - %s", e.getClass().getSimpleName(), e.getMessage());
-        log.error(errMsg);
-        log.debug(errMsg, e);
-        disconnect();
     }
 
 }

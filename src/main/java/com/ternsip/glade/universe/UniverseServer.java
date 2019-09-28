@@ -7,7 +7,7 @@ import com.ternsip.glade.network.INetworkServerEventReceiver;
 import com.ternsip.glade.universe.collisions.impl.ChunksObstacle;
 import com.ternsip.glade.universe.collisions.impl.GroundObstacle;
 import com.ternsip.glade.universe.entities.base.EntityGenericServer;
-import com.ternsip.glade.universe.entities.impl.EntityPlayersControllerServer;
+import com.ternsip.glade.universe.entities.impl.EntityPlayerListServer;
 import com.ternsip.glade.universe.entities.impl.EntitySunServer;
 import com.ternsip.glade.universe.interfaces.*;
 import lombok.Getter;
@@ -113,7 +113,7 @@ public class UniverseServer implements Threadable, INetworkServer, IBlocksReposi
             }
         }
 
-        new EntityPlayersControllerServer().register();
+        new EntityPlayerListServer().register();
 
     }
 

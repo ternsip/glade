@@ -16,7 +16,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public class EntityPlayersControllerServer extends EntityServer {
+public class EntityPlayerListServer extends EntityServer {
 
     private Callback<OnClientConnect> onClientConnectCallback = this::onClientConnect;
     private Callback<OnClientDisconnect> onClientDisconnectCallback = this::onClientDisconnect;
@@ -49,6 +49,9 @@ public class EntityPlayersControllerServer extends EntityServer {
     }
 
     private void onClientDisconnect(OnClientDisconnect onClientDisconnect) {
+        PlayerSession playerSession = getConnectionToPlayerSession().get(onClientDisconnect.getConnection());
+        playerSession.getEntityPlayerServer().unregister();
+        playerSession.getEntityCubeSelectionServer().unregister();
         getConnectionToPlayerSession().remove(onClientDisconnect.getConnection());
     }
 

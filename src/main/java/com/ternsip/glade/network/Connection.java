@@ -1,13 +1,16 @@
 package com.ternsip.glade.network;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+@RequiredArgsConstructor
 @Slf4j
 @Getter
 public class Connection {
@@ -24,22 +27,15 @@ public class Connection {
         this.socket = null;
     }
 
-    @SneakyThrows
-    public Connection(Socket socket) {
-        this.socket = socket;
-    }
-
     public boolean isActive() {
         return getSocket() != null && !getSocket().isClosed();
     }
 
-    @SneakyThrows
-    public Object readObject() {
+    public Object readObject() throws IOException, ClassNotFoundException {
         return getInput().readObject();
     }
 
-    @SneakyThrows
-    public void writeObject(Object object) {
+    public void writeObject(Object object) throws IOException {
         getOutput().writeObject(object);
     }
 
@@ -60,8 +56,8 @@ public class Connection {
         return new ObjectOutputStream(getSocket().getOutputStream());
     }
 
-    @SneakyThrows
-    public boolean isAvailable() {
+
+    public boolean isAvailable() throws IOException {
         return getSocket().getInputStream().available() > 0;
     }
 }
