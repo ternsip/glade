@@ -12,9 +12,9 @@ import org.joml.Vector4f;
 @Setter
 public class Balance {
 
-    private float fogDensity = 0.007f;
-    private float fogGradient = 1.5f;
-    private Vector4f fogColor = new Vector4f(0.39f, 0.58f, 0.92f, 1f);
+    private float fogDensity = 0.0075f;
+    private float fogGradient = 5.0f;
+    private Vector4f fogColor = new Vector4f(0.0f, 0.5f, 0.75f, 1f);
 
     private int viewDistance = 8; // TODO move it to Options class, and fog
     private int ticksPerSecond = 128;
