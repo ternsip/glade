@@ -39,7 +39,6 @@ import java.util.Set;
 // TODO Player inventory based on UI
 // TODO Item repository (blocks, tools)
 // TODO Add Free look camera
-// TODO handle client-server shutdown without errors
 // TODO add log messages to important processes
 // TODO add packet receive limitation (implement inside network server)
 public class Glade {
