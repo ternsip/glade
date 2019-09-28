@@ -25,11 +25,14 @@ out vec2 passAtlasMaxUV;
 out vec3 passNormal;
 out float passAmbient;
 out float passBlockType;
+out float visibility;
 
 uniform Light sun;
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 transformationMatrix;
+uniform float fogDensity;
+uniform float fogGradient;
 
 void main(void) {
 
@@ -41,5 +44,7 @@ void main(void) {
     passAtlasLayer = atlasLayer;
     passAtlasMaxUV = atlasMaxUV;
     passBlockType = blockType;
+    float distance_to_cam = length(viewMatrix * transformationMatrix * vec4(position, 1.0));
+    visibility = clamp(exp(-pow(distance_to_cam * fogDensity, fogGradient)), 0, 1);
 
 }

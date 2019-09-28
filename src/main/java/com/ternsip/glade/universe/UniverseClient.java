@@ -23,7 +23,7 @@ import java.io.File;
 
 @Getter
 @Setter
-public class UniverseClient implements Threadable, INetworkClient, IBindings, ISoundRepository, IEntityClientRepository, IEventIOReceiver, INetworkClientEventReceiver {
+public class UniverseClient implements Threadable, INetworkClient, IBindings, IBalance, ISoundRepository, IEntityClientRepository, IEventIOReceiver, INetworkClientEventReceiver {
 
     private Callback<OnConnectedToServer> onConnectedToServerCallback = this::whenConnected;
 

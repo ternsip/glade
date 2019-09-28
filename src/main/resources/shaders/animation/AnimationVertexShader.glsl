@@ -14,12 +14,15 @@ in vec4 weights;
 
 out vec2 pass_textureCoords;
 out vec3 pass_normal;
+out float visibility;
 
 uniform bool animated;
 uniform mat4 boneTransforms[MAX_BONES];
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 transformationMatrix;
+uniform float fogDensity;
+uniform float fogGradient;
 
 void main(void) {
 
@@ -41,5 +44,7 @@ void main(void) {
     gl_Position = projectionMatrix * viewMatrix * transformationMatrix * totalLocalPos;
     pass_normal =  (projectionMatrix * transformationMatrix * totalNormal).xyz;
     pass_textureCoords = textureCoordinates;
+    float distance_to_cam = length(viewMatrix * transformationMatrix * vec4(position, 1.0));
+    visibility = clamp(exp(-pow(distance_to_cam * fogDensity, fogGradient)), 0, 1);
 
 }

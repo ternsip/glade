@@ -56,7 +56,7 @@ public abstract class ShaderProgram {
         glCompileShader(shaderID);
         if (glGetShaderi(shaderID, GL_COMPILE_STATUS) == GL11.GL_FALSE) {
             String error = glGetShaderInfoLog(shaderID, 1024);
-            throw new IllegalArgumentException(String.format("Could not compile shader %s", error));
+            throw new IllegalArgumentException(String.format("Could not compile shader %s - %s", file.getName(), error));
         }
         return shaderID;
     }

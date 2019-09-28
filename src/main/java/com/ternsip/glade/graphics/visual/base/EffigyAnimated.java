@@ -42,6 +42,9 @@ public abstract class EffigyAnimated extends Effigy<AnimationShader> {
             getShader().getDisplacementMap().load(mesh.getMaterial().getDisplacementMap());
             getShader().getLightMap().load(mesh.getMaterial().getLightMap());
             getShader().getReflectionMap().load(mesh.getMaterial().getReflectionMap());
+            getShader().getFogColor().load(getUniverseClient().getBalance().getFogColor());
+            getShader().getFogDensity().load(getUniverseClient().getBalance().getFogDensity());
+            getShader().getFogGradient().load(getUniverseClient().getBalance().getFogGradient());
             mesh.render();
         }
         getShader().stop();

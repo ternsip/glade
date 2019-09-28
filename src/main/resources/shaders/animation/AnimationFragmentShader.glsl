@@ -17,6 +17,7 @@ struct Light {
 
 in vec2 pass_textureCoords;
 in vec3 pass_normal;
+in float visibility;
 
 out vec4 out_colour;
 
@@ -31,6 +32,7 @@ uniform TextureData opacityMap;
 uniform TextureData displacementMap;
 uniform TextureData lightMap;
 uniform TextureData reflectionMap;
+uniform vec4 fogColor;
 
 uniform Light sun;
 
@@ -74,5 +76,6 @@ void main(void){
     vec3 specColour = vec3(0, 0, 0);
 
     out_colour = vec4((diffuseColor + ambientColor + emmissiveColor + specColour) * texColor.xyz, texColor.a);
+    out_colour = mix(fogColor, out_colour, visibility);
 
 }
