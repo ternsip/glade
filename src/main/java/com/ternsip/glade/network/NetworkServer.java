@@ -48,16 +48,6 @@ public class NetworkServer implements Threadable, IUniverseServer {
         }
     }
 
-    private void removeInactiveConnections() {
-        getConnections().removeIf(connection -> {
-            if (!connection.isActive()) {
-                getUniverseServer().getNetworkServerEventReceiver().registerEvent(OnClientDisconnect.class, new OnClientDisconnect(connection));
-                return true;
-            }
-            return false;
-        });
-    }
-
     @Override
     public void finish() {}
 
@@ -66,21 +56,6 @@ public class NetworkServer implements Threadable, IUniverseServer {
         getConnections().forEach(this::disconnectClient);
         if (getServerHolder().isActive()) {
             getServerHolder().close();
-        }
-    }
-
-    private void receive(Connection connection) {
-        try {
-            if (connection.isAvailable()) {
-                ServerPacket serverPacket = (ServerPacket) connection.readObject();
-                serverPacket.apply(connection);
-            }
-        } catch (SocketException | EOFException e) {
-            handleClientTermination(connection, e);
-        } catch (Exception e) {
-            String errMsg = String.format("Can not apply %s packet from client (%s) - %s", e.getClass().getSimpleName(), connection, e.getMessage());
-            log.error(errMsg);
-            log.debug(errMsg, e);
         }
     }
 
@@ -99,6 +74,31 @@ public class NetworkServer implements Threadable, IUniverseServer {
             handleClientTermination(connection, e);
         } catch (Exception e) {
             String errMsg = String.format("Error while sending packet %s packet to client (%s) - %s", e.getClass().getSimpleName(), connection, e.getMessage());
+            log.error(errMsg);
+            log.debug(errMsg, e);
+        }
+    }
+
+    private void removeInactiveConnections() {
+        getConnections().removeIf(connection -> {
+            if (!connection.isActive()) {
+                getUniverseServer().getNetworkServerEventReceiver().registerEvent(OnClientDisconnect.class, new OnClientDisconnect(connection));
+                return true;
+            }
+            return false;
+        });
+    }
+
+    private void receive(Connection connection) {
+        try {
+            if (connection.isAvailable()) {
+                ServerPacket serverPacket = (ServerPacket) connection.readObject();
+                serverPacket.apply(connection);
+            }
+        } catch (SocketException | EOFException e) {
+            handleClientTermination(connection, e);
+        } catch (Exception e) {
+            String errMsg = String.format("Can not apply %s packet from client (%s) - %s", e.getClass().getSimpleName(), connection, e.getMessage());
             log.error(errMsg);
             log.debug(errMsg, e);
         }

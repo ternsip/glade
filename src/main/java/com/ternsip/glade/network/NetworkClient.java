@@ -51,19 +51,6 @@ public class NetworkClient implements Threadable, IUniverseClient {
         }
     }
 
-    private void receive() {
-        try {
-            ClientPacket clientPacket = (ClientPacket) getConnection().readObject();
-            clientPacket.apply(getConnection());
-        } catch (SocketException | EOFException e) {
-            handleTermination(e);
-        } catch (Exception e) {
-            String errMsg = String.format("Can not apply packet %s from server - %s", e.getClass().getSimpleName(), e.getMessage());
-            log.error(errMsg);
-            log.debug(errMsg, e);
-        }
-    }
-
     @Override
     public void finish() {}
 
@@ -82,6 +69,19 @@ public class NetworkClient implements Threadable, IUniverseClient {
     public void stop() {
         if (getConnection().isActive()) {
             disconnect();
+        }
+    }
+
+    private void receive() {
+        try {
+            ClientPacket clientPacket = (ClientPacket) getConnection().readObject();
+            clientPacket.apply(getConnection());
+        } catch (SocketException | EOFException e) {
+            handleTermination(e);
+        } catch (Exception e) {
+            String errMsg = String.format("Can not apply packet %s from server - %s", e.getClass().getSimpleName(), e.getMessage());
+            log.error(errMsg);
+            log.debug(errMsg, e);
         }
     }
 
