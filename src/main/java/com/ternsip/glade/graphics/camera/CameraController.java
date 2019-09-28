@@ -46,14 +46,7 @@ public class CameraController implements IGraphics, IUniverseClient {
         camera.setPosition(getEyePosition());
         camera.setViewMatrix(getViewMatrix());
 
-        // TODO make aim take this third person value (instead of pushing it) via update(effigy)
-        if (isThirdPerson()) {
-            getGraphics().getWindowData().enableCursor();
-            getUniverseClient().getEntityClientRepository().getAim().setVisible(false);
-        } else {
-            getGraphics().getWindowData().disableCursor();
-            getUniverseClient().getEntityClientRepository().getAim().setVisible(true);
-        }
+
         getUniverseClient().getSoundRepository().setListenerPosition(getEyePosition());
         getUniverseClient().getSoundRepository().setListenerOrientationFront(getLookDirection());
         getUniverseClient().getSoundRepository().setListenerOrientationUp(getUpDirection());

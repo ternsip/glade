@@ -7,9 +7,9 @@ import com.ternsip.glade.graphics.visual.impl.basis.EffigyAxis;
 import com.ternsip.glade.network.INetworkClientEventReceiver;
 import com.ternsip.glade.universe.bindings.Bind;
 import com.ternsip.glade.universe.entities.base.EntityGeneric;
+import com.ternsip.glade.universe.entities.impl.EntityAim;
 import com.ternsip.glade.universe.entities.impl.EntityCameraEffects;
 import com.ternsip.glade.universe.entities.impl.EntitySides;
-import com.ternsip.glade.universe.entities.impl.EntitySprite;
 import com.ternsip.glade.universe.entities.impl.EntityStatistics2D;
 import com.ternsip.glade.universe.entities.ui.EntityUIMenu;
 import com.ternsip.glade.universe.interfaces.*;
@@ -17,7 +17,6 @@ import com.ternsip.glade.universe.protocol.ConsoleMessageServerPacket;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.io.File;
@@ -69,10 +68,7 @@ public class UniverseClient implements Threadable, INetworkClient, IBindings, IB
         new EntityCameraEffects().register();
         new EntityStatistics2D(new File("fonts/default.png"), new Vector4f(1, 1, 0, 1), true).register();
 
-        EntitySprite aim = new EntitySprite(new File("tools/aim.png"), true, true);
-        aim.setScale(new Vector3f(0.01f));
-        aim.register();
-        getEntityClientRepository().setAim(aim);
+        new EntityAim().register();
 
         new EntityGeneric(EffigyAxis::new).register();
 
