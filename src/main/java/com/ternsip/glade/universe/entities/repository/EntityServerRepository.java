@@ -23,7 +23,7 @@ import java.util.function.Function;
 @Getter(value = AccessLevel.PRIVATE)
 public class EntityServerRepository extends EntityRepository<EntityServer> implements IUniverseServer {
 
-    private final Timer networkTimer = new Timer(50); // TODO get this value as a tickrate from options/balance
+    private final Timer networkTimer = new Timer(1000L / getUniverseServer().getBalance().getNetworkTicksPerSecond());
     private final Set<Connection> initiatedConnections = new HashSet<>();
 
     private Callback<OnClientConnect> onClientConnectCallback = this::onClientConnect;
@@ -67,6 +67,7 @@ public class EntityServerRepository extends EntityRepository<EntityServer> imple
         getUuidToEntity().values().forEach(EntityBase::update);
         if (getUniverseServer().getServer().getServerHolder().isActive() && getNetworkTimer().isOver()) {
             getUniverseServer().getServer().send(new EntitiesStateClientPacket(getUuidToEntity().values()), getConnectionInitiatedCondition());
+            getUuidToEntity().values().forEach(EntityBase::networkUpdate);
             getNetworkTimer().drop();
         }
     }

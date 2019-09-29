@@ -16,8 +16,8 @@ import java.io.File;
 public class EntityStatistics2D extends EntityDynamicText2D {
 
     private final Timer updateTimer = new Timer(1000);
-    private final Timer blockTraceTimer = new Timer(50); // TODO get this value as a tickrate from options/balance
-    private Vector3ic lookingAtBlockPosition = new Vector3i(0);
+    private final Vector3i lookingAtBlockPosition = new Vector3i(0);
+    private LineSegmentf eyeSegment = new LineSegmentf(new Vector3f(0), new Vector3f(0));
     private Block lookingAtBlock = Block.AIR;
     private int updates = 0;
     private int updatesPerSecond = 0;
@@ -31,15 +31,9 @@ public class EntityStatistics2D extends EntityDynamicText2D {
     @Override
     public void update(EffigyDynamicText effigy) {
         super.update(effigy);
-
-        if (getBlockTraceTimer().isOver()) {
-            Vector3fc eye = effigy.getGraphics().getCameraController().getTarget();
-            // TODO take eye length from options
-            Vector3fc direction = effigy.getGraphics().getCameraController().getLookDirection().mul(10, new Vector3f());
-            getUniverseClient().getClient().send(new EntityStatisticsServerPacket(new LineSegmentf(eye, eye.add(direction, new Vector3f()))));
-            getBlockTraceTimer().drop();
-        }
-
+        Vector3fc eye = effigy.getGraphics().getCameraController().getTarget();
+        Vector3fc direction = effigy.getGraphics().getCameraController().getLookDirection().mul(getUniverseClient().getBalance().getPlayerExamineLength(), new Vector3f());
+        setEyeSegment(new LineSegmentf(new Vector3f(eye), new Vector3f(eye).add(direction)));
         StringBuilder sb = new StringBuilder();
         Graphics graphics = effigy.getGraphics();
         sb.append("FPS : ").append(graphics.getWindowData().getFpsCounter().getFps()).append(System.lineSeparator());
@@ -60,5 +54,11 @@ public class EntityStatistics2D extends EntityDynamicText2D {
             setUpdatesPerSecond(getUpdates());
             setUpdates(0);
         }
+    }
+
+    @Override
+    public void networkUpdate() {
+        super.networkUpdate();
+        getUniverseClient().getClient().send(new EntityStatisticsServerPacket(getEyeSegment()));
     }
 }

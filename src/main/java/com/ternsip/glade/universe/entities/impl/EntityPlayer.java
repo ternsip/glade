@@ -2,7 +2,6 @@ package com.ternsip.glade.universe.entities.impl;
 
 import com.ternsip.glade.common.events.base.Callback;
 import com.ternsip.glade.common.events.display.KeyEvent;
-import com.ternsip.glade.common.logic.Timer;
 import com.ternsip.glade.graphics.camera.CameraController;
 import com.ternsip.glade.graphics.visual.impl.test.EffigyBoy;
 import com.ternsip.glade.universe.entities.base.GraphicalEntity;
@@ -23,8 +22,6 @@ import static org.lwjgl.glfw.GLFW.*;
 @Setter
 public class EntityPlayer extends GraphicalEntity<EffigyBoy> {
 
-    private static final float ARM_LENGTH = 5f;
-    private transient final Timer stateSenderTimer = new Timer(50);// TODO get this value as a tickrate from options/balance
     private transient final Callback<KeyEvent> keyCallback = this::handleKeyEvent;
     private transient boolean thirdPerson = false;
 
@@ -68,10 +65,12 @@ public class EntityPlayer extends GraphicalEntity<EffigyBoy> {
             move.add(LEFT_DIRECTION);
         }
         setMoveEffort(normalizeOrEmpty(move).mul(getVelocity(), new Vector3f()));
-        if (getStateSenderTimer().isOver()) {
-            getUniverseClient().getClient().send(new PlayerStateServerPacket(getUuid(), getMoveEffort(), getEyeSegment(), new Vector3f(getRotation())));
-            getStateSenderTimer().drop();
-        }
+    }
+
+    @Override
+    public void networkUpdate() {
+        super.networkUpdate();
+        getUniverseClient().getClient().send(new PlayerStateServerPacket(getUuid(), getMoveEffort(), getEyeSegment(), new Vector3f(getRotation())));
     }
 
     @Override
@@ -82,7 +81,7 @@ public class EntityPlayer extends GraphicalEntity<EffigyBoy> {
         setCameraYRotation(cameraController.getRotation().y());
         if (!isThirdPerson()) {
             Vector3fc eye = cameraController.getTarget();
-            Vector3fc direction = cameraController.getLookDirection().mul(ARM_LENGTH, new Vector3f());
+            Vector3fc direction = cameraController.getLookDirection().mul(getUniverseClient().getBalance().getPlayerArmLength(), new Vector3f());
             setEyeSegment(new LineSegmentf(eye, eye.add(direction, new Vector3f())));
         }
     }
@@ -121,7 +120,7 @@ public class EntityPlayer extends GraphicalEntity<EffigyBoy> {
             getUniverseClient().getClient().send(new PlayerActionServerPacket(getUuid(), EntityPlayerServer.Action.RESPAWN));
         }
         if (event.getKey() == GLFW_KEY_T && event.getAction() == GLFW_PRESS) {
-            // TODO sometimes does not work by some reason
+            // TODO sometimes pressing does not work by some reason (not sure)
             getUniverseClient().getClient().send(new PlayerActionServerPacket(getUuid(), EntityPlayerServer.Action.TELEPORT_FAR));
         }
         if (event.getKey() == GLFW_KEY_SPACE && event.getAction() == GLFW_PRESS) {

@@ -11,6 +11,9 @@ import org.joml.Vector3fc;
 @Setter
 public class Balance {
 
+    private float playerArmLength = 5;
+    private float playerExamineLength = 10;
+
     private float fogDensity = 0.0075f;
     private float fogGradient = 5.0f;
     private Vector3f fogColor = new Vector3f(0.0f, 0.5f, 0.75f);
@@ -19,8 +22,9 @@ public class Balance {
     private float underwaterFogGradient = 5.0f;
     private Vector3f underwaterFogColor = new Vector3f(0.097f, 0.097f, 0.43f);
 
-    private int viewDistance = 8; // TODO move it to Options class, and fog
-    private int ticksPerSecond = 128;
+    private int viewDistance = 8; // TODO move it to Options class, and fog and split this into client and server option-balance
+    private int physicalTicksPerSecond = 128;
+    private int networkTicksPerSecond = 20;
     private Vector3fc gravity = new Vector3f(0, -0.005f, 0);
 
 }

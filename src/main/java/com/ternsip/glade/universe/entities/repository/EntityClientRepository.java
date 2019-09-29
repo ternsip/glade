@@ -14,12 +14,16 @@ import lombok.Setter;
 public class EntityClientRepository extends EntityRepository<EntityClient> implements IUniverseClient {
 
     @Getter(value = AccessLevel.PRIVATE)
-    private final Timer networkTimer = new Timer(50); // TODO get this value as a tickrate from options/balance
+    private final Timer networkTimer = new Timer(1000L / getUniverseClient().getBalance().getNetworkTicksPerSecond());
 
     private GraphicalEntity cameraTarget = null;
 
     public void update() {
         getUuidToEntity().values().forEach(EntityBase::update);
+        if (getUniverseClient().getClient().getConnection().isActive() && getNetworkTimer().isOver()) {
+            getUuidToEntity().values().forEach(EntityBase::networkUpdate);
+            getNetworkTimer().drop();
+        }
     }
 
 }

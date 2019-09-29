@@ -18,4 +18,6 @@ public abstract class EntityBase {
 
     public abstract void update();
 
+    public abstract void networkUpdate();
+
 }

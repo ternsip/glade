@@ -20,7 +20,7 @@ public class EntityStatisticsClientPacket extends ClientPacket {
     @SneakyThrows
     public void apply(Connection connection) {
         EntityStatistics2D entityStatistics = getUniverseClient().getEntityClientRepository().getEntityByClass(EntityStatistics2D.class);
-        entityStatistics.setLookingAtBlockPosition(getLookingAtBlockPosition());
+        entityStatistics.getLookingAtBlockPosition().set(getLookingAtBlockPosition());
         entityStatistics.setLookingAtBlock(getLookingAtBlock());
     }
 

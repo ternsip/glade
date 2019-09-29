@@ -24,6 +24,9 @@ public abstract class EntityServer extends EntityBase implements IUniverseServer
     public void update() {
     }
 
+    public void networkUpdate() {
+    }
+
     public void writeToStream(ObjectOutputStream oos) throws Exception {}
 
     public boolean isTransferable() {

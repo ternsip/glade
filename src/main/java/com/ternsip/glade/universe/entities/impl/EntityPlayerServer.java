@@ -1,7 +1,6 @@
 package com.ternsip.glade.universe.entities.impl;
 
 import com.ternsip.glade.common.logic.Maths;
-import com.ternsip.glade.common.logic.Timer;
 import com.ternsip.glade.network.Connection;
 import com.ternsip.glade.universe.collisions.base.Collision;
 import com.ternsip.glade.universe.entities.base.EntityClient;
@@ -24,7 +23,6 @@ import static com.ternsip.glade.common.logic.Maths.EPS;
 @Setter
 public class EntityPlayerServer extends GraphicalEntityServer {
 
-    private transient final Timer blocksUpdateCheckTimer = new Timer(250);
     private final Connection allowedConnection;
     private transient Vector3ic previousPosition = new Vector3i(-1000);
     private Vector3f moveEffort = new Vector3f(0);
@@ -61,10 +59,12 @@ public class EntityPlayerServer extends GraphicalEntityServer {
         if (isOnTheGround()) {
             getCurrentVelocity().y = 0;
         }
-        if (getBlocksUpdateCheckTimer().isOver()) {
-            updateBlocksAround();
-            getBlocksUpdateCheckTimer().drop();
-        }
+    }
+
+    @Override
+    public void networkUpdate() {
+        super.networkUpdate();
+        updateBlocksAround();
     }
 
     @Override

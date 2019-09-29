@@ -19,6 +19,9 @@ public abstract class EntityClient extends EntityBase implements IUniverseClient
     public void update() {
     }
 
+    public void networkUpdate() {
+    }
+
     public void readFromStream(ObjectInputStream ois) throws Exception {}
 
 }
