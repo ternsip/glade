@@ -19,8 +19,8 @@ import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1;
 @Getter
 public class CameraController implements IGraphics, IUniverseClient {
 
-    private static final float MIN_DISTANCE_FROM_TARGET = 0.1f;
-    private static final float MAX_DISTANCE_FROM_TARGET = 320;
+    public static final float MIN_DISTANCE_FROM_TARGET = 0.1f;
+    public static final float MAX_DISTANCE_FROM_TARGET = 320;
     private static final float ROTATION_OVERLAP_EPSILON = 0.001f;
     private static final float MAX_ROTATION_DELTA_X = (float) (Math.PI / 2 - 0.01f);
     private static final float MAX_ROTATION_DELTA_Y = (float) (Math.PI * 2);
@@ -31,6 +31,7 @@ public class CameraController implements IGraphics, IUniverseClient {
 
     private Vector3fc target = new Vector3f(0);
     private float distanceFromTarget = (MAX_DISTANCE_FROM_TARGET + MIN_DISTANCE_FROM_TARGET) * 0.05f;
+    private float distanceFix = Float.MAX_VALUE;
     private Vector2fc rotation = new Vector2f();
 
     private Callback<ScrollEvent> scrollCallback = this::recalculateZoom;
@@ -42,26 +43,14 @@ public class CameraController implements IGraphics, IUniverseClient {
     }
 
     public void update() {
+        Vector3fc eye = getLookDirection().mul(Math.min(getDistanceFix(), getDistanceFromTarget()), new Vector3f()).negate().add(getTarget());
         Camera camera = getGraphics().getCamera();
-        camera.setPosition(getEyePosition());
-        camera.setViewMatrix(getViewMatrix());
-
-
-        getUniverseClient().getSoundRepository().setListenerPosition(getEyePosition());
+        camera.setPosition(eye);
+        // TODO deal with the situation when UP_DIR collinear to camera view
+        camera.setViewMatrix(new Matrix4f().lookAt(eye, getTarget(), UP_DIRECTION));
+        getUniverseClient().getSoundRepository().setListenerPosition(eye);
         getUniverseClient().getSoundRepository().setListenerOrientationFront(getLookDirection());
         getUniverseClient().getSoundRepository().setListenerOrientationUp(getUpDirection());
-    }
-
-    public Vector3fc getEyePosition() {
-        return getLookDirection()
-                .mul(getDistanceFromTarget(), new Vector3f())
-                .negate()
-                .add(getTarget());
-    }
-
-    public Matrix4fc getViewMatrix() {
-        // TODO deal with the situation when UP_DIR collinear to camera view
-        return new Matrix4f().lookAt(getEyePosition(), getTarget(), UP_DIRECTION);
     }
 
     public void finish() {

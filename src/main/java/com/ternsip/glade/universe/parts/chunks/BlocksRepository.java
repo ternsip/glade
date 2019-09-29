@@ -99,6 +99,10 @@ public class BlocksRepository implements Threadable, IUniverseServer {
         return INDEXER.isInside(pos);
     }
 
+    public boolean isBlockExists(int x, int y, int z) {
+        return INDEXER.isInside(x, y, z);
+    }
+
     public void setBlockInternal(int x, int y, int z, Block block) {
         setBlock(x, y, z, block);
     }
@@ -132,56 +136,107 @@ public class BlocksRepository implements Threadable, IUniverseServer {
     }
 
     // Using A Fast Voxel Traversal Algorithm for Ray Tracing by John Amanatides and Andrew Woo
-    // TODO Add case when it includes edges and corners (hard one)
-    public List<Vector3ic> traverseFull(LineSegmentf segment, Function<Block, Boolean> condition) {
-        Vector3i currentVoxel = new Vector3i((int) Math.floor(segment.aX), (int) Math.floor(segment.aY), (int) Math.floor(segment.aZ));
+    @Nullable
+    public Vector3ic traverse(LineSegmentf segment, Function<Block, Boolean> condition) {
+        int cx = (int) Math.floor(segment.aX);
+        int cy = (int) Math.floor(segment.aY);
+        int cz = (int) Math.floor(segment.aZ);
         Vector3fc ray = new Vector3f(segment.bX - segment.aX, segment.bY - segment.aY, segment.bZ - segment.aZ);
         int dx = (int) Math.signum(ray.x());
         int dy = (int) Math.signum(ray.y());
         int dz = (int) Math.signum(ray.z());
-        float tDeltaX = (dx != 0) ? Math.min(dx / ray.x(), Float.MAX_VALUE) : Float.MAX_VALUE;
-        float tMaxX = (dx > 0) ? tDeltaX * (1 - frac(segment.aX)) : tDeltaX * frac(segment.aX);
-        float tDeltaY = (dy != 0) ? Math.min(dy / ray.y(), Float.MAX_VALUE) : Float.MAX_VALUE;
-        float tMaxY = (dy > 0) ? tDeltaY * (1 - frac(segment.aY)) : tDeltaY * frac(segment.aY);
-        float tDeltaZ = (dz != 0) ? Math.min(dz / ray.z(), Float.MAX_VALUE) : Float.MAX_VALUE;
-        float tMaxZ = (dz > 0) ? tDeltaZ * (1 - frac(segment.aZ)) : tDeltaZ * frac(segment.aZ);
-        ArrayList<Vector3ic> voxels = new ArrayList<>();
-        if (checkVoxel(currentVoxel, condition)) {
-            voxels.add(new Vector3i(currentVoxel));
+        float tDeltaX = (dx == 0) ? Float.MAX_VALUE : dx / ray.x();
+        float tMaxX = (dx == 0) ? Float.MAX_VALUE : ((dx > 0) ? tDeltaX * (1 - frac(segment.aX)) : tDeltaX * frac(segment.aX));
+        float tDeltaY = (dy == 0) ? Float.MAX_VALUE : dy / ray.y();
+        float tMaxY = (dy == 0) ? Float.MAX_VALUE : ((dy > 0) ? tDeltaY * (1 - frac(segment.aY)) : tDeltaY * frac(segment.aY));
+        float tDeltaZ = (dz == 0) ? Float.MAX_VALUE : dz / ray.z();
+        float tMaxZ = (dz == 0) ? Float.MAX_VALUE : ((dz > 0) ? tDeltaZ * (1 - frac(segment.aZ)) : tDeltaZ * frac(segment.aZ));
+        if (checkVoxel(cx, cy, cz, condition)) {
+            return new Vector3i(cx, cy, cz);
         }
         while (tMaxX <= 1 || tMaxY <= 1 || tMaxZ <= 1) {
-            boolean changed;
+            if (Maths.isFloatsEqual(tMaxX, tMaxZ) && Maths.isFloatsEqual(tMaxX, tMaxY)) {
+                for (int ax = 0, nx = cx; ax <= 1; ++ax, nx += dx) {
+                    for (int ay = 0, ny = cy; ay <= 1; ++ay, ny += dy) {
+                        for (int az = 0, nz = cz; az <= 1; ++az, nz += dz) {
+                            if ((ax > 0 || ay > 0 || az > 0) && checkVoxel(nx, ny, nz, condition)) {
+                                return new Vector3i(nx, ny, nz);
+                            }
+                        }
+                    }
+                }
+                cx += dx;
+                cy += dy;
+                cz += dz;
+                tMaxX += tDeltaX;
+                tMaxY += tDeltaY;
+                tMaxZ += tDeltaZ;
+                continue;
+            }
+            if (Maths.isFloatsEqual(tMaxX, tMaxZ) && tMaxX < tMaxY) {
+                for (int ax = 0, nx = cx; ax <= 1; ++ax, nx += dx) {
+                    for (int az = 0, nz = cz; az <= 1; ++az, nz += dz) {
+                        if ((ax > 0 || az > 0) && checkVoxel(nx, cy, nz, condition)) {
+                            return new Vector3i(nx, cy, nz);
+                        }
+                    }
+                }
+                cx += dx;
+                cz += dz;
+                tMaxX += tDeltaX;
+                tMaxZ += tDeltaZ;
+                continue;
+            }
+            if (Maths.isFloatsEqual(tMaxX, tMaxY) && tMaxX < tMaxZ) {
+                for (int ax = 0, nx = cx; ax <= 1; ++ax, nx += dx) {
+                    for (int ay = 0, ny = cy; ay <= 1; ++ay, ny += dy) {
+                        if ((ax > 0 || ay > 0) && checkVoxel(nx, ny, cz, condition)) {
+                            return new Vector3i(nx, ny, cz);
+                        }
+                    }
+                }
+                cx += dx;
+                cy += dy;
+                tMaxX += tDeltaX;
+                tMaxY += tDeltaY;
+                continue;
+            }
+            if (Maths.isFloatsEqual(tMaxY, tMaxZ) && tMaxY < tMaxX) {
+                for (int ay = 0, ny = cy; ay <= 1; ++ay, ny += dy) {
+                    for (int az = 0, nz = cz; az <= 1; ++az, nz += dz) {
+                        if ((ay > 0 || az > 0) && checkVoxel(cx, ny, nz, condition)) {
+                            return new Vector3i(cx, ny, nz);
+                        }
+                    }
+                }
+                cy += dy;
+                cz += dz;
+                tMaxY += tDeltaY;
+                tMaxZ += tDeltaZ;
+                continue;
+            }
             if (tMaxX < tMaxY) {
                 if (tMaxX < tMaxZ) {
-                    currentVoxel.x += dx;
+                    cx += dx;
                     tMaxX += tDeltaX;
-                    changed = dx != 0;
                 } else {
-                    currentVoxel.z += dz;
+                    cz += dz;
                     tMaxZ += tDeltaZ;
-                    changed = dz != 0;
                 }
             } else {
                 if (tMaxY < tMaxZ) {
-                    currentVoxel.y += dy;
+                    cy += dy;
                     tMaxY += tDeltaY;
-                    changed = dy != 0;
                 } else {
-                    currentVoxel.z += dz;
+                    cz += dz;
                     tMaxZ += tDeltaZ;
-                    changed = dz != 0;
                 }
             }
-            if (changed && checkVoxel(currentVoxel, condition)) {
-                voxels.add(new Vector3i(currentVoxel));
+            if (checkVoxel(cx, cy, cz, condition)) {
+                return new Vector3i(cx, cy, cz);
             }
         }
-        return voxels;
-    }
-
-    @Nullable
-    public Vector3ic traverse(LineSegmentf segment, Function<Block, Boolean> condition) {
-        return traverseFull(segment, condition).stream().findFirst().orElse(null);
+        return null;
     }
 
     private void setBlock(int x, int y, int z, Block block) {
@@ -277,10 +332,10 @@ public class BlocksRepository implements Threadable, IUniverseServer {
         if (startNextChunkX >= CHUNKS_X || startNextChunkZ >= CHUNKS_Z || endNextChunkX < 0 || endNextChunkZ < 0) {
             return;
         }
-        int scx = Maths.bound(0, CHUNKS_X - 1, startNextChunkX);
-        int scz = Maths.bound(0, CHUNKS_Z - 1, startNextChunkZ);
-        int ecx = Maths.bound(0, CHUNKS_X - 1, endNextChunkX);
-        int ecz = Maths.bound(0, CHUNKS_Z - 1, endNextChunkZ);
+        int scx = Maths.clamp(0, CHUNKS_X - 1, startNextChunkX);
+        int scz = Maths.clamp(0, CHUNKS_Z - 1, startNextChunkZ);
+        int ecx = Maths.clamp(0, CHUNKS_X - 1, endNextChunkX);
+        int ecz = Maths.clamp(0, CHUNKS_Z - 1, endNextChunkZ);
         List<BlocksUpdate> blocksUpdates = new ArrayList<>();
         for (int cx = scx; cx <= ecx; ++cx) {
             for (int cz = scz; cz <= ecz; ++cz) {
@@ -493,8 +548,8 @@ public class BlocksRepository implements Threadable, IUniverseServer {
         relaxChunks();
     }
 
-    private boolean checkVoxel(Vector3ic pos, Function<Block, Boolean> condition) {
-        return isBlockExists(pos) && condition.apply(getBlock(pos));
+    private boolean checkVoxel(int x, int y, int z, Function<Block, Boolean> condition) {
+        return isBlockExists(x, y, z) && condition.apply(getBlock(x, y, z));
     }
 
 }

@@ -11,11 +11,13 @@ import lombok.RequiredArgsConstructor;
 public class CameraEffectsClientPacket extends ClientPacket {
 
     private final boolean underWater;
+    private final float cameraDistanceFix;
 
     @Override
     public void apply(Connection connection) {
         EntityCameraEffects cameraEffects = getUniverseClient().getEntityClientRepository().getEntityByClass(EntityCameraEffects.class);
         cameraEffects.setUnderWater(isUnderWater());
+        cameraEffects.setCameraDistanceFix(getCameraDistanceFix());
     }
 
 }

@@ -3,6 +3,7 @@ package com.ternsip.glade.universe.entities.impl;
 import com.ternsip.glade.common.events.base.Callback;
 import com.ternsip.glade.common.events.display.KeyEvent;
 import com.ternsip.glade.common.logic.Timer;
+import com.ternsip.glade.graphics.camera.CameraController;
 import com.ternsip.glade.graphics.visual.impl.test.EffigyBoy;
 import com.ternsip.glade.universe.entities.base.GraphicalEntity;
 import com.ternsip.glade.universe.protocol.PlayerActionServerPacket;
@@ -76,11 +77,12 @@ public class EntityPlayer extends GraphicalEntity<EffigyBoy> {
     @Override
     public void update(EffigyBoy effigy) {
         super.update(effigy);
-        setThirdPerson(effigy.getGraphics().getCameraController().isThirdPerson());
-        setCameraYRotation(effigy.getGraphics().getCameraController().getRotation().y());
+        CameraController cameraController = effigy.getGraphics().getCameraController();
+        setThirdPerson(cameraController.isThirdPerson());
+        setCameraYRotation(cameraController.getRotation().y());
         if (!isThirdPerson()) {
-            Vector3fc eye = effigy.getGraphics().getCameraController().getTarget();
-            Vector3fc direction = effigy.getGraphics().getCameraController().getLookDirection().mul(ARM_LENGTH, new Vector3f());
+            Vector3fc eye = cameraController.getTarget();
+            Vector3fc direction = cameraController.getLookDirection().mul(ARM_LENGTH, new Vector3f());
             setEyeSegment(new LineSegmentf(eye, eye.add(direction, new Vector3f())));
         }
     }

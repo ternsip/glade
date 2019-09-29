@@ -2,6 +2,8 @@ package com.ternsip.glade.universe.collisions.base;
 
 import org.joml.*;
 
+import javax.annotation.Nullable;
+
 import static org.joml.Intersectionf.INSIDE;
 import static org.joml.Intersectionf.OUTSIDE;
 
@@ -9,11 +11,10 @@ public interface Obstacle {
 
     AABBf getAabb();
 
-    /**
-     * @return Collision point or null when there is no collision
-     */
+    @Nullable
     Vector3fc collideSegment(LineSegmentf segment);
 
+    @Nullable
     default Vector3fc collideSegmentDefault(LineSegmentf segment, AABBf aabb) {
         Vector2f pResult = new Vector2f();
         int result = aabb.intersectLineSegment(segment, pResult);

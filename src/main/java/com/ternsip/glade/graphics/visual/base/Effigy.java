@@ -5,7 +5,7 @@ import com.ternsip.glade.common.logic.Utils;
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.interfaces.IGraphics;
 import com.ternsip.glade.graphics.shader.base.ShaderProgram;
-import com.ternsip.glade.universe.entities.base.Volumetric;
+import com.ternsip.glade.universe.common.Volumetric;
 import com.ternsip.glade.universe.interfaces.IUniverseClient;
 import lombok.Getter;
 import lombok.Setter;

@@ -48,16 +48,16 @@ public class Maths {
         return (float) (v - Math.floor(v));
     }
 
-    public static int bound(int min, int max, int value) {
+    public static int clamp(int min, int max, int value) {
         return Math.min(max, Math.max(min, value));
     }
 
-    public static float bound(float min, float max, float value) {
+    public static float clamp(float min, float max, float value) {
         return Math.min(max, Math.max(min, value));
     }
 
-    public static boolean isFloatsEqual(float x, float y) {
-        return Math.abs(x - y) < EPS;
+    public static boolean isFloatsEqual(float a, float b) {
+        return Math.abs(a - b) < EPS;
     }
 
     public static Vector3fc normalizeOrEmpty(Vector3fc v) {

@@ -1,5 +1,6 @@
 package com.ternsip.glade.universe.entities.base;
 
+import com.ternsip.glade.universe.common.Volumetric;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Delegate;

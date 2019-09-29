@@ -1,6 +1,7 @@
 package com.ternsip.glade.universe.entities.base;
 
 import com.ternsip.glade.graphics.visual.base.Effigy;
+import com.ternsip.glade.universe.common.VolumetricInterpolated;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Delegate;

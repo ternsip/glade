@@ -2,11 +2,15 @@ package com.ternsip.glade.universe.collisions.impl;
 
 import com.ternsip.glade.universe.collisions.base.Obstacle;
 import com.ternsip.glade.universe.interfaces.IUniverseServer;
+import com.ternsip.glade.universe.parts.blocks.Block;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.joml.*;
+import org.joml.AABBf;
+import org.joml.LineSegmentf;
+import org.joml.Vector3fc;
+import org.joml.Vector3ic;
 
-import java.util.List;
+import javax.annotation.Nullable;
 
 @RequiredArgsConstructor
 @Getter
@@ -17,28 +21,11 @@ public class ChunksObstacle implements Obstacle, IUniverseServer {
 
     private final AABBf aabb = new AABBf(-Float.MAX_VALUE, 0, -Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
 
+    @Nullable
     @Override
     public Vector3fc collideSegment(LineSegmentf segment) {
-        List<Vector3ic> positions = getUniverseServer().getBlocksRepository().traverseFull(segment, block -> true);
-        Vector3fc start = new Vector3f(segment.aX, segment.aY, segment.aZ);
-        Vector3f closest = new Vector3f(segment.bX, segment.bY, segment.bZ);
-        for (Vector3ic pos : positions) {
-            for (int dx = -1; dx <= 1; ++dx) {
-                for (int dy = -1; dy <= 1; ++dy) {
-                    for (int dz = -1; dz <= 1; ++dz) {
-                        Vector3fc nPos = collideBlockSafe(segment, pos.add(dx, dy, dz, new Vector3i()));
-                        if (nPos != null && start.distanceSquared(closest) > start.distanceSquared(nPos)) {
-                            closest.set(nPos);
-                        }
-                    }
-                }
-            }
-        }
-        return closest;
-    }
-
-    private Vector3fc collideBlockSafe(LineSegmentf segment, Vector3ic pos) {
-        if (getUniverseServer().getBlocksRepository().isBlockExists(pos) && !getUniverseServer().getBlocksRepository().getBlock(pos).isObstacle()) {
+        Vector3ic pos = getUniverseServer().getBlocksRepository().traverse(segment, Block::isObstacle);
+        if (pos == null) {
             return null;
         }
         AABBf aabb = new AABBf(
