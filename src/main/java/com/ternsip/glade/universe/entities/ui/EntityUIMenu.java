@@ -1,6 +1,7 @@
 package com.ternsip.glade.universe.entities.ui;
 
 import com.ternsip.glade.universe.audio.Sound;
+import com.ternsip.glade.universe.entities.impl.EntitySprite;
 import com.ternsip.glade.universe.interfaces.IUniverseServer;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,6 +23,7 @@ public class EntityUIMenu extends EntityUI {
     private static final Vector4fc TEXT_COLOR = new Vector4f(1, 1, 1, 1);
     private static final File CLICK_SOUND = new File("sounds/click2.ogg");
 
+    private final EntitySprite menuBackround;
     private final EntityUITextButton exitButton;
     private final EntityUITextButton resumeButton;
     private final EntityUITextButton connectButton;
@@ -32,6 +34,9 @@ public class EntityUIMenu extends EntityUI {
 
     public EntityUIMenu() {
         super(true);
+
+        this.menuBackround = new EntitySprite(new File("interface/menu_background.jpg"), true, false);
+        this.menuBackround.setPosition(new Vector3f(0, 0f, 0.01f));
 
         this.resumeButton = new EntityUITextButton(BUTTON_BACKGROUND, BROWSE_OVERLAY, PRESS_OVERLAY, FONT, TEXT_COLOR, "Resume", true);
         this.resumeButton.setScale(new Vector3f(0.1f, 0.05f, 1));
@@ -130,6 +135,7 @@ public class EntityUIMenu extends EntityUI {
     @Override
     public void register() {
         super.register();
+        getMenuBackround().register();
         getExitButton().register();
         getResumeButton().register();
         getConnectButton().register();
@@ -141,6 +147,7 @@ public class EntityUIMenu extends EntityUI {
     @Override
     public void unregister() {
         super.unregister();
+        getMenuBackround().unregister();
         getExitButton().unregister();
         getResumeButton().unregister();
         getConnectButton().unregister();

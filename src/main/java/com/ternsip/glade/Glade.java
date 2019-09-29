@@ -31,7 +31,7 @@ import java.util.Set;
 // TODO Add trees and structures and wand for selecting the area
 // TODO Add ambient sounds for underwater, forest, sky,
 // TODO Add Particle effects
-// TODO Add camera collision with collidable
+// TODO Make camera collisions better (more precise)
 // TODO ?? Add Combine collidable and block traversal (name blocksRepository collidable)
 // TODO Better collisions with playaer (push out from shape AABB)
 // TODO Player inventory based on UI

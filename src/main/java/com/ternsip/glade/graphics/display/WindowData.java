@@ -26,7 +26,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 @Setter
 public class WindowData implements IUniverseClient, IGraphics {
 
-    public static final Vector4fc BACKGROUND_COLOR = new Vector4f(1f, 0f, 0f, 1f);
+    public static final Vector4fc BACKGROUND_COLOR = new Vector4f(0f, 0f, 0f, 1f);
 
     private final ArrayList<Callback> callbacks = new ArrayList<>();
     private final FpsCounter fpsCounter = new FpsCounter();
