@@ -3,7 +3,7 @@ package com.ternsip.glade.universe.common;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
-public class Vector3Interpolated extends Interpolated<Vector3f>{
+public class Vector3Interpolated extends Interpolated<Vector3f> {
 
     public Vector3Interpolated(Vector3f value) {
         super(new Vector3f(value), new Vector3f(value));

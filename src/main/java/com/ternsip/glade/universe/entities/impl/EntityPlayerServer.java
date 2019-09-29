@@ -38,6 +38,12 @@ public class EntityPlayerServer extends GraphicalEntityServer {
     }
 
     @Override
+    public void networkUpdate() {
+        super.networkUpdate();
+        updateBlocksAround();
+    }
+
+    @Override
     public EntityClient getEntityClient(Connection connection) {
         return connection == getAllowedConnection() ? new EntityPlayer() : new EntityAnotherPlayer();
     }
@@ -59,12 +65,6 @@ public class EntityPlayerServer extends GraphicalEntityServer {
         if (isOnTheGround()) {
             getCurrentVelocity().y = 0;
         }
-    }
-
-    @Override
-    public void networkUpdate() {
-        super.networkUpdate();
-        updateBlocksAround();
     }
 
     @Override

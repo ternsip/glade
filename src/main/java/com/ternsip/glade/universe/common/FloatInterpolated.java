@@ -2,7 +2,7 @@ package com.ternsip.glade.universe.common;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-public class FloatInterpolated extends Interpolated<AtomicReference<Float>>{
+public class FloatInterpolated extends Interpolated<AtomicReference<Float>> {
 
     public FloatInterpolated(Float value) {
         super(new AtomicReference<>(value), new AtomicReference<>(value));

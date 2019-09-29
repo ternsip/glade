@@ -35,7 +35,7 @@ public abstract class Interpolated<T> {
         return System.currentTimeMillis();
     }
 
-    private float getBlend(){
+    private float getBlend() {
         long timeGap = getLastTime().get() - getPrevTime().get();
         long timeSpent = getCurrentTime() - getLastTime().get();
         return timeGap <= 0 ? 0 : Maths.clamp(0f, 1f, (timeGap - timeSpent) / ((float) timeGap));
