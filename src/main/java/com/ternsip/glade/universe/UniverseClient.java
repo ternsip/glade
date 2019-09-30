@@ -12,6 +12,7 @@ import com.ternsip.glade.universe.entities.impl.EntityCameraEffects;
 import com.ternsip.glade.universe.entities.impl.EntitySides;
 import com.ternsip.glade.universe.entities.impl.EntityStatistics2D;
 import com.ternsip.glade.universe.entities.ui.EntityUIMenu;
+import com.ternsip.glade.universe.entities.ui.UIInventory;
 import com.ternsip.glade.universe.interfaces.*;
 import com.ternsip.glade.universe.protocol.ConsoleMessageServerPacket;
 import lombok.Getter;
@@ -75,6 +76,8 @@ public class UniverseClient implements Threadable, INetworkClient, IBindings, IB
         getBindings().addBindCallback(Bind.TEST_BUTTON, () -> getClient().send(new ConsoleMessageServerPacket("HELLO 123")));
 
         new EntitySides().register();
+
+        new UIInventory().register();
     }
 
     private void whenConnected(OnConnectedToServer onConnectedToServer) {
