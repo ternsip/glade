@@ -52,12 +52,16 @@ public class Schematic implements IUniverseServer {
         getUniverseServer().getBlocksRepository().setBlocks(pos, getBlocks());
     }
 
-    public void putInternal(Vector3ic start, BlocksRepository blocksRepository) {
+    public void putInternal(Vector3ic start, BlocksRepository blocksRepository, boolean ignoreAir) {
         Vector3ic size = getSize();
         for (int x = 0, wx = start.x(); x < size.x(); ++x, ++wx) {
             for (int y = 0, wy = start.y(); y < size.y(); ++y, ++wy) {
                 for (int z = 0, wz = start.z(); z < size.z(); ++z, ++wz) {
-                    blocksRepository.setBlockInternal(wx, wy, wz, blocks[x][y][z]);
+                    Block block = blocks[x][y][z];
+                    if (ignoreAir && block == Block.AIR) {
+                        continue;
+                    }
+                    blocksRepository.setBlockInternal(wx, wy, wz,block);
                 }
             }
         }

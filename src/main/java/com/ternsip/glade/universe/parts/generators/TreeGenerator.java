@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class TreeGenerator implements ChunkGenerator {
 
-    private final int minHeight = 45;
-    private final int treeAttempts = BlocksRepository.SIZE_X * BlocksRepository.SIZE_Z / 100;
+    private static final int MIN_HEIGHT = 45;
+    private static final int TREE_ATTEMPTS = BlocksRepository.SIZE_X * BlocksRepository.SIZE_Z / 100;
 
     @Override
     public int getPriority() {
@@ -38,16 +38,16 @@ public class TreeGenerator implements ChunkGenerator {
         if (trees.size() == 0) {
             return;
         }
-        for (int i = 0; i < treeAttempts; ++i) {
+        for (int i = 0; i < TREE_ATTEMPTS; ++i) {
             int x = random.nextInt(BlocksRepository.SIZE_X);
             int z = random.nextInt(BlocksRepository.SIZE_Z);
             int y = BlocksRepository.SIZE_Y - 1;
-            for (; y >= minHeight; --y) {
+            for (; y >= MIN_HEIGHT; --y) {
                 if (blocksRepository.getBlockInternal(x, y, z) == Block.LAWN) {
                     break;
                 }
             }
-            if (y < minHeight) {
+            if (y < MIN_HEIGHT) {
                 continue;
             }
             Schematic tree = trees.get(random.nextInt(trees.size()));
@@ -56,7 +56,7 @@ public class TreeGenerator implements ChunkGenerator {
             if (!blocksRepository.isBlockExists(end)) {
                 continue;
             }
-            tree.putInternal(start, blocksRepository);
+            tree.putInternal(start, blocksRepository, true);
         }
     }
 }
