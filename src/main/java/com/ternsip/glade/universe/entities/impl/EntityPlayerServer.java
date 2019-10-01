@@ -7,16 +7,12 @@ import com.ternsip.glade.universe.entities.base.EntityClient;
 import com.ternsip.glade.universe.entities.base.GraphicalEntityServer;
 import com.ternsip.glade.universe.parts.blocks.Block;
 import com.ternsip.glade.universe.parts.items.Inventory;
-import com.ternsip.glade.universe.parts.items.Item;
 import com.ternsip.glade.universe.parts.items.ItemBlock;
-import com.ternsip.glade.universe.parts.items.ItemEmpty;
-import com.ternsip.glade.universe.protocol.UpdatePlayerInventoryClientPacket;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.*;
 
 import java.io.ObjectOutputStream;
-import java.lang.Math;
 import java.util.List;
 
 import static com.ternsip.glade.common.logic.Maths.DOWN_DIRECTION;
@@ -39,7 +35,11 @@ public class EntityPlayerServer extends GraphicalEntityServer {
     public EntityPlayerServer(Connection allowedConnection) {
         this.allowedConnection = allowedConnection;
         this.selectionInventory.getItems()[0] = new ItemBlock(Block.STONE);
-        this.selectionInventory.getItems()[0].setCount(15);
+        this.selectionInventory.getItems()[0].setCount(999);
+        this.selectionInventory.getItems()[1] = new ItemBlock(Block.WOOD);
+        this.selectionInventory.getItems()[1].setCount(999);
+        this.selectionInventory.getItems()[2] = new ItemBlock(Block.LEAVES);
+        this.selectionInventory.getItems()[2].setCount(999);
     }
 
     @Override
@@ -85,51 +85,6 @@ public class EntityPlayerServer extends GraphicalEntityServer {
         super.writeToStream(oos);
     }
 
-    public void handleAction(Action action) {
-        if (action == Action.USE_FIRST_ITEM) {
-            Item item = getSelectionInventory().getItems()[0];
-            item.setCount(item.getCount() - 1);
-            item.use(this);
-            if (item.getCount() <= 0) {
-                getSelectionInventory().getItems()[0] = new ItemEmpty();
-            }
-            updatePlayerInventory();
-        }
-        if (action == Action.RESPAWN) {
-            setRotation(new Vector3f(0, 0, 0));
-            setPosition(new Vector3f(50, 90, 50));
-        }
-        if (action == Action.TELEPORT_FAR) {
-            setRotation(new Vector3f(0, 0, 0));
-            setPosition(new Vector3f(512, 90, 512));
-        }
-        if (action == Action.JUMP) {
-            if (isOnTheGround()) {
-                getCurrentVelocity().add(new Vector3f(0, getJumpPower(), 0));
-            }
-        }
-        if (action == Action.DESTROY_BLOCK_UNDER) {
-            Vector3ic blockUnder = getBlockPositionStandingOn();
-            if (getUniverseServer().getBlocksRepository().isBlockExists(blockUnder)) {
-                getUniverseServer().getBlocksRepository().setBlock(blockUnder, Block.AIR);
-            }
-        }
-        if (action == Action.DESTROY_SELECTED_BLOCK) {
-            Vector3ic blockPositionLooking = getUniverseServer().getBlocksRepository().traverse(getEyeSegment(), (b, p) -> b != Block.AIR);
-            if (blockPositionLooking != null && getUniverseServer().getBlocksRepository().isBlockExists(blockPositionLooking)) {
-                getUniverseServer().getBlocksRepository().setBlock(blockPositionLooking, Block.AIR);
-            }
-        }
-    }
-
-    private Vector3i getBlockPositionStandingOn() {
-        return new Vector3i(
-                (int) Math.floor(getPosition().x()),
-                (int) Math.floor(getPosition().y()) - 1,
-                (int) Math.floor(getPosition().z())
-        );
-    }
-
     private Vector3fc tryToMove(Vector3fc startPosition, Vector3fc endPosition) {
         List<Collision> collisions = getUniverseServer().getCollisions().collideSegment(new LineSegmentf(startPosition, endPosition));
         if (!collisions.isEmpty()) {
@@ -146,22 +101,6 @@ public class EntityPlayerServer extends GraphicalEntityServer {
             getUniverseServer().getBlocksRepository().processMovement(new Vector3i(getPreviousPosition()), newPos);
             setPreviousPosition(newPos);
         }
-    }
-
-    private void updatePlayerInventory() {
-        getUniverseServer().getServer().send(new UpdatePlayerInventoryClientPacket(getUuid(), getSelectionInventory()), getAllowedConnection());
-    }
-
-    public enum Action {
-
-        JUMP,
-        RESPAWN,
-        TELEPORT_FAR,
-        DESTROY_BLOCK_UNDER,
-        DESTROY_SELECTED_BLOCK,
-        MODIFY_INVENTORY_BLOCK,
-        USE_FIRST_ITEM,
-
     }
 
 }

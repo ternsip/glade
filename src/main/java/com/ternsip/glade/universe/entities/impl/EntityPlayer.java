@@ -8,6 +8,7 @@ import com.ternsip.glade.graphics.visual.impl.test.EffigyBoy;
 import com.ternsip.glade.universe.entities.base.GraphicalEntity;
 import com.ternsip.glade.universe.entities.ui.UIInventory;
 import com.ternsip.glade.universe.parts.items.Inventory;
+import com.ternsip.glade.universe.parts.player.*;
 import com.ternsip.glade.universe.protocol.PlayerActionServerPacket;
 import com.ternsip.glade.universe.protocol.PlayerStateServerPacket;
 import lombok.Getter;
@@ -131,26 +132,27 @@ public class EntityPlayer extends GraphicalEntity<EffigyBoy> {
 
     private void handleKeyEvent(KeyEvent event) {
         if (event.getKey() == GLFW_KEY_R && event.getAction() == GLFW_PRESS) {
-            getUniverseClient().getClient().send(new PlayerActionServerPacket(getUuid(), EntityPlayerServer.Action.RESPAWN));
+            getUniverseClient().getClient().send(new PlayerActionServerPacket(getUuid(), new RespawnAction()));
         }
         if (event.getKey() == GLFW_KEY_T && event.getAction() == GLFW_PRESS) {
             // TODO sometimes pressing does not work by some reason (not sure)
-            getUniverseClient().getClient().send(new PlayerActionServerPacket(getUuid(), EntityPlayerServer.Action.TELEPORT_FAR));
+            getUniverseClient().getClient().send(new PlayerActionServerPacket(getUuid(), new TeleportFarAction()));
         }
         if (event.getKey() == GLFW_KEY_SPACE && event.getAction() == GLFW_PRESS) {
-            getUniverseClient().getClient().send(new PlayerActionServerPacket(getUuid(), EntityPlayerServer.Action.JUMP));
+            getUniverseClient().getClient().send(new PlayerActionServerPacket(getUuid(), new JumpAction()));
         }
         if (event.getKey() == GLFW_KEY_B && event.getAction() == GLFW_PRESS) {
-            getUniverseClient().getClient().send(new PlayerActionServerPacket(getUuid(), EntityPlayerServer.Action.DESTROY_BLOCK_UNDER));
+            getUniverseClient().getClient().send(new PlayerActionServerPacket(getUuid(), new DestroyBlockUnderAction()));
         }
         if (event.getKey() == GLFW_KEY_Q && event.getAction() == GLFW_PRESS) {
-            getUniverseClient().getClient().send(new PlayerActionServerPacket(getUuid(), EntityPlayerServer.Action.DESTROY_SELECTED_BLOCK));
+            getUniverseClient().getClient().send(new PlayerActionServerPacket(getUuid(), new DestroySelectedBlockAction()));
         }
     }
 
     private void handleMouseButtonEvent(MouseButtonEvent event) {
         if (event.getButton() == GLFW_MOUSE_BUTTON_2 && event.getAction() == GLFW_PRESS) {
-            getUniverseClient().getClient().send(new PlayerActionServerPacket(getUuid(), EntityPlayerServer.Action.USE_FIRST_ITEM));
+            int slot = getUniverseClient().getEntityClientRepository().getEntityByClass(UIInventory.class).getCellSelected();
+            getUniverseClient().getClient().send(new PlayerActionServerPacket(getUuid(), new UseItemAction(slot)));
         }
     }
 
