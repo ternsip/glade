@@ -17,7 +17,7 @@ import java.lang.Math;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import static com.ternsip.glade.common.logic.Maths.frac;
@@ -137,7 +137,7 @@ public class BlocksRepository implements Threadable, IUniverseServer {
 
     // Using A Fast Voxel Traversal Algorithm for Ray Tracing by John Amanatides and Andrew Woo
     @Nullable
-    public Vector3ic traverse(LineSegmentf segment, Function<Block, Boolean> condition) {
+    public Vector3ic traverse(LineSegmentf segment, BiFunction<Block, Vector3i, Boolean> condition) {
         int cx = (int) Math.floor(segment.aX);
         int cy = (int) Math.floor(segment.aY);
         int cz = (int) Math.floor(segment.aZ);
@@ -548,8 +548,8 @@ public class BlocksRepository implements Threadable, IUniverseServer {
         relaxChunks();
     }
 
-    private boolean checkVoxel(int x, int y, int z, Function<Block, Boolean> condition) {
-        return isBlockExists(x, y, z) && condition.apply(getBlock(x, y, z));
+    private boolean checkVoxel(int x, int y, int z, BiFunction<Block, Vector3i, Boolean> condition) {
+        return isBlockExists(x, y, z) && condition.apply(getBlock(x, y, z), new Vector3i(x, y, z));
     }
 
 }

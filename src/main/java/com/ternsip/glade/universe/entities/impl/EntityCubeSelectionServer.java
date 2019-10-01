@@ -22,7 +22,7 @@ public class EntityCubeSelectionServer extends GraphicalEntityServer {
     public void update() {
         super.update();
         LineSegmentf segment = getPlayer().getEyeSegment();
-        Vector3ic pos = getUniverseServer().getBlocksRepository().traverse(segment, block -> block != Block.AIR);
+        Vector3ic pos = getUniverseServer().getBlocksRepository().traverse(segment, (b, p) -> b != Block.AIR);
         if (pos != null) {
             setVisible(true);
             setPosition(new Vector3f(pos));

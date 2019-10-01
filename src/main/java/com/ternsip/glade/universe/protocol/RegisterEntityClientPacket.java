@@ -1,6 +1,5 @@
 package com.ternsip.glade.universe.protocol;
 
-import com.ternsip.glade.common.logic.Utils;
 import com.ternsip.glade.network.ClientPacket;
 import com.ternsip.glade.network.Connection;
 import com.ternsip.glade.universe.entities.base.EntityClient;
@@ -33,7 +32,7 @@ public class RegisterEntityClientPacket extends ClientPacket {
         this.initialValues = CLASS_TO_SERIALIZABLE_FIELDS
                 .computeIfAbsent(entity.getClass(), k -> findAllSerializableFields(entity.getClass()))
                 .stream()
-                .collect(HashMap::new, (m, field) -> m.put(field.getName(), Utils.cloneThroughJson(getFieldValueSilently(field, entity))), HashMap::putAll);
+                .collect(HashMap::new, (m, field) -> m.put(field.getName(), getFieldValueSilently(field, entity)), HashMap::putAll);
         this.initialValues.put("uuid", entityServer.getUuid());
     }
 

@@ -39,6 +39,8 @@ import java.util.Set;
 // TODO Add Free look camera
 // TODO add log messages to important processes
 // TODO add packet receive limitation (implement inside network server)
+// TODO make update dynamic (for better performance - do not call superfluous updates)
+// TODO UI should not be overlapped with game 3d world
 public class Glade {
 
     public static void main(String[] args) {

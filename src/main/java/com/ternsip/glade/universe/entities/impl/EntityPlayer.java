@@ -2,12 +2,16 @@ package com.ternsip.glade.universe.entities.impl;
 
 import com.ternsip.glade.common.events.base.Callback;
 import com.ternsip.glade.common.events.display.KeyEvent;
+import com.ternsip.glade.common.events.display.MouseButtonEvent;
 import com.ternsip.glade.graphics.camera.CameraController;
 import com.ternsip.glade.graphics.visual.impl.test.EffigyBoy;
 import com.ternsip.glade.universe.entities.base.GraphicalEntity;
+import com.ternsip.glade.universe.entities.ui.UIInventory;
+import com.ternsip.glade.universe.parts.items.Inventory;
 import com.ternsip.glade.universe.protocol.PlayerActionServerPacket;
 import com.ternsip.glade.universe.protocol.PlayerStateServerPacket;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.joml.LineSegmentf;
 import org.joml.Vector3f;
@@ -18,29 +22,39 @@ import java.io.ObjectInputStream;
 import static com.ternsip.glade.common.logic.Maths.*;
 import static org.lwjgl.glfw.GLFW.*;
 
+@NoArgsConstructor
 @Getter
 @Setter
 public class EntityPlayer extends GraphicalEntity<EffigyBoy> {
 
     private transient final Callback<KeyEvent> keyCallback = this::handleKeyEvent;
+    private transient final Callback<MouseButtonEvent> mouseButtonEventCallback = this::handleMouseButtonEvent;
     private transient boolean thirdPerson = false;
 
     private Vector3f moveEffort = new Vector3f(0);
     private float velocity = 0.1f;
     private float cameraYRotation = 0;
     private LineSegmentf eyeSegment = new LineSegmentf();
+    private Inventory selectionInventory;
+
+    public EntityPlayer(Inventory selectionInventory) {
+        this.selectionInventory = selectionInventory;
+    }
 
     @Override
     public void register() {
         super.register();
         getUniverseClient().getEventIOReceiver().registerCallback(KeyEvent.class, getKeyCallback());
+        getUniverseClient().getEventIOReceiver().registerCallback(MouseButtonEvent.class, getMouseButtonEventCallback());
         getUniverseClient().getEntityClientRepository().setCameraTarget(this);
+        getUniverseClient().getEntityClientRepository().getEntityByClass(UIInventory.class).updateSelectionInventory(getSelectionInventory());
     }
 
     @Override
     public void unregister() {
         super.unregister();
         getUniverseClient().getEventIOReceiver().unregisterCallback(KeyEvent.class, getKeyCallback());
+        getUniverseClient().getEventIOReceiver().unregisterCallback(MouseButtonEvent.class, getMouseButtonEventCallback());
         getUniverseClient().getEntityClientRepository().setCameraTarget(null);
     }
 
@@ -133,5 +147,12 @@ public class EntityPlayer extends GraphicalEntity<EffigyBoy> {
             getUniverseClient().getClient().send(new PlayerActionServerPacket(getUuid(), EntityPlayerServer.Action.DESTROY_SELECTED_BLOCK));
         }
     }
+
+    private void handleMouseButtonEvent(MouseButtonEvent event) {
+        if (event.getButton() == GLFW_MOUSE_BUTTON_2 && event.getAction() == GLFW_PRESS) {
+            getUniverseClient().getClient().send(new PlayerActionServerPacket(getUuid(), EntityPlayerServer.Action.USE_FIRST_ITEM));
+        }
+    }
+
 
 }

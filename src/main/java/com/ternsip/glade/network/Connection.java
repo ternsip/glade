@@ -4,10 +4,12 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.SerializationUtils;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.Socket;
 
 @RequiredArgsConstructor
@@ -32,11 +34,11 @@ public class Connection {
     }
 
     public Object readObject() throws IOException, ClassNotFoundException {
-        return getInput().readObject();
+        return SerializationUtils.deserialize((byte[]) getInput().readObject());
     }
 
-    public void writeObject(Object object) throws IOException {
-        getOutput().writeObject(object);
+    public void writeObject(Serializable object) throws IOException {
+        getOutput().writeObject(SerializationUtils.serialize(object));
     }
 
     @SneakyThrows

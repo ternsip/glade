@@ -3,6 +3,7 @@ package com.ternsip.glade.universe.entities.ui;
 import com.ternsip.glade.common.events.base.Callback;
 import com.ternsip.glade.common.events.display.KeyEvent;
 import com.ternsip.glade.universe.entities.impl.EntitySprite;
+import com.ternsip.glade.universe.parts.items.Inventory;
 import lombok.Getter;
 import org.joml.Vector3f;
 
@@ -14,13 +15,13 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_9;
 @Getter
 public class UIInventory extends EntityUI {
 
-    private static final int SELECTION_CELLS = 10;
-    private static final float SELECTION_BAR_CELL_SIZE = 0.5f / SELECTION_CELLS;
-    private static final float SELECTION_BAR_START_X = (SELECTION_CELLS - 1) * SELECTION_BAR_CELL_SIZE;
+    public static final int SELECTION_INVENTORY_SIZE = 10;
+
+    private static final float SELECTION_BAR_CELL_SIZE = 0.5f / SELECTION_INVENTORY_SIZE;
+    private static final float SELECTION_BAR_START_X = (SELECTION_INVENTORY_SIZE - 1) * SELECTION_BAR_CELL_SIZE;
 
     private final Callback<KeyEvent> keyCallback = this::handleKeyEvent;
-
-    private final EntitySprite[] selectionBarCells = new EntitySprite[SELECTION_CELLS];
+    private final UIInventoryCell[] selectionCells = new UIInventoryCell[SELECTION_INVENTORY_SIZE];
     private final EntitySprite itemSelection;
 
     private int cellSelected = 0;
@@ -28,10 +29,10 @@ public class UIInventory extends EntityUI {
     public UIInventory() {
         super(true);
 
-        for (int i = 0; i < SELECTION_CELLS; ++i) {
-            this.selectionBarCells[i] = new EntitySprite(new File("interface/item_cell.png"), true, true);
-            this.selectionBarCells[i].setScale(new Vector3f(SELECTION_BAR_CELL_SIZE, SELECTION_BAR_CELL_SIZE, 1));
-            this.selectionBarCells[i].setPosition(new Vector3f(-SELECTION_BAR_START_X + SELECTION_BAR_CELL_SIZE * i * 2, -1 + 2 * SELECTION_BAR_CELL_SIZE, 0));
+        for (int i = 0; i < SELECTION_INVENTORY_SIZE; ++i) {
+            this.selectionCells[i] = new UIInventoryCell(new File("interface/item_cell.png"));
+            this.selectionCells[i].setScale(new Vector3f(SELECTION_BAR_CELL_SIZE, SELECTION_BAR_CELL_SIZE, 1));
+            this.selectionCells[i].setPosition(new Vector3f(-SELECTION_BAR_START_X + SELECTION_BAR_CELL_SIZE * i * 2, -1 + 2 * SELECTION_BAR_CELL_SIZE, 0.02f));
         }
 
         this.itemSelection = new EntitySprite(new File("interface/item_selection.png"), true, true);
@@ -43,8 +44,8 @@ public class UIInventory extends EntityUI {
     @Override
     public void register() {
         super.register();
-        for (EntitySprite sbc : getSelectionBarCells()) {
-            sbc.register();
+        for (UIInventoryCell uiInventoryCell : getSelectionCells()) {
+            uiInventoryCell.register();
         }
         getItemSelection().register();
         getUniverseClient().getEventIOReceiver().registerCallback(KeyEvent.class, getKeyCallback());
@@ -53,11 +54,17 @@ public class UIInventory extends EntityUI {
     @Override
     public void unregister() {
         super.unregister();
-        for (EntitySprite sbc : getSelectionBarCells()) {
-            sbc.unregister();
+        for (UIInventoryCell uiInventoryCell : getSelectionCells()) {
+            uiInventoryCell.unregister();
         }
         getItemSelection().unregister();
         getUniverseClient().getEventIOReceiver().unregisterCallback(KeyEvent.class, getKeyCallback());
+    }
+
+    public void updateSelectionInventory(Inventory selectionInventory) {
+        for (int i = 0; i < SELECTION_INVENTORY_SIZE; ++i) {
+            getSelectionCells()[i].updateItem(selectionInventory.getItems()[i]);
+        }
     }
 
     public void setCellSelected(int cellSelected) {
@@ -67,7 +74,7 @@ public class UIInventory extends EntityUI {
 
     private void handleKeyEvent(KeyEvent event) {
         if (event.getKey() >= GLFW_KEY_0 && event.getKey() <= GLFW_KEY_9) {
-            setCellSelected((event.getKey() - GLFW_KEY_0 + SELECTION_CELLS - 1) % SELECTION_CELLS);
+            setCellSelected((event.getKey() - GLFW_KEY_0 + SELECTION_INVENTORY_SIZE - 1) % SELECTION_INVENTORY_SIZE);
         }
     }
 

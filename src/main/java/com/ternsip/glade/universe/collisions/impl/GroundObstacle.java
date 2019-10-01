@@ -16,6 +16,6 @@ public class GroundObstacle implements Obstacle {
     @Nullable
     @Override
     public Vector3fc collideSegment(LineSegmentf segment) {
-        return collideSegmentDefault(segment, getAabb());
+        return Obstacle.collideSegmentDefault(segment, getAabb());
     }
 }

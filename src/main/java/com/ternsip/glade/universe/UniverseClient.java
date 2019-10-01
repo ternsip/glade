@@ -63,6 +63,7 @@ public class UniverseClient implements Threadable, INetworkClient, IBindings, IB
         EntityUIMenu entityUIMenu = new EntityUIMenu();
         entityUIMenu.register();
         getBindings().addBindCallback(Bind.TOGGLE_MENU, entityUIMenu::toggle);
+        new UIInventory().register();
     }
 
     private void spawnEntities() {
@@ -76,8 +77,6 @@ public class UniverseClient implements Threadable, INetworkClient, IBindings, IB
         getBindings().addBindCallback(Bind.TEST_BUTTON, () -> getClient().send(new ConsoleMessageServerPacket("HELLO 123")));
 
         new EntitySides().register();
-
-        new UIInventory().register();
     }
 
     private void whenConnected(OnConnectedToServer onConnectedToServer) {

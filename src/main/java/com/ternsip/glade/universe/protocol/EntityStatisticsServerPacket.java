@@ -19,7 +19,7 @@ public class EntityStatisticsServerPacket extends ServerPacket {
     @Override
     @SneakyThrows
     public void apply(Connection connection) {
-        Vector3ic pos = getUniverseServer().getBlocksRepository().traverse(getEyeSegment(), block -> block != Block.AIR);
+        Vector3ic pos = getUniverseServer().getBlocksRepository().traverse(getEyeSegment(), (b, p) -> b != Block.AIR);
         if (pos != null) {
             getUniverseServer().getServer().send(new EntityStatisticsClientPacket(new Vector3i(pos), getUniverseServer().getBlocksRepository().getBlock(pos)), connection);
         } else {

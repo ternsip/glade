@@ -6,8 +6,12 @@ import com.ternsip.glade.universe.collisions.base.Collision;
 import com.ternsip.glade.universe.entities.base.EntityClient;
 import com.ternsip.glade.universe.entities.base.GraphicalEntityServer;
 import com.ternsip.glade.universe.parts.blocks.Block;
+import com.ternsip.glade.universe.parts.items.Inventory;
+import com.ternsip.glade.universe.parts.items.Item;
+import com.ternsip.glade.universe.parts.items.ItemBlock;
+import com.ternsip.glade.universe.parts.items.ItemEmpty;
+import com.ternsip.glade.universe.protocol.UpdatePlayerInventoryClientPacket;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.joml.*;
 
@@ -17,19 +21,26 @@ import java.util.List;
 
 import static com.ternsip.glade.common.logic.Maths.DOWN_DIRECTION;
 import static com.ternsip.glade.common.logic.Maths.EPS;
+import static com.ternsip.glade.universe.entities.ui.UIInventory.SELECTION_INVENTORY_SIZE;
 
-@RequiredArgsConstructor
 @Getter
 @Setter
 public class EntityPlayerServer extends GraphicalEntityServer {
 
     private final Connection allowedConnection;
+    private final Inventory selectionInventory = new Inventory(SELECTION_INVENTORY_SIZE);
     private transient Vector3ic previousPosition = new Vector3i(-1000);
     private Vector3f moveEffort = new Vector3f(0);
     private LineSegmentf eyeSegment = new LineSegmentf();
     private Vector3f currentVelocity = new Vector3f(0);
     private float jumpPower = 0.3f;
     private boolean onTheGround = false;
+
+    public EntityPlayerServer(Connection allowedConnection) {
+        this.allowedConnection = allowedConnection;
+        this.selectionInventory.getItems()[0] = new ItemBlock(Block.STONE);
+        this.selectionInventory.getItems()[0].setCount(15);
+    }
 
     @Override
     public void register() {
@@ -45,7 +56,9 @@ public class EntityPlayerServer extends GraphicalEntityServer {
 
     @Override
     public EntityClient getEntityClient(Connection connection) {
-        return connection == getAllowedConnection() ? new EntityPlayer() : new EntityAnotherPlayer();
+        return connection == getAllowedConnection()
+                ? new EntityPlayer(getSelectionInventory())
+                : new EntityAnotherPlayer();
     }
 
     @Override
@@ -73,6 +86,15 @@ public class EntityPlayerServer extends GraphicalEntityServer {
     }
 
     public void handleAction(Action action) {
+        if (action == Action.USE_FIRST_ITEM) {
+            Item item = getSelectionInventory().getItems()[0];
+            item.setCount(item.getCount() - 1);
+            item.use(this);
+            if (item.getCount() <= 0) {
+                getSelectionInventory().getItems()[0] = new ItemEmpty();
+            }
+            updatePlayerInventory();
+        }
         if (action == Action.RESPAWN) {
             setRotation(new Vector3f(0, 0, 0));
             setPosition(new Vector3f(50, 90, 50));
@@ -93,7 +115,7 @@ public class EntityPlayerServer extends GraphicalEntityServer {
             }
         }
         if (action == Action.DESTROY_SELECTED_BLOCK) {
-            Vector3ic blockPositionLooking = getUniverseServer().getBlocksRepository().traverse(getEyeSegment(), (block) -> block != Block.AIR);
+            Vector3ic blockPositionLooking = getUniverseServer().getBlocksRepository().traverse(getEyeSegment(), (b, p) -> b != Block.AIR);
             if (blockPositionLooking != null && getUniverseServer().getBlocksRepository().isBlockExists(blockPositionLooking)) {
                 getUniverseServer().getBlocksRepository().setBlock(blockPositionLooking, Block.AIR);
             }
@@ -126,6 +148,10 @@ public class EntityPlayerServer extends GraphicalEntityServer {
         }
     }
 
+    private void updatePlayerInventory() {
+        getUniverseServer().getServer().send(new UpdatePlayerInventoryClientPacket(getUuid(), getSelectionInventory()), getAllowedConnection());
+    }
+
     public enum Action {
 
         JUMP,
@@ -133,6 +159,8 @@ public class EntityPlayerServer extends GraphicalEntityServer {
         TELEPORT_FAR,
         DESTROY_BLOCK_UNDER,
         DESTROY_SELECTED_BLOCK,
+        MODIFY_INVENTORY_BLOCK,
+        USE_FIRST_ITEM,
 
     }
 

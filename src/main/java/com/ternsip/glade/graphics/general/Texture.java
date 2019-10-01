@@ -16,6 +16,7 @@ public class Texture implements IGraphics {
 
     public static final Vector4f DEFAULT_COLOR = new Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
 
+    private final File file;
     private final boolean texturePresent;
     private final boolean colorPresent;
     private final Vector4fc color;
@@ -26,10 +27,11 @@ public class Texture implements IGraphics {
     }
 
     public Texture(@Nullable Vector4fc color, @Nullable File file) {
+        this.file = file != null ? file : MISSING_TEXTURE;
         this.texturePresent = file != null;
         this.colorPresent = color != null;
         this.color = colorPresent ? color : DEFAULT_COLOR;
-        this.atlasTexture = getGraphics().getTextureRepository().getTexture(this.texturePresent ? file : MISSING_TEXTURE);
+        this.atlasTexture = getGraphics().getTextureRepository().getTexture(this.file);
     }
 
     public Texture(File file) {

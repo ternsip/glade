@@ -1,6 +1,5 @@
 package com.ternsip.glade.common.logic;
 
-import com.google.gson.Gson;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -59,16 +58,6 @@ public class Utils {
             throw new FileNotFoundException("Can't find file: " + file.getPath());
         }
         return in;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> T cloneThroughJson(T object) {
-        if (object == null) {
-            return null;
-        }
-        Gson gson = new Gson();
-        String json = gson.toJson(object);
-        return (T) gson.fromJson(json, object.getClass());
     }
 
     @SneakyThrows

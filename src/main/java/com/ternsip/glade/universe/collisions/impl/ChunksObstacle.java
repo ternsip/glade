@@ -2,7 +2,6 @@ package com.ternsip.glade.universe.collisions.impl;
 
 import com.ternsip.glade.universe.collisions.base.Obstacle;
 import com.ternsip.glade.universe.interfaces.IUniverseServer;
-import com.ternsip.glade.universe.parts.blocks.Block;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.joml.AABBf;
@@ -17,22 +16,21 @@ import javax.annotation.Nullable;
 public class ChunksObstacle implements Obstacle, IUniverseServer {
 
     private static final float BLOCK_SAVE_DELTA = 1e-4f;
-    private static final float CUBE_SIZE = 1;
 
     private final AABBf aabb = new AABBf(-Float.MAX_VALUE, 0, -Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
 
     @Nullable
     @Override
     public Vector3fc collideSegment(LineSegmentf segment) {
-        Vector3ic pos = getUniverseServer().getBlocksRepository().traverse(segment, Block::isObstacle);
+        Vector3ic pos = getUniverseServer().getBlocksRepository().traverse(segment, (b, p) -> b.isObstacle());
         if (pos == null) {
             return null;
         }
-        AABBf aabb = new AABBf(
-                pos.x() * CUBE_SIZE - BLOCK_SAVE_DELTA, pos.y() * CUBE_SIZE - BLOCK_SAVE_DELTA, pos.z() * CUBE_SIZE - BLOCK_SAVE_DELTA,
-                (pos.x() + 1) * CUBE_SIZE + BLOCK_SAVE_DELTA, (pos.y() + 1) * CUBE_SIZE + BLOCK_SAVE_DELTA, (pos.z() + 1) * CUBE_SIZE + BLOCK_SAVE_DELTA
+        AABBf extendedCube = new AABBf(
+                pos.x() - BLOCK_SAVE_DELTA, pos.y() - BLOCK_SAVE_DELTA, pos.z() - BLOCK_SAVE_DELTA,
+                (pos.x() + 1) + BLOCK_SAVE_DELTA, (pos.y() + 1) + BLOCK_SAVE_DELTA, (pos.z() + 1) + BLOCK_SAVE_DELTA
         );
-        return collideSegmentDefault(segment, aabb);
+        return Obstacle.collideSegmentDefault(segment, extendedCube);
     }
 
 }
