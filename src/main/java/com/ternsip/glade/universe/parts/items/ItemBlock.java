@@ -21,6 +21,7 @@ public class ItemBlock extends Item {
             Vector3ic prevPos = player.getUniverseServer().getBlocksRepository().traverse(player.getEyeSegment(), (b, p) -> p.distanceSquared(pos) == 1);
             if (prevPos != null) {
                 player.getUniverseServer().getBlocksRepository().setBlock(prevPos, getBlock());
+                setCount(getCount() - 1);
             }
         }
     }

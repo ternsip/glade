@@ -16,10 +16,9 @@ public class UseItemAction extends BaseAction {
     @Override
     public void apply(EntityPlayerServer player) {
         Item item = player.getSelectionInventory().getItems()[getSlot()];
-        item.setCount(item.getCount() - 1);
         item.use(player);
         if (item.getCount() <= 0) {
-            player.getSelectionInventory().getItems()[0] = new ItemEmpty();
+            player.getSelectionInventory().getItems()[getSlot()] = new ItemEmpty();
         }
         getUniverseServer().getServer().send(new UpdatePlayerInventoryClientPacket(player.getUuid(), player.getSelectionInventory()), player.getAllowedConnection());
     }

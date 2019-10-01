@@ -8,6 +8,7 @@ import com.ternsip.glade.universe.entities.base.GraphicalEntityServer;
 import com.ternsip.glade.universe.parts.blocks.Block;
 import com.ternsip.glade.universe.parts.items.Inventory;
 import com.ternsip.glade.universe.parts.items.ItemBlock;
+import com.ternsip.glade.universe.parts.items.ItemSelectTool;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.*;
@@ -40,6 +41,7 @@ public class EntityPlayerServer extends GraphicalEntityServer {
         this.selectionInventory.getItems()[1].setCount(999);
         this.selectionInventory.getItems()[2] = new ItemBlock(Block.LEAVES);
         this.selectionInventory.getItems()[2].setCount(999);
+        this.selectionInventory.getItems()[3] = new ItemSelectTool();
     }
 
     @Override

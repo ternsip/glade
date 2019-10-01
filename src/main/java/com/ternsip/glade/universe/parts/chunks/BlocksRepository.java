@@ -6,6 +6,7 @@ import com.ternsip.glade.universe.interfaces.IUniverseServer;
 import com.ternsip.glade.universe.parts.blocks.Block;
 import com.ternsip.glade.universe.parts.blocks.BlockSide;
 import com.ternsip.glade.universe.parts.generators.ChunkGenerator;
+import com.ternsip.glade.universe.parts.tools.Schematic;
 import com.ternsip.glade.universe.protocol.BlocksUpdateClientPacket;
 import com.ternsip.glade.universe.storage.Storage;
 import lombok.SneakyThrows;
@@ -83,8 +84,42 @@ public class BlocksRepository implements Threadable, IUniverseServer {
         unlock();
     }
 
+    public void setBlocksInternal(Vector3ic start, Block[][][] regionBlocks) {
+        Vector3ic size = new Vector3i(regionBlocks[0][0].length, regionBlocks[0].length, regionBlocks.length);
+        for (int x = 0, wx = start.x(); x < size.x(); ++x, ++wx) {
+            for (int y = 0, wy = start.y(); y < size.y(); ++y, ++wy) {
+                for (int z = 0, wz = start.z(); z < size.z(); ++z, ++wz) {
+                    setBlock(wx, wy, wz, regionBlocks[x][y][z]);
+                }
+            }
+        }
+    }
+
+    public void putSchematicInternal(Vector3ic pos, Schematic schematic) {
+        setBlocksInternal(pos, schematic.getBlocks());
+    }
+
     public Block getBlock(Vector3ic pos) {
         return getBlock(pos.x(), pos.y(), pos.z());
+    }
+
+    public Block[][][] getBlocks(Vector3ic start, Vector3ic end) {
+        if (!INDEXER.isInside(start) || !INDEXER.isInside(end)) {
+            throw new IllegalArgumentException("You tried to get blocks out of limits.");
+        }
+        Vector3ic fixStart = new Vector3i(start).min(end);
+        Vector3ic fixEnd = new Vector3i(start).max(end);
+        Vector3ic size = new Vector3i(fixEnd).sub(fixStart).add(1, 1, 1);
+        Block[][][] blocks = new Block[size.x()][size.y()][size.z()];
+        for (int x = 0, wx = fixStart.x(); x < size.x(); ++x, ++wx) {
+            for (int y = 0, wy = fixStart.y(); y < size.y(); ++y, ++wy) {
+                for (int z = 0, wz = fixStart.z(); z < size.z(); ++z, ++wz) {
+                    blocks[x][y][z] = getBlock(wx, wy, wz);
+                }
+            }
+        }
+        relaxChunks();
+        return blocks;
     }
 
     public byte getSkyLight(Vector3ic pos) {
