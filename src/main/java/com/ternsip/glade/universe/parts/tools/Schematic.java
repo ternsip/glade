@@ -2,6 +2,7 @@ package com.ternsip.glade.universe.parts.tools;
 
 import com.ternsip.glade.universe.interfaces.IUniverseServer;
 import com.ternsip.glade.universe.parts.blocks.Block;
+import com.ternsip.glade.universe.parts.chunks.BlocksRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -49,6 +50,17 @@ public class Schematic implements IUniverseServer {
 
     public void put(Vector3ic pos) {
         getUniverseServer().getBlocksRepository().setBlocks(pos, getBlocks());
+    }
+
+    public void putInternal(Vector3ic start, BlocksRepository blocksRepository) {
+        Vector3ic size = getSize();
+        for (int x = 0, wx = start.x(); x < size.x(); ++x, ++wx) {
+            for (int y = 0, wy = start.y(); y < size.y(); ++y, ++wy) {
+                for (int z = 0, wz = start.z(); z < size.z(); ++z, ++wz) {
+                    blocksRepository.setBlockInternal(wx, wy, wz, blocks[x][y][z]);
+                }
+            }
+        }
     }
 
 }

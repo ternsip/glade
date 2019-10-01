@@ -6,7 +6,6 @@ import com.ternsip.glade.universe.interfaces.IUniverseServer;
 import com.ternsip.glade.universe.parts.blocks.Block;
 import com.ternsip.glade.universe.parts.blocks.BlockSide;
 import com.ternsip.glade.universe.parts.generators.ChunkGenerator;
-import com.ternsip.glade.universe.parts.tools.Schematic;
 import com.ternsip.glade.universe.protocol.BlocksUpdateClientPacket;
 import com.ternsip.glade.universe.storage.Storage;
 import lombok.SneakyThrows;
@@ -82,21 +81,6 @@ public class BlocksRepository implements Threadable, IUniverseServer {
     public void setBlocks(Vector3ic start, Block[][][] regionBlocks) {
         changeBlocksRequests.add(new ChangeBlocksRequest(start, regionBlocks));
         unlock();
-    }
-
-    public void setBlocksInternal(Vector3ic start, Block[][][] regionBlocks) {
-        Vector3ic size = new Vector3i(regionBlocks[0][0].length, regionBlocks[0].length, regionBlocks.length);
-        for (int x = 0, wx = start.x(); x < size.x(); ++x, ++wx) {
-            for (int y = 0, wy = start.y(); y < size.y(); ++y, ++wy) {
-                for (int z = 0, wz = start.z(); z < size.z(); ++z, ++wz) {
-                    setBlock(wx, wy, wz, regionBlocks[x][y][z]);
-                }
-            }
-        }
-    }
-
-    public void putSchematicInternal(Vector3ic pos, Schematic schematic) {
-        setBlocksInternal(pos, schematic.getBlocks());
     }
 
     public Block getBlock(Vector3ic pos) {

@@ -56,7 +56,7 @@ public class TreeGenerator implements ChunkGenerator {
             if (!blocksRepository.isBlockExists(end)) {
                 continue;
             }
-            blocksRepository.putSchematicInternal(start, tree);
+            tree.putInternal(start, blocksRepository);
         }
     }
 }
