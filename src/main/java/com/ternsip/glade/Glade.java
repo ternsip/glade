@@ -34,8 +34,7 @@ import java.util.Set;
 // TODO Make camera collisions better (more precise)
 // TODO ?? Add Combine collidable and block traversal (name blocksRepository collidable)
 // TODO Better collisions with playaer (push out from shape AABB)
-// TODO Player inventory based on UI
-// TODO Item repository (blocks, tools)
+// TODO Extend Player inventory UI capabilities
 // TODO Add Free look camera
 // TODO add log messages to important processes
 // TODO add packet receive limitation (implement inside network server)

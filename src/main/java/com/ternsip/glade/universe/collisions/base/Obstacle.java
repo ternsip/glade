@@ -9,11 +9,6 @@ import static org.joml.Intersectionf.OUTSIDE;
 
 public interface Obstacle {
 
-    AABBf getAabb();
-
-    @Nullable
-    Vector3fc collideSegment(LineSegmentf segment);
-
     @Nullable
     static Vector3fc collideSegmentDefault(LineSegmentf segment, AABBf aabb) {
         Vector2f pResult = new Vector2f();
@@ -28,5 +23,10 @@ public interface Obstacle {
                 segment.aZ + (segment.bZ - segment.aZ) * tNear
         );
     }
+
+    AABBf getAabb();
+
+    @Nullable
+    Vector3fc collideSegment(LineSegmentf segment);
 
 }

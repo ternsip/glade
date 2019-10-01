@@ -29,6 +29,22 @@ public class UIInventoryCell extends EntityUI {
     }
 
     @Override
+    public void register() {
+        super.register();
+        getBackgroundSprite().register();
+        getItemSprite().register();
+        setRegistered(true);
+    }
+
+    @Override
+    public void unregister() {
+        super.unregister();
+        getBackgroundSprite().unregister();
+        getItemSprite().unregister();
+        setRegistered(false);
+    }
+
+    @Override
     public void update() {
         super.update();
 
@@ -45,22 +61,6 @@ public class UIInventoryCell extends EntityUI {
         getItemSprite().setRotation(rotation);
         getItemSprite().setPosition(new Vector3f(position).add(0, 0, -0.01f));
         getItemSprite().setVisible(isVisible());
-    }
-
-    @Override
-    public void register() {
-        super.register();
-        getBackgroundSprite().register();
-        getItemSprite().register();
-        setRegistered(true);
-    }
-
-    @Override
-    public void unregister() {
-        super.unregister();
-        getBackgroundSprite().unregister();
-        getItemSprite().unregister();
-        setRegistered(false);
     }
 
     public void updateItem(Item item) {
