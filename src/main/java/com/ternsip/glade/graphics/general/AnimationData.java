@@ -42,7 +42,7 @@ public class AnimationData {
         this.boneIndexDataTopologicallySorted = topSortBones.toArray(new BoneIndexData[0]);
     }
 
-    Matrix4fc[] calcBoneTransforms(AnimationTrack animationTrack) {
+    public Matrix4fc[] calcBoneTransforms(AnimationTrack animationTrack) {
         Map<String, Matrix4fc> currentPose = animationTrack.calculateCurrentAnimationPose();
         Matrix4fc[] boneMatrices = new Matrix4fc[getBiggestBoneIndex() + 1];
         AnimationData.BoneIndexData[] boneIndexData = getBoneIndexDataTopologicallySorted();

@@ -20,15 +20,13 @@ public abstract class EffigyAnimated extends Effigy<AnimationShader> {
     @Override
     public void render() {
         getShader().start();
-        updateAnimation();
-        Matrix4fc[] boneTransforms = getAnimation().getBoneTransforms();
         Matrix4fc projection = getProjectionMatrix();
         Matrix4fc view = getViewMatrix();
         getShader().getAnimated().load(getAnimation().isAnimated());
         getShader().getProjectionMatrix().load(projection);
         getShader().getViewMatrix().load(view);
         getShader().getSun().load(getSun());
-        getShader().getBoneTransforms().load(boneTransforms);
+        getShader().getBoneTransforms().load(getAnimation().calcBoneTransforms());
         getShader().getTransformationMatrix().load(getTransformationMatrix());
         for (Mesh mesh : getAnimation().getModel().getMeshes()) {
             getShader().getDiffuseMap().load(mesh.getMaterial().getDiffuseMap());
@@ -59,10 +57,6 @@ public abstract class EffigyAnimated extends Effigy<AnimationShader> {
     public Light getSun() {
         EntitySun sun = getUniverseClient().getEntityClientRepository().getEntityByClass(EntitySun.class);
         return new LightSource(sun.getPositionInterpolated(), sun.getColor(), sun.getIntensity() * getSkyIntensity());
-    }
-
-    private void updateAnimation() {
-        getAnimation().update();
     }
 
 }

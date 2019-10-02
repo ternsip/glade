@@ -2,7 +2,6 @@ package com.ternsip.glade.graphics.general;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 
 @Getter
@@ -11,27 +10,25 @@ public class Animation {
 
     private final Model model;
     private AnimationTrack animationTrack;
-    private Matrix4fc[] boneTransforms;
 
     public Animation(Model model) {
         this.model = model;
         this.animationTrack = model.getAnimationData().getAnimationTrack("");
-        this.boneTransforms = new Matrix4f[0];
     }
 
     public void play(String animationName) {
         this.animationTrack = getModel().getAnimationData().getAnimationTrack(animationName);
     }
 
-    public void update() {
-        if (getAnimationTrack() == null || getAnimationTrack().isEmpty()) {
-            return;
-        }
-        setBoneTransforms(getModel().getAnimationData().calcBoneTransforms(getAnimationTrack()));
+    public boolean isAnimated() {
+        return !getAnimationTrack().isEmpty();
     }
 
-    public boolean isAnimated() {
-        return getBoneTransforms().length > 0;
+    public Matrix4fc[] calcBoneTransforms() {
+        if (!isAnimated()) {
+            return new Matrix4fc[0];
+        }
+        return getModel().getAnimationData().calcBoneTransforms(getAnimationTrack());
     }
 
 }
