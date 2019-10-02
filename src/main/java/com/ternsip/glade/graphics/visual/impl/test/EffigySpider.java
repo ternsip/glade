@@ -14,7 +14,8 @@ public class EffigySpider extends EffigyAnimated {
                 .builder()
                 .meshFile(new File("models/spider/spider.dae"))
                 .manualMeshMaterials(spiderMaterials)
-                .baseRotation(new Vector3f((float) (-Math.PI / 2), 0, 0))
+                .baseRotation(new Vector3f(0, 0, 0))
+                .baseScale(new Vector3f(1))
                 .build()
         );
     }

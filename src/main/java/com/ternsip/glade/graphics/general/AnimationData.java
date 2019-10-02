@@ -51,7 +51,7 @@ public class AnimationData {
             Bone bone = boneIndexData[i].getBone();
             int parentBoneOrder = boneIndexData[i].getParentBoneOrder();
             Matrix4fc parentLocalTransform = parentBoneOrder == -1 ? new Matrix4f() : localTransforms[parentBoneOrder];
-            localTransforms[i] = new Matrix4f(parentLocalTransform).mul(currentPose.getOrDefault(bone.getName(), new Matrix4f()));
+            localTransforms[i] = new Matrix4f(parentLocalTransform).mul(currentPose.getOrDefault(bone.getName(), bone.getBindTransform()));
             if (bone.getIndex() != -1) {
                 boneMatrices[bone.getIndex()] = new Matrix4f(localTransforms[i]).mul(bone.getOffsetTransform());
             }

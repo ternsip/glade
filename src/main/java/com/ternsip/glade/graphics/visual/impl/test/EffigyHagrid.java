@@ -15,7 +15,7 @@ public class EffigyHagrid extends EffigyAnimated {
                 .builder()
                 .meshFile(new File("models/bob/boblamp.md5mesh"))
                 .animationFile(new File("models/bob/boblamp.md5anim"))
-                .baseRotation(new Vector3f((float) (-Math.PI / 2), 0, 0))
+                .baseRotation(new Vector3f(0, 0, 0))
                 .build()
         );
     }
