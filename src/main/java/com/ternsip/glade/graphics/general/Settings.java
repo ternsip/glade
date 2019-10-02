@@ -31,10 +31,6 @@ public class Settings {
 
     @SuppressWarnings("UnusedAssignment")
     @Builder.Default
-    private boolean preserveInvalidBoneLocalTransform = false;
-
-    @SuppressWarnings("UnusedAssignment")
-    @Builder.Default
     private int assimpFlags =
             aiProcess_GenSmoothNormals |
                     aiProcess_JoinIdenticalVertices |

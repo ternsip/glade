@@ -13,7 +13,6 @@ public class EffigyWolf extends EffigyAnimated {
     public Model loadModel() {
         return ModelLoader.loadModel(Settings.builder()
                 .meshFile(new File("models/wolf/wolf.dae"))
-                .preserveInvalidBoneLocalTransform(true)
                 .baseRotation(new Vector3f((float) (-Math.PI), 0, 0))
                 .build()
         );
