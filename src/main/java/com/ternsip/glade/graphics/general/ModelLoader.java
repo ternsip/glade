@@ -28,8 +28,7 @@ public class ModelLoader {
                 : loadResourceAsAssimp(settings.getAnimationFile(), settings.getAssimpFlags());
         Material[] materials = processMaterials(aiSceneMesh.mMaterials(), settings.getTexturesDir());
         Skeleton skeleton = processSkeleton(aiSceneMesh);
-        PointerBuffer aiMeshes = aiSceneMesh.mMeshes();
-        Mesh[] meshes = processMeshes(aiSceneMesh, materials, skeleton, aiMeshes, settings);
+        Mesh[] meshes = processMeshes(aiSceneMesh, materials, skeleton, settings);
         Map<String, FrameTrack> animationsFrames = buildAnimations(aiSceneAnimation);
         Bone rootBone = createBones(aiSceneMesh.mRootNode(), skeleton);
         assertThat(MAX_BONES > skeleton.numberOfUniqueBones());
@@ -59,10 +58,10 @@ public class ModelLoader {
             AIScene aiSceneMesh,
             Material[] materials,
             Skeleton skeleton,
-            PointerBuffer aiMeshes,
             Settings settings
     ) {
         Mesh[] meshes = new Mesh[aiSceneMesh.mNumMeshes()];
+        PointerBuffer aiMeshes = aiSceneMesh.mMeshes();
         for (int meshIndex = 0; meshIndex < aiSceneMesh.mNumMeshes(); meshIndex++) {
             AIMesh aiMesh = AIMesh.create(aiMeshes.get(meshIndex));
             int materialIdx = aiMesh.mMaterialIndex();
@@ -84,7 +83,7 @@ public class ModelLoader {
                     .add(TEXTURES, textures)
                     .add(INDICES, indices)
                     .add(WEIGHTS, skeleton.getBonesWeights(meshIndex, numVertices))
-                    .add(BONE_INDICES, skeleton.getBoneNameToBone(meshIndex, numVertices)),
+                    .add(BONE_INDICES, skeleton.getBoneIndices(meshIndex, numVertices)),
                     material
             );
             meshes[meshIndex] = mesh;

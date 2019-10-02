@@ -43,7 +43,7 @@ class Skeleton {
         return weights;
     }
 
-    int[] getBoneNameToBone(int meshIndex, int numVertices) {
+    int[] getBoneIndices(int meshIndex, int numVertices) {
         int weightLimit = MAX_WEIGHTS;
         int[] indices = new int[numVertices * weightLimit];
         Map<Integer, List<BoneWeight>> combinedBoneWeights = combineBoneWeights(meshIndex);
