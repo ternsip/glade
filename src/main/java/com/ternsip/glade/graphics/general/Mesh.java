@@ -43,16 +43,25 @@ public class Mesh {
 
     private final int vao;
     private final Map<AttributeData, Integer> vbos = new HashMap<>();
+    private final AnimationData animationData;
 
     private int indicesCount;
     private int vertexCount;
 
     public Mesh(MeshAttributes meshAttributes, Material material) {
-        this(meshAttributes, material, false);
+        this(meshAttributes, material, new AnimationData(), false);
     }
 
     public Mesh(MeshAttributes meshAttributes, Material material, boolean dynamic) {
+        this(meshAttributes, material, new AnimationData(), dynamic);
+    }
 
+    public Mesh(MeshAttributes meshAttributes, Material material,AnimationData animationData) {
+        this(meshAttributes, material, animationData, false);
+    }
+
+    public Mesh(MeshAttributes meshAttributes, Material material, AnimationData animationData, boolean dynamic) {
+        this.animationData = animationData;
         this.dynamic = dynamic;
         this.meshAttributes = meshAttributes;
         this.vertexCount = meshAttributes.getVerticesBuffer().limit() / VERTICES.getNumberPerVertex();

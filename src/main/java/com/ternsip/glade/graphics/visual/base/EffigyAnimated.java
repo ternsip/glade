@@ -20,17 +20,19 @@ public abstract class EffigyAnimated extends Effigy<AnimationShader> {
     @Override
     public void render() {
         getShader().start();
-        updateAnimation();
-        Matrix4fc[] boneTransforms = getAnimation().getBoneTransforms();
         Matrix4fc projection = getProjectionMatrix();
         Matrix4fc view = getViewMatrix();
         getShader().getAnimated().load(getAnimation().isAnimated());
         getShader().getProjectionMatrix().load(projection);
         getShader().getViewMatrix().load(view);
         getShader().getSun().load(getSun());
-        getShader().getBoneTransforms().load(boneTransforms);
         getShader().getTransformationMatrix().load(getTransformationMatrix());
+        boolean isUnderwater = getUniverseClient().getEntityClientRepository().getEntityByClass(EntityCameraEffects.class).isUnderWater();
+        getShader().getFogColor().load(isUnderwater ? getUniverseClient().getBalance().getUnderwaterFogColor() : getUniverseClient().getBalance().getFogColor());
+        getShader().getFogDensity().load(isUnderwater ? getUniverseClient().getBalance().getUnderwaterFogDensity() : getUniverseClient().getBalance().getFogDensity());
+        getShader().getFogGradient().load(isUnderwater ? getUniverseClient().getBalance().getUnderwaterFogGradient() : getUniverseClient().getBalance().getFogGradient());
         for (Mesh mesh : getAnimation().getModel().getMeshes()) {
+            getShader().getBoneTransforms().load(mesh.getAnimationData().calcBoneTransforms(getAnimation().getAnimationTrack()));
             getShader().getDiffuseMap().load(mesh.getMaterial().getDiffuseMap());
             getShader().getSpecularMap().load(mesh.getMaterial().getSpecularMap());
             getShader().getAmbientMap().load(mesh.getMaterial().getAmbientMap());
@@ -42,10 +44,6 @@ public abstract class EffigyAnimated extends Effigy<AnimationShader> {
             getShader().getDisplacementMap().load(mesh.getMaterial().getDisplacementMap());
             getShader().getLightMap().load(mesh.getMaterial().getLightMap());
             getShader().getReflectionMap().load(mesh.getMaterial().getReflectionMap());
-            boolean isUnderwater = getUniverseClient().getEntityClientRepository().getEntityByClass(EntityCameraEffects.class).isUnderWater();
-            getShader().getFogColor().load(isUnderwater ? getUniverseClient().getBalance().getUnderwaterFogColor() : getUniverseClient().getBalance().getFogColor());
-            getShader().getFogDensity().load(isUnderwater ? getUniverseClient().getBalance().getUnderwaterFogDensity() : getUniverseClient().getBalance().getFogDensity());
-            getShader().getFogGradient().load(isUnderwater ? getUniverseClient().getBalance().getUnderwaterFogGradient() : getUniverseClient().getBalance().getFogGradient());
             mesh.render();
         }
         getShader().stop();
@@ -59,10 +57,6 @@ public abstract class EffigyAnimated extends Effigy<AnimationShader> {
     public Light getSun() {
         EntitySun sun = getUniverseClient().getEntityClientRepository().getEntityByClass(EntitySun.class);
         return new LightSource(sun.getPositionInterpolated(), sun.getColor(), sun.getIntensity() * getSkyIntensity());
-    }
-
-    private void updateAnimation() {
-        getAnimation().update();
     }
 
 }

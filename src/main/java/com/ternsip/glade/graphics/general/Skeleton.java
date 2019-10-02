@@ -6,34 +6,34 @@ import org.joml.Matrix4f;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
+import static com.ternsip.glade.common.logic.Utils.assertThat;
+import static com.ternsip.glade.graphics.shader.impl.AnimationShader.MAX_BONES;
 import static com.ternsip.glade.graphics.shader.impl.AnimationShader.MAX_WEIGHTS;
 
 @Getter
 class Skeleton {
 
-    private final Bone[][] meshBones;
-    private final ArrayList<Bone> allBones;
-    private final Map<String, Integer> skeletonBoneNameToIndex;
+    private final Bone[] bones;
+    private final Map<String, Bone> boneNameToBone;
+    private final Map<String, Integer> boneNameToIndex;
 
-    Skeleton(Bone[][] meshBones) {
-        this.meshBones = meshBones;
-        Map<String, Bone> boneNameToBone = new HashMap<>();
-        for (Bone[] bones : meshBones) {
-            for (Bone bone : bones) {
-                boneNameToBone.put(bone.getBoneName(), bone);
-            }
+    Skeleton(Bone[] bones) {
+        this.bones = bones;
+        this.boneNameToBone = new HashMap<>();
+        this.boneNameToIndex = new HashMap<>();
+        for (int i = 0; i < bones.length; ++i) {
+            boneNameToBone.put(bones[i].getName(), bones[i]);
+            boneNameToIndex.put(bones[i].getName(), i);
         }
-        this.allBones = new ArrayList<>(boneNameToBone.values());
-        this.skeletonBoneNameToIndex = IntStream.range(0, allBones.size()).boxed()
-                .collect(Collectors.toMap(i -> allBones.get(i).getBoneName(), i -> i, (o, n) -> o));
+        assertThat(MAX_BONES > bones.length);
     }
 
-    float[] getBonesWeights(int meshIndex, int numVertices) {
+    // TODO check out numVertices can we remove this?
+    float[] getBonesWeights(int numVertices) {
         int weightLimit = MAX_WEIGHTS;
         float[] weights = new float[numVertices * weightLimit];
-        Map<Integer, List<BoneWeight>> combinedBoneWeights = combineBoneWeights(meshIndex);
+        Map<Integer, List<BoneWeight>> combinedBoneWeights = getBoneIndexToWeights();
         for (int i = 0; i < numVertices; i++) {
             List<BoneWeight> boneWeights = combinedBoneWeights.getOrDefault(i, Collections.emptyList());
             for (int j = 0; j < weightLimit; ++j) {
@@ -43,10 +43,10 @@ class Skeleton {
         return weights;
     }
 
-    int[] getBoneIndices(int meshIndex, int numVertices) {
+    int[] getBoneIndices(int numVertices) {
         int weightLimit = MAX_WEIGHTS;
         int[] indices = new int[numVertices * weightLimit];
-        Map<Integer, List<BoneWeight>> combinedBoneWeights = combineBoneWeights(meshIndex);
+        Map<Integer, List<BoneWeight>> combinedBoneWeights = getBoneIndexToWeights();
         for (int i = 0; i < numVertices; i++) {
             List<BoneWeight> boneWeights = combinedBoneWeights.getOrDefault(i, Collections.emptyList());
             for (int j = 0; j < weightLimit; ++j) {
@@ -56,24 +56,18 @@ class Skeleton {
         return indices;
     }
 
-    int numberOfUniqueBones() {
-        return skeletonBoneNameToIndex.size();
-    }
-
-    private Map<Integer, List<BoneWeight>> combineBoneWeights(int meshIndex) {
-        Map<Integer, List<BoneWeight>> combination = new HashMap<>();
-        for (int i = 0; i < meshBones[meshIndex].length; ++i) {
-            final int boneIndex = getSkeletonBoneNameToIndex().get(meshBones[meshIndex][i].getBoneName());
-            for (Map.Entry<Integer, List<Float>> entry : meshBones[meshIndex][i].getWeights().entrySet()) {
-                int vertexIndex = entry.getKey();
-                List<Float> boneVertexWeights = entry.getValue();
+    private Map<Integer, List<BoneWeight>> getBoneIndexToWeights() {
+        Map<Integer, List<BoneWeight>> boneIndexToWeights = new HashMap<>();
+        for (Bone bone : getBones()) {
+            final int boneIndex = getBoneNameToIndex().get(bone.getName());
+            bone.getWeights().forEach((vertexIndex, boneVertexWeights) -> {
                 List<BoneWeight> weights = boneVertexWeights.stream()
                         .map(e -> new BoneWeight(boneIndex, e))
                         .collect(Collectors.toList());
-                combination.computeIfAbsent(vertexIndex, e -> new ArrayList<>()).addAll(weights);
-            }
+                boneIndexToWeights.computeIfAbsent(vertexIndex, e -> new ArrayList<>()).addAll(weights);
+            });
         }
-        return combination;
+        return boneIndexToWeights;
     }
 
     @RequiredArgsConstructor
@@ -89,7 +83,7 @@ class Skeleton {
     @Getter
     public static class Bone {
 
-        private final String boneName;
+        private final String name;
         private final Matrix4f offsetMatrix;
         private final Map<Integer, List<Float>> weights;
 

@@ -1,13 +1,13 @@
 package com.ternsip.glade.graphics.general;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
+@RequiredArgsConstructor
 @Getter
 public class Model {
 
@@ -15,8 +15,8 @@ public class Model {
     private final Vector3fc baseOffset;
     private final Vector3fc baseRotation;
     private final Vector3fc baseScale;
+    private final Map<String, FrameTrack> nameToFrameTrack;
     private final float normalizingScale;
-    private final AnimationData animationData;
 
     public Model() {
         this(new ArrayList<>());
@@ -31,16 +31,11 @@ public class Model {
     }
 
     public Model(List<Mesh> meshes, Vector3fc baseOffset, Vector3fc baseRotation, Vector3fc baseScale) {
-        this(meshes, baseOffset, baseRotation, baseScale, new AnimationData());
+        this(meshes, baseOffset, baseRotation, baseScale,  new HashMap<>());
     }
 
-    public Model(List<Mesh> meshes, Vector3fc baseOffset, Vector3fc baseRotation, Vector3fc baseScale, AnimationData animationData) {
-        this.meshes = meshes;
-        this.baseOffset = baseOffset;
-        this.baseRotation = baseRotation;
-        this.baseScale = baseScale;
-        this.normalizingScale = calcNormalizedScale(meshes);
-        this.animationData = animationData;
+    public Model(List<Mesh> meshes, Vector3fc baseOffset, Vector3fc baseRotation, Vector3fc baseScale, Map<String, FrameTrack> nameToFrameTrack) {
+        this(meshes, baseOffset, baseRotation, baseScale,  nameToFrameTrack, calcNormalizedScale(meshes));
     }
 
     public void finish() {
@@ -49,7 +44,18 @@ public class Model {
         }
     }
 
-    private float calcNormalizedScale(List<Mesh> meshes) {
+    public AnimationTrack getAnimationTrack(String name) {
+        if (getNameToFrameTrack().containsKey(name)) {
+            return new AnimationTrack(getNameToFrameTrack().get(name));
+        }
+        return new AnimationTrack(getNameToFrameTrack().values().stream().findFirst().orElse(new FrameTrack()));
+    }
+
+    public boolean isAnimated() {
+        return getNameToFrameTrack().size() > 0;
+    }
+
+    private static float calcNormalizedScale(List<Mesh> meshes) {
         float smallestScale = Float.MAX_VALUE / 4;
         for (Mesh mesh : meshes) {
             smallestScale = Math.min(smallestScale, mesh.getNormalizingScale());

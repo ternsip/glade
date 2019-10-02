@@ -2,33 +2,33 @@ package com.ternsip.glade.graphics.general;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
 @Getter
+@Setter
 public class AnimationData {
 
-    private final Map<String, FrameTrack> nameToFrameTrack;
     private final int biggestBoneIndex;
     private final BoneIndexData[] boneIndexDataTopologicallySorted;
 
     public AnimationData() {
-        this.nameToFrameTrack = new HashMap<>();
-        this.biggestBoneIndex = 0;
+        this.biggestBoneIndex = -1;
         this.boneIndexDataTopologicallySorted = new BoneIndexData[0];
     }
 
-    public AnimationData(Bone rootBone, Map<String, FrameTrack> nameToFrameTrack) {
-        this.nameToFrameTrack = nameToFrameTrack;
+    public AnimationData(Bone rootBone) {
         Stack<BoneIndexData> bonesStack = new Stack<>();
-        bonesStack.push(new BoneIndexData(rootBone, -1));
-        int biggestBoneIndex = 0;
+        if (rootBone != null) {
+            bonesStack.push(new BoneIndexData(rootBone, -1));
+        }
+        int biggestBoneIndex = -1;
         ArrayList<BoneIndexData> topSortBones = new ArrayList<>();
         for (int i = 0; !bonesStack.isEmpty(); ++i) {
             BoneIndexData topBoneIndexData = bonesStack.pop();
@@ -42,10 +42,13 @@ public class AnimationData {
         this.boneIndexDataTopologicallySorted = topSortBones.toArray(new BoneIndexData[0]);
     }
 
-    Matrix4fc[] calcBoneTransforms(AnimationTrack animationTrack) {
+    public Matrix4fc[] calcBoneTransforms(AnimationTrack animationTrack) {
+        if (getBiggestBoneIndex() == -1) {
+            return new Matrix4fc[0];
+        }
         Map<String, Matrix4fc> currentPose = animationTrack.calculateCurrentAnimationPose();
         Matrix4fc[] boneMatrices = new Matrix4fc[getBiggestBoneIndex() + 1];
-        AnimationData.BoneIndexData[] boneIndexData = getBoneIndexDataTopologicallySorted();
+        BoneIndexData[] boneIndexData = getBoneIndexDataTopologicallySorted();
         Matrix4fc[] localTransforms = new Matrix4fc[boneIndexData.length];
         for (int i = 0; i < boneIndexData.length; ++i) {
             Bone bone = boneIndexData[i].getBone();
@@ -59,13 +62,6 @@ public class AnimationData {
         return boneMatrices;
     }
 
-    AnimationTrack getAnimationTrack(String name) {
-        if (getNameToFrameTrack().containsKey(name)) {
-            return new AnimationTrack(getNameToFrameTrack().get(name));
-        }
-        return new AnimationTrack(getNameToFrameTrack().values().stream().findFirst().orElse(new FrameTrack()));
-    }
-
     @RequiredArgsConstructor
     @Getter
     private static class BoneIndexData {
@@ -74,5 +70,6 @@ public class AnimationData {
         private final int parentBoneOrder;
 
     }
+
 
 }

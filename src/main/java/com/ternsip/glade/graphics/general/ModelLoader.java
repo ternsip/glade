@@ -11,7 +11,6 @@ import java.lang.Math;
 import java.nio.IntBuffer;
 import java.util.*;
 
-import static com.ternsip.glade.common.logic.Utils.assertThat;
 import static com.ternsip.glade.common.logic.Utils.loadResourceAsAssimp;
 import static com.ternsip.glade.graphics.shader.base.ShaderProgram.INDICES;
 import static com.ternsip.glade.graphics.shader.base.ShaderProgram.VERTICES;
@@ -23,28 +22,20 @@ public class ModelLoader {
     @SneakyThrows
     public static Model loadModel(Settings settings) {
         AIScene aiSceneMesh = loadResourceAsAssimp(settings.getMeshFile(), settings.getAssimpFlags());
-        AIScene aiSceneAnimation = settings.isAnimationAndMeshInOneFile()
-                ? aiSceneMesh
-                : loadResourceAsAssimp(settings.getAnimationFile(), settings.getAssimpFlags());
-        Material[] materials = processMaterials(aiSceneMesh.mMaterials(), settings.getTexturesDir());
-        Skeleton skeleton = processSkeleton(aiSceneMesh);
-        Mesh[] meshes = processMeshes(aiSceneMesh, materials, skeleton, settings);
-        Map<String, FrameTrack> animationsFrames = buildAnimations(aiSceneAnimation);
-        Bone rootBone = createBones(aiSceneMesh.mRootNode(), skeleton);
-        assertThat(MAX_BONES > skeleton.numberOfUniqueBones());
+        AIScene aiSceneAnimation = settings.isAnimationAndMeshInOneFile() ? aiSceneMesh : loadResourceAsAssimp(settings.getAnimationFile(), settings.getAssimpFlags());
         return new Model(
-                Arrays.asList(meshes),
+                processMeshes(aiSceneMesh, settings),
                 settings.getBaseOffset(),
                 settings.getBaseRotation(),
                 settings.getBaseScale(),
-                new AnimationData(rootBone, animationsFrames)
+                buildAnimations(aiSceneAnimation)
         );
     }
 
     public static Bone createBones(AINode aiNode, Skeleton skeleton) {
         String boneName = aiNode.mName().dataString();
-        int boneIndex = skeleton.getSkeletonBoneNameToIndex().getOrDefault(boneName, -1);
-        Matrix4fc offsetMatrix = boneIndex != -1 ? skeleton.getAllBones().get(boneIndex).getOffsetMatrix() : new Matrix4f();
+        int boneIndex = skeleton.getBoneNameToIndex().getOrDefault(boneName, -1);
+        Matrix4fc offsetMatrix = boneIndex != -1 ? skeleton.getBoneNameToBone().get(boneName).getOffsetMatrix() : new Matrix4f();
         List<Bone> children = new ArrayList<>();
         PointerBuffer aiChildren = aiNode.mChildren();
         for (int i = 0; i < aiNode.mNumChildren(); i++) {
@@ -55,41 +46,39 @@ public class ModelLoader {
         return new Bone(boneIndex, boneName, children, toMatrix(aiNode.mTransformation()), offsetMatrix);
     }
 
-    private static Mesh[] processMeshes(
-            AIScene aiSceneMesh,
-            Material[] materials,
-            Skeleton skeleton,
-            Settings settings
-    ) {
-        Mesh[] meshes = new Mesh[aiSceneMesh.mNumMeshes()];
+    private static ArrayList<Mesh> processMeshes(AIScene aiSceneMesh, Settings settings) {
+        Material[] materials = processMaterials(aiSceneMesh.mMaterials(), settings.getTexturesDir());
         PointerBuffer aiMeshes = aiSceneMesh.mMeshes();
+        ArrayList<Mesh> meshes = new ArrayList<>();
         for (int meshIndex = 0; meshIndex < aiSceneMesh.mNumMeshes(); meshIndex++) {
             AIMesh aiMesh = AIMesh.create(aiMeshes.get(meshIndex));
-            int materialIdx = aiMesh.mMaterialIndex();
-            Material material = materialIdx < materials.length ? materials[materialIdx] : new Material();
-            if (settings.isManualMeshMaterialsExists(meshIndex)) {
-                material = settings.getManualMeshMaterials()[meshIndex];
-            }
-            int numVertices = aiMesh.mNumVertices();
-            float[] vertices = process3DVector(aiMesh.mVertices());
-            float[] normals = process3DVector(aiMesh.mNormals());
-            float[] colors = processColors(aiMesh.mColors(0));
-            float[] textures = processTextures(aiMesh.mTextureCoords(0));
-            int[] indices = processIndices(aiMesh.mFaces());
-
-            Mesh mesh = new Mesh(new MeshAttributes()
-                    .add(VERTICES, vertices)
-                    .add(NORMALS, normals)
-                    .add(COLORS, colors)
-                    .add(TEXTURES, textures)
-                    .add(INDICES, indices)
-                    .add(WEIGHTS, skeleton.getBonesWeights(meshIndex, numVertices))
-                    .add(BONE_INDICES, skeleton.getBoneIndices(meshIndex, numVertices)),
-                    material
-            );
-            meshes[meshIndex] = mesh;
+            Material forceMaterial = settings.isManualMeshMaterialsExists(meshIndex) ? settings.getManualMeshMaterials()[meshIndex] : null;
+            meshes.add(processMesh(aiMesh, materials, aiSceneMesh.mRootNode(), forceMaterial));
         }
         return meshes;
+    }
+
+    private static Mesh processMesh(AIMesh aiMesh, Material[] materials, AINode rootNode, Material forceMaterial) {
+        Material material = forceMaterial == null ? materials[aiMesh.mMaterialIndex()] : forceMaterial;
+        int numVertices = aiMesh.mNumVertices();
+        float[] vertices = process3DVector(aiMesh.mVertices());
+        float[] normals = process3DVector(aiMesh.mNormals());
+        float[] colors = processColors(aiMesh.mColors(0));
+        float[] textures = processTextures(aiMesh.mTextureCoords(0));
+        int[] indices = processIndices(aiMesh.mFaces());
+        Skeleton skeleton = new Skeleton(processBones(aiMesh.mBones()));
+        AnimationData animationData = new AnimationData(createBones(rootNode, skeleton));
+        return new Mesh(new MeshAttributes()
+                .add(VERTICES, vertices)
+                .add(NORMALS, normals)
+                .add(COLORS, colors)
+                .add(TEXTURES, textures)
+                .add(INDICES, indices)
+                .add(WEIGHTS, skeleton.getBonesWeights(numVertices))
+                .add(BONE_INDICES, skeleton.getBoneIndices(numVertices)),
+                material,
+                animationData
+        );
     }
 
     private static Map<String, FrameTrack> buildAnimations(AIScene aiScene) {
@@ -154,15 +143,6 @@ public class ModelLoader {
             boneTransforms.add(new BoneTransform(translation, scale, rotation));
         }
         return boneTransforms;
-    }
-
-    private static Skeleton processSkeleton(AIScene aiScene) {
-        Skeleton.Bone[][] boneMeshes = new Skeleton.Bone[aiScene.mNumMeshes()][];
-        for (int i = 0; i < aiScene.mNumMeshes(); i++) {
-            AIMesh aiMesh = AIMesh.create(aiScene.mMeshes().get(i));
-            boneMeshes[i] = processBones(aiMesh.mBones());
-        }
-        return new Skeleton(boneMeshes);
     }
 
     private static Skeleton.Bone[] processBones(PointerBuffer aiBones) {
