@@ -14,7 +14,7 @@ import static com.ternsip.glade.graphics.shader.impl.AnimationShader.MAX_WEIGHTS
 class Skeleton {
 
     private final Bone[][] meshBones;
-    private final List<Bone> allBones;
+    private final ArrayList<Bone> allBones;
     private final Map<String, Integer> skeletonBoneNameToIndex;
 
     Skeleton(Bone[][] meshBones) {

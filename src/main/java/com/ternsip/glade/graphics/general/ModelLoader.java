@@ -44,6 +44,7 @@ public class ModelLoader {
     public static Bone createBones(AINode aiNode, Skeleton skeleton) {
         String boneName = aiNode.mName().dataString();
         int boneIndex = skeleton.getSkeletonBoneNameToIndex().getOrDefault(boneName, -1);
+        Matrix4fc offsetMatrix = boneIndex != -1 ? skeleton.getAllBones().get(boneIndex).getOffsetMatrix() : new Matrix4f();
         List<Bone> children = new ArrayList<>();
         PointerBuffer aiChildren = aiNode.mChildren();
         for (int i = 0; i < aiNode.mNumChildren(); i++) {
@@ -51,7 +52,7 @@ public class ModelLoader {
             Bone childBone = createBones(aiChildNode, skeleton);
             children.add(childBone);
         }
-        return new Bone(boneIndex, boneName, children, toMatrix(aiNode.mTransformation()).invert());
+        return new Bone(boneIndex, boneName, children, toMatrix(aiNode.mTransformation()), offsetMatrix);
     }
 
     private static Mesh[] processMeshes(

@@ -35,7 +35,7 @@ public class MeshAttributes {
             throw new IllegalArgumentException(String.format("Attribute already exists! %s", attributeData.getName()));
         }
         if (buffer.limit() % attributeData.getNumberPerVertex() > 0) {
-            throw new IllegalArgumentException("Buffer number of elements not multiple to number per vertex");
+            throw new IllegalArgumentException("Buffer number of elements is not multiple to number per vertex");
         }
         getAttributeToBuffer().put(attributeData, buffer);
         return this;

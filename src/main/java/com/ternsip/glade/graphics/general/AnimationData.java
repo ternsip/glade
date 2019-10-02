@@ -46,25 +46,14 @@ public class AnimationData {
         Map<String, Matrix4fc> currentPose = animationTrack.calculateCurrentAnimationPose();
         Matrix4fc[] boneMatrices = new Matrix4fc[getBiggestBoneIndex() + 1];
         AnimationData.BoneIndexData[] boneIndexData = getBoneIndexDataTopologicallySorted();
-        Matrix4fc[] boneAnimationTransforms = new Matrix4fc[boneIndexData.length];
-        Matrix4fc[] boneInverseTransforms = new Matrix4fc[boneIndexData.length];
-        boneAnimationTransforms[0] = new Matrix4f();
-        boneInverseTransforms[0] = new Matrix4f();
-        for (int i = 1; i < boneIndexData.length; ++i) {
+        Matrix4fc[] localTransforms = new Matrix4fc[boneIndexData.length];
+        for (int i = 0; i < boneIndexData.length; ++i) {
             Bone bone = boneIndexData[i].getBone();
             int parentBoneOrder = boneIndexData[i].getParentBoneOrder();
-            Matrix4fc parentAnimationTransform = boneAnimationTransforms[parentBoneOrder];
-            Matrix4fc parentInverseTransform = boneInverseTransforms[parentBoneOrder];
-            Matrix4fc localAnimationTransform = currentPose.get(bone.getName());
-            if (localAnimationTransform == null) {
-                boneAnimationTransforms[i] = parentAnimationTransform;
-                boneInverseTransforms[i] = parentInverseTransform;
-            } else {
-                boneAnimationTransforms[i] = new Matrix4f(parentAnimationTransform).mul(localAnimationTransform);
-                boneInverseTransforms[i] = new Matrix4f(bone.getInverseLocalBindTransform()).mul(parentInverseTransform);
-            }
+            Matrix4fc parentLocalTransform = parentBoneOrder == -1 ? new Matrix4f() : localTransforms[parentBoneOrder];
+            localTransforms[i] = new Matrix4f(parentLocalTransform).mul(currentPose.getOrDefault(bone.getName(), new Matrix4f()));
             if (bone.getIndex() != -1) {
-                boneMatrices[bone.getIndex()] = new Matrix4f(boneAnimationTransforms[i]).mul(boneInverseTransforms[i]);
+                boneMatrices[bone.getIndex()] = new Matrix4f(localTransforms[i]).mul(bone.getOffsetTransform());
             }
         }
         return boneMatrices;

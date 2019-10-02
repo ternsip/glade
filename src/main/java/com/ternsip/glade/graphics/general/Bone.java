@@ -17,13 +17,15 @@ class Bone {
     private final int index;
     private final String name;
     private final List<Bone> children;
-    private final Matrix4fc inverseLocalBindTransform;
+    private final Matrix4fc bindTransform;
+    private final Matrix4fc offsetTransform;
 
     Bone() {
         this.index = -1;
         this.name = "";
         this.children = Collections.emptyList();
-        this.inverseLocalBindTransform = new Matrix4f();
+        this.bindTransform = new Matrix4f();
+        this.offsetTransform = new Matrix4f();
     }
 
 }
