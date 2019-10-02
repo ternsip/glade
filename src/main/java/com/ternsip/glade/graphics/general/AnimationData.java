@@ -3,6 +3,7 @@ package com.ternsip.glade.graphics.general;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,21 +42,29 @@ public class AnimationData {
         this.boneIndexDataTopologicallySorted = topSortBones.toArray(new BoneIndexData[0]);
     }
 
-    Matrix4f[] calcBoneTransforms(AnimationTrack animationTrack) {
-        Map<String, Matrix4f> currentPose = animationTrack.calculateCurrentAnimationPose();
-        Matrix4f[] boneMatrices = new Matrix4f[getBiggestBoneIndex() + 1];
+    Matrix4fc[] calcBoneTransforms(AnimationTrack animationTrack) {
+        Map<String, Matrix4fc> currentPose = animationTrack.calculateCurrentAnimationPose();
+        Matrix4fc[] boneMatrices = new Matrix4fc[getBiggestBoneIndex() + 1];
         AnimationData.BoneIndexData[] boneIndexData = getBoneIndexDataTopologicallySorted();
-        Matrix4f[] parentTransforms = new Matrix4f[boneIndexData.length];
-        for (int i = 0; i < boneIndexData.length; ++i) {
+        Matrix4fc[] boneAnimationTransforms = new Matrix4fc[boneIndexData.length];
+        Matrix4fc[] boneInverseTransforms = new Matrix4fc[boneIndexData.length];
+        boneAnimationTransforms[0] = new Matrix4f();
+        boneInverseTransforms[0] = new Matrix4f();
+        for (int i = 1; i < boneIndexData.length; ++i) {
             Bone bone = boneIndexData[i].getBone();
             int parentBoneOrder = boneIndexData[i].getParentBoneOrder();
-            Matrix4f parentTransform = parentBoneOrder < 0 ? new Matrix4f() : parentTransforms[parentBoneOrder];
-            Matrix4f currentLocalTransform = currentPose.getOrDefault(bone.getName(), new Matrix4f());
-            Matrix4f currentTransform = parentTransform.mul(currentLocalTransform, new Matrix4f());
-            parentTransforms[i] = new Matrix4f(currentTransform);
-            if (bone.getIndex() >= 0) {
-                currentTransform.mul(bone.getInverseBindTransform(), currentTransform);
-                boneMatrices[bone.getIndex()] = currentTransform;
+            Matrix4fc parentAnimationTransform = boneAnimationTransforms[parentBoneOrder];
+            Matrix4fc parentInverseTransform = boneInverseTransforms[parentBoneOrder];
+            Matrix4fc localAnimationTransform = currentPose.get(bone.getName());
+            if (localAnimationTransform == null) {
+                boneAnimationTransforms[i] = parentAnimationTransform;
+                boneInverseTransforms[i] = parentInverseTransform;
+            } else {
+                boneAnimationTransforms[i] = new Matrix4f(parentAnimationTransform).mul(localAnimationTransform);
+                boneInverseTransforms[i] = new Matrix4f(bone.getInverseLocalBindTransform()).mul(parentInverseTransform);
+            }
+            if (bone.getIndex() != -1) {
+                boneMatrices[bone.getIndex()] = new Matrix4f(boneAnimationTransforms[i]).mul(boneInverseTransforms[i]);
             }
         }
         return boneMatrices;

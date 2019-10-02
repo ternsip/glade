@@ -3,6 +3,7 @@ package com.ternsip.glade.graphics.general;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 
 @Getter
 @Setter
@@ -10,7 +11,7 @@ public class Animation {
 
     private final Model model;
     private AnimationTrack animationTrack;
-    private Matrix4f[] boneTransforms;
+    private Matrix4fc[] boneTransforms;
 
     public Animation(Model model) {
         this.model = model;

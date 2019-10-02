@@ -1,9 +1,9 @@
 package com.ternsip.glade.graphics.shader.uniforms;
 
 import com.ternsip.glade.graphics.shader.base.Uniform;
-import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 
-public class UniformMatrix4Array extends Uniform<Matrix4f[]> {
+public class UniformMatrix4Array extends Uniform<Matrix4fc[]> {
 
     private UniformMatrix4[] uniformMatrices;
 
@@ -21,7 +21,7 @@ public class UniformMatrix4Array extends Uniform<Matrix4f[]> {
         }
     }
 
-    public void load(Matrix4f[] value) {
+    public void load(Matrix4fc[] value) {
         for (int i = 0; i < value.length; i++) {
             uniformMatrices[i].load(value[i]);
         }

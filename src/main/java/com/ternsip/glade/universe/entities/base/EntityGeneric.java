@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.joml.Vector3f;
 
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.function.Supplier;
 
@@ -38,6 +39,30 @@ public class EntityGeneric extends GraphicalEntity {
 
     @FunctionalInterface
     public interface EffigySupplier extends Supplier<Effigy>, Serializable {
+    }
+
+    @Override
+    public void readFromStream(ObjectInputStream ois) throws Exception {
+        float px = ois.readFloat();
+        float py = ois.readFloat();
+        float pz = ois.readFloat();
+        float rx = ois.readFloat();
+        float ry = ois.readFloat();
+        float rz = ois.readFloat();
+        float sx = ois.readFloat();
+        float sy = ois.readFloat();
+        float sz = ois.readFloat();
+        boolean visible = ois.readBoolean();
+        float skyIntensity = ois.readFloat();
+        float emitIntensity = ois.readFloat();
+        getVolumetricInterpolated().update(
+                px, py, pz,
+                getRotation().x(), getRotation().y(), getRotation().z(),
+                sx, sy, sz,
+                visible,
+                skyIntensity,
+                emitIntensity
+        );
     }
 
 }

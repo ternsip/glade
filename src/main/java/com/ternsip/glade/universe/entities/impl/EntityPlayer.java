@@ -138,6 +138,9 @@ public class EntityPlayer extends GraphicalEntity<EffigyBoy> {
             // TODO sometimes pressing does not work by some reason (not sure)
             getUniverseClient().getClient().send(new PlayerActionServerPacket(getUuid(), new TeleportFarAction()));
         }
+        if (event.getKey() == GLFW_KEY_Z && event.getAction() == GLFW_PRESS) {
+            getUniverseClient().getClient().send(new PlayerActionServerPacket(getUuid(), new TeleportZeroAction()));
+        }
         if (event.getKey() == GLFW_KEY_SPACE && event.getAction() == GLFW_PRESS) {
             getUniverseClient().getClient().send(new PlayerActionServerPacket(getUuid(), new JumpAction()));
         }

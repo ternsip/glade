@@ -10,7 +10,6 @@ import java.io.File;
 import java.lang.Math;
 import java.nio.IntBuffer;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.ternsip.glade.common.logic.Utils.assertThat;
 import static com.ternsip.glade.common.logic.Utils.loadResourceAsAssimp;
@@ -32,12 +31,7 @@ public class ModelLoader {
         PointerBuffer aiMeshes = aiSceneMesh.mMeshes();
         Mesh[] meshes = processMeshes(aiSceneMesh, materials, skeleton, aiMeshes, settings);
         Map<String, FrameTrack> animationsFrames = buildAnimations(aiSceneAnimation);
-        Set<String> allPossibleBoneNames = animationsFrames.values()
-                .stream()
-                .map(FrameTrack::findAllDistinctBonesNames)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toSet());
-        Bone rootBone = createBones(aiSceneMesh.mRootNode(), new Matrix4f(), skeleton, allPossibleBoneNames, settings);
+        Bone rootBone = createBones(aiSceneMesh.mRootNode(), skeleton);
         assertThat(MAX_BONES > skeleton.numberOfUniqueBones());
         return new Model(
                 Arrays.asList(meshes),
@@ -48,29 +42,17 @@ public class ModelLoader {
         );
     }
 
-    public static Bone createBones(
-            AINode aiNode,
-            Matrix4fc parentTransform,
-            Skeleton skeleton,
-            Set<String> allPossibleBoneNames,
-            Settings settings
-    ) {
+    public static Bone createBones(AINode aiNode, Skeleton skeleton) {
         String boneName = aiNode.mName().dataString();
         int boneIndex = skeleton.getSkeletonBoneNameToIndex().getOrDefault(boneName, -1);
-        Matrix4f localBindTransform = toMatrix(aiNode.mTransformation());
-        boolean marginal = !allPossibleBoneNames.contains(boneName);
-        Matrix4f bindTransform = settings.isPreserveInvalidBoneLocalTransform()
-                ? (marginal ? new Matrix4f() : parentTransform).mul(localBindTransform, new Matrix4f())
-                : (marginal ? new Matrix4f() : parentTransform.mul(localBindTransform, new Matrix4f()));
-        Matrix4f inverseBindTransform = bindTransform.invert(new Matrix4f());
         List<Bone> children = new ArrayList<>();
         PointerBuffer aiChildren = aiNode.mChildren();
         for (int i = 0; i < aiNode.mNumChildren(); i++) {
             AINode aiChildNode = AINode.create(aiChildren.get(i));
-            Bone childBone = createBones(aiChildNode, bindTransform, skeleton, allPossibleBoneNames, settings);
+            Bone childBone = createBones(aiChildNode, skeleton);
             children.add(childBone);
         }
-        return new Bone(boneIndex, boneName, children, inverseBindTransform);
+        return new Bone(boneIndex, boneName, children, toMatrix(aiNode.mTransformation()).invert());
     }
 
     private static Mesh[] processMeshes(
@@ -170,7 +152,6 @@ public class ModelLoader {
             Vector3f translation = new Vector3f(mat.m30(), mat.m31(), mat.m32());
             Quaternionfc rotation = mat.getNormalizedRotation(new Quaternionf());
             boneTransforms.add(new BoneTransform(translation, scale, rotation));
-
         }
         return boneTransforms;
     }

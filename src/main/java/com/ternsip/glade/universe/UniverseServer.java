@@ -79,10 +79,10 @@ public class UniverseServer implements Threadable, INetworkServer, IBlocksReposi
         wolf.setPosition(new Vector3f(-140f, 0, -40));
         wolf.setScale(new Vector3f(30, 30, 30));
 
-        EntityGenericServer hagrid = new EntityGenericServer(EffigyHagrid::new, new Vector3f(0, 0.01f, 0));
+        EntityGenericServer hagrid = new EntityGenericServer(EffigyHagrid::new);
         hagrid.register();
-        hagrid.setPosition(new Vector3f(20f, 2, 2));
-        hagrid.setScale(new Vector3f(15, 15, 15));
+        hagrid.setPosition(new Vector3f(-10f, 0, -10));
+        hagrid.setScale(new Vector3f(8, 8, 8));
 
         EntityGenericServer spider = new EntityGenericServer(EffigySpider::new);
         spider.register();

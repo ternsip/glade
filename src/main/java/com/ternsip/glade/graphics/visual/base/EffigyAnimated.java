@@ -8,7 +8,6 @@ import com.ternsip.glade.universe.entities.impl.EntityCameraEffects;
 import com.ternsip.glade.universe.entities.impl.EntitySun;
 import lombok.Getter;
 import lombok.Setter;
-import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 
 @Getter
@@ -22,7 +21,7 @@ public abstract class EffigyAnimated extends Effigy<AnimationShader> {
     public void render() {
         getShader().start();
         updateAnimation();
-        Matrix4f[] boneTransforms = getAnimation().getBoneTransforms();
+        Matrix4fc[] boneTransforms = getAnimation().getBoneTransforms();
         Matrix4fc projection = getProjectionMatrix();
         Matrix4fc view = getViewMatrix();
         getShader().getAnimated().load(getAnimation().isAnimated());

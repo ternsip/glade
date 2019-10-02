@@ -1,7 +1,7 @@
 package com.ternsip.glade.graphics.general;
 
 import lombok.Getter;
-import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +17,7 @@ class AnimationTrack {
         this.startTime = System.currentTimeMillis();
     }
 
-    Map<String, Matrix4f> calculateCurrentAnimationPose() {
+    Map<String, Matrix4fc> calculateCurrentAnimationPose() {
         float animationTimeDeltaSeconds = (System.currentTimeMillis() - getStartTime()) / 1000f;
         float animationTime = animationTimeDeltaSeconds % getFrameTrack().getLengthSeconds();
         KeyFrame[] allFrames = getFrameTrack().getKeyFrames();
@@ -28,7 +28,7 @@ class AnimationTrack {
         KeyFrame currentFrame = allFrames[frameIndex];
         KeyFrame nextFrame = allFrames[(frameIndex + 1) % frameNumber];
         float progression = (animationTime % deltaTime) / deltaTime;
-        Map<String, Matrix4f> currentPose = new HashMap<>();
+        Map<String, Matrix4fc> currentPose = new HashMap<>();
         for (String boneName : currentFrame.getBoneKeyFrames().keySet()) {
             BoneTransform previousTransform = currentFrame.getBoneKeyFrames().get(boneName);
             BoneTransform nextTransform = nextFrame.getBoneKeyFrames().get(boneName);

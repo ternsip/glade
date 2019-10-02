@@ -41,6 +41,7 @@ import java.util.Set;
 // TODO make update dynamic (for better performance - do not call superfluous updates)
 // TODO UI should not be overlapped with game 3d world
 // TODO make world generators works for any size dynamically without whole loading
+// TODO http://jbullet.advel.cz/
 public class Glade {
 
     public static void main(String[] args) {
