@@ -32,16 +32,6 @@ public class EntityGeneric extends GraphicalEntity {
     }
 
     @Override
-    public void update() {
-        super.update();
-        setRotation(getRotation().add(getRotationSpeed(), new Vector3f()));
-    }
-
-    @FunctionalInterface
-    public interface EffigySupplier extends Supplier<Effigy>, Serializable {
-    }
-
-    @Override
     public void readFromStream(ObjectInputStream ois) throws Exception {
         float px = ois.readFloat();
         float py = ois.readFloat();
@@ -63,6 +53,16 @@ public class EntityGeneric extends GraphicalEntity {
                 skyIntensity,
                 emitIntensity
         );
+    }
+
+    @Override
+    public void update() {
+        super.update();
+        setRotation(getRotation().add(getRotationSpeed(), new Vector3f()));
+    }
+
+    @FunctionalInterface
+    public interface EffigySupplier extends Supplier<Effigy>, Serializable {
     }
 
 }

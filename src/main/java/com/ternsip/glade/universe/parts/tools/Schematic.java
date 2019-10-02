@@ -61,7 +61,7 @@ public class Schematic implements IUniverseServer {
                     if (ignoreAir && block == Block.AIR) {
                         continue;
                     }
-                    blocksRepository.setBlockInternal(wx, wy, wz,block);
+                    blocksRepository.setBlockInternal(wx, wy, wz, block);
                 }
             }
         }

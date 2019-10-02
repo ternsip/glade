@@ -9,5 +9,5 @@ public class TeleportZeroAction extends BaseAction {
     public void apply(EntityPlayerServer player) {
         player.setPosition(new Vector3f(-5, 10, -5));
     }
-    
+
 }

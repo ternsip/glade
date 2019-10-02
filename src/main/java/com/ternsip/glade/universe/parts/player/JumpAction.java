@@ -11,5 +11,5 @@ public class JumpAction extends BaseAction {
             player.getCurrentVelocity().add(new Vector3f(0, player.getJumpPower(), 0));
         }
     }
-    
+
 }

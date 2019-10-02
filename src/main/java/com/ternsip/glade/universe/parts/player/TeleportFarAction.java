@@ -10,5 +10,5 @@ public class TeleportFarAction extends BaseAction {
         player.setRotation(new Vector3f(0, 0, 0));
         player.setPosition(new Vector3f(512, 90, 512));
     }
-    
+
 }

@@ -18,5 +18,5 @@ public class DestroyBlockUnderAction extends BaseAction {
             getUniverseServer().getBlocksRepository().setBlock(blockUnder, Block.AIR);
         }
     }
-    
+
 }

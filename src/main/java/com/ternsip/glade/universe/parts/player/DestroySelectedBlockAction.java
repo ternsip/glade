@@ -13,5 +13,5 @@ public class DestroySelectedBlockAction extends BaseAction {
             getUniverseServer().getBlocksRepository().setBlock(blockPositionLooking, Block.AIR);
         }
     }
-    
+
 }

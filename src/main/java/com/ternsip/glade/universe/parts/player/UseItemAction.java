@@ -22,5 +22,5 @@ public class UseItemAction extends BaseAction {
         }
         getUniverseServer().getServer().send(new UpdatePlayerInventoryClientPacket(player.getUuid(), player.getSelectionInventory()), player.getAllowedConnection());
     }
-    
+
 }
