@@ -8,6 +8,7 @@ public enum PlayerAnimation implements Serializable {
     RUN,
     FLOATING,
     FALLING,
-    JUMP;
+    JUMP,
+    DIE;
 
 }

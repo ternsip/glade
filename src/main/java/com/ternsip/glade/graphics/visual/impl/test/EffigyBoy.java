@@ -23,6 +23,7 @@ public class EffigyBoy extends EffigyAnimated {
                         new File("models/boy/Run.dae"),
                         new File("models/boy/Falling.dae"),
                         new File("models/boy/Floating.dae"),
+                        new File("models/boy/Die.dae"),
                 })
                 .baseRotation(new Vector3f(0, 0, 0))
                 .baseScale(new Vector3f(100))

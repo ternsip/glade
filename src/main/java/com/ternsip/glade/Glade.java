@@ -28,7 +28,6 @@ import java.util.Set;
 // TODO turn all  .collect(Collectors.toMap to hashmap creation
 // TODO handle network block sides inconsistency (like non-existent sides or packet loss)
 // TODO Add block placing on cursor
-// TODO Add trees and structures and wand for selecting the area
 // TODO Add ambient sounds for underwater, forest, sky,
 // TODO Add Particle effects
 // TODO Make camera collisions better (more precise)

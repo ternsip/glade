@@ -15,10 +15,14 @@ public class EventIOReceiver extends EventReceiver {
     public EventIOReceiver() {
         super();
         registerCallback(KeyEvent.class, (KeyEvent keyEvent) -> {
-            keyPressed[keyEvent.getKey()] = keyEvent.getAction() != GLFW_RELEASE;
+            if (keyEvent.getKey() >= 0 && keyEvent.getKey() < keyPressed.length) {
+                keyPressed[keyEvent.getKey()] = keyEvent.getAction() != GLFW_RELEASE;
+            }
         });
         registerCallback(MouseButtonEvent.class, (MouseButtonEvent mouseButtonEvent) -> {
-            mouseButtonPressed[mouseButtonEvent.getButton()] = mouseButtonEvent.getAction() != GLFW_RELEASE;
+            if (mouseButtonEvent.getButton() >= 0 && mouseButtonEvent.getButton() < mouseButtonPressed.length) {
+                mouseButtonPressed[mouseButtonEvent.getButton()] = mouseButtonEvent.getAction() != GLFW_RELEASE;
+            }
         });
     }
 
