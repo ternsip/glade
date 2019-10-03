@@ -95,7 +95,7 @@ public abstract class Effigy<SHADER extends ShaderProgram> implements IGraphics,
     }
 
     protected Matrix4fc getProjectionMatrix() {
-        return getGraphics().getCamera().getNormalProjectionMatrix();
+        return getGraphics().getCamera().getProjectionMatrix();
     }
 
 }

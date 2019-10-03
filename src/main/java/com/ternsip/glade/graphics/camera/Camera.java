@@ -13,13 +13,11 @@ import org.joml.Vector3fc;
 @Setter
 public class Camera implements IGraphics {
 
-    private static final float FOV = (float) Math.toRadians(80);
-    private static final float NEAR_PLANE = 0.1f;
-    private static final float NORMAL_DISTANCE = 1000;
-    private static final float FAR_DISTANCE = 100000f;
+    public static final float FOV = (float) Math.toRadians(80);
+    public static final float NEAR_PLANE = 0.1f;
+    public static final float FAR_PLANE = 10000f;
 
-    private Matrix4fc normalProjectionMatrix;
-    private Matrix4fc farProjectionMatrix;
+    private Matrix4fc projectionMatrix;
 
     private Vector3fc position = new Vector3f(0);
     private Matrix4fc viewMatrix = new Matrix4f();
@@ -29,14 +27,9 @@ public class Camera implements IGraphics {
         recalculateProjectionMatrices(getGraphics().getWindowData().getWidth(), getGraphics().getWindowData().getHeight());
     }
 
-    public static Matrix4f createProjectionMatrix(float viewDistance, float aspectRatio) {
-        return new Matrix4f().perspective(FOV, aspectRatio, NEAR_PLANE, viewDistance);
-    }
-
     private void recalculateProjectionMatrices(int width, int height) {
         float ratio = (float) width / height;
-        normalProjectionMatrix = createProjectionMatrix(NORMAL_DISTANCE, ratio);
-        farProjectionMatrix = createProjectionMatrix(FAR_DISTANCE, ratio);
+        projectionMatrix = new Matrix4f().perspective(FOV, ratio, NEAR_PLANE, FAR_PLANE);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.ternsip.glade.graphics.visual.impl.basis;
 
+import com.ternsip.glade.graphics.camera.Camera;
 import com.ternsip.glade.graphics.general.Material;
 import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.general.Model;
@@ -22,7 +23,7 @@ import static com.ternsip.glade.graphics.shader.base.ShaderProgram.VERTICES;
 @Setter
 public class EffigySky extends Effigy<SkyboxShader> {
 
-    public static final float SIZE = 10000f;
+    public static final float SIZE = Camera.FAR_PLANE * 0.5f;
 
     private static final float[] SKY_VERTICES = {
             -SIZE, SIZE, -SIZE,
@@ -109,7 +110,7 @@ public class EffigySky extends Effigy<SkyboxShader> {
 
     @Override
     protected Matrix4fc getProjectionMatrix() {
-        return getGraphics().getCamera().getFarProjectionMatrix();
+        return getGraphics().getCamera().getProjectionMatrix();
     }
 
 }

@@ -28,6 +28,7 @@ public class EffigySprite extends Effigy<SpriteShader> {
     protected static final float[] VERTICES_DATA = new float[]{1, 1, 0, -1, 1, 0, -1, -1, 0, 1, -1, 0};
     protected static final float[] TEXTURES_DATA = new float[]{1, 0, 0, 0, 0, 1, 1, 1};
     protected static final int[] INDICES_DATA = {0, 1, 2, 2, 3, 0};
+    protected static final float ORTHO_SCALE = 0.0001f;
 
     private static final Matrix4fc EMPTY_MATRIX = new Matrix4f();
     private static final Matrix4fc ORTHO_MATRIX = new Matrix4f();
@@ -98,6 +99,12 @@ public class EffigySprite extends Effigy<SpriteShader> {
     @Override
     protected Matrix4fc getProjectionMatrix() {
         return isOrtho() ? ORTHO_MATRIX : super.getProjectionMatrix();
+    }
+
+    @Override
+    public Vector3f getAdjustedPosition() {
+        Vector3f pos = super.getAdjustedPosition();
+        return new Vector3f(pos.x(), pos.y(), isOrtho() ? ((pos.z() + 1) * ORTHO_SCALE - 1) : pos.z());
     }
 
     @RequiredArgsConstructor
