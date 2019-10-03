@@ -37,6 +37,7 @@ public class EntityPlayer extends GraphicalEntity<EffigyBoy> {
     private float cameraYRotation = 0;
     private LineSegmentf eyeSegment = new LineSegmentf();
     private Inventory selectionInventory;
+    private PlayerAnimation playerAnimation = PlayerAnimation.IDLE;
 
     public EntityPlayer(Inventory selectionInventory) {
         this.selectionInventory = selectionInventory;
@@ -91,6 +92,9 @@ public class EntityPlayer extends GraphicalEntity<EffigyBoy> {
     @Override
     public void update(EffigyBoy effigy) {
         super.update(effigy);
+        if (!effigy.getAnimation().getAnimationTrack().getName().equalsIgnoreCase(getPlayerAnimation().name())) {
+            effigy.getAnimation().play(getPlayerAnimation().name().toLowerCase());
+        }
         CameraController cameraController = effigy.getGraphics().getCameraController();
         setThirdPerson(cameraController.isThirdPerson());
         setCameraYRotation(cameraController.getRotation().y());
@@ -128,6 +132,7 @@ public class EntityPlayer extends GraphicalEntity<EffigyBoy> {
                 skyIntensity,
                 emitIntensity
         );
+        setPlayerAnimation((PlayerAnimation) ois.readObject());
     }
 
     private void handleKeyEvent(KeyEvent event) {

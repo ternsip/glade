@@ -17,7 +17,13 @@ public class EffigyBoy extends EffigyAnimated {
     public Model loadModel() {
         return ModelLoader.loadModel(Settings
                 .builder()
-                .meshFile(new File("models/boy/Jumping2.dae"))
+                .animationFiles(new File[]{
+                        new File("models/boy/idle.dae"),
+                        new File("models/boy/Jump.dae"),
+                        new File("models/boy/Run.dae"),
+                        new File("models/boy/Falling.dae"),
+                        new File("models/boy/Floating.dae"),
+                })
                 .baseRotation(new Vector3f(0, 0, 0))
                 .baseScale(new Vector3f(100))
                 .build()

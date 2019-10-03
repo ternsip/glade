@@ -60,10 +60,7 @@ public class AnimationData {
     }
 
     AnimationTrack getAnimationTrack(String name) {
-        if (getNameToFrameTrack().containsKey(name)) {
-            return new AnimationTrack(getNameToFrameTrack().get(name));
-        }
-        return new AnimationTrack(getNameToFrameTrack().values().stream().findFirst().orElse(new FrameTrack()));
+        return new AnimationTrack(name, getNameToFrameTrack().getOrDefault(name, getNameToFrameTrack().values().stream().findFirst().orElse(new FrameTrack())));
     }
 
     @RequiredArgsConstructor

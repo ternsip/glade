@@ -7,12 +7,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Getter
-class AnimationTrack {
+public class AnimationTrack {
 
+    private final String name;
     private final FrameTrack frameTrack;
     private final long startTime;
 
-    AnimationTrack(FrameTrack frameTrack) {
+    AnimationTrack(String name, FrameTrack frameTrack) {
+        this.name = name;
         this.frameTrack = frameTrack;
         this.startTime = System.currentTimeMillis();
     }

@@ -13,7 +13,7 @@ import static org.lwjgl.assimp.Assimp.*;
 public class Settings {
 
     private File meshFile;
-    private File animationFile;
+    private File[] animationFiles;
     private File texturesDir;
     private Material[] manualMeshMaterials;
 
@@ -42,23 +42,19 @@ public class Settings {
         return getManualMeshMaterials() != null && getManualMeshMaterials().length > meshIndex;
     }
 
-    public File getAnimationFile() {
-        return animationFile == null ? meshFile : animationFile;
+    public File[] produceAnimationFiles() {
+        return getAnimationFiles() == null || getAnimationFiles().length == 0 ? new File[]{getMeshFile()} : getAnimationFiles();
     }
 
-    public File getMeshFile() {
-        return meshFile == null ? animationFile : meshFile;
+    public File produceMeshFile() {
+        return getMeshFile() == null ? getAnimationFiles()[0] : getMeshFile();
     }
 
-    boolean isAnimationAndMeshInOneFile() {
-        return getAnimationFile() == null || getAnimationFile().equals(getMeshFile());
-    }
-
-    File getTexturesDir() {
-        if (texturesDir == null) {
-            return new File(meshFile.getParent());
+    public File produceTexturesDir() {
+        if (getTexturesDir() == null) {
+            return new File(produceMeshFile().getParent());
         }
-        return texturesDir;
+        return getTexturesDir();
     }
 
 }

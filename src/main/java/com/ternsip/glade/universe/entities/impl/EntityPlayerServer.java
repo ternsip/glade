@@ -9,6 +9,7 @@ import com.ternsip.glade.universe.parts.blocks.Block;
 import com.ternsip.glade.universe.parts.items.Inventory;
 import com.ternsip.glade.universe.parts.items.ItemBlock;
 import com.ternsip.glade.universe.parts.items.ItemSelectTool;
+import com.ternsip.glade.universe.parts.player.PlayerAnimation;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.*;
@@ -32,6 +33,7 @@ public class EntityPlayerServer extends GraphicalEntityServer {
     private Vector3f currentVelocity = new Vector3f(0);
     private float jumpPower = 0.3f;
     private boolean onTheGround = false;
+    private PlayerAnimation playerAnimation = PlayerAnimation.IDLE;
 
     public EntityPlayerServer(Connection allowedConnection) {
         this.allowedConnection = allowedConnection;
@@ -80,11 +82,30 @@ public class EntityPlayerServer extends GraphicalEntityServer {
         if (isOnTheGround()) {
             getCurrentVelocity().y = 0;
         }
+        refreshPlayerAnimation();
+    }
+
+    private void refreshPlayerAnimation() {
+        Vector3ic pos = getPreviousPosition();
+        if (getUniverseServer().getBlocksRepository().isBlockExists(pos) && getUniverseServer().getBlocksRepository().getBlock(pos) == Block.WATER) {
+            setPlayerAnimation(PlayerAnimation.FLOATING);
+            return;
+        }
+        if (!isOnTheGround()) {
+            setPlayerAnimation(PlayerAnimation.FALLING);
+            return;
+        }
+        if (getMoveEffort().lengthSquared() > 1e-3f) {
+            setPlayerAnimation(PlayerAnimation.RUN);
+            return;
+        }
+        setPlayerAnimation(PlayerAnimation.IDLE);
     }
 
     @Override
     public void writeToStream(ObjectOutputStream oos) throws Exception {
         super.writeToStream(oos);
+        oos.writeObject(getPlayerAnimation());
     }
 
     private Vector3fc tryToMove(Vector3fc startPosition, Vector3fc endPosition) {

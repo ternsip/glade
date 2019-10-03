@@ -2,6 +2,7 @@ package com.ternsip.glade.graphics.general;
 
 import com.ternsip.glade.graphics.shader.base.MeshAttributes;
 import lombok.SneakyThrows;
+import org.apache.commons.io.FilenameUtils;
 import org.joml.*;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
@@ -11,7 +12,6 @@ import java.lang.Math;
 import java.nio.IntBuffer;
 import java.util.*;
 
-import static com.ternsip.glade.common.logic.Utils.assertThat;
 import static com.ternsip.glade.common.logic.Utils.loadResourceAsAssimp;
 import static com.ternsip.glade.graphics.shader.base.ShaderProgram.INDICES;
 import static com.ternsip.glade.graphics.shader.base.ShaderProgram.VERTICES;
@@ -22,22 +22,28 @@ public class ModelLoader {
 
     @SneakyThrows
     public static Model loadModel(Settings settings) {
-        AIScene aiSceneMesh = loadResourceAsAssimp(settings.getMeshFile(), settings.getAssimpFlags());
-        AIScene aiSceneAnimation = settings.isAnimationAndMeshInOneFile()
-                ? aiSceneMesh
-                : loadResourceAsAssimp(settings.getAnimationFile(), settings.getAssimpFlags());
-        Material[] materials = processMaterials(aiSceneMesh.mMaterials(), settings.getTexturesDir());
+        AIScene aiSceneMesh = loadResourceAsAssimp(settings.produceMeshFile(), settings.getAssimpFlags());
+        Map<String, FrameTrack> nameToFrameTrack = new HashMap<>();
+        for (File animationFile : settings.produceAnimationFiles()) {
+            AIScene aiSceneAnimation = animationFile.equals(settings.produceMeshFile())
+                    ? aiSceneMesh
+                    : loadResourceAsAssimp(animationFile, settings.getAssimpFlags());
+            Map<String, FrameTrack> tracks = buildAnimations(aiSceneAnimation);
+            if (tracks.containsKey("")) {
+                tracks.put(FilenameUtils.removeExtension(animationFile.getName()).toLowerCase(), tracks.remove(""));
+            }
+            nameToFrameTrack.putAll(tracks);
+        }
+        Material[] materials = processMaterials(aiSceneMesh.mMaterials(), settings.produceTexturesDir());
         Skeleton skeleton = processSkeleton(aiSceneMesh);
         Mesh[] meshes = processMeshes(aiSceneMesh, materials, skeleton, settings);
-        Map<String, FrameTrack> animationsFrames = buildAnimations(aiSceneAnimation);
         Bone rootBone = createBones(aiSceneMesh.mRootNode(), skeleton);
-        assertThat(MAX_BONES > skeleton.numberOfUniqueBones());
         return new Model(
                 Arrays.asList(meshes),
                 settings.getBaseOffset(),
                 settings.getBaseRotation(),
                 settings.getBaseScale(),
-                new AnimationData(rootBone, animationsFrames)
+                new AnimationData(rootBone, nameToFrameTrack)
         );
     }
 

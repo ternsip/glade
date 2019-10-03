@@ -8,6 +8,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.ternsip.glade.common.logic.Utils.assertThat;
+import static com.ternsip.glade.graphics.shader.impl.AnimationShader.MAX_BONES;
 import static com.ternsip.glade.graphics.shader.impl.AnimationShader.MAX_WEIGHTS;
 
 @Getter
@@ -28,6 +30,7 @@ class Skeleton {
         this.allBones = new ArrayList<>(boneNameToBone.values());
         this.skeletonBoneNameToIndex = IntStream.range(0, allBones.size()).boxed()
                 .collect(Collectors.toMap(i -> allBones.get(i).getBoneName(), i -> i, (o, n) -> o));
+        assertThat(MAX_BONES > skeletonBoneNameToIndex.size());
     }
 
     float[] getBonesWeights(int meshIndex, int numVertices) {
@@ -54,10 +57,6 @@ class Skeleton {
             }
         }
         return indices;
-    }
-
-    int numberOfUniqueBones() {
-        return skeletonBoneNameToIndex.size();
     }
 
     private Map<Integer, List<BoneWeight>> combineBoneWeights(int meshIndex) {
