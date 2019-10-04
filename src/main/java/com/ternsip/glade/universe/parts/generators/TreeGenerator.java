@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class TreeGenerator implements ChunkGenerator {
 
     private static final int MIN_HEIGHT = 45;
-    private static final int TREE_ATTEMPTS = BlocksRepository.SIZE_X * BlocksRepository.SIZE_Z / 100;
+    private static final int TREE_ATTEMPTS = 100;
 
     @Override
     public int getPriority() {
@@ -25,7 +25,7 @@ public class TreeGenerator implements ChunkGenerator {
     }
 
     @Override
-    public void populate(BlocksRepository blocksRepository) {
+    public void populate(BlocksRepository blocksRepository, int startX, int startZ, int endX, int endZ) {
         Random random = new Random(0);
         File[] files = new File("schematics/trees").listFiles();
         if (files == null) {
@@ -39,8 +39,8 @@ public class TreeGenerator implements ChunkGenerator {
             return;
         }
         for (int i = 0; i < TREE_ATTEMPTS; ++i) {
-            int x = random.nextInt(BlocksRepository.SIZE_X);
-            int z = random.nextInt(BlocksRepository.SIZE_Z);
+            int x = startX + random.nextInt(endX - startX + 1);
+            int z = startZ + random.nextInt(endZ - startZ + 1);
             int y = BlocksRepository.SIZE_Y - 1;
             for (; y >= MIN_HEIGHT; --y) {
                 if (blocksRepository.getBlockInternal(x, y, z) == Block.LAWN) {
@@ -51,12 +51,13 @@ public class TreeGenerator implements ChunkGenerator {
                 continue;
             }
             Schematic tree = trees.get(random.nextInt(trees.size()));
-            Vector3ic start = new Vector3i(x, y + 1, z);
-            Vector3ic end = new Vector3i(start).add(tree.getSize());
-            if (!blocksRepository.isBlockExists(end)) {
+            Vector3ic treeStart = new Vector3i(x, y + 1, z);
+            Vector3ic treeEnd = new Vector3i(treeStart).add(tree.getSize());
+            if (!blocksRepository.isBlockExists(treeEnd)) {
                 continue;
             }
-            tree.putInternal(start, blocksRepository, true);
+            tree.putInternal(treeStart, blocksRepository, true);
         }
     }
+
 }

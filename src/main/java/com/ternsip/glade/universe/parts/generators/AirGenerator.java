@@ -13,9 +13,9 @@ public class AirGenerator implements ChunkGenerator {
     }
 
     @Override
-    public void populate(BlocksRepository blocksRepository) {
-        for (int x = 0; x < BlocksRepository.SIZE_X; ++x) {
-            for (int z = 0; z < BlocksRepository.SIZE_Z; ++z) {
+    public void populate(BlocksRepository blocksRepository, int startX, int startZ, int endX, int endZ) {
+        for (int x = startX; x <= endX; ++x) {
+            for (int z = startZ; z <= endZ; ++z) {
                 for (int y = 0; y < BlocksRepository.SIZE_Y; ++y) {
                     blocksRepository.setBlockInternal(x, y, z, Block.AIR);
                 }

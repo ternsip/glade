@@ -18,15 +18,15 @@ public class SurfaceGenerator implements ChunkGenerator {
     }
 
     @Override
-    public void populate(BlocksRepository blocksRepository) {
-        int[][] heightMapStone = generateHeightMap(11, 5, 50, 0.01f);
-        int[][] heightMapDirt = generateHeightMap(60, 5, 20, 0.01f);
-        for (int x = 0; x < BlocksRepository.SIZE_X; ++x) {
-            for (int z = 0; z < BlocksRepository.SIZE_Z; ++z) {
+    public void populate(BlocksRepository blocksRepository, int startX, int startZ, int endX, int endZ) {
+        int[][] heightMapStone = generateHeightMap(11, 5, 50, 0.01f, startX, startZ, endX, endZ);
+        int[][] heightMapDirt = generateHeightMap(60, 5, 20, 0.01f, startX, startZ, endX, endZ);
+        for (int dx = 0, x = startX; x <= endX; ++x, ++dx) {
+            for (int dz = 0, z = startZ; z <= endZ; ++z, ++dz) {
                 for (int y = 0; y < BlocksRepository.SIZE_Y; ++y) {
                     Vector3ic wPos = new Vector3i(x, y, z);
-                    int stoneHeight = height + heightMapStone[x][z];
-                    int dirtHeight = stoneHeight + heightMapDirt[x][z];
+                    int stoneHeight = height + heightMapStone[dx][dz];
+                    int dirtHeight = stoneHeight + heightMapDirt[dx][dz];
                     if (wPos.y() < stoneHeight) {
                         blocksRepository.setBlockInternal(x, y, z, Block.STONE);
                     } else if (wPos.y() <= dirtHeight) {
@@ -37,17 +37,17 @@ public class SurfaceGenerator implements ChunkGenerator {
         }
     }
 
-    private int[][] generateHeightMap(float seed, long terraces, float deviation, float compress) {
-        int[][] heightMap = new int[BlocksRepository.SIZE_X][BlocksRepository.SIZE_Z];
-        for (int x = 0; x < BlocksRepository.SIZE_X; ++x) {
-            for (int z = 0; z < BlocksRepository.SIZE_Z; ++z) {
+    private int[][] generateHeightMap(float seed, long terraces, float deviation, float compress, int startX, int startZ, int endX, int endZ) {
+        int[][] heightMap = new int[endX - startX + 1][endZ - startZ + 1];
+        for (int dx = 0, x = startX; x <= endX; ++x, ++dx) {
+            for (int dz = 0, z = startZ; z <= endZ; ++z, ++dz) {
                 float noiseX = x * compress;
                 float noiseZ = z * compress;
                 double noise1 = SimplexNoise.noise(noiseX, noiseZ, seed);
                 double noise2 = SimplexNoise.noise(noiseZ, noiseX, seed);
                 long diff = Math.round(Math.pow(noise1, Math.E) * terraces * deviation) / terraces;
                 long diff2 = -Math.round(Math.pow(noise2, Math.E) * terraces * deviation) / terraces;
-                heightMap[x][z] = (int) (diff + diff2);
+                heightMap[dx][dz] = (int) (diff + diff2);
             }
         }
         return heightMap;

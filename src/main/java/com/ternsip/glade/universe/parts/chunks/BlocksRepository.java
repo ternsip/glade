@@ -47,8 +47,15 @@ public class BlocksRepository implements Threadable, IUniverseServer {
     public BlocksRepository() {
         this.storage = new Storage("blocks_meta");
         if (!storage.isExists()) {
-            for (ChunkGenerator chunkGenerator : CHUNK_GENERATORS) {
-                chunkGenerator.populate(this);
+            for (int x = 0; x < SIZE_X; x += UPDATE_SIZE) {
+                for (int z = 0; z < SIZE_Z; z += UPDATE_SIZE) {
+                    int endX = Math.min(x + UPDATE_SIZE, SIZE_X) - 1;
+                    int endZ = Math.min(z + UPDATE_SIZE, SIZE_Z) - 1;
+                    for (ChunkGenerator chunkGenerator : CHUNK_GENERATORS) {
+                        chunkGenerator.populate(this, x, z, endX, endZ);
+                    }
+                    relaxChunks();
+                }
             }
             for (int x = 0; x < SIZE_X; x += UPDATE_SIZE) {
                 for (int z = 0; z < SIZE_Z; z += UPDATE_SIZE) {
