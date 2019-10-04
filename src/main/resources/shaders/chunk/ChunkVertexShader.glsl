@@ -1,11 +1,5 @@
 #version 400 core
 
-struct Light {
-    vec3 pos;
-    float intensity;
-    vec3 color;
-};
-
 in vec3 position;
 in vec2 textureCoordinates;
 in float atlasNumber;
@@ -27,8 +21,9 @@ out vec3 passNormal;
 out float passAmbient;
 out float passBlockType;
 out float visibility;
+out float passSkyLight;
+out float passEmitLight;
 
-uniform Light sun;
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 transformationMatrix;
@@ -39,7 +34,6 @@ void main(void) {
 
     gl_Position = projectionMatrix * viewMatrix * transformationMatrix * vec4(position, 1.0);
     passNormal =  (projectionMatrix * transformationMatrix * vec4(normal, 0.0)).xyz;
-    passAmbient = min(1, sun.intensity * skyLight + emitLight);
     passTextureCoords = textureCoordinates;
     passAtlasNumber = atlasNumber;
     passAtlasLayer = atlasLayer;
@@ -48,5 +42,7 @@ void main(void) {
     float distance_to_cam = length(viewMatrix * transformationMatrix * vec4(position, 1.0));
     visibility = clamp(exp(-pow(distance_to_cam * fogDensity, fogGradient)), 0, 1);
     passWorldPos = (transformationMatrix * vec4(position, 1.0)).xyz;
+    passSkyLight = skyLight;
+    passEmitLight = emitLight;
 
 }

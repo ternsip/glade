@@ -1,5 +1,11 @@
 #version 400 core
 
+struct Light {
+    vec3 pos;
+    float intensity;
+    vec3 color;
+};
+
 #define M_PI 3.1415926535897932384626433832795
 const int MAX_SAMPLERS = 16;
 const int BLOCK_TYPE_WATER = 1;
@@ -13,12 +19,15 @@ in float passAmbient;
 in vec3 passNormal;
 in float passBlockType;
 in float visibility;
+in float passSkyLight;
+in float passEmitLight;
 
 out vec4 out_colour;
 
 uniform float time;
 uniform sampler2DArray[MAX_SAMPLERS] samplers;
 uniform vec3 fogColor;
+uniform Light sun;
 
 bool isBlockOfType(int type) {
     return abs(passBlockType - type) < 1e-3;
@@ -29,6 +38,9 @@ int roundFloat(float value) {
 }
 
 void main(void){
+
+    float surfaceLight = max(dot(normalize(sun.pos), normalize(passNormal)), 0.0);
+    float passAmbient = min(1, sun.intensity * passSkyLight + passEmitLight);
 
     if (isBlockOfType(BLOCK_TYPE_WATER)) {
         vec2 cPos = -1.0 + 2.0 * passWorldPos.xz;
