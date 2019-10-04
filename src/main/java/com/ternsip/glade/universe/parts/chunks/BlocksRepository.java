@@ -68,10 +68,9 @@ public class BlocksRepository implements Threadable, IUniverseServer {
                     int sizeX = x + UPDATE_SIZE > SIZE_X ? SIZE_X - x : UPDATE_SIZE;
                     int sizeZ = z + UPDATE_SIZE > SIZE_Z ? SIZE_Z - z : UPDATE_SIZE;
                     visualUpdate(new Vector3i(x, 0, z), new Vector3i(sizeX, SIZE_Y, sizeZ), false);
-                    log.info("World light processing {}%", (100f * step) / totalSteps);
+                    log.info("World light processing {}%", (100f * (step + 1)) / totalSteps);
                 }
             }
-            log.info("World light processing 100%");
             log.info("World light recalculation time spent: {}s", timer.spent() / 1000.0f);
             timer.drop();
             loadedChunks.forEach(this::saveChunk);
