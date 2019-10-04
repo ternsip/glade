@@ -32,12 +32,12 @@ public class UIInventory extends EntityUI {
         for (int i = 0; i < SELECTION_INVENTORY_SIZE; ++i) {
             this.selectionCells[i] = new UIInventoryCell(new File("interface/item_cell.png"));
             this.selectionCells[i].setScale(new Vector3f(SELECTION_BAR_CELL_SIZE, SELECTION_BAR_CELL_SIZE, 1));
-            this.selectionCells[i].setPosition(new Vector3f(-SELECTION_BAR_START_X + SELECTION_BAR_CELL_SIZE * i * 2, -1 + 2 * SELECTION_BAR_CELL_SIZE, 0.02f));
+            this.selectionCells[i].setPosition(new Vector3f(-SELECTION_BAR_START_X + SELECTION_BAR_CELL_SIZE * i * 2, -1 + 2 * SELECTION_BAR_CELL_SIZE, 0.52f));
         }
 
         this.itemSelection = new EntitySprite(new File("interface/item_selection.png"), true, true);
         this.itemSelection.setScale(new Vector3f(SELECTION_BAR_CELL_SIZE, SELECTION_BAR_CELL_SIZE, 1));
-        this.itemSelection.setPosition(new Vector3f(-SELECTION_BAR_START_X, -1 + 2 * SELECTION_BAR_CELL_SIZE, 0));
+        this.itemSelection.setPosition(new Vector3f(-SELECTION_BAR_START_X, -1 + 2 * SELECTION_BAR_CELL_SIZE, 0.5f));
 
     }
 
@@ -69,7 +69,7 @@ public class UIInventory extends EntityUI {
 
     public void setCellSelected(int cellSelected) {
         this.cellSelected = cellSelected;
-        getItemSelection().setPosition(new Vector3f(-SELECTION_BAR_START_X + SELECTION_BAR_CELL_SIZE * cellSelected * 2, -1 + 2 * SELECTION_BAR_CELL_SIZE, 0));
+        getItemSelection().setPosition(new Vector3f(-SELECTION_BAR_START_X + SELECTION_BAR_CELL_SIZE * cellSelected * 2, -1 + 2 * SELECTION_BAR_CELL_SIZE, 0.5f));
     }
 
     private void handleKeyEvent(KeyEvent event) {

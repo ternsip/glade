@@ -19,7 +19,7 @@ public class EffigyAxis extends EffigyAnimated {
 
     @Override
     public Matrix4fc getTransformationMatrix() {
-        Vector3fc totalScale = getAdjustedScale().mul(getAnimation().getModel().getNormalizingScale());
+        Vector3fc totalScale = new Vector3f(getAdjustedScale()).mul(getAnimation().getModel().getNormalizingScale());
         Matrix4fc view = getGraphics().getCamera().getViewMatrix();
         Quaternionfc rotQuaternion = view.getNormalizedRotation(new Quaternionf());
         return view

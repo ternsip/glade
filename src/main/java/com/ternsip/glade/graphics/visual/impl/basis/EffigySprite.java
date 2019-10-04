@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 import java.io.File;
 
@@ -102,9 +103,12 @@ public class EffigySprite extends Effigy<SpriteShader> {
     }
 
     @Override
-    public Vector3f getAdjustedPosition() {
-        Vector3f pos = super.getAdjustedPosition();
-        return new Vector3f(pos.x(), pos.y(), isOrtho() ? ((pos.z() + 1) * ORTHO_SCALE - 1) : pos.z());
+    public Vector3fc getAdjustedPosition() {
+        Vector3fc pos = super.getAdjustedPosition();
+        if (isOrtho()) {
+            return new Vector3f(pos.x(), pos.y(), (pos.z() + 1) * ORTHO_SCALE - 1);
+        }
+        return pos;
     }
 
     @RequiredArgsConstructor

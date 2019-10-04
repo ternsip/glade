@@ -25,8 +25,8 @@ import static com.ternsip.glade.common.logic.Maths.frac;
 @Slf4j
 public class BlocksRepository implements Threadable, IUniverseServer {
 
-    public static final int CHUNKS_X = 32;
-    public static final int CHUNKS_Z = 32;
+    public static final int CHUNKS_X = 8;
+    public static final int CHUNKS_Z = 8;
     public static final byte MAX_LIGHT_LEVEL = 15;
     public static final int SIZE_X = CHUNKS_X * Chunk.SIZE_X;
     public static final int SIZE_Y = 256;

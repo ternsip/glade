@@ -28,20 +28,20 @@ public abstract class Effigy<SHADER extends ShaderProgram> implements IGraphics,
     private final SHADER shader = getGraphics().getShaderRepository().getShader(this);
 
     public Matrix4fc getTransformationMatrix() {
-        Vector3fc totalScale = getAdjustedScale().mul(getModel().getNormalizingScale());
+        Vector3fc totalScale = new Vector3f(getAdjustedScale()).mul(getModel().getNormalizingScale());
         Matrix4fc rotMatrix = Maths.getRotationQuaternion(getAdjustedRotation()).get(new Matrix4f());
         return new Matrix4f().translate(getAdjustedPosition()).mul(rotMatrix).scale(totalScale);
     }
 
-    public Vector3f getAdjustedScale() {
+    public Vector3fc getAdjustedScale() {
         return new Vector3f(getScale()).mul(getModel().getBaseScale());
     }
 
-    public Vector3f getAdjustedRotation() {
+    public Vector3fc getAdjustedRotation() {
         return new Vector3f(getRotation()).add(getModel().getBaseRotation());
     }
 
-    public Vector3f getAdjustedPosition() {
+    public Vector3fc getAdjustedPosition() {
         return new Vector3f(getPosition()).add(getModel().getBaseOffset());
     }
 
