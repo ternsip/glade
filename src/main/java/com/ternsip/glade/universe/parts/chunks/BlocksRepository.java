@@ -47,6 +47,8 @@ public class BlocksRepository implements Threadable, IUniverseServer {
     public BlocksRepository() {
         this.storage = new Storage("blocks_meta");
         if (!storage.isExists()) {
+            Timer timer = new Timer();
+            log.info("World generation has been stared");
             for (int x = 0; x < SIZE_X; x += UPDATE_SIZE) {
                 for (int z = 0; z < SIZE_Z; z += UPDATE_SIZE) {
                     int endX = Math.min(x + UPDATE_SIZE, SIZE_X) - 1;
@@ -57,14 +59,23 @@ public class BlocksRepository implements Threadable, IUniverseServer {
                     relaxChunks();
                 }
             }
-            for (int x = 0; x < SIZE_X; x += UPDATE_SIZE) {
-                for (int z = 0; z < SIZE_Z; z += UPDATE_SIZE) {
+            log.info("World generation time spent: {}s", timer.spent() / 1000.0f);
+            timer.drop();
+            log.info("World light recalculation has been started");
+            int totalSteps = (SIZE_X / UPDATE_SIZE + (SIZE_X % UPDATE_SIZE > 0 ? 1 : 0)) * (SIZE_Z / UPDATE_SIZE + (SIZE_Z % UPDATE_SIZE > 0 ? 1 : 0));
+            for (int x = 0, step = 0; x < SIZE_X; x += UPDATE_SIZE) {
+                for (int z = 0; z < SIZE_Z; z += UPDATE_SIZE, ++step) {
                     int sizeX = x + UPDATE_SIZE > SIZE_X ? SIZE_X - x : UPDATE_SIZE;
                     int sizeZ = z + UPDATE_SIZE > SIZE_Z ? SIZE_Z - z : UPDATE_SIZE;
                     visualUpdate(new Vector3i(x, 0, z), new Vector3i(sizeX, SIZE_Y, sizeZ), false);
+                    log.info("World light processing {}%", (100f * step) / totalSteps);
                 }
             }
+            log.info("World light processing 100%");
+            log.info("World light recalculation time spent: {}s", timer.spent() / 1000.0f);
+            timer.drop();
             loadedChunks.forEach(this::saveChunk);
+            log.info("Chunks saved time spent: {}s", timer.spent() / 1000.0f);
         }
     }
 
