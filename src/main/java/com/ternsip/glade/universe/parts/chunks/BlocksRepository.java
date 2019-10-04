@@ -25,8 +25,8 @@ import static com.ternsip.glade.common.logic.Maths.frac;
 @Slf4j
 public class BlocksRepository implements Threadable, IUniverseServer {
 
-    public static final int CHUNKS_X = 8;
-    public static final int CHUNKS_Z = 8;
+    public static final int CHUNKS_X = 32;
+    public static final int CHUNKS_Z = 32;
     public static final byte MAX_LIGHT_LEVEL = 15;
     public static final int SIZE_X = CHUNKS_X * Chunk.SIZE_X;
     public static final int SIZE_Y = 256;
@@ -72,9 +72,6 @@ public class BlocksRepository implements Threadable, IUniverseServer {
                 }
             }
             log.info("World light recalculation time spent: {}s", timer.spent() / 1000.0f);
-            timer.drop();
-            loadedChunks.forEach(this::saveChunk);
-            log.info("Chunks saved time spent: {}s", timer.spent() / 1000.0f);
         }
     }
 
@@ -385,14 +382,19 @@ public class BlocksRepository implements Threadable, IUniverseServer {
         }
     }
 
-    private synchronized Chunk getChunk(int x, int z) {
-        if (chunks[x][z] == null) {
+    private Chunk getChunk(int x, int z) {
+        Chunk chunk = chunks[x][z];
+        if (chunk != null) {
+            chunk.timer.drop();
+            return chunk;
+        }
+        synchronized (this) {
             Vector2i pos = new Vector2i(x, z);
             chunks[x][z] = storage.isExists(pos) ? storage.load(pos) : new Chunk(x, z);
             loadedChunks.add(chunks[x][z]);
+            chunks[x][z].timer.drop();
+            return chunks[x][z];
         }
-        chunks[x][z].timer.drop();
-        return chunks[x][z];
     }
 
     private synchronized void relaxChunks() {
