@@ -55,7 +55,7 @@ public class EffigySprite extends Effigy<SpriteShader> {
     }
 
     @Override
-    public Vector3f getAdjustedScale() {
+    public Vector3fc getAdjustedScale() {
         return new Vector3f(super.getAdjustedScale()).mul(new Vector3f(getRatioX(), getRatioY(), 1));
     }
 

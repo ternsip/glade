@@ -7,6 +7,7 @@ import com.ternsip.glade.graphics.visual.base.EffigyAnimated;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 import java.io.File;
 
@@ -32,8 +33,8 @@ public class EffigyBoy extends EffigyAnimated {
     }
 
     @Override
-    public Vector3f getCameraAttachmentPoint() {
-        return super.getCameraAttachmentPoint().add(0, getScale().y() * 2, 0, new Vector3f());
+    public Vector3fc getCameraAttachmentPoint() {
+        return new Vector3f(super.getCameraAttachmentPoint()).add(0, getScale().y() * 2, 0);
     }
 
 }
