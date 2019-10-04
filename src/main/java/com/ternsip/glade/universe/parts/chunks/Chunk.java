@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 public class Chunk implements Serializable {
 
-    public final static int RELAX_PERIOD_MILLISECONDS = 3000;
+    public final static int RELAX_PERIOD_MILLISECONDS = 30000;
     public final static int SIZE_X = 32;
     public final static int SIZE_Z = 32;
 
