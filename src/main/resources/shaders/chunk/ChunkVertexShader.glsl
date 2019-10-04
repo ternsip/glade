@@ -19,6 +19,7 @@ in float emitLight;
 in float blockType;
 
 out vec2 passTextureCoords;
+out vec3 passWorldPos;
 out float passAtlasNumber;
 out float passAtlasLayer;
 out vec2 passAtlasMaxUV;
@@ -46,5 +47,6 @@ void main(void) {
     passBlockType = blockType;
     float distance_to_cam = length(viewMatrix * transformationMatrix * vec4(position, 1.0));
     visibility = clamp(exp(-pow(distance_to_cam * fogDensity, fogGradient)), 0, 1);
+    passWorldPos = (transformationMatrix * vec4(position, 1.0)).xyz;
 
 }
