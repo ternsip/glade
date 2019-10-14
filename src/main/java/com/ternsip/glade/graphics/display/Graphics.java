@@ -40,6 +40,7 @@ public class Graphics implements IUniverseClient, IEventIOReceiverGraphics, IFra
         getTextureRepository().finish();
         getWindowData().finish();
         getAudioRepository().finish();
+        getEffigyRepository().finish();
     }
 
 }

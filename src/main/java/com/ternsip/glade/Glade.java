@@ -39,6 +39,8 @@ import java.util.Set;
 // TODO add packet receive limitation (implement inside network server)
 // TODO make update dynamic (for better performance - do not call superfluous updates)
 // TODO http://jbullet.advel.cz/
+// TODO i've spotted that some gl-gen-buffers not finished after execution
+// TODO produce exception when load crashed data from world-file
 public class Glade {
 
     public static void main(String[] args) {

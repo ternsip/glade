@@ -5,11 +5,18 @@ import lombok.Getter;
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
 
+import java.io.Serializable;
+
 @Getter
-public class ChangeBlocksRequest {
+public class ChangeBlocksRequest implements Serializable {
 
     private final Vector3ic start;
     private final Block[][][] blocks;
+
+    public ChangeBlocksRequest(Chunk chunk) {
+        this.start = new Vector3i(chunk.xPos * Chunk.SIZE_X, 0, chunk.zPos * Chunk.SIZE_Z);
+        this.blocks = chunk.blocks;
+    }
 
     public ChangeBlocksRequest(Vector3ic start, Block[][][] blocks) {
         this.start = start;

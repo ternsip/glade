@@ -22,7 +22,6 @@ public class Balance {
     private float underwaterFogGradient = 5.0f;
     private Vector3f underwaterFogColor = new Vector3f(0.097f, 0.097f, 0.43f);
 
-    private int viewDistance = 8; // TODO move it to Options class, and fog and split this into client and server option-balance
     private int physicalTicksPerSecond = 128;
     private int networkTicksPerSecond = 20;
     private Vector3fc gravity = new Vector3f(0, -0.005f, 0);

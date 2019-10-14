@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.lwjgl.opengl.GL11;
 
 import java.io.File;
@@ -13,40 +14,64 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
 
-import static org.lwjgl.opengl.GL20.glDeleteProgram;
-import static org.lwjgl.opengl.GL20C.*;
+import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL43.glDispatchCompute;
+import static org.lwjgl.opengl.GL43C.GL_COMPUTE_SHADER;
 
 @Setter(AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Slf4j
 public abstract class ShaderProgram {
 
     public static final AttributeData INDICES = new AttributeData(0, "indices", 3, AttributeData.ArrayType.ELEMENT_ARRAY);
     public static final AttributeData VERTICES = new AttributeData(1, "position", 3, AttributeData.ArrayType.FLOAT);
-    private static int LAST_PROGRAM_ID = -100;
-    @SuppressWarnings("unused")
-    private int programID;
+    public static int ACTIVE_PROGRAM_ID = -1;
+    private int rasterProgramID = -1;
+    private int computeProgramID = -1;
 
     @SneakyThrows
     public static <T extends ShaderProgram> T createShader(Class<T> clazz) {
         Constructor<T> constructor = clazz.getDeclaredConstructor();
         constructor.setAccessible(true);
         T shader = constructor.newInstance();
-        int vertexShaderID = loadShader((File) findHeader(shader, "VERTEX_SHADER"), GL_VERTEX_SHADER);
-        int fragmentShaderID = loadShader((File) findHeader(shader, "FRAGMENT_SHADER"), GL_FRAGMENT_SHADER);
+
+        File vertexShaderFile = (File) findHeader(shader, "VERTEX_SHADER").orElseThrow(() -> new IllegalArgumentException("Can't find vertex shader"));
+        File fragmentShaderFile = (File) findHeader(shader, "FRAGMENT_SHADER").orElseThrow(() -> new IllegalArgumentException("Can't find fragment shader"));
+        int vertexShaderID = loadShader(vertexShaderFile, GL_VERTEX_SHADER);
+        int fragmentShaderID = loadShader(fragmentShaderFile, GL_FRAGMENT_SHADER);
         Collection<AttributeData> attributeData = collectAttributeData(shader);
-        int programID = glCreateProgram();
-        glAttachShader(programID, vertexShaderID);
-        glAttachShader(programID, fragmentShaderID);
-        bindAttributes(programID, attributeData);
-        glLinkProgram(programID);
-        glDetachShader(programID, vertexShaderID);
-        glDetachShader(programID, fragmentShaderID);
+        int rasterProgramID = glCreateProgram();
+        glAttachShader(rasterProgramID, vertexShaderID);
+        glAttachShader(rasterProgramID, fragmentShaderID);
+        bindAttributes(rasterProgramID, attributeData);
+        glLinkProgram(rasterProgramID);
+        glDetachShader(rasterProgramID, vertexShaderID);
+        glDetachShader(rasterProgramID, fragmentShaderID);
         glDeleteShader(vertexShaderID);
         glDeleteShader(fragmentShaderID);
-        loadUniformLocations(shader, programID);
-        glValidateProgram(programID);
-        shader.setProgramID(programID);
+        loadInputLocations(shader, rasterProgramID);
+        glValidateProgram(rasterProgramID);
+        shader.setRasterProgramID(rasterProgramID);
+
+        Optional computeShaderFile = findHeader(shader, "COMPUTE_SHADER");
+        if (computeShaderFile.isPresent()) {
+            int computeShaderID = loadShader((File) computeShaderFile.get(), GL_COMPUTE_SHADER);
+            int computeProgramID = glCreateProgram();
+            glAttachShader(computeProgramID, computeShaderID);
+            glLinkProgram(computeProgramID);
+            if (glGetProgrami(computeProgramID, GL_LINK_STATUS) == 0) { // TODO is this needed?
+                String programLog = glGetProgramInfoLog(computeProgramID);
+                throw new IllegalArgumentException(String.format("Could not link program reason: %s", programLog));
+            }
+            glDetachShader(computeProgramID, computeShaderID);
+            glDeleteShader(computeShaderID);
+            loadInputLocations(shader, computeProgramID);
+            glValidateProgram(computeProgramID);
+            shader.setComputeProgramID(computeProgramID);
+        }
+
         return shader;
     }
 
@@ -62,14 +87,14 @@ public abstract class ShaderProgram {
     }
 
     @SneakyThrows
-    private static Object findHeader(ShaderProgram instance, String fieldName) {
+    private static Optional<Object> findHeader(ShaderProgram instance, String fieldName) {
         for (Field field : instance.getClass().getDeclaredFields()) {
             if (Modifier.isStatic(field.getModifiers()) && field.getName().equals(fieldName)) {
                 field.setAccessible(true);
-                return field.get(instance);
+                return Optional.of(field.get(instance));
             }
         }
-        throw new IllegalArgumentException(String.format("Can't find filed %s", fieldName));
+        return Optional.empty();
     }
 
     @SneakyThrows
@@ -91,31 +116,46 @@ public abstract class ShaderProgram {
     }
 
     @SneakyThrows
-    private static void loadUniformLocations(ShaderProgram instance, int programID) {
+    private static void loadInputLocations(ShaderProgram instance, int programID) {
         for (Field field : instance.getClass().getDeclaredFields()) {
             if (!Modifier.isStatic(field.getModifiers())) {
                 field.setAccessible(true);
                 Object object = field.get(instance);
-                if (object instanceof Uniform) {
-                    Uniform uniform = (Uniform) object;
+                if (object instanceof Locatable) {
+                    Locatable locatable = (Locatable) object;
                     String fieldName = field.getName();
-                    uniform.locate(programID, fieldName);
+                    locatable.locate(programID, fieldName);
                 }
             }
         }
     }
 
-    public void start() {
-        // XXX Use caching for optimisation purposes
-        if (LAST_PROGRAM_ID != programID) {
-            glUseProgram(programID);
-            LAST_PROGRAM_ID = programID;
+    public void startRaster() {
+        if (ACTIVE_PROGRAM_ID != rasterProgramID) {
+            glUseProgram(rasterProgramID);
+            ACTIVE_PROGRAM_ID = rasterProgramID;
         }
+    }
+
+    public void startCompute() {
+        if (ACTIVE_PROGRAM_ID != computeProgramID) {
+            glUseProgram(computeProgramID);
+            ACTIVE_PROGRAM_ID = computeProgramID;
+        }
+    }
+
+    public void compute(int size) {
+        glDispatchCompute(size, 1, 1); // TODO think about dimensions
+    }
+
+    public void compute(int x, int y, int z) {
+        glDispatchCompute(x, y, z);
     }
 
     public void finish() {
         stop();
-        glDeleteProgram(programID);
+        glDeleteProgram(rasterProgramID);
+        glDeleteProgram(computeProgramID);
     }
 
     public void stop() {

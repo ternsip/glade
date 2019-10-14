@@ -19,7 +19,7 @@ public abstract class EffigyAnimated extends Effigy<AnimationShader> {
 
     @Override
     public void render() {
-        getShader().start();
+        getShader().startRaster();
         Matrix4fc projection = getProjectionMatrix();
         Matrix4fc view = getViewMatrix();
         getShader().getAnimated().load(getAnimation().isAnimated());

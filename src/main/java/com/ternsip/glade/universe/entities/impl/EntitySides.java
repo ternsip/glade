@@ -2,7 +2,7 @@ package com.ternsip.glade.universe.entities.impl;
 
 import com.ternsip.glade.graphics.visual.impl.basis.EffigySides;
 import com.ternsip.glade.universe.entities.base.GraphicalEntity;
-import com.ternsip.glade.universe.parts.chunks.BlocksUpdate;
+import com.ternsip.glade.universe.parts.chunks.ChangeBlocksRequest;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 @Setter
 public class EntitySides extends GraphicalEntity<EffigySides> {
 
-    private transient final ConcurrentLinkedDeque<BlocksUpdate> blocksUpdates = new ConcurrentLinkedDeque<>();
+    private transient final ConcurrentLinkedDeque<ChangeBlocksRequest> changeBlocksRequests = new ConcurrentLinkedDeque<>();
 
     private final Vector3i observerPos = new Vector3i(-1000);
     private int observerViewDistance = 0;
@@ -23,8 +23,8 @@ public class EntitySides extends GraphicalEntity<EffigySides> {
     @Override
     public void update(EffigySides effigy) {
         super.update(effigy);
-        if (!getBlocksUpdates().isEmpty()) {
-            effigy.applyBlockUpdate(getBlocksUpdates().poll());
+        while (!getChangeBlocksRequests().isEmpty()) {
+            effigy.applyBlockUpdate(getChangeBlocksRequests().poll());
         }
     }
 

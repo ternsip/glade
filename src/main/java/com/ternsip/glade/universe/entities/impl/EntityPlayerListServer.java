@@ -38,7 +38,7 @@ public class EntityPlayerListServer extends EntityServer {
 
     private void onClientConnect(OnClientConnect onClientConnect) {
         EntityPlayerServer entityPlayerServer = new EntityPlayerServer(onClientConnect.getConnection());
-        entityPlayerServer.setPosition(new Vector3f(50, 90, 50));
+        entityPlayerServer.setPosition(new Vector3f(50, 190, 50));
         entityPlayerServer.setScale(new Vector3f(1, 1, 1));
         entityPlayerServer.register();
 

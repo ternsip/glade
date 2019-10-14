@@ -44,6 +44,8 @@ public class EntityPlayerServer extends GraphicalEntityServer {
         this.selectionInventory.getItems()[2] = new ItemBlock(Block.LEAVES);
         this.selectionInventory.getItems()[2].setCount(999);
         this.selectionInventory.getItems()[3] = new ItemSelectTool();
+        this.selectionInventory.getItems()[4] = new ItemBlock(Block.LAVA);
+        this.selectionInventory.getItems()[4].setCount(999);
     }
 
     @Override

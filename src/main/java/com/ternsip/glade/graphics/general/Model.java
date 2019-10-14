@@ -1,47 +1,35 @@
 package com.ternsip.glade.graphics.general;
 
+import lombok.Builder;
 import lombok.Getter;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
+@SuppressWarnings("UnusedAssignment")
+@Builder
 @Getter
 public class Model {
 
-    private final List<Mesh> meshes;
-    private final Vector3fc baseOffset;
-    private final Vector3fc baseRotation;
-    private final Vector3fc baseScale;
-    private final float normalizingScale;
-    private final AnimationData animationData;
+    @Builder.Default
+    private List<Mesh> meshes = new ArrayList<>();
 
-    public Model() {
-        this(new ArrayList<>());
-    }
+    @Builder.Default
+    private Vector3fc baseOffset = new Vector3f(0);
 
-    public Model(Mesh mesh) {
-        this(Collections.singletonList(mesh));
-    }
+    @Builder.Default
+    private Vector3fc baseRotation = new Vector3f(0);
 
-    public Model(List<Mesh> meshes) {
-        this(meshes, new Vector3f(0), new Vector3f(0), new Vector3f(1));
-    }
+    @Builder.Default
+    private Vector3fc baseScale = new Vector3f(1);
 
-    public Model(List<Mesh> meshes, Vector3fc baseOffset, Vector3fc baseRotation, Vector3fc baseScale) {
-        this(meshes, baseOffset, baseRotation, baseScale, new AnimationData());
-    }
+    @Builder.Default
+    private AnimationData animationData = new AnimationData();
 
-    public Model(List<Mesh> meshes, Vector3fc baseOffset, Vector3fc baseRotation, Vector3fc baseScale, AnimationData animationData) {
-        this.meshes = meshes;
-        this.baseOffset = baseOffset;
-        this.baseRotation = baseRotation;
-        this.baseScale = baseScale;
-        this.normalizingScale = calcNormalizedScale(meshes);
-        this.animationData = animationData;
-    }
+    @Getter(lazy = true)
+    private final float normalizingScale = calcNormalizedScale(meshes);
 
     public void finish() {
         for (Mesh mesh : getMeshes()) {

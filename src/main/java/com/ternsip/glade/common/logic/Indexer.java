@@ -42,4 +42,8 @@ public class Indexer {
         return x >= 0 && x < getSize().x() && y >= 0 && y < getSize().y() && z >= 0 && z < getSize().z();
     }
 
+    public boolean isOnBorder(int x, int y, int z) {
+        return x == 0 || x == getSize().x() - 1 || y == 0 || y == getSize().y() - 1 || z == 0 || z == getSize().z() - 1;
+    }
+
 }

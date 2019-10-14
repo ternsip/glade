@@ -17,10 +17,6 @@ public class Chunk implements Serializable {
     public volatile transient boolean modified = false;
 
     public volatile Block[][][] blocks = new Block[SIZE_X][BlocksRepository.SIZE_Y][SIZE_Z];
-    public volatile byte[][][] skyLights = new byte[SIZE_X][BlocksRepository.SIZE_Y][SIZE_Z];
-    public volatile byte[][][] emitLights = new byte[SIZE_X][BlocksRepository.SIZE_Y][SIZE_Z];
-    public volatile int[][] heights = new int[SIZE_X][SIZE_Z];
-    public volatile Sides sides = new Sides();
     public volatile int xPos;
     public volatile int zPos;
 

@@ -74,7 +74,7 @@ public class EffigySky extends Effigy<SkyboxShader> {
 
     @Override
     public void render() {
-        getShader().start();
+        getShader().startRaster();
         getShader().getProjectionMatrix().load(getProjectionMatrix());
         getShader().getSun().load(new LightSource(getPosition(), getColor(), getIntensity()));
         getShader().getViewMatrix().load(getViewMatrix());
@@ -84,12 +84,12 @@ public class EffigySky extends Effigy<SkyboxShader> {
 
     @Override
     public Model loadModel() {
-        return new Model(
-                Collections.singletonList(new Mesh(new MeshAttributes().add(VERTICES, SKY_VERTICES), new Material())),
-                new Vector3f(0),
-                new Vector3f(0),
-                new Vector3f(2 * SIZE)
-        );
+        return Model.builder()
+                .meshes(Collections.singletonList(new Mesh(new MeshAttributes().add(VERTICES, SKY_VERTICES), new Material())))
+                .baseOffset(new Vector3f(0))
+                .baseRotation(new Vector3f(0))
+                .baseScale(new Vector3f(2 * SIZE))
+                .build();
     }
 
     @Override

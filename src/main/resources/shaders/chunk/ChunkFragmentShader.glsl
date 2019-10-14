@@ -1,4 +1,4 @@
-#version 400 core
+#version 430 core
 
 struct Light {
     vec3 pos;
@@ -40,7 +40,7 @@ int roundFloat(float value) {
 void main(void){
 
     float surfaceLight = max(dot(normalize(sun.pos), normalize(passNormal)), 0.0);
-    float passAmbient = min(1, sun.intensity * passSkyLight + passEmitLight);
+    float passAmbient = min(1, max(sun.intensity * passSkyLight, passEmitLight));
 
     if (isBlockOfType(BLOCK_TYPE_WATER)) {
         vec2 cPos = -1.0 + 2.0 * passWorldPos.xz;

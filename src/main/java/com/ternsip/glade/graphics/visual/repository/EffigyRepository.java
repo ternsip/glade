@@ -34,6 +34,10 @@ public class EffigyRepository implements IUniverseClient, IGraphics {
         });
     }
 
+    public void finish() {
+        getEntityToEffigy().values().forEach(Effigy::finish);
+    }
+
     @SuppressWarnings("unchecked")
     private void updateEntities() {
         Collection<GraphicalEntity> entities = getUniverseClient().getEntityClientRepository().getGraphicalEntities();

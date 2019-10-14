@@ -1,5 +1,6 @@
 package com.ternsip.glade.universe.parts.chunks;
 
+import com.ternsip.glade.universe.parts.blocks.Block;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,6 @@ import java.io.Serializable;
 public class Side implements Serializable {
 
     private final SidePosition sidePosition;
-    private final SideData sideData;
+    private final Block block;
 
 }
