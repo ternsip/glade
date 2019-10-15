@@ -13,8 +13,6 @@ import com.ternsip.glade.universe.parts.blocks.Block;
 import com.ternsip.glade.universe.parts.blocks.BlockSide;
 import com.ternsip.glade.universe.parts.chunks.BlocksRepository;
 import com.ternsip.glade.universe.parts.chunks.ChangeBlocksRequest;
-import com.ternsip.glade.universe.parts.chunks.Side;
-import com.ternsip.glade.universe.parts.chunks.SidePosition;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.joml.Vector3i;
@@ -22,7 +20,10 @@ import org.joml.Vector3ic;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import static com.ternsip.glade.graphics.shader.base.ShaderProgram.INDICES;
 import static com.ternsip.glade.graphics.shader.base.ShaderProgram.VERTICES;
@@ -87,8 +88,8 @@ public class SideConstructor implements IGraphics {
             .put(BlockSide.FRONT, SIDE_FRONT)
             .build();
 
-    private final Map<SidePosition, Integer> sides = new HashMap<>();
-    private ArrayList<SidePosition> activeSides = new ArrayList<>();
+    private final Map<Integer, Integer> sideToIndex = new HashMap<>();
+    private ArrayList<Integer> activeSides = new ArrayList<>();
 
     // TODO add viewport pointer + cycled viewport
 
@@ -129,15 +130,17 @@ public class SideConstructor implements IGraphics {
         Vector3ic startChanges = new Vector3i(start).sub(new Vector3i(1)).max(new Vector3i(0));
         Vector3ic endChangesExcluding = new Vector3i(endExcluding).add(new Vector3i(1)).min(SIZE);
 
-        List<SidePosition> sidesToRemove = new ArrayList<>();
-        List<Side> sidesToAdd = new ArrayList<>();
+        ArrayList<Integer> sidesToRemove = new ArrayList<>();
+        ArrayList<Integer> sidesToAdd = new ArrayList<>();
+        ArrayList<Block> sideBlocksToAdd = new ArrayList<>();
+        int numberOfSidesThatExist = 0;
 
         for (int x = startChanges.x(); x < endChangesExcluding.x(); ++x) {
             for (int z = startChanges.z(); z < endChangesExcluding.z(); ++z) {
                 for (int y = startChanges.y(); y < endChangesExcluding.y(); ++y) {
                     Block block = blocks[x][y][z];
                     for (BlockSide blockSide : BlockSide.values()) {
-                        SidePosition sidePosition = new SidePosition(x, y, z, blockSide);
+                        int side = (int) INDEXER.getIndex(x, y, z) * BlockSide.getSize() + blockSide.getIndex();
                         boolean addSide = false;
                         if (block != Block.AIR && block != null) {
                             int nx = x + blockSide.getAdjacentBlockOffset().x();
@@ -150,10 +153,13 @@ public class SideConstructor implements IGraphics {
                                 addSide = true;
                             }
                         }
+                        boolean exists = getSideToIndex().containsKey(side);
                         if (addSide) {
-                            sidesToAdd.add(new Side(sidePosition, block));
-                        } else if (getSides().containsKey(sidePosition)) {
-                            sidesToRemove.add(sidePosition);
+                            sidesToAdd.add(side);
+                            sideBlocksToAdd.add(block);
+                            numberOfSidesThatExist += exists ? 1 : 0;
+                        } else if (exists) {
+                            sidesToRemove.add(side);
                         }
                     }
                 }
@@ -164,9 +170,8 @@ public class SideConstructor implements IGraphics {
             return;
         }
 
-        int numberOfSidesThatExists = (int) sidesToAdd.stream().filter(side -> sides.get(side.getSidePosition()) != null).count();
         int oldLength = activeSides.size();
-        int newLength = oldLength + (sidesToAdd.size() - sidesToRemove.size()) - numberOfSidesThatExists;
+        int newLength = oldLength + (sidesToAdd.size() - sidesToRemove.size()) - numberOfSidesThatExist;
         int meshesNumber = newLength / SIDES_PER_MESH + (newLength % SIDES_PER_MESH > 0 ? 1 : 0);
         while (meshes.size() < meshesNumber) {
             Mesh mesh = new Mesh(
@@ -186,48 +191,49 @@ public class SideConstructor implements IGraphics {
             mesh.setVertexCount(0);
             meshes.add(mesh);
         }
-        Iterator<SidePosition> toRemove = sidesToRemove.iterator();
+        Iterator<Integer> toRemove = sidesToRemove.iterator();
         boolean[] changedMeshes = new boolean[meshes.size()];
-        for (Side side : sidesToAdd) {
-            SidePosition sidePositionSrc = side.getSidePosition();
-            Integer sideIndexSrc = sides.get(sidePositionSrc);
+        for (int i = 0; i < sidesToAdd.size(); ++i) {
+            Block blockToAdd = sideBlocksToAdd.get(i);
+            Integer sideToAdd = sidesToAdd.get(i);
+            Integer sideIndexSrc = sideToIndex.get(sideToAdd);
             // If side already exists refresh it with new data
             if (sideIndexSrc != null) {
-                fillSide(sideIndexSrc, side);
+                fillSide(sideIndexSrc, sideToAdd, blockToAdd);
                 changedMeshes[sideIndexSrc / SIDES_PER_MESH] = true;
                 continue;
             }
             // If side need to be removed - fill it with side for adding
             if (toRemove.hasNext()) {
-                SidePosition sidePosition = toRemove.next();
-                int sideIndex = sides.get(sidePosition);
-                fillSide(sideIndex, side);
+                Integer sidePosition = toRemove.next();
+                int sideIndex = sideToIndex.get(sidePosition);
+                fillSide(sideIndex, sideToAdd, blockToAdd);
                 changedMeshes[sideIndex / SIDES_PER_MESH] = true;
                 Utils.assertThat(sideIndex < activeSides.size());
-                sides.remove(sidePosition);
-                sides.put(sidePositionSrc, sideIndex);
-                activeSides.set(sideIndex, sidePositionSrc);
+                sideToIndex.remove(sidePosition);
+                sideToIndex.put(sideToAdd, sideIndex);
+                activeSides.set(sideIndex, sideToAdd);
                 continue;
             }
             // Just append side to the end
             int sideIndex = activeSides.size();
-            fillSide(sideIndex, side);
+            fillSide(sideIndex, sideToAdd, blockToAdd);
             changedMeshes[sideIndex / SIDES_PER_MESH] = true;
-            sides.put(sidePositionSrc, sideIndex);
-            activeSides.add(sidePositionSrc);
+            sideToIndex.put(sideToAdd, sideIndex);
+            activeSides.add(sideToAdd);
         }
         // Relocate last side to the place of one that should be removed
         while (toRemove.hasNext()) {
-            SidePosition sidePositionDst = toRemove.next();
-            int sideIndexDst = sides.get(sidePositionDst);
+            Integer sideToRemove = toRemove.next();
+            int sideIndexDst = sideToIndex.get(sideToRemove);
             int sideIndexSrc = activeSides.size() - 1;
             relocateSide(sideIndexSrc, sideIndexDst);
             changedMeshes[sideIndexSrc / SIDES_PER_MESH] = true;
             changedMeshes[sideIndexDst / SIDES_PER_MESH] = true;
             Utils.assertThat(sideIndexDst < activeSides.size());
-            SidePosition sidePositionSrc = activeSides.get(sideIndexSrc);
-            sides.put(sidePositionSrc, sideIndexDst);
-            sides.remove(sidePositionDst);
+            Integer sidePositionSrc = activeSides.get(sideIndexSrc);
+            sideToIndex.put(sidePositionSrc, sideIndexDst);
+            sideToIndex.remove(sideToRemove);
             activeSides.set(sideIndexDst, sidePositionSrc);
             activeSides.remove(sideIndexSrc);
         }
@@ -309,25 +315,26 @@ public class SideConstructor implements IGraphics {
 
     }
 
-    private void fillSide(int sideIndex, Side side) {
+    private void fillSide(int sideIndex, int side, Block block) {
 
         SideIndexData sideIndexData = new SideIndexData(sideIndex, meshes);
-        BlockSide blockSide = side.getSidePosition().getSide();
+        BlockSide blockSide = BlockSide.getSideByIndex(side % BlockSide.getSize());
         CubeSideMeshData cubeSideMeshData = ALL_SIDES.get(blockSide);
-        int dx = side.getSidePosition().getX();
-        int dy = side.getSidePosition().getY();
-        int dz = side.getSidePosition().getZ();
+        int idx = side / BlockSide.getSize();
+        int dx = INDEXER.getX(idx);
+        int dy = INDEXER.getY(idx);
+        int dz = INDEXER.getZ(idx);
         int watchingX = dx + blockSide.getAdjacentBlockOffset().x();
         int watchingY = dy + blockSide.getAdjacentBlockOffset().y();
         int watchingZ = dz + blockSide.getAdjacentBlockOffset().z();
         int index = (int) INDEXER.getIndexLooping(watchingX, watchingY, watchingZ);
-        Texture atlasFragment = getGraphics().getTexturePackRepository().getCubeMap(side.getBlock()).getTextureByBlockSide(blockSide);
+        Texture atlasFragment = getGraphics().getTexturePackRepository().getCubeMap(block).getTextureByBlockSide(blockSide);
 
         for (int i = 0; i < SIDE_INDICES.length; ++i) {
             sideIndexData.getIndices().put(i + sideIndexData.getIndexPos(), SIDE_INDICES[i] + sideIndexData.getVertexStart());
         }
 
-        int blockType = side.getBlock() == Block.WATER ? BLOCK_TYPE_WATER : BLOCK_TYPE_NORMAL;
+        int blockType = block == Block.WATER ? BLOCK_TYPE_WATER : BLOCK_TYPE_NORMAL;
 
         for (int i = 0; i < VERTICES_PER_SIDE; i++) {
             int vIdx = i * VERTICES.getNumberPerVertex();
