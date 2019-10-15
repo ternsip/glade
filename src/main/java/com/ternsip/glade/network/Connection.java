@@ -1,5 +1,6 @@
 package com.ternsip.glade.network;
 
+import com.ternsip.glade.common.logic.CompressionUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -34,11 +35,11 @@ public class Connection {
     }
 
     public Object readObject() throws IOException, ClassNotFoundException {
-        return SerializationUtils.deserialize((byte[]) getInput().readObject());
+        return SerializationUtils.deserialize(CompressionUtils.decompress((byte[]) getInput().readObject()));
     }
 
     public void writeObject(Serializable object) throws IOException {
-        getOutput().writeObject(SerializationUtils.serialize(object));
+        getOutput().writeObject(CompressionUtils.compress(SerializationUtils.serialize(object)));
     }
 
     @SneakyThrows
