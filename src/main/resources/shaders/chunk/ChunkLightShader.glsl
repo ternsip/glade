@@ -44,7 +44,8 @@ layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 void main(void) {
     //int offset = startX + startY * SIZE_X * SIZE_Z + startZ * SIZE_X;
     //int calcSize = sizeX * sizeY * sizeZ;
-    int gid = PADDING_INDEX + int(gl_GlobalInvocationID) % CALC_SIZE;
+    //int gid = PADDING_INDEX + int(gl_GlobalInvocationID) % CALC _SIZE;
+    int gid = PADDING_INDEX + int(dot(vec3(1, gl_NumWorkGroups.x, gl_NumWorkGroups.y * gl_NumWorkGroups.x), gl_GlobalInvocationID)) % CALC_SIZE;
 
     int x = gid % SIZE_X;
     int y = gid / (SIZE_X * SIZE_Z); // better start from top for height maps

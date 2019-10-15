@@ -1,5 +1,7 @@
 #version 430 core
 
+const float MAX_LIGHT_LEVEL = 15.0;
+
 layout (std430, binding = 0) buffer skyBuffer {
     int sky[];
 };
@@ -49,8 +51,7 @@ void main(void) {
     float distance_to_cam = length(viewMatrix * transformationMatrix * vec4(position, 1.0));
     visibility = clamp(exp(-pow(distance_to_cam * fogDensity, fogGradient)), 0, 1);
     passWorldPos = (transformationMatrix * vec4(position, 1.0)).xyz;
-    int faceIndexInt = int(faceIndex);
-    passSkyLight = faceIndexInt < 0 ? 0 : sky[faceIndexInt] / 16.0;
-    passEmitLight = faceIndexInt < 0 ? 0 : emit[faceIndexInt] / 16.0;
+    passSkyLight = sky[int(faceIndex + 0.1)] / MAX_LIGHT_LEVEL;
+    passEmitLight = emit[int(faceIndex + 0.1)] / MAX_LIGHT_LEVEL;
 
 }

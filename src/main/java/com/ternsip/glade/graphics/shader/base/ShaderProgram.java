@@ -1,23 +1,30 @@
 package com.ternsip.glade.graphics.shader.base;
 
+import com.ternsip.glade.common.logic.Maths;
 import com.ternsip.glade.common.logic.Utils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.joml.Vector3f;
+import org.joml.Vector3i;
+import org.joml.Vector3ic;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 
 import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL43.glDispatchCompute;
+import static org.lwjgl.opengl.GL30.glGetIntegeri_v;
+import static org.lwjgl.opengl.GL43.*;
 import static org.lwjgl.opengl.GL43C.GL_COMPUTE_SHADER;
 
 @Setter(AccessLevel.PROTECTED)
@@ -30,6 +37,7 @@ public abstract class ShaderProgram {
     public static int ACTIVE_PROGRAM_ID = -1;
     private int rasterProgramID = -1;
     private int computeProgramID = -1;
+    private Vector3ic workgroupCounts = new Vector3i(1);
 
     @SneakyThrows
     public static <T extends ShaderProgram> T createShader(Class<T> clazz) {
@@ -70,6 +78,13 @@ public abstract class ShaderProgram {
             loadInputLocations(shader, computeProgramID);
             glValidateProgram(computeProgramID);
             shader.setComputeProgramID(computeProgramID);
+            IntBuffer workGroupsX = BufferUtils.createIntBuffer(1);
+            IntBuffer workGroupsY = BufferUtils.createIntBuffer(1);
+            IntBuffer workGroupsZ = BufferUtils.createIntBuffer(1);
+            glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 0, workGroupsX);
+            glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 1, workGroupsY);
+            glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 2, workGroupsZ);
+            shader.setWorkgroupCounts(new Vector3i(workGroupsX.get(), workGroupsY.get(), workGroupsZ.get()));
         }
 
         return shader;
@@ -145,22 +160,30 @@ public abstract class ShaderProgram {
     }
 
     public void compute(int size) {
-        glDispatchCompute(size, 1, 1); // TODO think about dimensions
-    }
-
-    public void compute(int x, int y, int z) {
+        int rest = size;
+        int x = Maths.clamp(1, workgroupCounts.x(), rest);
+        rest = rest / x + (rest % x > 0 ? 1 : 0);
+        int y = Maths.clamp(1, workgroupCounts.y(), rest);
+        rest = rest / y + (rest % y > 0 ? 1 : 0);
+        int z = Maths.clamp(1, workgroupCounts.z(), rest);
+        rest = rest / z + (rest % z > 0 ? 1 : 0);
+        if (rest != 1) {
+            throw new IllegalArgumentException(String.format("Size %s can not be packet into GPU workgroup %s", size, workgroupCounts));
+        }
         glDispatchCompute(x, y, z);
     }
 
     public void finish() {
         stop();
         glDeleteProgram(rasterProgramID);
-        glDeleteProgram(computeProgramID);
+        if (computeProgramID != -1) {
+            glDeleteProgram(computeProgramID);
+        }
     }
 
     public void stop() {
-        // XXX Just simply do not unbind the shader program for optimisation purposes
-        //glUseProgram(0);
+        glUseProgram(0);
+        ACTIVE_PROGRAM_ID = -1;
     }
 
 }

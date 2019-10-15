@@ -1,6 +1,7 @@
 package com.ternsip.glade.graphics.display;
 
 import com.ternsip.glade.common.events.base.CharEvent;
+import com.ternsip.glade.common.events.base.DebugEvent;
 import com.ternsip.glade.common.events.base.ErrorEvent;
 import com.ternsip.glade.common.events.base.Event;
 import com.ternsip.glade.common.events.display.*;
@@ -8,11 +9,13 @@ import com.ternsip.glade.graphics.interfaces.IGraphics;
 import com.ternsip.glade.universe.interfaces.IUniverseClient;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.joml.Vector2i;
 import org.joml.Vector4f;
 import org.joml.Vector4fc;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GLDebugMessageCallback;
 import org.lwjgl.system.Callback;
 
 import java.util.ArrayList;
@@ -20,10 +23,13 @@ import java.util.ArrayList;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_SAMPLE_ALPHA_TO_COVERAGE;
-import static org.lwjgl.system.MemoryUtil.NULL;
+import static org.lwjgl.opengl.GL43.glDebugMessageCallback;
+import static org.lwjgl.opengl.GL43C.GL_DEBUG_OUTPUT;
+import static org.lwjgl.system.MemoryUtil.*;
 
 @Getter
 @Setter
+@Slf4j
 public class WindowData implements IUniverseClient, IGraphics {
 
     public static final Vector4fc BACKGROUND_COLOR = new Vector4f(0f, 0f, 0f, 1f);
@@ -37,6 +43,7 @@ public class WindowData implements IUniverseClient, IGraphics {
     public WindowData() {
 
         getGraphics().getEventIOReceiverGraphics().registerCallback(ErrorEvent.class, this::handleError);
+        getGraphics().getEventIOReceiverGraphics().registerCallback(DebugEvent.class, this::handleDebug);
 
         registerErrorEvent();
 
@@ -70,6 +77,9 @@ public class WindowData implements IUniverseClient, IGraphics {
         //glEnable(GL_BLEND);
         //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+        glEnable(GL_DEBUG_OUTPUT);
+        registerDebugEvent();
+        //glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
         OpenGlSettings.antialias(true);
         OpenGlSettings.enableDepthTesting(true);
         OpenGlSettings.goWireframe(false);
@@ -160,6 +170,21 @@ public class WindowData implements IUniverseClient, IGraphics {
         glfwSetErrorCallback(errorCallback);
     }
 
+    private void registerDebugEvent() {
+        GLDebugMessageCallback debugMessageCallback = GLDebugMessageCallback.create(
+                (source, type, id, severity, length, message, userParam) -> {
+                    if (id == 2) {
+                        // https://github.com/LWJGL/lwjgl3/blob/master/modules/lwjgl/opengl/src/main/java/org/lwjgl/opengl/GLUtil.java
+                        return; // TODO filtering useless messages
+                    }
+                    DebugEvent debugEvent = new DebugEvent(memUTF8(memByteBuffer(message, length)), new Exception());
+                    registerEvent(DebugEvent.class, debugEvent);
+                }
+        );
+        getCallbacks().add(debugMessageCallback);
+        glDebugMessageCallback(debugMessageCallback, NULL);
+    }
+
     private void registerScrollEvent() {
         GLFWScrollCallback scrollCallback = GLFWScrollCallback.create(
                 (window, xOffset, yOffset) -> registerEvent(ScrollEvent.class, new ScrollEvent(xOffset, yOffset))
@@ -219,6 +244,10 @@ public class WindowData implements IUniverseClient, IGraphics {
 
     private void handleError(ErrorEvent errorEvent) {
         GLFWErrorCallback.createPrint(System.err).invoke(errorEvent.getError(), errorEvent.getDescription());
+    }
+
+    private void handleDebug(DebugEvent debugEvent) {
+        log.error("Message: {}, {}", debugEvent.getMessage(), debugEvent.getException());
     }
 
     private void handleResize(ResizeEvent resizeEvent) {
