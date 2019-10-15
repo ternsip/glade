@@ -3,12 +3,11 @@
 const int SIZE_X = 256;
 const int SIZE_Y = 256;
 const int SIZE_Z = 256;
-const int PADDING = 1;
-const int SIZE_PX = SIZE_X - PADDING * 2;
-const int SIZE_PY = SIZE_Y - PADDING * 2;
-const int SIZE_PZ = SIZE_Z - PADDING * 2;
-const int CALC_SIZE = SIZE_PX * SIZE_PY * SIZE_PZ;
-const int PADDING_INDEX = PADDING + PADDING * SIZE_X * SIZE_Z  + PADDING * SIZE_X;
+const int VOLUME = SIZE_X * SIZE_Y * SIZE_Z;
+
+int[] dx = {-1, 1, 0, 0, 0, 0};
+int[] dy = {0, 0, 1, -1, 0, 0};
+int[] dz = {0, 0, 0, 0, 1, -1};
 
 const int MAX_LIGHT_LEVEL = 15;
 
@@ -34,6 +33,18 @@ layout (std430, binding = 4) buffer heightBuffer {
 
 layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
+int floorDiv(int x, int y) {
+    int r = x / y;
+    if ((x ^ y) < 0 && r * y != x) {
+        --r;
+    }
+    return r;
+}
+
+int floorMod(int x, int y) {
+    return x - floorDiv(x, y) * y;
+}
+
 //uniform int startX;
 //uniform int startY;
 //uniform int startZ;
@@ -44,8 +55,7 @@ layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 void main(void) {
     //int offset = startX + startY * SIZE_X * SIZE_Z + startZ * SIZE_X;
     //int calcSize = sizeX * sizeY * sizeZ;
-    //int gid = PADDING_INDEX + int(gl_GlobalInvocationID) % CALC _SIZE;
-    int gid = PADDING_INDEX + int(dot(vec3(1, gl_NumWorkGroups.x, gl_NumWorkGroups.y * gl_NumWorkGroups.x), gl_GlobalInvocationID)) % CALC_SIZE;
+    int gid = int(dot(vec3(1, gl_NumWorkGroups.x, gl_NumWorkGroups.y * gl_NumWorkGroups.x), gl_GlobalInvocationID)) % VOLUME;
 
     int x = gid % SIZE_X;
     int y = gid / (SIZE_X * SIZE_Z); // better start from top for height maps
@@ -57,19 +67,14 @@ void main(void) {
     int bestSkyLight = y >= height[heightIndex] ? MAX_LIGHT_LEVEL : 0;
     int bestEmitLight = selfEmit[gid];
 
-    bestSkyLight = max(bestSkyLight, sky[gid + 1] - boundOpacity);
-    bestSkyLight = max(bestSkyLight, sky[gid + SIZE_X] - boundOpacity);
-    bestSkyLight = max(bestSkyLight, sky[gid + SIZE_X * SIZE_Z] - boundOpacity);
-    bestSkyLight = max(bestSkyLight, sky[gid - 1] - boundOpacity);
-    bestSkyLight = max(bestSkyLight, sky[gid - SIZE_X] - boundOpacity);
-    bestSkyLight = max(bestSkyLight, sky[gid - SIZE_X * SIZE_Z] - boundOpacity);
-
-    bestEmitLight = max(bestEmitLight, emit[gid + 1] - boundOpacity);
-    bestEmitLight = max(bestEmitLight, emit[gid + SIZE_X] - boundOpacity);
-    bestEmitLight = max(bestEmitLight, emit[gid + SIZE_X * SIZE_Z] - boundOpacity);
-    bestEmitLight = max(bestEmitLight, emit[gid - 1] - boundOpacity);
-    bestEmitLight = max(bestEmitLight, emit[gid - SIZE_X] - boundOpacity);
-    bestEmitLight = max(bestEmitLight, emit[gid - SIZE_X * SIZE_Z] - boundOpacity);
+    for (int k = 0; k < 6; ++k) {
+        int nx = floorMod(x + dx[k], SIZE_X);
+        int ny = floorMod(y + dy[k], SIZE_Y);
+        int nz = floorMod(z + dz[k], SIZE_Z);
+        int index = nx + ny * SIZE_X * SIZE_Z + nz * SIZE_X;
+        bestSkyLight = max(bestSkyLight, sky[index] - boundOpacity);
+        bestEmitLight = max(bestEmitLight, emit[index] - boundOpacity);
+    }
 
     sky[gid] = bestSkyLight;
     emit[gid] = bestEmitLight;
