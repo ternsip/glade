@@ -320,7 +320,6 @@ public class SideConstructor implements IGraphics {
         int watchingX = dx + blockSide.getAdjacentBlockOffset().x();
         int watchingY = dy + blockSide.getAdjacentBlockOffset().y();
         int watchingZ = dz + blockSide.getAdjacentBlockOffset().z();
-        // XXX for optimisation purposes chosen 0 index out of border
         int index = (int) INDEXER.getIndexLooping(watchingX, watchingY, watchingZ);
         Texture atlasFragment = getGraphics().getTexturePackRepository().getCubeMap(side.getBlock()).getTextureByBlockSide(blockSide);
 
