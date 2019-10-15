@@ -18,6 +18,13 @@ public class Indexer {
         return x + y * getSize().x() * getSize().z() + z * getSize().x();
     }
 
+    public long getIndexLooping(int x, int y, int z) {
+        int nx = Math.floorMod(x, getSize().x());
+        int ny = Math.floorMod(y, getSize().y());
+        int nz = Math.floorMod(z, getSize().z());
+        return nx + ny * getSize().x() * getSize().z() + nz * getSize().x();
+    }
+
     public int getX(long index) {
         return (int) (index % getSize().x());
     }

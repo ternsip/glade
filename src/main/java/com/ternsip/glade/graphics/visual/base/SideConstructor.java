@@ -317,11 +317,11 @@ public class SideConstructor implements IGraphics {
         int dx = side.getSidePosition().getX();
         int dy = side.getSidePosition().getY();
         int dz = side.getSidePosition().getZ();
-        int faceX = dx + blockSide.getAdjacentBlockOffset().x();
-        int faceY = dy + blockSide.getAdjacentBlockOffset().y();
-        int faceZ = dz + blockSide.getAdjacentBlockOffset().z();
+        int watchingX = dx + blockSide.getAdjacentBlockOffset().x();
+        int watchingY = dy + blockSide.getAdjacentBlockOffset().y();
+        int watchingZ = dz + blockSide.getAdjacentBlockOffset().z();
         // XXX for optimisation purposes chosen 0 index out of border
-        int index = INDEXER.isInside(faceX, faceY, faceZ) ? (int) INDEXER.getIndex(faceX, faceY, faceZ) : 0;
+        int index = (int) INDEXER.getIndexLooping(watchingX, watchingY, watchingZ);
         Texture atlasFragment = getGraphics().getTexturePackRepository().getCubeMap(side.getBlock()).getTextureByBlockSide(blockSide);
 
         for (int i = 0; i < SIDE_INDICES.length; ++i) {
