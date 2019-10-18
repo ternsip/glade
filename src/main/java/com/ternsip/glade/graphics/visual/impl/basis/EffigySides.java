@@ -2,7 +2,6 @@ package com.ternsip.glade.graphics.visual.impl.basis;
 
 import com.ternsip.glade.common.logic.Maths;
 import com.ternsip.glade.common.logic.Timer;
-import com.ternsip.glade.common.logic.Utils;
 import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.shader.impl.ChunkShader;
@@ -19,8 +18,6 @@ import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 
 import static com.ternsip.glade.universe.parts.chunks.BlocksRepository.MAX_LIGHT_LEVEL;
-import static org.lwjgl.opengl.ARBShaderStorageBufferObject.GL_SHADER_STORAGE_BARRIER_BIT;
-import static org.lwjgl.opengl.GL42C.*;
 
 @Getter
 @Setter

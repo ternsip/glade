@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.joml.Vector3f;
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
 import org.lwjgl.BufferUtils;
@@ -25,7 +24,6 @@ import java.util.Optional;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.glGetIntegeri_v;
 import static org.lwjgl.opengl.GL43.*;
-import static org.lwjgl.opengl.GL43C.GL_COMPUTE_SHADER;
 
 @Setter(AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

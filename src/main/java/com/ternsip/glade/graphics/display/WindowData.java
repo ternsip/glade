@@ -1,7 +1,6 @@
 package com.ternsip.glade.graphics.display;
 
 import com.ternsip.glade.common.events.base.CharEvent;
-import com.ternsip.glade.common.events.base.DebugEvent;
 import com.ternsip.glade.common.events.base.ErrorEvent;
 import com.ternsip.glade.common.events.base.Event;
 import com.ternsip.glade.common.events.display.*;
@@ -19,12 +18,13 @@ import org.lwjgl.opengl.GLDebugMessageCallback;
 import org.lwjgl.system.Callback;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_SAMPLE_ALPHA_TO_COVERAGE;
 import static org.lwjgl.opengl.GL43.glDebugMessageCallback;
-import static org.lwjgl.opengl.GL43C.GL_DEBUG_OUTPUT;
+import static org.lwjgl.opengl.GL43.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
 @Getter
@@ -43,7 +43,6 @@ public class WindowData implements IUniverseClient, IGraphics {
     public WindowData() {
 
         getGraphics().getEventIOReceiverGraphics().registerCallback(ErrorEvent.class, this::handleError);
-        getGraphics().getEventIOReceiverGraphics().registerCallback(DebugEvent.class, this::handleDebug);
 
         registerErrorEvent();
 
@@ -173,12 +172,16 @@ public class WindowData implements IUniverseClient, IGraphics {
     private void registerDebugEvent() {
         GLDebugMessageCallback debugMessageCallback = GLDebugMessageCallback.create(
                 (source, type, id, severity, length, message, userParam) -> {
-                    if (id == 2) {
-                        // https://github.com/LWJGL/lwjgl3/blob/master/modules/lwjgl/opengl/src/main/java/org/lwjgl/opengl/GLUtil.java
-                        return; // TODO filtering useless messages
+                    String messageString = memUTF8(memByteBuffer(message, length));
+                    String stackTrace = Arrays.stream(IGraphics.MAIN_THREAD.getStackTrace())
+                            .map(StackTraceElement::toString)
+                            .reduce((s1, s2) -> s1 + System.lineSeparator() + s2)
+                            .orElse("No stack trace");
+                    if (severity == GL_DEBUG_SEVERITY_HIGH) {
+                        log.error("Message: {}\n{}", messageString, stackTrace);
+                    } else {
+                        log.debug("Message: {}\n{}", messageString, stackTrace);
                     }
-                    DebugEvent debugEvent = new DebugEvent(memUTF8(memByteBuffer(message, length)), new Exception());
-                    registerEvent(DebugEvent.class, debugEvent);
                 }
         );
         getCallbacks().add(debugMessageCallback);
@@ -244,10 +247,6 @@ public class WindowData implements IUniverseClient, IGraphics {
 
     private void handleError(ErrorEvent errorEvent) {
         GLFWErrorCallback.createPrint(System.err).invoke(errorEvent.getError(), errorEvent.getDescription());
-    }
-
-    private void handleDebug(DebugEvent debugEvent) {
-        log.error("Message: {}, {}", debugEvent.getMessage(), debugEvent.getException());
     }
 
     private void handleResize(ResizeEvent resizeEvent) {

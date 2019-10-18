@@ -4,7 +4,7 @@ import com.ternsip.glade.graphics.shader.base.Uniform;
 import org.joml.Vector4f;
 import org.joml.Vector4fc;
 
-import static org.lwjgl.opengl.GL20C.glUniform4f;
+import static org.lwjgl.opengl.GL20.glUniform4f;
 
 public class UniformVec4 extends Uniform<Vector4fc> {
 
