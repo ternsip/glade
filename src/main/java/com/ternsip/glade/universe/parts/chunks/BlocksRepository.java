@@ -1,12 +1,12 @@
 package com.ternsip.glade.universe.parts.chunks;
 
-import com.ternsip.glade.common.logic.Timer;
 import com.ternsip.glade.common.logic.*;
 import com.ternsip.glade.graphics.visual.base.SideConstructor;
 import com.ternsip.glade.universe.interfaces.IUniverseServer;
 import com.ternsip.glade.universe.parts.blocks.Block;
+import com.ternsip.glade.universe.parts.blocks.BlockSide;
 import com.ternsip.glade.universe.parts.generators.ChunkGenerator;
-import com.ternsip.glade.universe.protocol.BlocksUpdateClientPacket;
+import com.ternsip.glade.universe.protocol.BlockSidesUpdateClientPacket;
 import com.ternsip.glade.universe.storage.Storage;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +14,10 @@ import org.joml.*;
 
 import javax.annotation.Nullable;
 import java.lang.Math;
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.function.BiFunction;
@@ -27,7 +30,7 @@ public class BlocksRepository implements Threadable, IUniverseServer {
 
     public static final int CHUNKS_X = 8;
     public static final int CHUNKS_Z = 8;
-    public static final byte MAX_LIGHT_LEVEL = 16;
+    public static final byte MAX_LIGHT_LEVEL = 15;
     public static final int SIZE_X = CHUNKS_X * Chunk.SIZE_X;
     public static final int SIZE_Y = 256;
     public static final int SIZE_Z = CHUNKS_Z * Chunk.SIZE_Z;
@@ -56,6 +59,7 @@ public class BlocksRepository implements Threadable, IUniverseServer {
                     for (ChunkGenerator chunkGenerator : CHUNK_GENERATORS) {
                         chunkGenerator.populate(this, x, z, endX, endZ);
                     }
+                    visualUpdate(new Vector3i(x, 0, z), new Vector3i(endX + 1, SIZE_Y, endZ + 1), false);
                     relaxChunks();
                 }
             }
@@ -108,6 +112,40 @@ public class BlocksRepository implements Threadable, IUniverseServer {
         return blocks;
     }
 
+    private boolean isSideExists(SidePosition sPos) {
+        Chunk chunk = getChunk(sPos.getX() / Chunk.SIZE_X, sPos.getZ() / Chunk.SIZE_Z);
+        return chunk.sides.contains(sPos);
+    }
+
+    private void addSide(SidePosition sPos) {
+        Chunk chunk = getChunk(sPos.getX() / Chunk.SIZE_X, sPos.getZ() / Chunk.SIZE_Z);
+        chunk.sides.add(sPos);
+        chunk.modified = true;
+    }
+
+    private void removeSide(SidePosition sPos) {
+        Chunk chunk = getChunk(sPos.getX() / Chunk.SIZE_X, sPos.getZ() / Chunk.SIZE_Z);
+        chunk.sides.remove(sPos);
+        chunk.modified = true;
+    }
+
+    private void engageBlock(Vector3ic pos, Block block) {
+        Chunk chunk = getChunk(pos.x() / Chunk.SIZE_X, pos.z() / Chunk.SIZE_Z);
+        chunk.engagedBlocks.put(pos, block);
+        chunk.modified = true;
+    }
+
+    private void unEngageBlock(Vector3ic pos) {
+        Chunk chunk = getChunk(pos.x() / Chunk.SIZE_X, pos.z() / Chunk.SIZE_Z);
+        chunk.engagedBlocks.remove(pos);
+        chunk.modified = true;
+    }
+
+    private boolean isBlockEngaged(Vector3ic pos) {
+        Chunk chunk = getChunk(pos.x() / Chunk.SIZE_X, pos.z() / Chunk.SIZE_Z);
+        return chunk.engagedBlocks.isExists(pos);
+    }
+
     public boolean isBlockExists(Vector3ic pos) {
         return INDEXER.isInside(pos);
     }
@@ -148,7 +186,9 @@ public class BlocksRepository implements Threadable, IUniverseServer {
         storage.finish();
     }
 
-    // Using A Fast Voxel Traversal Algorithm for Ray Tracing by John Amanatides and Andrew Woo
+    /**
+     * A Fast Voxel Traversal Algorithm for Ray Tracing by John Amanatides and Andrew Woo
+     */
     @Nullable
     public Vector3ic traverse(LineSegmentf segment, BiFunction<Block, Vector3i, Boolean> condition) {
         int cx = (int) Math.floor(segment.aX);
@@ -264,28 +304,34 @@ public class BlocksRepository implements Threadable, IUniverseServer {
     }
 
     private void processMovementRequest(MovementRequest movementRequest) {
-        int viewDistance = SideConstructor.VIEW_DISTANCE / Chunk.SIZE_X;
+        int viewDistance = SideConstructor.VIEW_DISTANCE / Chunk.SIZE_X; // TODO update this
 
         int middlePrevChunkX = movementRequest.getPrevPos().x() / Chunk.SIZE_X;
         int middlePrevChunkZ = movementRequest.getPrevPos().z() / Chunk.SIZE_Z;
-
-        int middleNextChunkX = movementRequest.getNextPos().x() / Chunk.SIZE_X;
-        int middleNextChunkZ = movementRequest.getNextPos().z() / Chunk.SIZE_Z;
-
-        if (middlePrevChunkX == middleNextChunkX && middlePrevChunkZ == middleNextChunkZ) {
-            return;
-        }
-
         int startPrevChunkX = middlePrevChunkX - viewDistance;
         int startPrevChunkZ = middlePrevChunkZ - viewDistance;
         int endPrevChunkX = middlePrevChunkX + viewDistance;
         int endPrevChunkZ = middlePrevChunkZ + viewDistance;
 
+        int middleNextChunkX = movementRequest.getNextPos().x() / Chunk.SIZE_X;
+        int middleNextChunkZ = movementRequest.getNextPos().z() / Chunk.SIZE_Z;
         int startNextChunkX = middleNextChunkX - viewDistance;
         int startNextChunkZ = middleNextChunkZ - viewDistance;
         int endNextChunkX = middleNextChunkX + viewDistance;
         int endNextChunkZ = middleNextChunkZ + viewDistance;
 
+        if (startNextChunkX == startPrevChunkX && startNextChunkZ == startPrevChunkZ) {
+            return;
+        }
+        requestBlockUpdates(startNextChunkX, startNextChunkZ, endNextChunkX, endNextChunkZ, startPrevChunkX, startPrevChunkZ, endPrevChunkX, endPrevChunkZ, true);
+        requestBlockUpdates(startPrevChunkX, startPrevChunkZ, endPrevChunkX, endPrevChunkZ, startNextChunkX, startNextChunkZ, endNextChunkX, endNextChunkZ, false);
+    }
+
+    private void requestBlockUpdates(
+            int startNextChunkX, int startNextChunkZ, int endNextChunkX, int endNextChunkZ,
+            int startPrevChunkX, int startPrevChunkZ, int endPrevChunkX, int endPrevChunkZ,
+            boolean additive
+    ) {
         if (startNextChunkX >= CHUNKS_X || startNextChunkZ >= CHUNKS_Z || endNextChunkX < 0 || endNextChunkZ < 0) {
             return;
         }
@@ -293,16 +339,16 @@ public class BlocksRepository implements Threadable, IUniverseServer {
         int scz = Maths.clamp(0, CHUNKS_Z - 1, startNextChunkZ);
         int ecx = Maths.clamp(0, CHUNKS_X - 1, endNextChunkX);
         int ecz = Maths.clamp(0, CHUNKS_Z - 1, endNextChunkZ);
-        List<ChangeBlocksRequest> changeBlocksRequests = new ArrayList<>();
+        BlockSidesUpdateClientPacket blockSidesUpdateClientPacket = new BlockSidesUpdateClientPacket();
         for (int cx = scx; cx <= ecx; ++cx) {
             for (int cz = scz; cz <= ecz; ++cz) {
                 if (cx < startPrevChunkX || cx > endPrevChunkX || cz < startPrevChunkZ || cz > endPrevChunkZ) {
-                    changeBlocksRequests.add(new ChangeBlocksRequest(getChunk(cx, cz)));
+                    blockSidesUpdateClientPacket.add(getChunk(cx, cz), additive);
                 }
             }
         }
-        if (!changeBlocksRequests.isEmpty()) {
-            getUniverseServer().getServer().send(new BlocksUpdateClientPacket(changeBlocksRequests), getUniverseServer().getEntityServerRepository().getConnectionInitiatedCondition());
+        if (!blockSidesUpdateClientPacket.isEmpty()) {
+            getUniverseServer().getServer().send(blockSidesUpdateClientPacket, getUniverseServer().getEntityServerRepository().getConnectionInitiatedCondition());
         }
     }
 
@@ -344,7 +390,6 @@ public class BlocksRepository implements Threadable, IUniverseServer {
 
     private void processSetBlockRequest(ChangeBlocksRequest changeBlocksRequest) {
         Vector3ic start = changeBlocksRequest.getStart();
-        Vector3ic size = changeBlocksRequest.getSize();
         Vector3ic endExcluding = changeBlocksRequest.getEndExcluding();
         Block[][][] regionBlocks = changeBlocksRequest.getBlocks();
         for (int x = start.x(), dx = 0; x < endExcluding.x(); ++x, ++dx) {
@@ -354,7 +399,55 @@ public class BlocksRepository implements Threadable, IUniverseServer {
                 }
             }
         }
-        getUniverseServer().getServer().send(new BlocksUpdateClientPacket(Collections.singletonList(changeBlocksRequest)), getUniverseServer().getEntityServerRepository().getConnectionInitiatedCondition());
+        visualUpdate(start, endExcluding, true);
+        relaxChunks();
+    }
+
+    private void visualUpdate(Vector3ic start, Vector3ic endExcluding, boolean sendChanges) {
+        // Add border blocks to engage neighbour side-recalculation
+        Vector3ic startChanges = new Vector3i(start).sub(new Vector3i(1)).max(new Vector3i(0));
+        Vector3ic endChangesExcluding = new Vector3i(endExcluding).add(new Vector3i(1)).min(SIZE);
+
+        // Calculate which sides should be removed or added
+        BlockSidesUpdateClientPacket blockSidesUpdateClientPacket = new BlockSidesUpdateClientPacket();
+
+        // Recalculating added/removed sides based on blocks state and putting them to the queue
+        for (int x = startChanges.x(); x < endChangesExcluding.x(); ++x) {
+            for (int z = startChanges.z(); z < endChangesExcluding.z(); ++z) {
+                for (int y = startChanges.y(); y < endChangesExcluding.y(); ++y) {
+                    Vector3ic pos = new Vector3i(x, y, z);
+                    Block block = getBlock(x, y, z);
+                    boolean blockEngaged = false;
+                    for (BlockSide blockSide : BlockSide.values()) {
+                        SidePosition sidePosition = new SidePosition(x, y, z, blockSide);
+                        int nx = x + blockSide.getAdjacentBlockOffset().x();
+                        int ny = y + blockSide.getAdjacentBlockOffset().y();
+                        int nz = z + blockSide.getAdjacentBlockOffset().z();
+                        Block nextBlock = INDEXER.isInside(nx, ny, nz) ? getBlock(nx, ny, nz) : null;
+                        boolean wasVisible = isSideExists(sidePosition);
+                        boolean visible = block != Block.AIR && (nextBlock == null || (nextBlock.isSemiTransparent() && (block != nextBlock || !block.isCombineSides())));
+                        blockEngaged |= visible || nextBlock == null || !nextBlock.isBlackout();
+                        if (wasVisible != visible) {
+                            blockSidesUpdateClientPacket.add(sidePosition);
+                            addSide(sidePosition);
+                        } else if (wasVisible) {
+                            blockSidesUpdateClientPacket.remove(sidePosition);
+                            removeSide(sidePosition);
+                        }
+                    }
+                    if (block != Block.AIR && blockEngaged) {
+                        blockSidesUpdateClientPacket.engage(pos, block);
+                        engageBlock(pos, block);
+                    } else if (isBlockEngaged(pos)) {
+                        blockSidesUpdateClientPacket.engage(pos, Block.AIR);
+                        unEngageBlock(pos);
+                    }
+                }
+            }
+        }
+        if (sendChanges && !blockSidesUpdateClientPacket.isEmpty()) {
+            getUniverseServer().getServer().send(blockSidesUpdateClientPacket, getUniverseServer().getEntityServerRepository().getConnectionInitiatedCondition());
+        }
     }
 
     private boolean checkVoxel(int x, int y, int z, BiFunction<Block, Vector3i, Boolean> condition) {

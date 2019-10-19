@@ -47,4 +47,8 @@ public enum Block {
         return name();
     }
 
+    public boolean isBlackout() {
+        return getLightOpacity() == MAX_LIGHT_LEVEL;
+    }
+
 }

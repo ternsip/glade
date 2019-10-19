@@ -18,6 +18,10 @@ public class Indexer {
         return x + y * getSize().x() * getSize().z() + z * getSize().x();
     }
 
+    public long getIndexLooping(Vector3ic pos) {
+        return getIndexLooping(pos.x(), pos.y(), pos.z());
+    }
+
     public long getIndexLooping(int x, int y, int z) {
         int nx = Math.floorMod(x, getSize().x());
         int ny = Math.floorMod(y, getSize().y());

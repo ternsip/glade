@@ -11,7 +11,7 @@ import com.ternsip.glade.graphics.visual.base.SideConstructor;
 import com.ternsip.glade.universe.common.Light;
 import com.ternsip.glade.universe.entities.impl.EntityCameraEffects;
 import com.ternsip.glade.universe.entities.impl.EntitySun;
-import com.ternsip.glade.universe.parts.chunks.ChangeBlocksRequest;
+import com.ternsip.glade.universe.protocol.BlockSidesUpdateClientPacket;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.Matrix4f;
@@ -30,8 +30,8 @@ public class EffigySides extends Effigy<ChunkShader> {
     private final Timer updateTimer = new Timer(3000);
     private boolean dirty = false;
 
-    public void applyBlockUpdate(ChangeBlocksRequest blocksUpdate) {
-        getSideConstructor().applyChanges(blocksUpdate);
+    public void applyBlocksUpdate(BlockSidesUpdateClientPacket blockSidesUpdateClientPacket) {
+        getSideConstructor().applyChanges(blockSidesUpdateClientPacket);
         setDirty(true);
     }
 
