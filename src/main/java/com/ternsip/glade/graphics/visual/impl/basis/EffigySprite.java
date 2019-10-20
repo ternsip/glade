@@ -17,6 +17,7 @@ import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
 import java.io.File;
+import java.util.Collections;
 
 import static com.ternsip.glade.graphics.shader.base.ShaderProgram.INDICES;
 import static com.ternsip.glade.graphics.shader.base.ShaderProgram.VERTICES;
@@ -74,12 +75,12 @@ public class EffigySprite extends Effigy<SpriteShader> {
 
     @Override
     public Model loadModel() {
-        return new Model(new Mesh(new MeshAttributes()
+        Mesh mesh = new Mesh(new MeshAttributes()
                 .add(VERTICES, VERTICES_DATA)
                 .add(TEXTURES, TEXTURES_DATA)
                 .add(INDICES, INDICES_DATA),
-                new Material(new Texture(file))
-        ));
+                new Material(new Texture(file)));
+        return Model.builder().meshes(Collections.singletonList(mesh)).build();
     }
 
     @Override

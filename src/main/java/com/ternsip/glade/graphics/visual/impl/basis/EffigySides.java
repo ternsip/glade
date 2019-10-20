@@ -56,11 +56,12 @@ public class EffigySides extends Effigy<ChunkShader> {
 
     @Override
     public Model loadModel() {
-        return new Model();
+        return Model.builder().build();
     }
 
     @Override
     public boolean deleteModelOnFinish() {
+        // TODO remove this method
         return true;
     }
 
@@ -88,5 +89,12 @@ public class EffigySides extends Effigy<ChunkShader> {
         EntitySun sun = getUniverseClient().getEntityClientRepository().getEntityByClass(EntitySun.class);
         return new LightSource(sun.getPositionInterpolated(), sun.getColor(), sun.getIntensity());
     }
+
+    @Override
+    public void finish() {
+        super.finish();
+        getSideConstructor().finish();
+    }
+
 
 }

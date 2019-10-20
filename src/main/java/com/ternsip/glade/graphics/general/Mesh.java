@@ -20,7 +20,6 @@ import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.GL_STREAM_DRAW;
 import static org.lwjgl.opengl.GL30.*;
-import static org.lwjgl.system.MemoryUtil.NULL;
 
 @Getter
 @Setter
@@ -142,7 +141,6 @@ public class Mesh {
             buffer.rewind();
             if (attributeData.getType() == AttributeData.ArrayType.ELEMENT_ARRAY) {
                 glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo);
-                glBufferData(GL_ARRAY_BUFFER, NULL, isDynamic() ? GL_STREAM_DRAW : GL_STATIC_DRAW);
                 glBufferData(GL_ELEMENT_ARRAY_BUFFER, (IntBuffer) buffer, isDynamic() ? GL_STREAM_DRAW : GL_STATIC_DRAW);
             }
             if (attributeData.getType() == AttributeData.ArrayType.FLOAT) {

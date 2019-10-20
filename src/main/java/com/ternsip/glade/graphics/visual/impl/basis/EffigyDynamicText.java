@@ -87,7 +87,7 @@ public class EffigyDynamicText extends EffigySprite {
         for (char symbol = 0; symbol < 256; ++symbol) {
             meshes.add(generateGlyphMesh(getFile(), symbol, getColor()));
         }
-        return new Model(meshes);
+        return Model.builder().meshes(meshes).build();
     }
 
     @Override

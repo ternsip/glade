@@ -39,7 +39,12 @@ public class EffigyAxis extends EffigyAnimated {
         Mesh meshX = EffigyCube.createAABBMesh(new Vector3f(1, proportion, proportion), red);
         Mesh meshY = EffigyCube.createAABBMesh(new Vector3f(proportion, 1, proportion), greed);
         Mesh meshZ = EffigyCube.createAABBMesh(new Vector3f(proportion, proportion, 1), blue);
-        return new Model(Arrays.asList(meshX, meshY, meshZ), new Vector3f(0), new Vector3f(0), new Vector3f(0.075f));
+        return Model.builder()
+                .meshes(Arrays.asList(meshX, meshY, meshZ))
+                .baseOffset(new Vector3f(0))
+                .baseRotation(new Vector3f(0))
+                .baseScale(new Vector3f(0.075f))
+                .build();
     }
 
     @Override

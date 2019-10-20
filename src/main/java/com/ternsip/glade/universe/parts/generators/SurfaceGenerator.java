@@ -10,7 +10,7 @@ import org.joml.Vector3ic;
 @Getter
 public class SurfaceGenerator implements ChunkGenerator {
 
-    private final int height = 60;
+    private final int height = 130;
 
     @Override
     public int getPriority() {

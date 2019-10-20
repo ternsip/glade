@@ -13,6 +13,6 @@ public class EffigyDummy extends EffigyAnimated {
 
     @Override
     public Model loadModel() {
-        return new Model();
+        return Model.builder().build();
     }
 }

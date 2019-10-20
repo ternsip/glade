@@ -17,7 +17,7 @@ public enum Block {
     WOOD(true, false, false, false, MAX_LIGHT_LEVEL, (byte) 0, DECORATIVE),
     LEAVES(true, false, true, false, (byte) 4, (byte) 0, DECORATIVE),
     WATER(false, true, true, true, (byte) 1, (byte) 0, LIQUID),
-    LAVA(false, true, false, false, (byte) 1, (byte) 4, LIQUID),
+    LAVA(false, true, false, false, MAX_LIGHT_LEVEL, (byte) 12, LIQUID),
     SAND(true, false, false, false, MAX_LIGHT_LEVEL, (byte) 0, SOIL);
 
     private final boolean obstacle;

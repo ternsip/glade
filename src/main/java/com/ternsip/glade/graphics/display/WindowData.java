@@ -8,22 +8,28 @@ import com.ternsip.glade.graphics.interfaces.IGraphics;
 import com.ternsip.glade.universe.interfaces.IUniverseClient;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.joml.Vector2i;
 import org.joml.Vector4f;
 import org.joml.Vector4fc;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GLDebugMessageCallback;
 import org.lwjgl.system.Callback;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_SAMPLE_ALPHA_TO_COVERAGE;
-import static org.lwjgl.system.MemoryUtil.NULL;
+import static org.lwjgl.opengl.GL43.glDebugMessageCallback;
+import static org.lwjgl.opengl.GL43.*;
+import static org.lwjgl.system.MemoryUtil.*;
 
 @Getter
 @Setter
+@Slf4j
 public class WindowData implements IUniverseClient, IGraphics {
 
     public static final Vector4fc BACKGROUND_COLOR = new Vector4f(0f, 0f, 0f, 1f);
@@ -70,6 +76,9 @@ public class WindowData implements IUniverseClient, IGraphics {
         //glEnable(GL_BLEND);
         //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+        glEnable(GL_DEBUG_OUTPUT);
+        registerDebugEvent();
+        //glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
         OpenGlSettings.antialias(true);
         OpenGlSettings.enableDepthTesting(true);
         OpenGlSettings.goWireframe(false);
@@ -158,6 +167,25 @@ public class WindowData implements IUniverseClient, IGraphics {
         );
         getCallbacks().add(errorCallback);
         glfwSetErrorCallback(errorCallback);
+    }
+
+    private void registerDebugEvent() {
+        GLDebugMessageCallback debugMessageCallback = GLDebugMessageCallback.create(
+                (source, type, id, severity, length, message, userParam) -> {
+                    String messageString = memUTF8(memByteBuffer(message, length));
+                    String stackTrace = Arrays.stream(IGraphics.MAIN_THREAD.getStackTrace())
+                            .map(StackTraceElement::toString)
+                            .reduce((s1, s2) -> s1 + System.lineSeparator() + s2)
+                            .orElse("No stack trace");
+                    if (severity == GL_DEBUG_SEVERITY_HIGH) {
+                        log.error("Message: {}\n{}", messageString, stackTrace);
+                    } else {
+                        log.debug("Message: {}\n{}", messageString, stackTrace);
+                    }
+                }
+        );
+        getCallbacks().add(debugMessageCallback);
+        glDebugMessageCallback(debugMessageCallback, NULL);
     }
 
     private void registerScrollEvent() {

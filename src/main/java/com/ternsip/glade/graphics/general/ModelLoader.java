@@ -38,13 +38,13 @@ public class ModelLoader {
         Skeleton skeleton = processSkeleton(aiSceneMesh);
         Mesh[] meshes = processMeshes(aiSceneMesh, materials, skeleton, settings);
         Bone rootBone = createBones(aiSceneMesh.mRootNode(), skeleton);
-        return new Model(
-                Arrays.asList(meshes),
-                settings.getBaseOffset(),
-                settings.getBaseRotation(),
-                settings.getBaseScale(),
-                new AnimationData(rootBone, nameToFrameTrack)
-        );
+        return Model.builder()
+                .meshes(Arrays.asList(meshes))
+                .baseOffset(settings.getBaseOffset())
+                .baseRotation(settings.getBaseRotation())
+                .baseScale(settings.getBaseScale())
+                .animationData(new AnimationData(rootBone, nameToFrameTrack))
+                .build();
     }
 
     public static Bone createBones(AINode aiNode, Skeleton skeleton) {

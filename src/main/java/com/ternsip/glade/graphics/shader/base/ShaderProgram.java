@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import static org.lwjgl.opengl.GL20.glDeleteProgram;
-import static org.lwjgl.opengl.GL20C.*;
+import static org.lwjgl.opengl.GL20.*;
 
 @Setter(AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

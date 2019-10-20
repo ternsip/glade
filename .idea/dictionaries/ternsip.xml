@@ -12,6 +12,7 @@
       <w>ortho</w>
       <w>shaders</w>
       <w>skybox</w>
+      <w>ssbo</w>
       <w>teleport</w>
       <w>ternsip</w>
       <w>threadable</w>

@@ -8,7 +8,7 @@ public class TeleportFarAction extends BaseAction {
     @Override
     public void apply(EntityPlayerServer player) {
         player.setRotation(new Vector3f(0, 0, 0));
-        player.setPosition(new Vector3f(512, 90, 512));
+        player.setPosition(new Vector3f(512, 190, 512));
     }
 
 }

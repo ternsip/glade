@@ -81,6 +81,10 @@ public class SideConstructor implements IGraphics {
     @Getter
     private ArrayList<Mesh> meshes = new ArrayList<>();
 
+    public void finish() {
+        getMeshes().forEach(Mesh::finish);
+    }
+
     public void applyChanges(BlocksUpdate changes) {
 
         if (changes.isEmpty()) {

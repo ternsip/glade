@@ -8,7 +8,7 @@ public class RespawnAction extends BaseAction {
     @Override
     public void apply(EntityPlayerServer player) {
         player.setRotation(new Vector3f(0, 0, 0));
-        player.setPosition(new Vector3f(50, 90, 50));
+        player.setPosition(new Vector3f(50, 190, 50));
     }
 
 }
