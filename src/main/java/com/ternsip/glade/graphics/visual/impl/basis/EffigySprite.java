@@ -61,6 +61,15 @@ public class EffigySprite extends Effigy<SpriteShader> {
     }
 
     @Override
+    public Vector3fc getAdjustedPosition() {
+        Vector3fc pos = super.getAdjustedPosition();
+        if (isOrtho()) {
+            return new Vector3f(pos.x(), pos.y(), (pos.z() + 1) * ORTHO_SCALE - 1);
+        }
+        return pos;
+    }
+
+    @Override
     public void render() {
         getShader().start();
         getShader().getProjectionMatrix().load(getProjectionMatrix());
@@ -101,15 +110,6 @@ public class EffigySprite extends Effigy<SpriteShader> {
     @Override
     protected Matrix4fc getProjectionMatrix() {
         return isOrtho() ? ORTHO_MATRIX : super.getProjectionMatrix();
-    }
-
-    @Override
-    public Vector3fc getAdjustedPosition() {
-        Vector3fc pos = super.getAdjustedPosition();
-        if (isOrtho()) {
-            return new Vector3f(pos.x(), pos.y(), (pos.z() + 1) * ORTHO_SCALE - 1);
-        }
-        return pos;
     }
 
     @RequiredArgsConstructor

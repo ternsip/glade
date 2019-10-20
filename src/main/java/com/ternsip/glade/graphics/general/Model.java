@@ -13,23 +13,18 @@ import java.util.List;
 @Getter
 public class Model {
 
+    @Getter(lazy = true)
+    private final float normalizingScale = calcNormalizedScale(getMeshes());
     @Builder.Default
     private List<Mesh> meshes = new ArrayList<>();
-
     @Builder.Default
     private Vector3fc baseOffset = new Vector3f(0);
-
     @Builder.Default
     private Vector3fc baseRotation = new Vector3f(0);
-
     @Builder.Default
     private Vector3fc baseScale = new Vector3f(1);
-
     @Builder.Default
     private AnimationData animationData = new AnimationData();
-
-    @Getter(lazy = true)
-    private final float normalizingScale = calcNormalizedScale(meshes);
 
     public void finish() {
         for (Mesh mesh : getMeshes()) {

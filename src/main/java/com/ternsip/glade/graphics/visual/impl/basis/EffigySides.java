@@ -71,6 +71,12 @@ public class EffigySides extends Effigy<ChunkShader> {
     }
 
     @Override
+    public void finish() {
+        super.finish();
+        getSideConstructor().finish();
+    }
+
+    @Override
     public boolean isGraphicalInsideFrustum() {
         return true;
     }
@@ -88,12 +94,6 @@ public class EffigySides extends Effigy<ChunkShader> {
     public Light getSun() {
         EntitySun sun = getUniverseClient().getEntityClientRepository().getEntityByClass(EntitySun.class);
         return new LightSource(sun.getPositionInterpolated(), sun.getColor(), sun.getIntensity());
-    }
-
-    @Override
-    public void finish() {
-        super.finish();
-        getSideConstructor().finish();
     }
 
 

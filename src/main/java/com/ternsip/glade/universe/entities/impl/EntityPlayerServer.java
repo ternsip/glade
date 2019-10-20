@@ -87,6 +87,12 @@ public class EntityPlayerServer extends GraphicalEntityServer {
         refreshPlayerAnimation();
     }
 
+    @Override
+    public void writeToStream(ObjectOutputStream oos) throws Exception {
+        super.writeToStream(oos);
+        oos.writeObject(getPlayerAnimation());
+    }
+
     private void refreshPlayerAnimation() {
         Vector3ic pos = getPreviousPosition();
         if (getUniverseServer().getBlocksRepository().isBlockExists(pos) && getUniverseServer().getBlocksRepository().getBlock(pos) == Block.WATER) {
@@ -102,12 +108,6 @@ public class EntityPlayerServer extends GraphicalEntityServer {
             return;
         }
         setPlayerAnimation(PlayerAnimation.IDLE);
-    }
-
-    @Override
-    public void writeToStream(ObjectOutputStream oos) throws Exception {
-        super.writeToStream(oos);
-        oos.writeObject(getPlayerAnimation());
     }
 
     private Vector3fc tryToMove(Vector3fc startPosition, Vector3fc endPosition) {
