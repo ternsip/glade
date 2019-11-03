@@ -14,7 +14,7 @@ public class EntityUIRadioBox extends EntityUICheckBox {
     public EntityUIRadioBox(
             File background,
             File browseOverlay,
-            File pressOverlay,
+            File pressBackground,
             File checkedImage,
             File uncheckedImage,
             File font,
@@ -22,7 +22,7 @@ public class EntityUIRadioBox extends EntityUICheckBox {
             List<Sign> signs,
             boolean useAspect
     ) {
-        super(background, browseOverlay, pressOverlay, checkedImage, uncheckedImage, font, textColor, signs, useAspect);
+        super(background, browseOverlay, pressBackground, checkedImage, uncheckedImage, font, textColor, signs, useAspect);
         getBars().forEach(bar -> {
             bar.getSwitcher().getOnClick().add(() -> {
                 getBars().forEach(anotherBar -> anotherBar.getSwitcher().setSwitched(false));

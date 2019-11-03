@@ -26,7 +26,7 @@ public class EntityUIButton extends EntityUI {
     private final Callback<MouseButtonEvent> mouseButtonCallback = this::handleMouseButton;
     private final EntitySprite background;
     private final EntitySprite browseOverlay;
-    private final EntitySprite pressOverlay;
+    private final EntitySprite pressBackground;
 
     private final ArrayList<UICallback> onClick = new ArrayList<>();
     private final ArrayList<UICallback> onPress = new ArrayList<>();
@@ -40,11 +40,11 @@ public class EntityUIButton extends EntityUI {
     private boolean pressed = false;
     private boolean animated = true;
 
-    public EntityUIButton(File background, File browseOverlay, File pressOverlay, boolean useAspect) {
+    public EntityUIButton(File background, File browseOverlay, File pressBackground, boolean useAspect) {
         super(useAspect);
         this.background = new EntitySprite(background, true, useAspect);
         this.browseOverlay = new EntitySprite(browseOverlay, true, useAspect);
-        this.pressOverlay = new EntitySprite(pressOverlay, true, useAspect);
+        this.pressBackground = new EntitySprite(pressBackground, true, useAspect);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class EntityUIButton extends EntityUI {
         super.register();
         getBackground().register();
         getBrowseOverlay().register();
-        getPressOverlay().register();
+        getPressBackground().register();
         getUniverseClient().getEventIOReceiver().registerCallback(CursorPosEvent.class, getCursorPosCallback());
         getUniverseClient().getEventIOReceiver().registerCallback(MouseButtonEvent.class, getMouseButtonCallback());
         getUniverseClient().getEventIOReceiver().registerCallback(CursorVisibilityEvent.class, getCursorVisibilityCallback());
@@ -63,7 +63,7 @@ public class EntityUIButton extends EntityUI {
         super.unregister();
         getBackground().unregister();
         getBrowseOverlay().unregister();
-        getPressOverlay().unregister();
+        getPressBackground().unregister();
         getUniverseClient().getEventIOReceiver().unregisterCallback(CursorPosEvent.class, getCursorPosCallback());
         getUniverseClient().getEventIOReceiver().unregisterCallback(MouseButtonEvent.class, getMouseButtonCallback());
         getUniverseClient().getEventIOReceiver().unregisterCallback(CursorVisibilityEvent.class, getCursorVisibilityCallback());
@@ -87,10 +87,10 @@ public class EntityUIButton extends EntityUI {
         getBrowseOverlay().setPosition(new Vector3f(position).add(new Vector3f(0, 0, -0.01f)));
         getBrowseOverlay().setVisible(isVisible() && isCursorInside() && !isPressed());
 
-        getPressOverlay().setScale(scale);
-        getPressOverlay().setRotation(rotation);
-        getPressOverlay().setPosition(new Vector3f(position).add(new Vector3f(0, 0, -0.02f)));
-        getPressOverlay().setVisible(isVisible() && isPressed());
+        getPressBackground().setScale(scale);
+        getPressBackground().setRotation(rotation);
+        getPressBackground().setPosition(new Vector3f(position).add(new Vector3f(0, 0, -0.02f)));
+        getPressBackground().setVisible(isVisible() && isPressed());
     }
 
     public Vector3fc getVisualScale() {

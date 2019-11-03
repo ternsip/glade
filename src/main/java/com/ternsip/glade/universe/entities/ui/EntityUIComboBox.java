@@ -24,20 +24,20 @@ public class EntityUIComboBox extends EntityUI {
     public EntityUIComboBox(
             File dropBackground,
             File dropBrowseOverlay,
-            File dropPressOverlay,
+            File dropPressBackground,
             File selectBackground,
             File selectBrowseOverlay,
-            File selectPressOverlay,
+            File selectPressBackground,
             File font,
             Vector4fc textColor,
             List<String> selections,
             boolean useAspect
     ) {
         super(useAspect);
-        this.drop = new EntityUIButton(dropBackground, dropBrowseOverlay, dropPressOverlay, useAspect);
+        this.drop = new EntityUIButton(dropBackground, dropBrowseOverlay, dropPressBackground, useAspect);
         this.drop.getOnClick().add(this::roll);
         this.options = selections.stream().map(text -> {
-                    EntityUITextButton button = new EntityUITextButton(selectBackground, selectBrowseOverlay, selectPressOverlay, font, textColor, text, useAspect);
+                    EntityUITextButton button = new EntityUITextButton(selectBackground, selectBrowseOverlay, selectPressBackground, font, textColor, text, useAspect);
                     button.setAnimated(false);
                     button.getOnClick().add(() -> getSelected().setText(button.getText()));
                     button.getOnClick().add(this::roll);
@@ -49,7 +49,7 @@ public class EntityUIComboBox extends EntityUI {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Combo box options should contain at least 1 element"))
                 .getText();
-        this.selected = new EntityUITextButton(selectBackground, selectBrowseOverlay, selectPressOverlay, font, textColor, selectedText, useAspect);
+        this.selected = new EntityUITextButton(selectBackground, selectBrowseOverlay, selectPressBackground, font, textColor, selectedText, useAspect);
         this.selected.setAnimated(false);
         this.selected.getOnClick().add(this::roll);
     }

@@ -25,7 +25,7 @@ public class EntityUICheckBox extends EntityUI {
     public EntityUICheckBox(
             File background,
             File browseOverlay,
-            File pressOverlay,
+            File pressBackground,
             File checkedImage,
             File uncheckedImage,
             File font,
@@ -36,7 +36,7 @@ public class EntityUICheckBox extends EntityUI {
         super(useAspect);
         this.bars = signs.stream().map(sign -> {
             EntityDynamicText2D text2D = new EntityDynamicText2D(font, sign.getText(), textColor, useAspect);
-            EntityUISwitcher switcher = new EntityUISwitcher(uncheckedImage, browseOverlay, pressOverlay, checkedImage, useAspect);
+            EntityUISwitcher switcher = new EntityUISwitcher(uncheckedImage, browseOverlay, pressBackground, checkedImage, useAspect);
             switcher.getOnClick().add(() -> sign.getOnSwitch().accept(switcher.isSwitched()));
             switcher.setAnimated(false);
             return new Bar(text2D, switcher);

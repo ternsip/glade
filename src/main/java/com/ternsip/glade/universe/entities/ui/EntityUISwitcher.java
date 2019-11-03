@@ -14,8 +14,8 @@ public class EntityUISwitcher extends EntityUIButton {
 
     private boolean switched = false;
 
-    public EntityUISwitcher(File background, File browseOverlay, File pressOverlay, File switchedOverlay, boolean useAspect) {
-        super(background, browseOverlay, pressOverlay, useAspect);
+    public EntityUISwitcher(File background, File browseOverlay, File pressBackground, File switchedOverlay, boolean useAspect) {
+        super(background, browseOverlay, pressBackground, useAspect);
         getOnClick().add(() -> switched = !switched);
         this.switchedOverlay = new EntitySprite(switchedOverlay, true, useAspect);
     }

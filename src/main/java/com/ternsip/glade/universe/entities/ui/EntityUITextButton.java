@@ -19,8 +19,8 @@ public class EntityUITextButton extends EntityUIButton {
 
     private boolean fit = false;
 
-    public EntityUITextButton(File background, File browseOverlay, File pressOverlay, File font, Vector4fc textColor, String text, boolean useAspect) {
-        super(background, browseOverlay, pressOverlay, useAspect);
+    public EntityUITextButton(File background, File browseOverlay, File pressBackground, File font, Vector4fc textColor, String text, boolean useAspect) {
+        super(background, browseOverlay, pressBackground, useAspect);
         this.sign = new EntityDynamicText2D(font, text, textColor, useAspect);
     }
 

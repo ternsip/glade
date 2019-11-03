@@ -35,18 +35,18 @@ public class EntityUIScrollbar extends EntityUI {
             File background,
             File sliderBackground,
             File sliderBrowseOverlay,
-            File sliderPressOverlay,
+            File sliderPressBackground,
             File buttonUpBackground,
             File buttonUpBrowseOverlay,
-            File buttonUpPressOverlay,
+            File buttonUpPressBackground,
             Consumer<Float> onSlide,
             boolean useAspect
     ) {
         super(useAspect);
         this.background = new EntitySprite(background, true, useAspect);
-        this.slider = new EntityUIButton(sliderBackground, sliderBrowseOverlay, sliderPressOverlay, useAspect);
-        this.buttonUp = new EntityUIButton(buttonUpBackground, buttonUpBrowseOverlay, buttonUpPressOverlay, useAspect);
-        this.buttonDown = new EntityUIButton(buttonUpBackground, buttonUpBrowseOverlay, buttonUpPressOverlay, useAspect);
+        this.slider = new EntityUIButton(sliderBackground, sliderBrowseOverlay, sliderPressBackground, useAspect);
+        this.buttonUp = new EntityUIButton(buttonUpBackground, buttonUpBrowseOverlay, buttonUpPressBackground, useAspect);
+        this.buttonDown = new EntityUIButton(buttonUpBackground, buttonUpBrowseOverlay, buttonUpPressBackground, useAspect);
         this.onSlide = onSlide;
         this.slider.getOnPress().add(() -> setHolding(true));
         this.slider.getOnRelease().add(() -> setHolding(false));

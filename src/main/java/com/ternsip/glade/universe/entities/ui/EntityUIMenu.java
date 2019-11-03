@@ -18,7 +18,7 @@ public class EntityUIMenu extends EntityUI {
 
     private static final File BUTTON_BACKGROUND = new File("interface/button.png");
     private static final File BROWSE_OVERLAY = new File("interface/browse_overlay.png");
-    private static final File PRESS_OVERLAY = new File("interface/press_overlay.png");
+    private static final File PRESS_BACKGROUND = new File("interface/press_background.png");
     private static final File FONT = new File("fonts/default.png");
     private static final Vector4fc TEXT_COLOR = new Vector4f(1, 1, 1, 1);
     private static final File CLICK_SOUND = new File("sounds/click2.ogg");
@@ -38,13 +38,13 @@ public class EntityUIMenu extends EntityUI {
         this.menuBackground = new EntitySprite(new File("interface/menu_background.jpg"), true, false);
         this.menuBackground.setPosition(new Vector3f(0, 0f, 0.01f));
 
-        this.resumeButton = new EntityUITextButton(BUTTON_BACKGROUND, BROWSE_OVERLAY, PRESS_OVERLAY, FONT, TEXT_COLOR, "Resume", true);
+        this.resumeButton = new EntityUITextButton(BUTTON_BACKGROUND, BROWSE_OVERLAY, PRESS_BACKGROUND, FONT, TEXT_COLOR, "Resume", true);
         this.resumeButton.setScale(new Vector3f(0.2f, 0.05f, 1));
         this.resumeButton.setPosition(new Vector3f(0, 0.5f, 0));
         this.resumeButton.getOnPress().add(() -> new Sound(CLICK_SOUND).register());
         this.resumeButton.getOnClick().add(this::toggle);
 
-        this.connectButton = new EntityUITextButton(BUTTON_BACKGROUND, BROWSE_OVERLAY, PRESS_OVERLAY, FONT, TEXT_COLOR, "Connect", true);
+        this.connectButton = new EntityUITextButton(BUTTON_BACKGROUND, BROWSE_OVERLAY, PRESS_BACKGROUND, FONT, TEXT_COLOR, "Connect", true);
         this.connectButton.setScale(new Vector3f(0.2f, 0.05f, 1));
         this.connectButton.setPosition(new Vector3f(0, 0.25f, 0));
         this.connectButton.getOnPress().add(() -> new Sound(CLICK_SOUND).register());
@@ -53,18 +53,18 @@ public class EntityUIMenu extends EntityUI {
             this.toggle();
         });
 
-        this.hostButton = new EntityUITextButton(BUTTON_BACKGROUND, BROWSE_OVERLAY, PRESS_OVERLAY, FONT, TEXT_COLOR, "Host", true);
+        this.hostButton = new EntityUITextButton(BUTTON_BACKGROUND, BROWSE_OVERLAY, PRESS_BACKGROUND, FONT, TEXT_COLOR, "Host", true);
         this.hostButton.setScale(new Vector3f(0.2f, 0.05f, 1));
         this.hostButton.setPosition(new Vector3f(0, 0, 0));
         this.hostButton.getOnPress().add(() -> new Sound(CLICK_SOUND).register());
         this.hostButton.getOnClick().add(IUniverseServer::run);
 
-        this.optionsButton = new EntityUITextButton(BUTTON_BACKGROUND, BROWSE_OVERLAY, PRESS_OVERLAY, FONT, TEXT_COLOR, "Options", true);
+        this.optionsButton = new EntityUITextButton(BUTTON_BACKGROUND, BROWSE_OVERLAY, PRESS_BACKGROUND, FONT, TEXT_COLOR, "Options", true);
         this.optionsButton.setScale(new Vector3f(0.2f, 0.05f, 1));
         this.optionsButton.setPosition(new Vector3f(0, -0.25f, 0));
         this.optionsButton.getOnPress().add(() -> new Sound(CLICK_SOUND).register());
 
-        this.exitButton = new EntityUITextButton(BUTTON_BACKGROUND, BROWSE_OVERLAY, PRESS_OVERLAY, FONT, TEXT_COLOR, "Exit", true);
+        this.exitButton = new EntityUITextButton(BUTTON_BACKGROUND, BROWSE_OVERLAY, PRESS_BACKGROUND, FONT, TEXT_COLOR, "Exit", true);
         this.exitButton.setScale(new Vector3f(0.2f, 0.05f, 1));
         this.exitButton.setPosition(new Vector3f(0, -0.5f, 0));
         this.exitButton.getOnPress().add(() -> new Sound(CLICK_SOUND).register());
@@ -78,7 +78,7 @@ public class EntityUIMenu extends EntityUI {
         EntityUIRadioBox radioBox = new EntityUIRadioBox(
                 new File("interface/ui_background.png"),
                 new File("interface/browse_overlay.png"),
-                new File("interface/press_overlay.png"),
+                new File("interface/press_background.png"),
                 new File("interface/checkbox_on.png"),
                 new File("interface/checkbox_off.png"),
                 new File("fonts/default.png"),
@@ -98,10 +98,10 @@ public class EntityUIMenu extends EntityUI {
         EntityUIComboBox comboBox = new EntityUIComboBox(
                 new File("interface/combo_drop.png"),
                 new File("interface/browse_overlay.png"),
-                new File("interface/press_overlay.png"),
+                new File("interface/press_background.png"),
                 new File("interface/combo_background.jpg"),
                 new File("interface/browse_overlay.png"),
-                new File("interface/press_overlay.png"),
+                new File("interface/press_background.png"),
                 new File("fonts/default.png"),
                 new Vector4f(1, 1, 1, 1),
                 Arrays.asList(
@@ -119,10 +119,10 @@ public class EntityUIMenu extends EntityUI {
                 new File("interface/scrollbar_background.jpg"),
                 new File("interface/scrollbar_bar.png"),
                 new File("interface/browse_overlay.png"),
-                new File("interface/press_overlay.png"),
+                new File("interface/press_background.png"),
                 new File("interface/scrollbar_up.png"),
                 new File("interface/browse_overlay.png"),
-                new File("interface/press_overlay.png"),
+                new File("interface/press_background.png"),
                 state -> {},
                 true
         );
