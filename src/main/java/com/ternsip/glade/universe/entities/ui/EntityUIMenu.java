@@ -39,13 +39,13 @@ public class EntityUIMenu extends EntityUI {
         this.menuBackground.setPosition(new Vector3f(0, 0f, 0.01f));
 
         this.resumeButton = new EntityUITextButton(BUTTON_BACKGROUND, BROWSE_OVERLAY, PRESS_OVERLAY, FONT, TEXT_COLOR, "Resume", true);
-        this.resumeButton.setScale(new Vector3f(0.1f, 0.05f, 1));
+        this.resumeButton.setScale(new Vector3f(0.2f, 0.05f, 1));
         this.resumeButton.setPosition(new Vector3f(0, 0.5f, 0));
         this.resumeButton.getOnPress().add(() -> new Sound(CLICK_SOUND).register());
         this.resumeButton.getOnClick().add(this::toggle);
 
         this.connectButton = new EntityUITextButton(BUTTON_BACKGROUND, BROWSE_OVERLAY, PRESS_OVERLAY, FONT, TEXT_COLOR, "Connect", true);
-        this.connectButton.setScale(new Vector3f(0.1f, 0.05f, 1));
+        this.connectButton.setScale(new Vector3f(0.2f, 0.05f, 1));
         this.connectButton.setPosition(new Vector3f(0, 0.25f, 0));
         this.connectButton.getOnPress().add(() -> new Sound(CLICK_SOUND).register());
         this.connectButton.getOnClick().add(() -> {
@@ -54,18 +54,18 @@ public class EntityUIMenu extends EntityUI {
         });
 
         this.hostButton = new EntityUITextButton(BUTTON_BACKGROUND, BROWSE_OVERLAY, PRESS_OVERLAY, FONT, TEXT_COLOR, "Host", true);
-        this.hostButton.setScale(new Vector3f(0.1f, 0.05f, 1));
+        this.hostButton.setScale(new Vector3f(0.2f, 0.05f, 1));
         this.hostButton.setPosition(new Vector3f(0, 0, 0));
         this.hostButton.getOnPress().add(() -> new Sound(CLICK_SOUND).register());
         this.hostButton.getOnClick().add(IUniverseServer::run);
 
         this.optionsButton = new EntityUITextButton(BUTTON_BACKGROUND, BROWSE_OVERLAY, PRESS_OVERLAY, FONT, TEXT_COLOR, "Options", true);
-        this.optionsButton.setScale(new Vector3f(0.1f, 0.05f, 1));
+        this.optionsButton.setScale(new Vector3f(0.2f, 0.05f, 1));
         this.optionsButton.setPosition(new Vector3f(0, -0.25f, 0));
         this.optionsButton.getOnPress().add(() -> new Sound(CLICK_SOUND).register());
 
         this.exitButton = new EntityUITextButton(BUTTON_BACKGROUND, BROWSE_OVERLAY, PRESS_OVERLAY, FONT, TEXT_COLOR, "Exit", true);
-        this.exitButton.setScale(new Vector3f(0.1f, 0.05f, 1));
+        this.exitButton.setScale(new Vector3f(0.2f, 0.05f, 1));
         this.exitButton.setPosition(new Vector3f(0, -0.5f, 0));
         this.exitButton.getOnPress().add(() -> new Sound(CLICK_SOUND).register());
         this.exitButton.getOnClick().add(() -> getUniverseClient().stop());

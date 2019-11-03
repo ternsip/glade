@@ -60,6 +60,10 @@ public class Maths {
         return Math.abs(a - b) < EPS;
     }
 
+    public static int log(int x, int base) {
+        return (int) (Math.log(x) / Math.log(base));
+    }
+
     public static Vector3fc normalizeOrEmpty(Vector3fc v) {
         return v.lengthSquared() <= EPS ? v : v.normalize(new Vector3f());
     }

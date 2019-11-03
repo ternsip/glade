@@ -55,7 +55,7 @@ public class EntityUITextButton extends EntityUIButton {
         float textScale = isFit() ? (scale.y() * 2f / Math.max(1, getSign().getText().length())) : scale.y() * TEXT_SCALE_Y;
         getSign().setScale(new Vector3f(textScale, textScale, 1));
         getSign().setRotation(rotation);
-        getSign().setPosition(new Vector3f(position.x(), position.y(), position.z() - 0.01f));
+        getSign().setPosition(new Vector3f(position.x(), position.y(), position.z() - 0.03f));
         getSign().setVisible(isVisible());
     }
 

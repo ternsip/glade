@@ -19,7 +19,7 @@ import static org.lwjgl.glfw.GLFW.*;
 @Setter
 public class EntityUIButton extends EntityUI {
 
-    private static final long ANIMATION_TIME_MILLISECONDS = 1000;
+    private static final long ANIMATION_TIME_MILLISECONDS = 2000;
 
     private final Callback<CursorPosEvent> cursorPosCallback = this::trackCursor;
     private final Callback<CursorVisibilityEvent> cursorVisibilityCallback = this::handleCursorVisibility;
@@ -80,12 +80,12 @@ public class EntityUIButton extends EntityUI {
         getBackground().setScale(scale);
         getBackground().setRotation(rotation);
         getBackground().setPosition(position);
-        getBackground().setVisible(isVisible());
+        getBackground().setVisible(isVisible() && !isPressed());
 
         getBrowseOverlay().setScale(scale);
         getBrowseOverlay().setRotation(rotation);
         getBrowseOverlay().setPosition(new Vector3f(position).add(new Vector3f(0, 0, -0.01f)));
-        getBrowseOverlay().setVisible(isVisible() && isCursorInside());
+        getBrowseOverlay().setVisible(isVisible() && isCursorInside() && !isPressed());
 
         getPressOverlay().setScale(scale);
         getPressOverlay().setRotation(rotation);
@@ -98,7 +98,7 @@ public class EntityUIButton extends EntityUI {
             return getScale();
         }
         float phase = ((System.currentTimeMillis() - getCursorJoinTime()) % ANIMATION_TIME_MILLISECONDS) / (float) ANIMATION_TIME_MILLISECONDS;
-        float scaleCriteria = 0.8f + (float) Math.abs(Math.cos(2 * Math.PI * phase)) * 0.20f;
+        float scaleCriteria = 0.95f + (float) Math.abs(Math.cos(2 * Math.PI * phase)) * 0.05f;
         return new Vector3f(getScale().x() * scaleCriteria, getScale().y() * scaleCriteria, getScale().z());
     }
 

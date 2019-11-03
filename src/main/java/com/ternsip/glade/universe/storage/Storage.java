@@ -6,6 +6,7 @@ import org.mapdb.DB;
 import org.mapdb.DBMaker;
 
 import java.io.File;
+import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 
 @Getter
@@ -39,6 +40,11 @@ public class Storage {
     @SuppressWarnings("unchecked")
     public void save(Object key, Object value) {
         getMap().put(key, value);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void saveAll(Map m) {
+        getMap().putAll(m);
     }
 
     @SuppressWarnings("unchecked")
