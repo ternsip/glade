@@ -39,6 +39,6 @@ public class EntityUISwitcher extends EntityUIButton {
         getSwitchedOverlay().setRotation(getVisualRotation());
         getSwitchedOverlay().setPosition(getPosition());
         getSwitchedOverlay().setVisible(isVisible() && isSwitched());
-        getBackground().setVisible(isVisible() && !isSwitched());
+        getBackground().setVisible(isVisible());
     }
 }

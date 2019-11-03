@@ -26,8 +26,8 @@ public class EntityUICheckBox extends EntityUI {
             File background,
             File browseOverlay,
             File pressBackground,
-            File checkedImage,
-            File uncheckedImage,
+            File switchedOverlay,
+            File switcherBackground,
             File font,
             Vector4fc textColor,
             List<Sign> signs,
@@ -36,7 +36,7 @@ public class EntityUICheckBox extends EntityUI {
         super(useAspect);
         this.bars = signs.stream().map(sign -> {
             EntityDynamicText2D text2D = new EntityDynamicText2D(font, sign.getText(), textColor, useAspect);
-            EntityUISwitcher switcher = new EntityUISwitcher(uncheckedImage, browseOverlay, pressBackground, checkedImage, useAspect);
+            EntityUISwitcher switcher = new EntityUISwitcher(switcherBackground, browseOverlay, pressBackground, switchedOverlay, useAspect);
             switcher.getOnClick().add(() -> sign.getOnSwitch().accept(switcher.isSwitched()));
             switcher.setAnimated(false);
             return new Bar(text2D, switcher);
@@ -71,9 +71,8 @@ public class EntityUICheckBox extends EntityUI {
         Vector3fc scale = getVisualScale();
         Vector3fc position = getVisualPosition();
         Vector3fc rotation = getVisualRotation();
-        Integer biggestTextLength = getBars().stream().mapToInt(v -> v.getSign().getText().length()).max().orElse(1);
-        float textScaleX = scale.x() / Math.max(1, biggestTextLength + 1);
-        float textScaleY = scale.y() / Math.max(1, getBars().size());
+        int biggestTextLength = getBars().stream().mapToInt(v -> v.getSign().getText().length()).max().orElse(1);
+        float textScale = scale.y() / Math.max(1, getBars().size());
 
         getBackground().setScale(scale);
         getBackground().setPosition(position);
@@ -82,18 +81,18 @@ public class EntityUICheckBox extends EntityUI {
 
         for (int i = 0; i < getBars().size(); ++i) {
 
-            float rowOffsetY = -textScaleY + (getBars().size() - i - 2) * textScaleY * 2;
+            float rowOffsetY = -textScale + (getBars().size() - i - 2) * textScale * 2;
             EntityDynamicText2D sign = getBars().get(i).getSign();
             EntityUIButton button = getBars().get(i).getSwitcher();
 
-            button.setScale(new Vector3f(textScaleX, textScaleY, 1));
+            button.setScale(new Vector3f(textScale, textScale, 1));
             button.setRotation(rotation);
-            button.setPosition(new Vector3f(position).add((-scale.x() + textScaleX) * getRatioX(), rowOffsetY * getRatioY(), -0.01f));
+            button.setPosition(new Vector3f(position).add((-scale.x() + textScale) * getRatioX(), rowOffsetY * getRatioY(), -0.01f));
             button.setVisible(isVisible());
 
-            sign.setScale(new Vector3f(textScaleX, textScaleY, 1));
+            sign.setScale(new Vector3f(textScale, textScale, 1));
             sign.setRotation(rotation);
-            sign.setPosition(new Vector3f(position).add((-scale.x() + 2 * textScaleX) * getRatioX(), rowOffsetY * getRatioY(), -0.01f));
+            sign.setPosition(new Vector3f(position).add((-scale.x() + 2 * textScale) * getRatioX(), rowOffsetY * getRatioY(), -0.01f));
             sign.setVisible(isVisible());
             sign.setShiftX(true);
         }

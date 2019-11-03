@@ -76,22 +76,22 @@ public class EntityUIMenu extends EntityUI {
         //editBox.register();
 
         EntityUIRadioBox radioBox = new EntityUIRadioBox(
-                new File("interface/ui_background.png"),
-                new File("interface/browse_overlay.png"),
-                new File("interface/press_background.png"),
-                new File("interface/checkbox_on.png"),
-                new File("interface/checkbox_off.png"),
+                new File("interface/checkbox_background.png"),
+                new File("interface/checkbox_browse_overlay.png"),
+                new File("interface/checkbox_press_background.png"),
+                new File("interface/checkbox_switched_overlay.png"),
+                new File("interface/checkbox_switcher_background.png"),
                 new File("fonts/default.png"),
                 new Vector4f(1, 1, 1, 1),
                 Arrays.asList(
                         new EntityUICheckBox.Sign("trulala", state -> {}),
                         new EntityUICheckBox.Sign("abc", state -> {}),
                         new EntityUICheckBox.Sign("", state -> {}),
-                        new EntityUICheckBox.Sign("test", state -> {})
+                        new EntityUICheckBox.Sign("test1-test", state -> {})
                 ),
                 true
         );
-        radioBox.setScale(new Vector3f(0.2f, 0.2f, 1));
+        radioBox.setScale(new Vector3f(0.3f, 0.15f, 1));
         radioBox.setPosition(new Vector3f(0, 0, 0));
         //radioBox.register();
 

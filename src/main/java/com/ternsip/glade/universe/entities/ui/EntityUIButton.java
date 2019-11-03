@@ -93,15 +93,6 @@ public class EntityUIButton extends EntityUI {
         getPressBackground().setVisible(isVisible() && isPressed());
     }
 
-    public Vector3fc getVisualScale() {
-        if (!isCursorInside() || !isAnimated()) {
-            return getScale();
-        }
-        float phase = ((System.currentTimeMillis() - getCursorJoinTime()) % ANIMATION_TIME_MILLISECONDS) / (float) ANIMATION_TIME_MILLISECONDS;
-        float scaleCriteria = 0.95f + (float) Math.abs(Math.cos(2 * Math.PI * phase)) * 0.05f;
-        return new Vector3f(getScale().x() * scaleCriteria, getScale().y() * scaleCriteria, getScale().z());
-    }
-
     private void trackCursor(CursorPosEvent event) {
         boolean cursorInside = isAvailable() && isInside((float) event.getNormalX(), (float) event.getNormalY());
         if (!isCursorInside() && cursorInside) {
