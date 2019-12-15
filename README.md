@@ -1,9 +1,9 @@
 # glade
 
 
-This is sketch for minecraft-like game written on pure java and lwjgl ans assimp.
+This is sketch for minecraft-like game written on pure java and lwjgl and assimp libs.
 
-It is highly underdeveloped project and most of code used to understand best approach.
+It is highly underdeveloped project and most of code is used to understand best approach.
 The main benefit of this project is to understand how to write 3d game with skeletal animation and easy-loading textures.
 It uses raster rendering.
 It contains UI elements (so you can test press host -> connect, wait a bit).
@@ -13,6 +13,8 @@ Smart texture loading.
 Easy-models with meshes.
 Mesh compressing block-chunks.
 Solved a lot of bottom stones.
+Camera collisions.
+Physical world collisions.
 It uses LWJGL and redistributable for most platforms, but not tested on IOS and android yet.
 
 I stopped the development due to lack of time in my life, but I am so keen of finishing it.
