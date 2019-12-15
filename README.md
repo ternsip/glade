@@ -23,3 +23,5 @@ I tried to use ray-tracing and realized that there is no enough support for that
 A lot of architectural things should be changed (eg multiplayer and data locality).  
 I also developed cool algorithm for compressing minecraft worlds, but not implemented yet. (it can compress much better than standart minecraft segment-tree compressor) (It is based on hashing).  
 
+![image](https://i.imgur.com/DmHU0Kd.png)
+![image](https://i.imgur.com/u2WM07n.jpg)
