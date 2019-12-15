@@ -16,6 +16,7 @@ Mesh compressing block-chunks.
 Solved a lot of pitfalls.  
 Camera collisions.  
 Physical world collisions.  
+Dynamic text.  
 
 It uses LWJGL and redistributable for most platforms, but not tested on IOS and android yet.  
 I stopped the development due to lack of time in my life, but I am so keen of finishing it.  
