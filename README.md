@@ -4,10 +4,10 @@
 This is sketch for minecraft-like game written on pure java and lwjgl and assimp libs.  
 
 It is highly underdeveloped project and most of code is used to understand best approach.  
-The main benefit of this project is to understand how to write 3d game with skeletal animation and easy-loading textures.  
+The main benefit of this project is to understand how to write 3d game with skeletal animation and easy-loading textures.
 
 It uses raster rendering.  
-It contains UI elements (so you can test press host -> connect, wait a bit).  
+It contains UI elements (so you can test press host -> connect, wait a bit) (Main keys - mouse + R, T, Z, SPACE, B, Q).
 Multiplayer is present.  
 Skeletal animation works perfectly.  
 Smart texture loading.  
