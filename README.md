@@ -7,7 +7,7 @@ It is highly underdeveloped project and most of code is used to understand best 
 The main benefit of this project is to understand how to write 3d game with skeletal animation and easy-loading textures.
 
 It uses raster rendering.  
-It contains UI elements (so you can test press host -> connect, wait a bit) (Main keys - mouse, WASD, R, T, Z, SPACE, B, Q).
+It contains UI elements (so you can test press host -> connect, wait a bit) (Main keys - mouse, WASD, R, T, Z, SPACE, B, Q) (You can scroll up to first person) (You can put and destroy blocks).
 Multiplayer is present.  
 Skeletal animation works perfectly.  
 Smart texture loading.  
