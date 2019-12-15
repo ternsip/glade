@@ -13,7 +13,7 @@ Skeletal animation works perfectly.
 Smart texture loading.  
 Easy-models with meshes.  
 Mesh compressing block-chunks.  
-Solved a lot of bottom stones.  
+Solved a lot of pitfalls.  
 Camera collisions.  
 Physical world collisions.  
 
