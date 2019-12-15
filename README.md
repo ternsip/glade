@@ -1,1 +1,21 @@
 # glade
+
+
+This is sketch for minecraft-like game written on pure java and lwjgl ans assimp.
+
+It is highly underdeveloped project and most of code used to understand best approach.
+The main benefit of this project is to understand how to write 3d game with skeletal animation and easy-loading textures.
+It uses raster rendering.
+It contains UI elements (so you can test press host -> connect, wait a bit).
+Multiplayer is present.
+Skeletal animation works perfectly.
+Smart texture loading.
+Easy-models with meshes.
+Mesh compressing block-chunks.
+Solved a lot of bottom stones.
+It uses LWJGL and redistributable for most platforms, but not tested on IOS and android yet.
+
+I stopped the development due to lack of time in my life, but I am so keen of finishing it.
+I tried to use ray-tracing and realized that there is no enough support for that even using Vulkan (lack of dynamic animation).
+A lot of architectural things should be changed (eg multiplayer and data locality).
+I also developed cool algorithm for compressing minecraft worlds, but not implemented yet. (it can compress much better than standart minecraft segment-tree compressor) (It is based on hashing).
