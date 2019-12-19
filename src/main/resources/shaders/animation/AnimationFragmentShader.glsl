@@ -1,4 +1,4 @@
-#version 400 core
+#version 130
 
 struct TextureData {
     bool isTexturePresent;

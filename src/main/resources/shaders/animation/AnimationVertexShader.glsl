@@ -1,4 +1,4 @@
-#version 400 core
+#version 130
 
 // Maximal number of bones allowed in a skeleton, not all of them should be loaded into uniform
 const int MAX_BONES = 180;
