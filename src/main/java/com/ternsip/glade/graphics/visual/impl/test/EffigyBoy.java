@@ -19,7 +19,7 @@ public class EffigyBoy extends EffigyAnimated {
         return ModelLoader.loadModel(Settings
                 .builder()
                 .animationFiles(new File[]{
-                        new File("models/boy/idle.dae"),
+                        new File("models/boy/Idle.dae"),
                         new File("models/boy/Jump.dae"),
                         new File("models/boy/Run.dae"),
                         new File("models/boy/Falling.dae"),

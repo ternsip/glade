@@ -1,6 +1,7 @@
 package com.ternsip.glade.graphics.display;
 
 import com.ternsip.glade.common.events.display.ResizeEvent;
+import com.ternsip.glade.common.logic.Maths;
 import com.ternsip.glade.graphics.interfaces.IGraphics;
 import lombok.Getter;
 
@@ -22,7 +23,7 @@ public class FrameBuffers implements IGraphics {
 
     public FrameBuffers() {
         maxSamples = glGetInteger(GL_MAX_SAMPLES);
-        samples = 4;
+        samples = Maths.clamp(1, 4, maxSamples);
         getGraphics().getEventIOReceiverGraphics().registerCallback(ResizeEvent.class, (resizeEvent) -> resizeFBOs());
         resetSize();
         createFBOs();
