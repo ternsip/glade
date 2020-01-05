@@ -25,7 +25,7 @@ in float passEmitLight;
 out vec4 out_colour;
 
 uniform float time;
-const uniform sampler2DArray[MAX_SAMPLERS] samplers;
+uniform sampler2DArray[MAX_SAMPLERS] samplers;
 uniform vec3 fogColor;
 uniform Light sun;
 
