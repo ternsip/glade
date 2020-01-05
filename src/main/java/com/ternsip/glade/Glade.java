@@ -41,6 +41,7 @@ import java.util.Set;
 // TODO http://jbullet.advel.cz/
 // TODO i've spotted that some gl-gen-buffers not finished after execution
 // TODO produce exception when load crashed data from world-file
+// TODO prevent saving malformed world
 public class Glade {
 
     public static void main(String[] args) {
