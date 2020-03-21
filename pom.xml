@@ -79,6 +79,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.14</version>
+        </dependency>
+        <dependency>
             <groupId>com.aparapi</groupId>
             <artifactId>aparapi</artifactId>
             <version>1.10.0</version>

@@ -73,6 +73,25 @@ public class BlocksRepository implements Threadable, IUniverseServer {
             }
             log.info("World light recalculation time spent: {}s", timer.spent() / 1000.0f);
         }
+/*        GridCompressor gridCompressor = new GridCompressor();
+        int[] strip = new int[SIZE_Y];
+        for (int x = 0; x < SIZE_X; ++x) {
+            for (int z = 0; z < SIZE_Z; ++z) {
+                for (int y = 0; y < SIZE_Y; ++y) {
+                    strip[y] = getBlock(x, y, z).getIndex();
+                }
+                gridCompressor.saveStrip(strip, x, z);
+            }
+        }
+        for (int x = 0; x < SIZE_X; ++x) {
+            for (int z = 0; z < SIZE_Z; ++z) {
+                int[] strip2 = gridCompressor.loadStrip(x, z);
+                for (int y = 0; y < SIZE_Y; ++y) {
+                    setBlock(x, y, z, Block.getBlockByIndex(strip2[y]));
+                }
+            }
+        }
+        visualUpdate(new Vector3i(0, 0, 0), new Vector3i(SIZE_X, SIZE_Y, SIZE_Z), false);*/
     }
 
     private static List<ChunkGenerator> constructChunkGenerators() {
