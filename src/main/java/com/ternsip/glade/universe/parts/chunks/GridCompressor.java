@@ -1,45 +1,91 @@
 package com.ternsip.glade.universe.parts.chunks;
 
 import lombok.Data;
-import lombok.SneakyThrows;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.joml.Vector2i;
 
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.stream.Collectors;
 
 import static com.ternsip.glade.universe.parts.chunks.BlocksRepository.*;
 
 public class GridCompressor {
 
-    private static final int BUFFER_SIZE = 64;
-    private static final int MAX_Y_BUFFERS = 128; // TODO this might be dynamically different for client and server
-
     private final HashMap<Hash, Node> hashToNode = new HashMap<>();
-    private final int[][][] buffer = new int[BUFFER_SIZE][BUFFER_SIZE][BUFFER_SIZE];
-    private final int[] yBuffer = new int[SIZE_Y];
-    private final LinkedHashMap<Vector2i, Integer[]> yBuffers = new LinkedHashMap<>();
+    private final LinkedHashMap<Vector2i, Strip> stripBuffers = new LinkedHashMap<>();
     private final Hash[][] roots = new Hash[SIZE_X][SIZE_Z];
+    private final int stripBuffersLimit = 128; // TODO this might be dynamically different for client and server
 
     public GridCompressor() {
-
+        Strip strip = new Strip();
+        for (int x = 0; x < SIZE_X; ++x) {
+            for (int z = 0; z < SIZE_Z; ++z) {
+                saveStrip(strip, x, z);
+            }
+        }
     }
 
     public int read(int x, int y, int z) {
-        Vector2i stripPos = new Vector2i(x, z);
-        Integer[] yBuffer = yBuffers.remove(stripPos);
-        if (yBuffer == null) {
-            yBuffer = Arrays.stream(loadStrip(x, z)).boxed().toArray(Integer[]::new);
-        }
-        yBuffers.put(stripPos, yBuffer);
-        return yBuffer[y];
+        return getStrip(x, z).values[y];
     }
 
-    public int[] loadStrip(int x, int z) {
-        int[] strip = new int[SIZE_Y];
+    public void save(int x, int y, int z, int value) {
+        getStrip(x, z).values[y] = value;
+    }
+
+    public void read(int[][][] data, int offsetX, int offsetY, int offsetZ) {
+        int sizeX = data.length;
+        int sizeY = data[0].length;
+        int sizeZ = data[0][0].length;
+        for (int x = 0; x < sizeX; ++x) {
+            for (int z = 0; z < sizeZ; ++z) {
+                int[] stripValuesXZ = getStrip(x + offsetX, z + offsetZ).values;
+                for (int y = 0; y < sizeY; ++y) {
+                    data[x][y][z] = stripValuesXZ[y + offsetY];
+                }
+            }
+        }
+    }
+
+    public void save(int[][][] data, int offsetX, int offsetY, int offsetZ) {
+        int sizeX = data.length;
+        int sizeY = data[0].length;
+        int sizeZ = data[0][0].length;
+        for (int x = 0; x < sizeX; ++x) {
+            for (int z = 0; z < sizeZ; ++z) {
+                int[] stripValuesXZ = getStrip(x + offsetX, z + offsetZ).values;
+                for (int y = 0; y < sizeY; ++y) {
+                    stripValuesXZ[y + offsetY] = data[x][y][z];
+                }
+            }
+        }
+    }
+
+    public void saveBufferedStrips() {
+        stripBuffers.forEach((pos, strip) -> saveStrip(strip, pos.x(), pos.y()));
+    }
+
+    public void unloadExcessiveBufferedStrips() {
+        int toRemove = Math.max(0, stripBuffers.size() - stripBuffersLimit);
+        stripBuffers.keySet().removeAll(stripBuffers.keySet().stream().limit(toRemove).collect(Collectors.toSet()));
+    }
+
+    private Strip getStrip(int x, int z) {
+        Vector2i stripPos = new Vector2i(x, z);
+        Strip strip = stripBuffers.remove(stripPos);
+        if (strip == null) {
+            strip = loadStrip(x, z);
+        }
+        stripBuffers.put(stripPos, strip);
+        return strip;
+    }
+
+    private Strip loadStrip(int x, int z) {
+        Strip strip = new Strip();
         int leafs = SIZE_Y / (Hash.LENGTH * 2);
         Node[] nodes = new Node[leafs];
         nodes[0] = hashToNode.get(roots[x][z]);
@@ -53,18 +99,18 @@ public class GridCompressor {
             }
         }
         for (int i = 0; i < leafs; ++i) {
-            nodes[i].left.fill(strip, i * 2 * Hash.LENGTH);
-            nodes[i].right.fill(strip, (i * 2 + 1) * Hash.LENGTH);
+            nodes[i].left.fill(strip.values, i * 2 * Hash.LENGTH);
+            nodes[i].right.fill(strip.values, (i * 2 + 1) * Hash.LENGTH);
         }
         return strip;
     }
 
-    public void saveStrip(int[] strip, int x, int z) {
+    private void saveStrip(Strip strip, int x, int z) {
         int leafs = SIZE_Y / (Hash.LENGTH * 2);
         Node[] nodes = new Node[leafs];
         for (int i = 0; i < leafs; ++i) {
-            Hash left = new Hash(strip, i * 2 * Hash.LENGTH);
-            Hash right = new Hash(strip, (i * 2 + 1) * Hash.LENGTH);
+            Hash left = new Hash(strip.values, i * 2 * Hash.LENGTH);
+            Hash right = new Hash(strip.values, (i * 2 + 1) * Hash.LENGTH);
             nodes[i] = new Node(left, right);
         }
         for (int leaf = leafs; leaf > 1; leaf /= 2) {
@@ -80,14 +126,15 @@ public class GridCompressor {
         }
         roots[x][z] = nodes[0].combine();
         hashToNode.put(roots[x][z], nodes[0]);
-        // todo cache yBuffers
     }
 
-    @SneakyThrows
-    private static String nodeToHash(String node) {
-        return new String(DigestUtils.md5(node), StandardCharsets.ISO_8859_1);
-    }
+    @RequiredArgsConstructor
+    @Getter
+    private static class Strip {
 
+        public final int[] values = new int[SIZE_Y];
+
+    }
 
     @Data
     public static class Hash {
