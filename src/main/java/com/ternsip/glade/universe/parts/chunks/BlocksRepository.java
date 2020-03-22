@@ -73,7 +73,7 @@ public class BlocksRepository implements Threadable, IUniverseServer {
             }
             log.info("World light recalculation time spent: {}s", timer.spent() / 1000.0f);
         }
-      /*  GridCompressor gridCompressor = new GridCompressor();
+/*        GridCompressor gridCompressor = new GridCompressor();
         int[][][] strip = new int[1][SIZE_Y][1];
         for (int x = 0; x < SIZE_X; ++x) {
             for (int z = 0; z < SIZE_Z; ++z) {
@@ -85,6 +85,7 @@ public class BlocksRepository implements Threadable, IUniverseServer {
         }
         gridCompressor.saveBufferedStrips();
         gridCompressor.unloadExcessiveBufferedStrips();
+        gridCompressor.cleanTree();
         for (int x = 0; x < SIZE_X; ++x) {
             for (int z = 0; z < SIZE_Z; ++z) {
                 gridCompressor.read(strip, x, 0, z);

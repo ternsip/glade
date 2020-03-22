@@ -7,13 +7,14 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.joml.Vector2i;
 
 import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.ternsip.glade.universe.parts.chunks.BlocksRepository.*;
 
 public class GridCompressor {
+
+    private static final int LEAFS = SIZE_Y / (Hash.LENGTH * 2);
 
     private final HashMap<Hash, Node> hashToNode = new HashMap<>();
     private final LinkedHashMap<Vector2i, Strip> stripBuffers = new LinkedHashMap<>();
@@ -74,6 +75,26 @@ public class GridCompressor {
         stripBuffers.keySet().removeAll(stripBuffers.keySet().stream().limit(toRemove).collect(Collectors.toSet()));
     }
 
+    public void cleanTree() {
+        Set<Hash> used = new HashSet<>();
+        Stack<Hash> stack = new Stack<>();
+        for (int x = 0; x < SIZE_X; ++x) {
+            for (int z = 0; z < SIZE_Z; ++z) {
+                stack.push(roots[x][z]);
+                while (!stack.isEmpty()) {
+                    Hash top = stack.pop();
+                    if (used.contains(top)) continue;
+                    Node node = hashToNode.get(top);
+                    if (node == null) continue;
+                    used.add(top);
+                    stack.push(node.left);
+                    stack.push(node.right);
+                }
+            }
+        }
+        hashToNode.keySet().retainAll(used);
+    }
+
     private Strip getStrip(int x, int z) {
         Vector2i stripPos = new Vector2i(x, z);
         Strip strip = stripBuffers.remove(stripPos);
@@ -86,11 +107,10 @@ public class GridCompressor {
 
     private Strip loadStrip(int x, int z) {
         Strip strip = new Strip();
-        int leafs = SIZE_Y / (Hash.LENGTH * 2);
-        Node[] nodes = new Node[leafs];
+        Node[] nodes = new Node[LEAFS];
         nodes[0] = hashToNode.get(roots[x][z]);
-        for (int leaf = 1; leaf < leafs; leaf *= 2) {
-            int step = leafs / leaf;
+        for (int leaf = 1; leaf < LEAFS; leaf *= 2) {
+            int step = LEAFS / leaf;
             int smallStep = step / 2;
             for (int i = 0, d = 0; i < leaf; ++i, d += step) {
                 Node node = nodes[d];
@@ -98,7 +118,7 @@ public class GridCompressor {
                 nodes[d + smallStep] = hashToNode.get(node.getRight());
             }
         }
-        for (int i = 0; i < leafs; ++i) {
+        for (int i = 0; i < LEAFS; ++i) {
             nodes[i].left.fill(strip.values, i * 2 * Hash.LENGTH);
             nodes[i].right.fill(strip.values, (i * 2 + 1) * Hash.LENGTH);
         }
@@ -106,14 +126,13 @@ public class GridCompressor {
     }
 
     private void saveStrip(Strip strip, int x, int z) {
-        int leafs = SIZE_Y / (Hash.LENGTH * 2);
-        Node[] nodes = new Node[leafs];
-        for (int i = 0; i < leafs; ++i) {
+        Node[] nodes = new Node[LEAFS];
+        for (int i = 0; i < LEAFS; ++i) {
             Hash left = new Hash(strip.values, i * 2 * Hash.LENGTH);
             Hash right = new Hash(strip.values, (i * 2 + 1) * Hash.LENGTH);
             nodes[i] = new Node(left, right);
         }
-        for (int leaf = leafs; leaf > 1; leaf /= 2) {
+        for (int leaf = LEAFS; leaf > 1; leaf /= 2) {
             for (int i = 0, d = 0; i + 1 < leaf; ++d, i += 2) {
                 Node leftNode = nodes[i];
                 Node rightNode = nodes[i + 1];
