@@ -73,21 +73,21 @@ public class BlocksRepository implements Threadable, IUniverseServer {
             }
             log.info("World light recalculation time spent: {}s", timer.spent() / 1000.0f);
         }
-/*        GridOctreeCompressor gridOctreeCompressor = new GridOctreeCompressor();
+/*        GridCompressor gridCompressor = new GridCompressor();
         int[][][] strip = new int[1][SIZE_Y][1];
         for (int x = 0; x < SIZE_X; ++x) {
             for (int z = 0; z < SIZE_Z; ++z) {
                 for (int y = 0; y < SIZE_Y; ++y) {
                     strip[0][y][0] = getBlock(x, y, z).getIndex();
                 }
-                gridOctreeCompressor.write(strip, x, 0, z);
+                gridCompressor.write(strip, x, 0, z);
             }
         }
-        gridOctreeCompressor.saveChunks();
-        gridOctreeCompressor.cleanTree();
+        gridCompressor.saveChunks();
+        gridCompressor.cleanTree();
         for (int x = 0; x < SIZE_X; ++x) {
             for (int z = 0; z < SIZE_Z; ++z) {
-                gridOctreeCompressor.read(strip, x, 0, z);
+                gridCompressor.read(strip, x, 0, z);
                 for (int y = 0; y < SIZE_Y; ++y) {
                     setBlock(x, y, z, Block.getBlockByIndex(strip[0][y][0]));
                 }
