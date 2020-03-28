@@ -72,6 +72,7 @@ public class GridOctreeCompressor {
     public void saveChunks() {
         posToChunk.keySet().forEach(this::saveChunk);
         // TODO add unloading obsoleted chunks
+        // TODO clean after saving periodically, otherwise you can get too many dead nodes
     }
 
     public void cleanTree() {
