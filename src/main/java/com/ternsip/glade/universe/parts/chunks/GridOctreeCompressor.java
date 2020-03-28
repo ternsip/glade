@@ -14,6 +14,10 @@ public class GridOctreeCompressor {
     private static final int NODES = SIZE / 2;
     private static final int CHUNK_DEPTH = Maths.log2(NODES / Chunk.NODES);
 
+    private static final Hash[] HASHES_BUFFER = new Hash[Chunk.NODES * Chunk.NODES * Chunk.NODES];
+    private static final int[] INDEX_PATH_BUFFER = new int[CHUNK_DEPTH];
+    private static final Node[] NODE_PATH_BUFFER = new Node[CHUNK_DEPTH];
+
     private final HashMap<Hash, Node> hashToNode = new HashMap<>();
     private final HashMap<Vector3i, Chunk> posToChunk = new HashMap<>();
     private Hash root;
@@ -27,7 +31,6 @@ public class GridOctreeCompressor {
         }
         root = hash;
     }
-
 
     public int read(int x, int y, int z) {
         Chunk chunk = loadChunk(x / Chunk.SIZE, y / Chunk.SIZE, z / Chunk.SIZE);
@@ -110,14 +113,13 @@ public class GridOctreeCompressor {
                 }
                 pointer = node.children[index];
             }
-            Hash[] hashes = new Hash[Chunk.NODES * Chunk.NODES * Chunk.NODES]; // todo static buffer
-            hashes[0] = pointer;
-            for (int step = hashes.length; step >= 8; step /= 8) {
-                for (int ptr = 0; ptr < hashes.length; ptr += step) {
-                    Node node = hashToNode.get(hashes[ptr]);
+            HASHES_BUFFER[0] = pointer;
+            for (int step = HASHES_BUFFER.length; step >= 8; step /= 8) {
+                for (int ptr = 0; ptr < HASHES_BUFFER.length; ptr += step) {
+                    Node node = hashToNode.get(HASHES_BUFFER[ptr]);
                     int smallStep = step / 8;
                     for (int j = 0, smallPtr = ptr; j < 8; ++j, smallPtr += smallStep) {
-                        hashes[smallPtr] = node.children[j];
+                        HASHES_BUFFER[smallPtr] = node.children[j];
                     }
                 }
             }
@@ -127,7 +129,7 @@ public class GridOctreeCompressor {
                         for (int dx = 0, deltaIndex = 0; dx < 2; ++dx) {
                             for (int dy = 0; dy < 2; ++dy) {
                                 for (int dz = 0; dz < 2; ++dz, ++deltaIndex) {
-                                    chunk.values[nx * 2 + dx][ny * 2 + dy][nz * 2 + dz] = hashes[hashIndex].values[deltaIndex];
+                                    chunk.values[nx * 2 + dx][ny * 2 + dy][nz * 2 + dz] = HASHES_BUFFER[hashIndex].values[deltaIndex];
                                 }
                             }
                         }
@@ -147,35 +149,32 @@ public class GridOctreeCompressor {
         if (chunk == null) {
             throw new IllegalArgumentException("Chunk not found");
         }
-        Hash[] hashes = new Hash[Chunk.NODES * Chunk.NODES * Chunk.NODES]; // todo static
         for (int nx = 0, hashIndex = 0; nx < Chunk.NODES; ++nx) {
             for (int ny = 0; ny < Chunk.NODES; ++ny) {
                 for (int nz = 0; nz < Chunk.NODES; ++nz, ++hashIndex) {
-                    hashes[hashIndex] = new Hash();
+                    HASHES_BUFFER[hashIndex] = new Hash();
                     for (int dx = 0, deltaIndex = 0; dx < 2; ++dx) {
                         for (int dy = 0; dy < 2; ++dy) {
                             for (int dz = 0; dz < 2; ++dz, ++deltaIndex) {
-                                hashes[hashIndex].values[deltaIndex] = chunk.values[nx * 2 + dx][ny * 2 + dy][nz * 2 + dz];
+                                HASHES_BUFFER[hashIndex].values[deltaIndex] = chunk.values[nx * 2 + dx][ny * 2 + dy][nz * 2 + dz];
                             }
                         }
                     }
                 }
             }
         }
-        for (int step = 8; step <= hashes.length; step *= 8) {
-            for (int ptr = 0; ptr < hashes.length; ptr += step) {
+        for (int step = 8; step <= HASHES_BUFFER.length; step *= 8) {
+            for (int ptr = 0; ptr < HASHES_BUFFER.length; ptr += step) {
                 Node node = new Node();
                 int smallStep = step / 8;
                 for (int j = 0, smallPtr = ptr; j < 8; ++j, smallPtr += smallStep) {
-                    node.children[j] = hashes[smallPtr];
+                    node.children[j] = HASHES_BUFFER[smallPtr];
                 }
-                hashes[ptr] = node.combine();
-                hashToNode.put(hashes[ptr], node);
+                HASHES_BUFFER[ptr] = node.combine();
+                hashToNode.put(HASHES_BUFFER[ptr], node);
             }
         }
         Hash pointer = root;
-        int[] indexPath = new int[CHUNK_DEPTH]; // TODO static
-        Node[] nodePath = new Node[CHUNK_DEPTH]; // TODO static
         for (int depth = 0, halfNodes = NODES / 2; depth < CHUNK_DEPTH; ++depth, halfNodes /= 2) {
             Node node = hashToNode.get(pointer);
             int index = 0;
@@ -191,13 +190,13 @@ public class GridOctreeCompressor {
                 cx -= halfNodes;
                 index += 4;
             }
-            nodePath[depth] = node;
-            indexPath[depth] = index;
+            NODE_PATH_BUFFER[depth] = node;
+            INDEX_PATH_BUFFER[depth] = index;
             pointer = node.children[index];
         }
-        Hash updatedHash = hashes[0];
+        Hash updatedHash = HASHES_BUFFER[0];
         for (int depth = CHUNK_DEPTH - 2; depth >= 0; --depth) {
-            Node updatedNode = nodePath[depth].cloneWithChangedChild(indexPath[depth], updatedHash);
+            Node updatedNode = NODE_PATH_BUFFER[depth].cloneWithChangedChild(INDEX_PATH_BUFFER[depth], updatedHash);
             updatedHash = updatedNode.combine();
             hashToNode.put(updatedHash, updatedNode);
         }
