@@ -7,6 +7,7 @@ import java.lang.Math;
 public class Maths {
 
     public static final float EPS = 1e-5f;
+    public static final double EPS_D = 1e-10f;
 
     public static final Vector3fc UP_DIRECTION = new Vector3f(0, 1, 0);
     public static final Vector3fc DOWN_DIRECTION = new Vector3f(0, -1, 0);
@@ -138,6 +139,10 @@ public class Maths {
 
     public static float log2(float d) {
         return (float) (Math.log(d) / Math.log(2.0));
+    }
+
+    public static int log2(int x) {
+        return (int) (Math.log(x) / Math.log(2) + EPS_D);
     }
 
     public static Vector3i round(Vector3fc vec) {
