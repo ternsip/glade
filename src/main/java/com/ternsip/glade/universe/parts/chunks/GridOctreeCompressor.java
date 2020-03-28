@@ -10,8 +10,9 @@ import java.util.*;
 
 public class GridOctreeCompressor {
 
-    private static final int SIZE = 256;
+    private static final int SIZE = 1024;
     private static final int NODES = SIZE / 2;
+    private static final int DEPTH =  Maths.log2(NODES);
     private static final int CHUNK_DEPTH = Maths.log2(NODES / Chunk.NODES);
 
     private static final Hash[] HASHES_BUFFER = new Hash[Chunk.NODES * Chunk.NODES * Chunk.NODES];
@@ -24,7 +25,7 @@ public class GridOctreeCompressor {
 
     public GridOctreeCompressor() {
         Hash hash = new Hash();
-        for (int i = 0; i < NODES; ++i) {
+        for (int i = 0; i < DEPTH; ++i) {
             Node node = new Node(hash);
             hash = node.combine();
             hashToNode.put(hash, node);
