@@ -1,27 +1,44 @@
 package com.ternsip.glade.universe.parts.chunks;
 
 import com.ternsip.glade.common.logic.Maths;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.joml.Vector3i;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.*;
 
-public class GridCompressor {
+import static com.ternsip.glade.universe.parts.chunks.BlocksServerRepository.*;
 
-    private static final int SIZE = 1024;
+// TODO think about thread safety and performance
+public class GridCompressor implements Serializable {
+
+    private static final int SIZE = Maths.max(SIZE_X, SIZE_Y, SIZE_Z);
     private static final int NODES = SIZE / 2;
-    private static final int DEPTH =  Maths.log2(NODES);
+    private static final int DEPTH = Maths.log2(NODES);
     private static final int CHUNK_DEPTH = Maths.log2(NODES / Chunk.NODES);
 
     private static final Hash[] HASHES_BUFFER = new Hash[Chunk.NODES * Chunk.NODES * Chunk.NODES];
     private static final int[] INDEX_PATH_BUFFER = new int[CHUNK_DEPTH];
     private static final Node[] NODE_PATH_BUFFER = new Node[CHUNK_DEPTH];
 
-    private final HashMap<Hash, Node> hashToNode = new HashMap<>();
-    private final HashMap<Vector3i, Chunk> posToChunk = new HashMap<>();
+    private HashMap<Vector3i, Chunk> posToChunk = new HashMap<>();
+    private HashMap<Hash, Node> hashToNode = new HashMap<>();
     private Hash root;
+
+    static {
+        if (!Maths.isPowerOfTwo(SIZE) || SIZE < 2) {
+            throw new IllegalArgumentException("Invalid size");
+        }
+        if (!Maths.isPowerOfTwo(Chunk.NODES) || Chunk.NODES > NODES) {
+            throw new IllegalArgumentException("Invalid chunk size");
+        }
+    }
 
     public GridCompressor() {
         Hash hash = new Hash();
@@ -33,49 +50,50 @@ public class GridCompressor {
         root = hash;
     }
 
-    public int read(int x, int y, int z) {
+    public synchronized int read(int x, int y, int z) {
         Chunk chunk = loadChunk(x / Chunk.SIZE, y / Chunk.SIZE, z / Chunk.SIZE);
         return chunk.values[x % Chunk.SIZE][y % Chunk.SIZE][z % Chunk.SIZE];
     }
 
-    public void write(int x, int y, int z, int value) {
+    public synchronized void write(int x, int y, int z, int value) {
         Chunk chunk = loadChunk(x / Chunk.SIZE, y / Chunk.SIZE, z / Chunk.SIZE);
         chunk.values[x % Chunk.SIZE][y % Chunk.SIZE][z % Chunk.SIZE] = value;
     }
 
-    public void read(int[][][] values, int startX, int startY, int startZ) {
+    public synchronized void read(int[][][] values, int startX, int startY, int startZ) {
         int sizeX = values.length;
         int sizeY = values[0].length;
         int sizeZ = values[0][0].length;
         for (int x = 0; x < sizeX; ++x) {
-            for (int y =  0; y < sizeY; ++y) {
-                for (int z =  0; z < sizeZ; ++z) {
+            for (int y = 0; y < sizeY; ++y) {
+                for (int z = 0; z < sizeZ; ++z) {
                     values[x][y][z] = read(startX + x, startY + y, startZ + z); // TODO slow due to chunk map, load each chunk and fill with it
                 }
             }
         }
     }
 
-    public void write(int[][][] values, int startX, int startY, int startZ) {
+    public synchronized void write(int[][][] values, int startX, int startY, int startZ) {
         int sizeX = values.length;
         int sizeY = values[0].length;
         int sizeZ = values[0][0].length;
         for (int x = 0; x < sizeX; ++x) {
-            for (int y =  0; y < sizeY; ++y) {
-                for (int z =  0; z < sizeZ; ++z) {
-                   write(startX + x, startY + y, startZ + z,  values[x][y][z]); // TODO slow due to chunk map, load each chunk and fill with it
+            for (int y = 0; y < sizeY; ++y) {
+                for (int z = 0; z < sizeZ; ++z) {
+                    write(startX + x, startY + y, startZ + z, values[x][y][z]); // TODO slow due to chunk map, load each chunk and fill with it
                 }
             }
         }
     }
 
-    public void saveChunks() {
+    public synchronized void saveChunks() {
         posToChunk.keySet().forEach(this::saveChunk);
+        posToChunk.clear();
         // TODO add unloading obsoleted chunks
         // TODO clean after saving periodically, otherwise you can get too many dead nodes
     }
 
-    public void cleanTree() {
+    public synchronized void cleanTree() {
         Set<Hash> used = new HashSet<>();
         Stack<Hash> stack = new Stack<>();
         stack.push(root);
@@ -98,18 +116,18 @@ public class GridCompressor {
         if (chunk == null) {
             chunk = new Chunk();
             Hash pointer = root;
-            for (int depth = 0, halfNodes = NODES / 2; depth < CHUNK_DEPTH; ++depth, halfNodes /= 2) {
+            for (int depth = 0, halfNodes = NODES / (2 * Chunk.NODES); depth < CHUNK_DEPTH; ++depth, halfNodes /= 2) {
                 Node node = hashToNode.get(pointer);
                 int index = 0;
-                if (cz > halfNodes) {
+                if (cz >= halfNodes) {
                     cz -= halfNodes;
                     index += 1;
                 }
-                if (cy > halfNodes) {
+                if (cy >= halfNodes) {
                     cy -= halfNodes;
                     index += 2;
                 }
-                if (cx > halfNodes) {
+                if (cx >= halfNodes) {
                     cx -= halfNodes;
                     index += 4;
                 }
@@ -177,18 +195,18 @@ public class GridCompressor {
             }
         }
         Hash pointer = root;
-        for (int depth = 0, halfNodes = NODES / 2; depth < CHUNK_DEPTH; ++depth, halfNodes /= 2) {
+        for (int depth = 0, halfNodes = NODES / (2 * Chunk.NODES); depth < CHUNK_DEPTH; ++depth, halfNodes /= 2) {
             Node node = hashToNode.get(pointer);
             int index = 0;
-            if (cz > halfNodes) {
+            if (cz >= halfNodes) {
                 cz -= halfNodes;
                 index += 1;
             }
-            if (cy > halfNodes) {
+            if (cy >= halfNodes) {
                 cy -= halfNodes;
                 index += 2;
             }
-            if (cx > halfNodes) {
+            if (cx >= halfNodes) {
                 cx -= halfNodes;
                 index += 4;
             }
@@ -197,7 +215,7 @@ public class GridCompressor {
             pointer = node.children[index];
         }
         Hash updatedHash = HASHES_BUFFER[0];
-        for (int depth = CHUNK_DEPTH - 2; depth >= 0; --depth) {
+        for (int depth = CHUNK_DEPTH - 1; depth >= 0; --depth) {
             Node updatedNode = NODE_PATH_BUFFER[depth].cloneWithChangedChild(INDEX_PATH_BUFFER[depth], updatedHash);
             updatedHash = updatedNode.combine();
             hashToNode.put(updatedHash, updatedNode);
@@ -205,7 +223,51 @@ public class GridCompressor {
         root = updatedHash;
     }
 
+    private synchronized void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
+        posToChunk = new HashMap<>();
+        hashToNode = new HashMap<>();
+        int size = ois.readInt();
+        for (int i = 0; i < size; ++i) {
+            Hash hash = new Hash();
+            for (int j = 0; j < Hash.LENGTH; ++j) {
+                hash.values[j] = ois.readInt();
+            }
+            Node node = new Node();
+            for (int c = 0; c < 8; ++c) {
+                node.children[c] = new Hash();
+                for (int j = 0; j < Hash.LENGTH; ++j) {
+                    node.children[c].values[j] = ois.readInt();
+                }
+            }
+            hashToNode.put(hash, node);
+        }
+        root = new Hash();
+        for (int j = 0; j < Hash.LENGTH; ++j) {
+            root.values[j] = ois.readInt();
+        }
+    }
+
+    private synchronized void writeObject(ObjectOutputStream oos) throws IOException {
+        oos.writeInt(hashToNode.size());
+        for (Map.Entry<Hash, Node> entry : hashToNode.entrySet()) {
+            Hash hash = entry.getKey();
+            Node node = entry.getValue();
+            for (int j = 0; j < Hash.LENGTH; ++j) {
+                oos.writeInt(hash.values[j]);
+            }
+            for (int c = 0; c < 8; ++c) {
+                for (int j = 0; j < Hash.LENGTH; ++j) {
+                    oos.writeInt(node.children[c].values[j]);
+                }
+            }
+        }
+        for (int j = 0; j < Hash.LENGTH; ++j) {
+            oos.writeInt(root.values[j]);
+        }
+    }
+
     @NoArgsConstructor
+    @EqualsAndHashCode
     private static class Hash {
 
         private static final int LENGTH = 8;
@@ -220,6 +282,7 @@ public class GridCompressor {
     }
 
     @NoArgsConstructor
+    @EqualsAndHashCode
     private static class Node {
 
         private final Hash[] children = new Hash[8];
@@ -251,7 +314,7 @@ public class GridCompressor {
 
     private static class Chunk {
 
-        private static final int NODES = 1 << 3; // todo NODES should be 2^n
+        private static final int NODES = 1 << 3;
         private static final int SIZE = NODES * 2;
         private final int[][][] values = new int[SIZE][SIZE][SIZE];
 
