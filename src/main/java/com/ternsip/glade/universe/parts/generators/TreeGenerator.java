@@ -1,7 +1,7 @@
 package com.ternsip.glade.universe.parts.generators;
 
 import com.ternsip.glade.universe.parts.blocks.Block;
-import com.ternsip.glade.universe.parts.chunks.BlocksRepository;
+import com.ternsip.glade.universe.parts.chunks.BlocksServerRepository;
 import com.ternsip.glade.universe.parts.tools.Schematic;
 import lombok.extern.slf4j.Slf4j;
 import org.joml.Vector3i;
@@ -25,7 +25,7 @@ public class TreeGenerator implements ChunkGenerator {
     }
 
     @Override
-    public void populate(BlocksRepository blocksRepository, int startX, int startZ, int endX, int endZ) {
+    public void populate(BlocksServerRepository blocksServerRepository, int startX, int startZ, int endX, int endZ) {
         Random random = new Random(0);
         File[] files = new File("schematics/trees").listFiles();
         if (files == null) {
@@ -41,9 +41,9 @@ public class TreeGenerator implements ChunkGenerator {
         for (int i = 0; i < TREE_ATTEMPTS; ++i) {
             int x = startX + random.nextInt(endX - startX + 1);
             int z = startZ + random.nextInt(endZ - startZ + 1);
-            int y = BlocksRepository.SIZE_Y - 1;
+            int y = BlocksServerRepository.SIZE_Y - 1;
             for (; y >= MIN_HEIGHT; --y) {
-                if (blocksRepository.getBlockInternal(x, y, z) == Block.LAWN) {
+                if (blocksServerRepository.getBlock(x, y, z) == Block.LAWN) {
                     break;
                 }
             }
@@ -53,10 +53,10 @@ public class TreeGenerator implements ChunkGenerator {
             Schematic tree = trees.get(random.nextInt(trees.size()));
             Vector3ic treeStart = new Vector3i(x, y + 1, z);
             Vector3ic treeEnd = new Vector3i(treeStart).add(tree.getSize());
-            if (!blocksRepository.isBlockExists(treeEnd)) {
+            if (!blocksServerRepository.isBlockExists(treeEnd)) {
                 continue;
             }
-            tree.putInternal(treeStart, blocksRepository, true);
+            tree.putInternal(treeStart, blocksServerRepository, true);
         }
     }
 

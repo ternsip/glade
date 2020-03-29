@@ -16,11 +16,11 @@ public class ItemBlock extends Item {
 
     @Override
     public void use(EntityPlayerServer player) {
-        Vector3ic pos = player.getUniverseServer().getBlocksRepository().traverse(player.getEyeSegment(), (b, p) -> b.isObstacle());
-        if (pos != null && player.getUniverseServer().getBlocksRepository().isBlockExists(pos)) {
-            Vector3ic prevPos = player.getUniverseServer().getBlocksRepository().traverse(player.getEyeSegment(), (b, p) -> p.distanceSquared(pos) == 1);
+        Vector3ic pos = player.getUniverseServer().getBlocksServerRepository().traverse(player.getEyeSegment(), (b, p) -> b.isObstacle());
+        if (pos != null && player.getUniverseServer().getBlocksServerRepository().isBlockExists(pos)) {
+            Vector3ic prevPos = player.getUniverseServer().getBlocksServerRepository().traverse(player.getEyeSegment(), (b, p) -> p.distanceSquared(pos) == 1);
             if (prevPos != null) {
-                player.getUniverseServer().getBlocksRepository().setBlock(prevPos, getBlock());
+                player.getUniverseServer().getBlocksServerRepository().setBlock(prevPos, getBlock());
                 setCount(getCount() - 1);
             }
         }

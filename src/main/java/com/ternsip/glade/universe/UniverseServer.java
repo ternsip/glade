@@ -20,11 +20,12 @@ import java.io.File;
 
 @Getter
 @Setter
-public class UniverseServer implements Threadable, INetworkServer, IBlocksRepository, ICollisions, IBalance, IEntityServerRepository, INetworkServerEventReceiver {
+public class UniverseServer implements Threadable, INetworkServer, IBlocksRepositoryServer, ICollisions, IBalance, IEntityServerRepository, INetworkServerEventReceiver {
 
     @Override
     public void init() {
         spawnEntities();
+        IBlocksRepositoryServer.BLOCKS_SERVER_REPOSITORY_THREAD.touch();
     }
 
     @Override
@@ -37,7 +38,7 @@ public class UniverseServer implements Threadable, INetworkServer, IBlocksReposi
     @SneakyThrows
     @Override
     public void finish() {
-        stopBlocksThread();
+        stopBlocksServerThread();
         getEntityServerRepository().finish();
         stopServerThread();
     }

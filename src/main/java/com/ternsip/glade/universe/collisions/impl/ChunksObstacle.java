@@ -22,7 +22,7 @@ public class ChunksObstacle implements Obstacle, IUniverseServer {
     @Nullable
     @Override
     public Vector3fc collideSegment(LineSegmentf segment) {
-        Vector3ic pos = getUniverseServer().getBlocksRepository().traverse(segment, (b, p) -> b.isObstacle());
+        Vector3ic pos = getUniverseServer().getBlocksServerRepository().traverse(segment, (b, p) -> b.isObstacle());
         if (pos == null) {
             return null;
         }

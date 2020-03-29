@@ -148,4 +148,13 @@ public class Maths {
     public static Vector3i round(Vector3fc vec) {
         return new Vector3i((int) vec.x(), (int) vec.y(), (int) vec.z());
     }
+
+    public static int max(int a, int b, int c) {
+        return Math.max(Math.max(a, b), c);
+    }
+
+    public static boolean isPowerOfTwo(int number) {
+        return number > 0 && ((number & (number - 1)) == 0);
+    }
+
 }

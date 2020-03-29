@@ -24,9 +24,9 @@ import java.io.File;
 
 @Getter
 @Setter
-public class UniverseClient implements Threadable, INetworkClient, IBindings, IBalance, ISoundRepository, IEntityClientRepository, IEventIOReceiver, INetworkClientEventReceiver {
+public class UniverseClient implements Threadable, INetworkClient, IBlocksRepositoryClient, IBindings, IBalance, ISoundRepository, IEntityClientRepository, IEventIOReceiver, INetworkClientEventReceiver {
 
-    private Callback<OnConnectedToServer> onConnectedToServerCallback = this::whenConnected;
+    private final Callback<OnConnectedToServer> onConnectedToServerCallback = this::whenConnected;
 
     @Override
     public void init() {
@@ -45,6 +45,7 @@ public class UniverseClient implements Threadable, INetworkClient, IBindings, IB
     @Override
     public void finish() {
         getNetworkClientEventReceiver().unregisterCallback(OnConnectedToServer.class, getOnConnectedToServerCallback());
+        stopBlocksClientThread();
         getBindings().finish();
         getEntityClientRepository().finish();
         stopClientThread();

@@ -51,13 +51,11 @@ public class EntityPlayerServer extends GraphicalEntityServer {
     @Override
     public void register() {
         super.register();
-        updateBlocksAround();
     }
 
     @Override
     public void networkUpdate() {
         super.networkUpdate();
-        updateBlocksAround();
     }
 
     @Override
@@ -95,7 +93,7 @@ public class EntityPlayerServer extends GraphicalEntityServer {
 
     private void refreshPlayerAnimation() {
         Vector3ic pos = getPreviousPosition();
-        if (getUniverseServer().getBlocksRepository().isBlockExists(pos) && getUniverseServer().getBlocksRepository().getBlock(pos) == Block.WATER) {
+        if (getUniverseServer().getBlocksServerRepository().isBlockExists(pos) && getUniverseServer().getBlocksServerRepository().getBlock(pos) == Block.WATER) {
             setPlayerAnimation(PlayerAnimation.FLOATING);
             return;
         }
@@ -118,14 +116,6 @@ public class EntityPlayerServer extends GraphicalEntityServer {
             return shift.add(intersection);
         }
         return endPosition;
-    }
-
-    private void updateBlocksAround() {
-        Vector3ic newPos = new Vector3i((int) getPosition().x(), (int) getPosition().y(), (int) getPosition().z());
-        if (!getPreviousPosition().equals(newPos)) {
-            getUniverseServer().getBlocksRepository().processMovement(new Vector3i(getPreviousPosition()), newPos);
-            setPreviousPosition(newPos);
-        }
     }
 
 }

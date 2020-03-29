@@ -42,16 +42,10 @@ public class EntityGeneric extends GraphicalEntity {
         float sx = ois.readFloat();
         float sy = ois.readFloat();
         float sz = ois.readFloat();
-        boolean visible = ois.readBoolean();
-        float skyIntensity = ois.readFloat();
-        float emitIntensity = ois.readFloat();
         getVolumetricInterpolated().update(
                 px, py, pz,
                 getRotation().x(), getRotation().y(), getRotation().z(),
-                sx, sy, sz,
-                visible,
-                skyIntensity,
-                emitIntensity
+                sx, sy, sz
         );
     }
 

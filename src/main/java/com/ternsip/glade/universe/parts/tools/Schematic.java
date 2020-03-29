@@ -2,7 +2,7 @@ package com.ternsip.glade.universe.parts.tools;
 
 import com.ternsip.glade.universe.interfaces.IUniverseServer;
 import com.ternsip.glade.universe.parts.blocks.Block;
-import com.ternsip.glade.universe.parts.chunks.BlocksRepository;
+import com.ternsip.glade.universe.parts.chunks.BlocksServerRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -29,7 +29,7 @@ public class Schematic implements IUniverseServer {
     }
 
     public Schematic(Vector3ic start, Vector3ic end) {
-        this.blocks = getUniverseServer().getBlocksRepository().getBlocks(start, end);
+        this.blocks = getUniverseServer().getBlocksServerRepository().getBlocks(start, end);
     }
 
     public Vector3ic getSize() {
@@ -49,10 +49,10 @@ public class Schematic implements IUniverseServer {
     }
 
     public void put(Vector3ic pos) {
-        getUniverseServer().getBlocksRepository().setBlocks(pos, getBlocks());
+        getUniverseServer().getBlocksServerRepository().setBlocks(pos, getBlocks());
     }
 
-    public void putInternal(Vector3ic start, BlocksRepository blocksRepository, boolean ignoreAir) {
+    public void putInternal(Vector3ic start, BlocksServerRepository blocksServerRepository, boolean ignoreAir) {
         Vector3ic size = getSize();
         for (int x = 0, wx = start.x(); x < size.x(); ++x, ++wx) {
             for (int y = 0, wy = start.y(); y < size.y(); ++y, ++wy) {
@@ -61,7 +61,7 @@ public class Schematic implements IUniverseServer {
                     if (ignoreAir && block == Block.AIR) {
                         continue;
                     }
-                    blocksRepository.setBlockInternal(wx, wy, wz, block);
+                    blocksServerRepository.setBlock(wx, wy, wz, block);
                 }
             }
         }

@@ -96,11 +96,6 @@ public class EffigyDynamicText extends EffigySprite {
     }
 
     @Override
-    public float getSkyIntensity() {
-        return 1;
-    }
-
-    @Override
     public boolean isGraphicalInsideFrustum() {
         Vector3fc scale = getAdjustedScale();
         float delta = Math.max(Math.max(scale.x(), scale.y()), scale.z()) * getText().length() * 1.5f;

@@ -19,8 +19,8 @@ public class ItemSelectTool extends Item {
 
     @Override
     public void use(EntityPlayerServer player) {
-        Vector3ic pos = player.getUniverseServer().getBlocksRepository().traverse(player.getEyeSegment(), (b, p) -> b.isObstacle());
-        if (pos != null && player.getUniverseServer().getBlocksRepository().isBlockExists(pos)) {
+        Vector3ic pos = player.getUniverseServer().getBlocksServerRepository().traverse(player.getEyeSegment(), (b, p) -> b.isObstacle());
+        if (pos != null && player.getUniverseServer().getBlocksServerRepository().isBlockExists(pos)) {
             if (getUsed() == 0) {
                 setStartPos(pos);
             }

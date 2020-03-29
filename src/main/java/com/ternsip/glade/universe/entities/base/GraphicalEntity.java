@@ -5,20 +5,37 @@ import com.ternsip.glade.universe.common.VolumetricInterpolated;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Delegate;
+import org.joml.Vector3ic;
 
 import java.io.ObjectInputStream;
 
+import static com.ternsip.glade.common.logic.Maths.round;
+import static com.ternsip.glade.universe.parts.chunks.BlocksClientRepository.MAX_LIGHT_LEVEL;
+
 @Getter
 @Setter
+// TODO rename to GraphicalClientEntity
 public abstract class GraphicalEntity<T extends Effigy> extends EntityClient {
 
     @Delegate
     private final VolumetricInterpolated volumetricInterpolated = new VolumetricInterpolated();
 
+    private boolean visible = true;
+    private float skyIntensity = 1f;
+    private float emitIntensity = 1f;
+
     public void update(T effigy) {
         effigy.setFromVolumetricInterpolated(getVolumetricInterpolated());
         effigy.setSkyIntensity(getSkyIntensity());
         effigy.setEmitIntensity(getEmitIntensity());
+        effigy.setVisible(isVisible());
+    }
+
+    @Override
+    public void update() {
+        super.update();
+        Vector3ic blockPos = round(getPosition());
+        setSkyIntensity(getUniverseClient().getBlocksClientRepository().isBlockExists(blockPos) ? getUniverseClient().getBlocksClientRepository().getSkyLight(blockPos) / (float) MAX_LIGHT_LEVEL : 1);
     }
 
     /**
@@ -32,10 +49,7 @@ public abstract class GraphicalEntity<T extends Effigy> extends EntityClient {
         getVolumetricInterpolated().update(
                 ois.readFloat(), ois.readFloat(), ois.readFloat(),
                 ois.readFloat(), ois.readFloat(), ois.readFloat(),
-                ois.readFloat(), ois.readFloat(), ois.readFloat(),
-                ois.readBoolean(),
-                ois.readFloat(),
-                ois.readFloat()
+                ois.readFloat(), ois.readFloat(), ois.readFloat()
         );
     }
 

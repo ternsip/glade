@@ -282,7 +282,6 @@ public class GridCompressor implements Serializable {
     }
 
     @NoArgsConstructor
-    @EqualsAndHashCode
     private static class Node {
 
         private final Hash[] children = new Hash[8];

@@ -1,7 +1,7 @@
 package com.ternsip.glade.universe.parts.generators;
 
 import com.ternsip.glade.universe.parts.blocks.Block;
-import com.ternsip.glade.universe.parts.chunks.BlocksRepository;
+import com.ternsip.glade.universe.parts.chunks.BlocksServerRepository;
 import lombok.Getter;
 import org.joml.SimplexNoise;
 import org.joml.Vector3i;
@@ -18,19 +18,19 @@ public class SurfaceGenerator implements ChunkGenerator {
     }
 
     @Override
-    public void populate(BlocksRepository blocksRepository, int startX, int startZ, int endX, int endZ) {
+    public void populate(BlocksServerRepository blocksServerRepository, int startX, int startZ, int endX, int endZ) {
         int[][] heightMapStone = generateHeightMap(11, 5, 50, 0.01f, startX, startZ, endX, endZ);
         int[][] heightMapDirt = generateHeightMap(60, 5, 20, 0.01f, startX, startZ, endX, endZ);
         for (int dx = 0, x = startX; x <= endX; ++x, ++dx) {
             for (int dz = 0, z = startZ; z <= endZ; ++z, ++dz) {
-                for (int y = 0; y < BlocksRepository.SIZE_Y; ++y) {
+                for (int y = 0; y < BlocksServerRepository.SIZE_Y; ++y) {
                     Vector3ic wPos = new Vector3i(x, y, z);
                     int stoneHeight = height + heightMapStone[dx][dz];
                     int dirtHeight = stoneHeight + heightMapDirt[dx][dz];
                     if (wPos.y() < stoneHeight) {
-                        blocksRepository.setBlockInternal(x, y, z, Block.STONE);
+                        blocksServerRepository.setBlock(x, y, z, Block.STONE);
                     } else if (wPos.y() <= dirtHeight) {
-                        blocksRepository.setBlockInternal(x, y, z, wPos.y() == dirtHeight ? Block.LAWN : Block.DIRT);
+                        blocksServerRepository.setBlock(x, y, z, wPos.y() == dirtHeight ? Block.LAWN : Block.DIRT);
                     }
                 }
             }

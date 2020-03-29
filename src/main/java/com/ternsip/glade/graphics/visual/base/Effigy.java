@@ -27,6 +27,10 @@ public abstract class Effigy<SHADER extends ShaderProgram> implements IGraphics,
     @Getter(lazy = true)
     private final SHADER shader = getGraphics().getShaderRepository().getShader(this);
 
+    private boolean visible;
+    private float skyIntensity;
+    private float emitIntensity; // TODO move this somewhere else (this is not for base effigy)
+
     public Matrix4fc getTransformationMatrix() {
         Vector3fc totalScale = new Vector3f(getAdjustedScale()).mul(getModel().getNormalizingScale());
         Matrix4fc rotMatrix = Maths.getRotationQuaternion(getAdjustedRotation()).get(new Matrix4f());

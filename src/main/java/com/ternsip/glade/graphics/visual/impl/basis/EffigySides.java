@@ -10,7 +10,7 @@ import com.ternsip.glade.graphics.visual.base.SideConstructor;
 import com.ternsip.glade.universe.common.Light;
 import com.ternsip.glade.universe.entities.impl.EntityCameraEffects;
 import com.ternsip.glade.universe.entities.impl.EntitySun;
-import com.ternsip.glade.universe.parts.chunks.BlocksUpdate;
+import com.ternsip.glade.universe.parts.chunks.SidesUpdate;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.Matrix4f;
@@ -25,8 +25,8 @@ public class EffigySides extends Effigy<ChunkShader> {
 
     private final SideConstructor sideConstructor = new SideConstructor();
 
-    public void applyBlockUpdate(BlocksUpdate blocksUpdate) {
-        getSideConstructor().applyChanges(blocksUpdate);
+    public void applyChanges(SidesUpdate sidesUpdate) {
+        getSideConstructor().applyChanges(sidesUpdate);
     }
 
     @Override

@@ -23,13 +23,10 @@ public class EventProcessor<T extends Event> {
         getEvents().add(event);
     }
 
-    void wipeEvents() {
-        getEvents().clear();
-    }
-
-    void applyCallbacks() {
-        if (!getEvents().isEmpty() && !getCallbacks().isEmpty()) {
-            getCallbacks().forEach(callback -> getEvents().forEach(callback::apply));
+    void update() {
+        while (!getEvents().isEmpty()) {
+            T event = events.poll();
+            getCallbacks().forEach(callback -> callback.apply(event));
         }
     }
 

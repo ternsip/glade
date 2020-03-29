@@ -42,7 +42,7 @@ public class EntityPlayerListServer extends EntityServer {
         entityPlayerServer.setScale(new Vector3f(1, 1, 1));
         entityPlayerServer.register();
 
-        EntityCubeSelectionServer entityCubeSelectionServer = new EntityCubeSelectionServer(entityPlayerServer);
+        EntityCubeSelectionServer entityCubeSelectionServer = new EntityCubeSelectionServer();
         entityCubeSelectionServer.register();
         PlayerSession playerSession = new PlayerSession(entityPlayerServer, entityCubeSelectionServer);
         getConnectionToPlayerSession().put(onClientConnect.getConnection(), playerSession);

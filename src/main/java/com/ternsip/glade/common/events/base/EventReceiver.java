@@ -48,8 +48,7 @@ public class EventReceiver {
     }
 
     public void update() {
-        getEventProcessors().values().forEach(EventProcessor::applyCallbacks);
-        getEventProcessors().values().forEach(EventProcessor::wipeEvents);
+        getEventProcessors().values().forEach(EventProcessor::update);
     }
 
 }

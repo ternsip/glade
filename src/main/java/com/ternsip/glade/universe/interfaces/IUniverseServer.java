@@ -35,7 +35,7 @@ public interface IUniverseServer {
         }
         Thread thread = Thread.currentThread();
         return thread == UNIVERSE_SERVER_THREAD.getThreadWrapper().getThread() ||
-                thread == IBlocksRepository.BLOCKS_REPOSITORY_THREAD.getThreadWrapper().getThread() ||
+                thread == IBlocksRepositoryServer.BLOCKS_SERVER_REPOSITORY_THREAD.getThreadWrapper().getThread() ||
                 thread == INetworkServer.SERVER_THREAD.getThreadWrapper().getThread() ||
                 thread == INetworkServer.SERVER_THREAD.getObjective().getAcceptorThread().getThreadWrapper().getThread();
     }

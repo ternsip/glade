@@ -55,7 +55,7 @@ public abstract class EffigyAnimated extends Effigy<AnimationShader> {
     }
 
     public Light getSun() {
-        EntitySun sun = getUniverseClient().getEntityClientRepository().getEntityByClass(EntitySun.class);
+        EntitySun sun = getUniverseClient().getEntityClientRepository().getEntityByClass(EntitySun.class); // TODO invert this (set from clientUniverse thread)
         return new LightSource(sun.getPositionInterpolated(), sun.getColor(), sun.getIntensity() * getSkyIntensity());
     }
 

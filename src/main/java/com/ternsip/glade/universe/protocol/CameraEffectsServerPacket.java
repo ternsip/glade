@@ -26,7 +26,7 @@ public class CameraEffectsServerPacket extends ServerPacket {
     @Override
     public void apply(Connection connection) {
         Vector3ic camPos = new Vector3i((int) cameraPosition.x(), (int) cameraPosition.y(), (int) cameraPosition.z());
-        boolean underWater = getUniverseServer().getBlocksRepository().isBlockExists(camPos) && getUniverseServer().getBlocksRepository().getBlock(camPos) == Block.WATER;
+        boolean underWater = getUniverseServer().getBlocksServerRepository().isBlockExists(camPos) && getUniverseServer().getBlocksServerRepository().getBlock(camPos) == Block.WATER;
         getUniverseServer().getServer().send(new CameraEffectsClientPacket(underWater, findCameraDistanceFix()), connection);
     }
 

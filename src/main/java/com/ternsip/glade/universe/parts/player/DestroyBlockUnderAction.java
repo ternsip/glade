@@ -14,8 +14,8 @@ public class DestroyBlockUnderAction extends BaseAction {
                 (int) Math.floor(player.getPosition().y()) - 1,
                 (int) Math.floor(player.getPosition().z())
         );
-        if (getUniverseServer().getBlocksRepository().isBlockExists(blockUnder)) {
-            getUniverseServer().getBlocksRepository().setBlock(blockUnder, Block.AIR);
+        if (getUniverseServer().getBlocksServerRepository().isBlockExists(blockUnder)) {
+            getUniverseServer().getBlocksServerRepository().setBlock(blockUnder, Block.AIR);
         }
     }
 

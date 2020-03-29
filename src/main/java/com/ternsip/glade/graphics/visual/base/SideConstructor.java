@@ -9,7 +9,7 @@ import com.ternsip.glade.graphics.interfaces.IGraphics;
 import com.ternsip.glade.graphics.shader.base.MeshAttributes;
 import com.ternsip.glade.universe.parts.blocks.Block;
 import com.ternsip.glade.universe.parts.blocks.BlockSide;
-import com.ternsip.glade.universe.parts.chunks.BlocksUpdate;
+import com.ternsip.glade.universe.parts.chunks.SidesUpdate;
 import com.ternsip.glade.universe.parts.chunks.Side;
 import com.ternsip.glade.universe.parts.chunks.SidePosition;
 import lombok.Getter;
@@ -23,7 +23,7 @@ import static com.ternsip.glade.graphics.shader.base.ShaderProgram.INDICES;
 import static com.ternsip.glade.graphics.shader.base.ShaderProgram.VERTICES;
 import static com.ternsip.glade.graphics.shader.impl.ChunkShader.*;
 import static com.ternsip.glade.graphics.visual.base.SideConstructor.SideIndexData.*;
-import static com.ternsip.glade.universe.parts.chunks.BlocksRepository.MAX_LIGHT_LEVEL;
+import static com.ternsip.glade.universe.parts.chunks.BlocksClientRepository.MAX_LIGHT_LEVEL;
 
 public class SideConstructor implements IGraphics {
 
@@ -85,7 +85,7 @@ public class SideConstructor implements IGraphics {
         getMeshes().forEach(Mesh::finish);
     }
 
-    public void applyChanges(BlocksUpdate changes) {
+    public void applyChanges(SidesUpdate changes) {
 
         if (changes.isEmpty()) {
             return;
