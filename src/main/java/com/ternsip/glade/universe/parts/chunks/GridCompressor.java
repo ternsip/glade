@@ -15,7 +15,6 @@ import java.util.*;
 
 import static com.ternsip.glade.universe.parts.chunks.BlocksServerRepository.*;
 
-// TODO think about thread safety and performance
 public class GridCompressor implements Serializable {
 
     private static final int SIZE = Maths.max(SIZE_X, SIZE_Y, SIZE_Z);

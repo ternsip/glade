@@ -22,7 +22,7 @@ It uses LWJGL and redistributable for most platforms, but not tested on IOS and 
 I stopped the development due to lack of time in my life, but I am so keen of finishing it.  
 I tried to use ray-tracing and realized that there is no enough support for that even using Vulkan (lack of dynamic animation).  
 A lot of architectural things should be changed (eg multiplayer and data locality).  
-I also developed cool algorithm for compressing minecraft worlds! It can compress 256^3 into just 200 nodes. WOW. (it can compress much better than standart minecraft segment-tree compressor) (It is based on hashing).  
+I also developed cool algorithm for compressing minecraft worlds! It can compress 512^3 integers into just 9mb instead of 512mb. WOW. (it can compress much better than standart minecraft segment-tree compressor) (It is based on hashing).  
 
 ![image](https://i.imgur.com/DmHU0Kd.png)
 ![image](https://i.imgur.com/u2WM07n.jpg)
