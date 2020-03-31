@@ -113,25 +113,7 @@ public class GridCompressor implements Serializable {
         Chunk chunk = posToChunk.get(pos);
         if (chunk == null) {
             chunk = new Chunk();
-            Hash pointer = root;
-            for (int depth = 0, halfNodes = NODES / (2 * Chunk.NODES); depth < CHUNK_DEPTH; ++depth, halfNodes /= 2) {
-                Node node = hashToNode.get(pointer);
-                int index = 0;
-                if (cz >= halfNodes) {
-                    cz -= halfNodes;
-                    index += 1;
-                }
-                if (cy >= halfNodes) {
-                    cy -= halfNodes;
-                    index += 2;
-                }
-                if (cx >= halfNodes) {
-                    cx -= halfNodes;
-                    index += 4;
-                }
-                pointer = node.children[index];
-            }
-            hashesBuffer[0] = pointer;
+            hashesBuffer[0] = traceChunk(cx, cy, cz);
             for (int step = hashesBuffer.length; step >= 8; step /= 8) {
                 for (int ptr = 0; ptr < hashesBuffer.length; ptr += step) {
                     Node node = hashToNode.get(hashesBuffer[ptr]);
@@ -192,26 +174,7 @@ public class GridCompressor implements Serializable {
                 hashToNode.put(hashesBuffer[ptr], node);
             }
         }
-        Hash pointer = root;
-        for (int depth = 0, halfNodes = NODES / (2 * Chunk.NODES); depth < CHUNK_DEPTH; ++depth, halfNodes /= 2) {
-            Node node = hashToNode.get(pointer);
-            int index = 0;
-            if (cz >= halfNodes) {
-                cz -= halfNodes;
-                index += 1;
-            }
-            if (cy >= halfNodes) {
-                cy -= halfNodes;
-                index += 2;
-            }
-            if (cx >= halfNodes) {
-                cx -= halfNodes;
-                index += 4;
-            }
-            nodePathBuffer[depth] = node;
-            indexPathBuffer[depth] = index;
-            pointer = node.children[index];
-        }
+        traceChunk(cx, cy, cz);
         Hash updatedHash = hashesBuffer[0];
         for (int depth = CHUNK_DEPTH - 1; depth >= 0; --depth) {
             Node updatedNode = nodePathBuffer[depth].cloneWithChangedChild(indexPathBuffer[depth], updatedHash);
@@ -219,6 +182,30 @@ public class GridCompressor implements Serializable {
             hashToNode.put(updatedHash, updatedNode);
         }
         root = updatedHash;
+    }
+
+    private Hash traceChunk(int cx, int cy, int cz) {
+        Hash pointer = root;
+        for (int depth = 0, halfChunks = NODES / (2 * Chunk.NODES); depth < CHUNK_DEPTH; ++depth, halfChunks /= 2) {
+            Node node = hashToNode.get(pointer);
+            int index = 0;
+            if (cz >= halfChunks) {
+                cz -= halfChunks;
+                index += 1;
+            }
+            if (cy >= halfChunks) {
+                cy -= halfChunks;
+                index += 2;
+            }
+            if (cx >= halfChunks) {
+                cx -= halfChunks;
+                index += 4;
+            }
+            nodePathBuffer[depth] = node;
+            indexPathBuffer[depth] = index;
+            pointer = node.children[index];
+        }
+        return pointer;
     }
 
     private synchronized void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
