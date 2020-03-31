@@ -23,10 +23,9 @@ public class GridCompressor implements Serializable {
     private static final int DEPTH = Maths.log2(NODES);
     private static final int CHUNK_DEPTH = Maths.log2(NODES / Chunk.NODES);
 
-    private static final Hash[] HASHES_BUFFER = new Hash[Chunk.NODES * Chunk.NODES * Chunk.NODES];
-    private static final int[] INDEX_PATH_BUFFER = new int[CHUNK_DEPTH];
-    private static final Node[] NODE_PATH_BUFFER = new Node[CHUNK_DEPTH];
-
+    private Hash[] hashesBuffer = new Hash[Chunk.NODES * Chunk.NODES * Chunk.NODES];
+    private int[] indexPathBuffer = new int[CHUNK_DEPTH];
+    private Node[] nodePathBuffer = new Node[CHUNK_DEPTH];
     private HashMap<Vector3i, Chunk> posToChunk = new HashMap<>();
     private HashMap<Hash, Node> hashToNode = new HashMap<>();
     private Hash root;
@@ -133,13 +132,13 @@ public class GridCompressor implements Serializable {
                 }
                 pointer = node.children[index];
             }
-            HASHES_BUFFER[0] = pointer;
-            for (int step = HASHES_BUFFER.length; step >= 8; step /= 8) {
-                for (int ptr = 0; ptr < HASHES_BUFFER.length; ptr += step) {
-                    Node node = hashToNode.get(HASHES_BUFFER[ptr]);
+            hashesBuffer[0] = pointer;
+            for (int step = hashesBuffer.length; step >= 8; step /= 8) {
+                for (int ptr = 0; ptr < hashesBuffer.length; ptr += step) {
+                    Node node = hashToNode.get(hashesBuffer[ptr]);
                     int smallStep = step / 8;
                     for (int j = 0, smallPtr = ptr; j < 8; ++j, smallPtr += smallStep) {
-                        HASHES_BUFFER[smallPtr] = node.children[j];
+                        hashesBuffer[smallPtr] = node.children[j];
                     }
                 }
             }
@@ -149,7 +148,7 @@ public class GridCompressor implements Serializable {
                         for (int dx = 0, deltaIndex = 0; dx < 2; ++dx) {
                             for (int dy = 0; dy < 2; ++dy) {
                                 for (int dz = 0; dz < 2; ++dz, ++deltaIndex) {
-                                    chunk.values[nx * 2 + dx][ny * 2 + dy][nz * 2 + dz] = HASHES_BUFFER[hashIndex].values[deltaIndex];
+                                    chunk.values[nx * 2 + dx][ny * 2 + dy][nz * 2 + dz] = hashesBuffer[hashIndex].values[deltaIndex];
                                 }
                             }
                         }
@@ -172,26 +171,26 @@ public class GridCompressor implements Serializable {
         for (int nx = 0, hashIndex = 0; nx < Chunk.NODES; ++nx) {
             for (int ny = 0; ny < Chunk.NODES; ++ny) {
                 for (int nz = 0; nz < Chunk.NODES; ++nz, ++hashIndex) {
-                    HASHES_BUFFER[hashIndex] = new Hash();
+                    hashesBuffer[hashIndex] = new Hash();
                     for (int dx = 0, deltaIndex = 0; dx < 2; ++dx) {
                         for (int dy = 0; dy < 2; ++dy) {
                             for (int dz = 0; dz < 2; ++dz, ++deltaIndex) {
-                                HASHES_BUFFER[hashIndex].values[deltaIndex] = chunk.values[nx * 2 + dx][ny * 2 + dy][nz * 2 + dz];
+                                hashesBuffer[hashIndex].values[deltaIndex] = chunk.values[nx * 2 + dx][ny * 2 + dy][nz * 2 + dz];
                             }
                         }
                     }
                 }
             }
         }
-        for (int step = 8; step <= HASHES_BUFFER.length; step *= 8) {
-            for (int ptr = 0; ptr < HASHES_BUFFER.length; ptr += step) {
+        for (int step = 8; step <= hashesBuffer.length; step *= 8) {
+            for (int ptr = 0; ptr < hashesBuffer.length; ptr += step) {
                 Node node = new Node();
                 int smallStep = step / 8;
                 for (int j = 0, smallPtr = ptr; j < 8; ++j, smallPtr += smallStep) {
-                    node.children[j] = HASHES_BUFFER[smallPtr];
+                    node.children[j] = hashesBuffer[smallPtr];
                 }
-                HASHES_BUFFER[ptr] = node.combine();
-                hashToNode.put(HASHES_BUFFER[ptr], node);
+                hashesBuffer[ptr] = node.combine();
+                hashToNode.put(hashesBuffer[ptr], node);
             }
         }
         Hash pointer = root;
@@ -210,13 +209,13 @@ public class GridCompressor implements Serializable {
                 cx -= halfNodes;
                 index += 4;
             }
-            NODE_PATH_BUFFER[depth] = node;
-            INDEX_PATH_BUFFER[depth] = index;
+            nodePathBuffer[depth] = node;
+            indexPathBuffer[depth] = index;
             pointer = node.children[index];
         }
-        Hash updatedHash = HASHES_BUFFER[0];
+        Hash updatedHash = hashesBuffer[0];
         for (int depth = CHUNK_DEPTH - 1; depth >= 0; --depth) {
-            Node updatedNode = NODE_PATH_BUFFER[depth].cloneWithChangedChild(INDEX_PATH_BUFFER[depth], updatedHash);
+            Node updatedNode = nodePathBuffer[depth].cloneWithChangedChild(indexPathBuffer[depth], updatedHash);
             updatedHash = updatedNode.combine();
             hashToNode.put(updatedHash, updatedNode);
         }
@@ -224,6 +223,9 @@ public class GridCompressor implements Serializable {
     }
 
     private synchronized void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
+        hashesBuffer = new Hash[Chunk.NODES * Chunk.NODES * Chunk.NODES];
+        indexPathBuffer = new int[CHUNK_DEPTH];
+        nodePathBuffer = new Node[CHUNK_DEPTH];
         posToChunk = new HashMap<>();
         hashToNode = new HashMap<>();
         int size = ois.readInt();
