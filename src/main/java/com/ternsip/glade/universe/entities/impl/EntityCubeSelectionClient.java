@@ -9,9 +9,15 @@ import org.joml.LineSegmentf;
 import org.joml.Vector3f;
 import org.joml.Vector3ic;
 
+import java.io.ObjectInputStream;
+
 @RequiredArgsConstructor
 @Getter
 public class EntityCubeSelectionClient extends GraphicalEntity<EffigyCube> {
+
+    @Override
+    public void readFromStream(ObjectInputStream ois) {
+    }
 
     @Override
     public void update() {

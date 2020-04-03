@@ -1,5 +1,6 @@
 package com.ternsip.glade.universe.parts.items;
 
+import com.ternsip.glade.universe.entities.impl.EntityPlayer;
 import com.ternsip.glade.universe.entities.impl.EntityPlayerServer;
 import com.ternsip.glade.universe.parts.tools.Schematic;
 import lombok.Getter;
@@ -18,9 +19,9 @@ public class ItemSelectTool extends Item {
     private int used = 0;
 
     @Override
-    public void use(EntityPlayerServer player) {
-        Vector3ic pos = player.getUniverseServer().getBlocksServerRepository().traverse(player.getEyeSegment(), (b, p) -> b.isObstacle());
-        if (pos != null && player.getUniverseServer().getBlocksServerRepository().isBlockExists(pos)) {
+    public void useOnServer(EntityPlayerServer player) {
+        Vector3ic pos = getUniverseServer().getBlocksServerRepository().traverse(player.getEyeSegment(), (b, p) -> b.isObstacle());
+        if (pos != null && getUniverseServer().getBlocksServerRepository().isBlockExists(pos)) {
             if (getUsed() == 0) {
                 setStartPos(pos);
             }
@@ -32,6 +33,10 @@ public class ItemSelectTool extends Item {
             }
             setUsed((getUsed() + 1) % 3);
         }
+    }
+
+    @Override
+    public void useOnClient(EntityPlayer player) {
     }
 
     @Override

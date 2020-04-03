@@ -79,6 +79,24 @@ public class BlocksClientRepository extends BlocksRepositoryBase implements Thre
     public void finish() {
     }
 
+    @Override
+    public void setBlock(Vector3ic pos, Block block) {
+        super.setBlock(pos, block);
+        visualUpdate(pos, new Vector3i(1));
+    }
+
+    @Override
+    public void setBlock(int x, int y, int z, Block block) {
+        super.setBlock(x, y, z, block);
+        visualUpdate(new Vector3i(x, y, z), new Vector3i(1));
+    }
+
+    @Override
+    public void setBlocks(Vector3ic start, Block[][][] region) {
+        super.setBlocks(start, region);
+        visualUpdate(start, new Vector3i(region[0].length, region[0][0].length, region[0][0].length));
+    }
+
     public synchronized void visualUpdate(Vector3ic start, Vector3ic size) {
         // Recalculate height maps
         int minObservedHeight = SIZE_Y;
@@ -179,7 +197,8 @@ public class BlocksClientRepository extends BlocksRepositoryBase implements Thre
                     queue.add(INDEXER.getIndex(nx, ny, nz));
                 }
             }
-        }
+        } // TODO ssbo light data, layout buffer, no_sides_updates for light
+        // TODO process only visible data
 
         // Add border blocks to engage neighbour side-recalculation
         Vector3ic startChanges = new Vector3i(startLight).sub(new Vector3i(1)).max(new Vector3i(0));

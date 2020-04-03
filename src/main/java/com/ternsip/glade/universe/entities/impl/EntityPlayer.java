@@ -127,31 +127,36 @@ public class EntityPlayer extends GraphicalEntity<EffigyBoy> {
 
     private void handleKeyEvent(KeyEvent event) {
         if (event.getKey() == GLFW_KEY_R && event.getAction() == GLFW_PRESS) {
-            getUniverseClient().getClient().send(new PlayerActionServerPacket(getUuid(), new RespawnAction()));
+            applyAction(new RespawnAction());
         }
         if (event.getKey() == GLFW_KEY_T && event.getAction() == GLFW_PRESS) {
-            // TODO sometimes pressing does not work by some reason (not sure)
-            getUniverseClient().getClient().send(new PlayerActionServerPacket(getUuid(), new TeleportFarAction()));
+            // TODO sometimes pressing does not work by some reason (not sure), Update: this might be fixed (multithreading)
+            applyAction(new TeleportFarAction());
         }
         if (event.getKey() == GLFW_KEY_Z && event.getAction() == GLFW_PRESS) {
-            getUniverseClient().getClient().send(new PlayerActionServerPacket(getUuid(), new TeleportZeroAction()));
+            applyAction(new TeleportZeroAction());
         }
         if (event.getKey() == GLFW_KEY_SPACE && event.getAction() == GLFW_PRESS) {
-            getUniverseClient().getClient().send(new PlayerActionServerPacket(getUuid(), new JumpAction()));
+            applyAction(new JumpAction());
         }
         if (event.getKey() == GLFW_KEY_B && event.getAction() == GLFW_PRESS) {
-            getUniverseClient().getClient().send(new PlayerActionServerPacket(getUuid(), new DestroyBlockUnderAction()));
+            applyAction(new DestroyBlockUnderAction());
         }
         if (event.getKey() == GLFW_KEY_Q && event.getAction() == GLFW_PRESS) {
-            getUniverseClient().getClient().send(new PlayerActionServerPacket(getUuid(), new DestroySelectedBlockAction()));
+            applyAction(new DestroySelectedBlockAction());
         }
     }
 
     private void handleMouseButtonEvent(MouseButtonEvent event) {
         if (event.getButton() == GLFW_MOUSE_BUTTON_2 && event.getAction() == GLFW_PRESS) {
             int slot = getUniverseClient().getEntityClientRepository().getEntityByClass(UIInventory.class).getCellSelected();
-            getUniverseClient().getClient().send(new PlayerActionServerPacket(getUuid(), new UseItemAction(slot)));
+            applyAction(new UseItemAction(slot));
         }
+    }
+
+    private void applyAction(BaseAction baseAction) {
+        baseAction.applyOnClient(this);
+        getUniverseClient().getClient().send(new PlayerActionServerPacket(getUuid(), baseAction));
     }
 
 

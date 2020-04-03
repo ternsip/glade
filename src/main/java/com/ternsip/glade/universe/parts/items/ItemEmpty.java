@@ -1,5 +1,6 @@
 package com.ternsip.glade.universe.parts.items;
 
+import com.ternsip.glade.universe.entities.impl.EntityPlayer;
 import com.ternsip.glade.universe.entities.impl.EntityPlayerServer;
 import lombok.Getter;
 
@@ -13,7 +14,11 @@ public class ItemEmpty extends Item {
     }
 
     @Override
-    public void use(EntityPlayerServer player) {}
+    public void useOnServer(EntityPlayerServer player) {}
+
+    @Override
+    public void useOnClient(EntityPlayer player) {
+    }
 
     @Override
     public Object getKey() {
