@@ -13,6 +13,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
 
 import static org.lwjgl.opengl.GL20.*;
 
@@ -22,7 +23,8 @@ public abstract class ShaderProgram {
 
     public static final AttributeData INDICES = new AttributeData(0, "indices", 3, AttributeData.ArrayType.ELEMENT_ARRAY);
     public static final AttributeData VERTICES = new AttributeData(1, "position", 3, AttributeData.ArrayType.FLOAT);
-    private static int LAST_PROGRAM_ID = -100;
+    private static int ACTIVE_PROGRAM_ID = -1;
+
     @SuppressWarnings("unused")
     private int programID;
 
@@ -31,8 +33,11 @@ public abstract class ShaderProgram {
         Constructor<T> constructor = clazz.getDeclaredConstructor();
         constructor.setAccessible(true);
         T shader = constructor.newInstance();
-        int vertexShaderID = loadShader((File) findHeader(shader, "VERTEX_SHADER"), GL_VERTEX_SHADER);
-        int fragmentShaderID = loadShader((File) findHeader(shader, "FRAGMENT_SHADER"), GL_FRAGMENT_SHADER);
+
+        File vertexShaderFile = findHeader(shader, "VERTEX_SHADER", File.class).orElseThrow(() -> new IllegalArgumentException("Can't find vertex shader"));
+        File fragmentShaderFile = findHeader(shader, "FRAGMENT_SHADER", File.class).orElseThrow(() -> new IllegalArgumentException("Can't find fragment shader"));
+        int vertexShaderID = loadShader(vertexShaderFile, GL_VERTEX_SHADER);
+        int fragmentShaderID = loadShader(fragmentShaderFile, GL_FRAGMENT_SHADER);
         Collection<AttributeData> attributeData = collectAttributeData(shader);
         int programID = glCreateProgram();
         glAttachShader(programID, vertexShaderID);
@@ -43,7 +48,7 @@ public abstract class ShaderProgram {
         glDetachShader(programID, fragmentShaderID);
         glDeleteShader(vertexShaderID);
         glDeleteShader(fragmentShaderID);
-        loadUniformLocations(shader, programID);
+        locateInputs(shader, programID);
         glValidateProgram(programID);
         shader.setProgramID(programID);
         return shader;
@@ -61,14 +66,24 @@ public abstract class ShaderProgram {
     }
 
     @SneakyThrows
-    private static Object findHeader(ShaderProgram instance, String fieldName) {
+    private static <T> Optional<T> findHeader(ShaderProgram instance, String fieldName, Class<T> clazz) {
         for (Field field : instance.getClass().getDeclaredFields()) {
             if (Modifier.isStatic(field.getModifiers()) && field.getName().equals(fieldName)) {
                 field.setAccessible(true);
-                return field.get(instance);
+                Object fieldValue = field.get(instance);
+                if (fieldValue.getClass() != clazz) {
+                    String msg = String.format(
+                            "Field %s should be of type %s, but actual type is %s",
+                            fieldName,
+                            clazz.getSimpleName(),
+                            fieldValue.getClass().getSimpleName()
+                    );
+                    throw new IllegalArgumentException(msg);
+                }
+                return Optional.of((T) fieldValue);
             }
         }
-        throw new IllegalArgumentException(String.format("Can't find filed %s", fieldName));
+        return Optional.empty();
     }
 
     @SneakyThrows
@@ -90,15 +105,15 @@ public abstract class ShaderProgram {
     }
 
     @SneakyThrows
-    private static void loadUniformLocations(ShaderProgram instance, int programID) {
+    private static void locateInputs(ShaderProgram instance, int programID) {
         for (Field field : instance.getClass().getDeclaredFields()) {
             if (!Modifier.isStatic(field.getModifiers())) {
                 field.setAccessible(true);
                 Object object = field.get(instance);
-                if (object instanceof Uniform) {
-                    Uniform uniform = (Uniform) object;
+                if (object instanceof Locatable) {
+                    Locatable locatable = (Locatable) object;
                     String fieldName = field.getName();
-                    uniform.locate(programID, fieldName);
+                    locatable.locate(programID, fieldName);
                 }
             }
         }
@@ -106,20 +121,22 @@ public abstract class ShaderProgram {
 
     public void start() {
         // XXX Use caching for optimisation purposes
-        if (LAST_PROGRAM_ID != programID) {
+        if (ACTIVE_PROGRAM_ID != programID) {
             glUseProgram(programID);
-            LAST_PROGRAM_ID = programID;
+            ACTIVE_PROGRAM_ID = programID;
         }
     }
 
     public void finish() {
         stop();
-        glDeleteProgram(programID);
+        if (programID != -1) {
+            glDeleteProgram(programID);
+        }
     }
 
     public void stop() {
-        // XXX Just simply do not unbind the shader program for optimisation purposes
-        //glUseProgram(0);
+        glUseProgram(0);
+        ACTIVE_PROGRAM_ID = -1;
     }
 
 }
