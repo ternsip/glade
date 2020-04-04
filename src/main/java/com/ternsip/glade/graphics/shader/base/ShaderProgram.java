@@ -25,7 +25,6 @@ public abstract class ShaderProgram {
     public static final AttributeData VERTICES = new AttributeData(1, "position", 3, AttributeData.ArrayType.FLOAT);
     private static int ACTIVE_PROGRAM_ID = -1;
 
-    @SuppressWarnings("unused")
     private int programID;
 
     @SneakyThrows
@@ -34,8 +33,8 @@ public abstract class ShaderProgram {
         constructor.setAccessible(true);
         T shader = constructor.newInstance();
 
-        File vertexShaderFile = findHeader(shader, "VERTEX_SHADER", File.class).orElseThrow(() -> new IllegalArgumentException("Can't find vertex shader"));
-        File fragmentShaderFile = findHeader(shader, "FRAGMENT_SHADER", File.class).orElseThrow(() -> new IllegalArgumentException("Can't find fragment shader"));
+        File vertexShaderFile = findFileHeader(shader, "VERTEX_SHADER").orElseThrow(() -> new IllegalArgumentException("Can't find vertex shader"));
+        File fragmentShaderFile = findFileHeader(shader, "FRAGMENT_SHADER").orElseThrow(() -> new IllegalArgumentException("Can't find fragment shader"));
         int vertexShaderID = loadShader(vertexShaderFile, GL_VERTEX_SHADER);
         int fragmentShaderID = loadShader(fragmentShaderFile, GL_FRAGMENT_SHADER);
         Collection<AttributeData> attributeData = collectAttributeData(shader);
@@ -66,21 +65,11 @@ public abstract class ShaderProgram {
     }
 
     @SneakyThrows
-    private static <T> Optional<T> findHeader(ShaderProgram instance, String fieldName, Class<T> clazz) {
+    private static Optional<File> findFileHeader(ShaderProgram instance, String fieldName) {
         for (Field field : instance.getClass().getDeclaredFields()) {
             if (Modifier.isStatic(field.getModifiers()) && field.getName().equals(fieldName)) {
                 field.setAccessible(true);
-                Object fieldValue = field.get(instance);
-                if (fieldValue.getClass() != clazz) {
-                    String msg = String.format(
-                            "Field %s should be of type %s, but actual type is %s",
-                            fieldName,
-                            clazz.getSimpleName(),
-                            fieldValue.getClass().getSimpleName()
-                    );
-                    throw new IllegalArgumentException(msg);
-                }
-                return Optional.of((T) fieldValue);
+                return Optional.of((File) field.get(instance));
             }
         }
         return Optional.empty();
@@ -129,9 +118,7 @@ public abstract class ShaderProgram {
 
     public void finish() {
         stop();
-        if (programID != -1) {
-            glDeleteProgram(programID);
-        }
+        glDeleteProgram(programID);
     }
 
     public void stop() {
