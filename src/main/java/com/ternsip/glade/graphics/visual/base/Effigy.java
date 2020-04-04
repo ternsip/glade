@@ -4,7 +4,7 @@ import com.ternsip.glade.common.logic.Maths;
 import com.ternsip.glade.common.logic.Utils;
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.interfaces.IGraphics;
-import com.ternsip.glade.graphics.shader.base.ShaderProgram;
+import com.ternsip.glade.graphics.shader.base.Shader;
 import com.ternsip.glade.universe.common.Volumetric;
 import com.ternsip.glade.universe.interfaces.IUniverseClient;
 import lombok.Getter;
@@ -16,7 +16,7 @@ import java.lang.Math;
 
 @Getter
 @Setter
-public abstract class Effigy<SHADER extends ShaderProgram> implements IGraphics, IUniverseClient {
+public abstract class Effigy<SHADER extends Shader> implements IGraphics, IUniverseClient {
 
     @Delegate
     private final Volumetric volumetric = new Volumetric();
@@ -25,7 +25,7 @@ public abstract class Effigy<SHADER extends ShaderProgram> implements IGraphics,
     private final Model model = getGraphics().getModelRepository().getEffigyModel(this);
 
     @Getter(lazy = true)
-    private final SHADER shader = getGraphics().getShaderRepository().getShader(this);
+    private final SHADER shader = getGraphics().getShaderRepository().getShader(getShaderClass());
 
     private boolean visible;
     private float skyIntensity;
@@ -57,16 +57,9 @@ public abstract class Effigy<SHADER extends ShaderProgram> implements IGraphics,
         return false;
     }
 
-    public boolean deleteShaderOnFinish() {
-        return false;
-    }
-
     public void finish() {
         if (deleteModelOnFinish()) {
             getGraphics().getModelRepository().removeEffigyModel(this);
-        }
-        if (deleteShaderOnFinish()) {
-            getGraphics().getShaderRepository().removeShader(this);
         }
     }
 
@@ -78,10 +71,6 @@ public abstract class Effigy<SHADER extends ShaderProgram> implements IGraphics,
 
     public FrustumIntersection getFrustumIntersection() {
         return new FrustumIntersection(getProjectionMatrix().mul(getViewMatrix(), new Matrix4f()));
-    }
-
-    public Object getShaderKey() {
-        return getShaderClass();
     }
 
     public abstract Class<SHADER> getShaderClass();

@@ -13,8 +13,8 @@ import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.ternsip.glade.graphics.shader.base.ShaderProgram.INDICES;
-import static com.ternsip.glade.graphics.shader.base.ShaderProgram.VERTICES;
+import static com.ternsip.glade.graphics.shader.base.RasterShader.INDICES;
+import static com.ternsip.glade.graphics.shader.base.RasterShader.VERTICES;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;

@@ -13,47 +13,29 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Optional;
 
 import static org.lwjgl.opengl.GL20.*;
 
 @Setter(AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class ShaderProgram {
+public abstract class Shader {
 
-    public static final AttributeData INDICES = new AttributeData(0, "indices", 3, AttributeData.ArrayType.ELEMENT_ARRAY);
-    public static final AttributeData VERTICES = new AttributeData(1, "position", 3, AttributeData.ArrayType.FLOAT);
     private static int ACTIVE_PROGRAM_ID = -1;
 
     private int programID;
 
+    protected abstract void construct();
+
     @SneakyThrows
-    public static <T extends ShaderProgram> T createShader(Class<T> clazz) {
+    public static <T extends Shader> T createShader(Class<T> clazz) {
         Constructor<T> constructor = clazz.getDeclaredConstructor();
         constructor.setAccessible(true);
         T shader = constructor.newInstance();
-
-        File vertexShaderFile = findFileHeader(shader, "VERTEX_SHADER").orElseThrow(() -> new IllegalArgumentException("Can't find vertex shader"));
-        File fragmentShaderFile = findFileHeader(shader, "FRAGMENT_SHADER").orElseThrow(() -> new IllegalArgumentException("Can't find fragment shader"));
-        int vertexShaderID = loadShader(vertexShaderFile, GL_VERTEX_SHADER);
-        int fragmentShaderID = loadShader(fragmentShaderFile, GL_FRAGMENT_SHADER);
-        Collection<AttributeData> attributeData = collectAttributeData(shader);
-        int programID = glCreateProgram();
-        glAttachShader(programID, vertexShaderID);
-        glAttachShader(programID, fragmentShaderID);
-        bindAttributes(programID, attributeData);
-        glLinkProgram(programID);
-        glDetachShader(programID, vertexShaderID);
-        glDetachShader(programID, fragmentShaderID);
-        glDeleteShader(vertexShaderID);
-        glDeleteShader(fragmentShaderID);
-        locateInputs(shader, programID);
-        glValidateProgram(programID);
-        shader.setProgramID(programID);
+        shader.construct();
         return shader;
     }
 
-    private static int loadShader(File file, int type) {
+    static int loadShader(File file, int type) {
         int shaderID = glCreateShader(type);
         glShaderSource(shaderID, new String(Utils.loadResourceAsByteArray(file)));
         glCompileShader(shaderID);
@@ -65,40 +47,40 @@ public abstract class ShaderProgram {
     }
 
     @SneakyThrows
-    private static Optional<File> findFileHeader(ShaderProgram instance, String fieldName) {
-        for (Field field : instance.getClass().getDeclaredFields()) {
+    Object findHeader(String fieldName) {
+        for (Field field : this.getClass().getDeclaredFields()) {
             if (Modifier.isStatic(field.getModifiers()) && field.getName().equals(fieldName)) {
                 field.setAccessible(true);
-                return Optional.of((File) field.get(instance));
+                return field.get(this);
             }
         }
-        return Optional.empty();
+        throw new IllegalArgumentException(String.format("Can't find header %s", fieldName));
     }
 
     @SneakyThrows
-    private static Collection<AttributeData> collectAttributeData(ShaderProgram instance) {
+    Collection<AttributeData> collectAttributeData() {
         Collection<AttributeData> attributeData = new ArrayList<>();
-        for (Field field : instance.getClass().getFields()) {
+        for (Field field : this.getClass().getFields()) {
             if (Modifier.isStatic(field.getModifiers()) && field.getType() == AttributeData.class) {
                 field.setAccessible(true);
-                attributeData.add((AttributeData) field.get(instance));
+                attributeData.add((AttributeData) field.get(this));
             }
         }
         return attributeData;
     }
 
-    private static void bindAttributes(int programID, Collection<AttributeData> attributeData) {
+    static void bindAttributes(int programID, Collection<AttributeData> attributeData) {
         for (AttributeData data : attributeData) {
             glBindAttribLocation(programID, data.getIndex(), data.getName());
         }
     }
 
     @SneakyThrows
-    private static void locateInputs(ShaderProgram instance, int programID) {
-        for (Field field : instance.getClass().getDeclaredFields()) {
+    void locateInputs(int programID) {
+        for (Field field : this.getClass().getDeclaredFields()) {
             if (!Modifier.isStatic(field.getModifiers())) {
                 field.setAccessible(true);
-                Object object = field.get(instance);
+                Object object = field.get(this);
                 if (object instanceof Locatable) {
                     Locatable locatable = (Locatable) object;
                     String fieldName = field.getName();
@@ -125,5 +107,4 @@ public abstract class ShaderProgram {
         glUseProgram(0);
         ACTIVE_PROGRAM_ID = -1;
     }
-
 }

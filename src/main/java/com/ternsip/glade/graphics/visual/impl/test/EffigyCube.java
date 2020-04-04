@@ -13,8 +13,8 @@ import org.joml.Vector4f;
 import java.io.File;
 import java.util.Collections;
 
-import static com.ternsip.glade.graphics.shader.base.ShaderProgram.INDICES;
-import static com.ternsip.glade.graphics.shader.base.ShaderProgram.VERTICES;
+import static com.ternsip.glade.graphics.shader.base.RasterShader.INDICES;
+import static com.ternsip.glade.graphics.shader.base.RasterShader.VERTICES;
 import static com.ternsip.glade.graphics.shader.impl.AnimationShader.NORMALS;
 import static com.ternsip.glade.graphics.shader.impl.AnimationShader.TEXTURES;
 

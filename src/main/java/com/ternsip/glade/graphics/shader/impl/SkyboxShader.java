@@ -1,6 +1,6 @@
 package com.ternsip.glade.graphics.shader.impl;
 
-import com.ternsip.glade.graphics.shader.base.ShaderProgram;
+import com.ternsip.glade.graphics.shader.base.RasterShader;
 import com.ternsip.glade.graphics.shader.uniforms.UniformLight;
 import com.ternsip.glade.graphics.shader.uniforms.UniformMatrix4;
 import lombok.AccessLevel;
@@ -12,7 +12,7 @@ import java.io.File;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SkyboxShader extends ShaderProgram {
+public final class SkyboxShader extends RasterShader {
 
     public static final File VERTEX_SHADER = new File("shaders/sky/SkyboxVertexShader.glsl");
     public static final File FRAGMENT_SHADER = new File("shaders/sky/SkyboxFragmentShader.glsl");

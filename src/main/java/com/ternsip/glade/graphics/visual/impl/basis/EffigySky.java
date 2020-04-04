@@ -17,7 +17,7 @@ import org.joml.Vector3fc;
 
 import java.util.Collections;
 
-import static com.ternsip.glade.graphics.shader.base.ShaderProgram.VERTICES;
+import static com.ternsip.glade.graphics.shader.base.RasterShader.VERTICES;
 
 @Getter
 @Setter

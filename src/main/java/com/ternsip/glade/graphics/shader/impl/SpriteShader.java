@@ -1,7 +1,7 @@
 package com.ternsip.glade.graphics.shader.impl;
 
 import com.ternsip.glade.graphics.shader.base.AttributeData;
-import com.ternsip.glade.graphics.shader.base.ShaderProgram;
+import com.ternsip.glade.graphics.shader.base.RasterShader;
 import com.ternsip.glade.graphics.shader.uniforms.UniformMatrix4;
 import com.ternsip.glade.graphics.shader.uniforms.UniformTextureAddress;
 import lombok.AccessLevel;
@@ -12,7 +12,7 @@ import java.io.File;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SpriteShader extends ShaderProgram {
+public final class SpriteShader extends RasterShader {
 
     public static final File VERTEX_SHADER = new File("shaders/sprite/SpriteVertexShader.glsl");
     public static final File FRAGMENT_SHADER = new File("shaders/sprite/SpriteFragmentShader.glsl");

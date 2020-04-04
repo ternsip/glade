@@ -66,11 +66,6 @@ public class EffigySides extends Effigy<ChunkShader> {
     }
 
     @Override
-    public boolean deleteShaderOnFinish() {
-        return true;
-    }
-
-    @Override
     public void finish() {
         super.finish();
         getSideConstructor().finish();

@@ -8,7 +8,7 @@ import java.nio.FloatBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.ternsip.glade.graphics.shader.base.ShaderProgram.VERTICES;
+import static com.ternsip.glade.graphics.shader.base.RasterShader.VERTICES;
 
 @Getter
 public class MeshAttributes {

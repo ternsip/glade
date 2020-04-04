@@ -19,8 +19,8 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.*;
 
-import static com.ternsip.glade.graphics.shader.base.ShaderProgram.INDICES;
-import static com.ternsip.glade.graphics.shader.base.ShaderProgram.VERTICES;
+import static com.ternsip.glade.graphics.shader.base.RasterShader.INDICES;
+import static com.ternsip.glade.graphics.shader.base.RasterShader.VERTICES;
 import static com.ternsip.glade.graphics.shader.impl.ChunkShader.*;
 import static com.ternsip.glade.graphics.visual.base.SideConstructor.SideIndexData.*;
 import static com.ternsip.glade.universe.parts.chunks.BlocksClientRepository.MAX_LIGHT_LEVEL;

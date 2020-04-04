@@ -1,7 +1,7 @@
 package com.ternsip.glade.graphics.shader.impl;
 
 import com.ternsip.glade.graphics.shader.base.AttributeData;
-import com.ternsip.glade.graphics.shader.base.ShaderProgram;
+import com.ternsip.glade.graphics.shader.base.RasterShader;
 import com.ternsip.glade.graphics.shader.uniforms.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -11,7 +11,7 @@ import java.io.File;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AnimationShader extends ShaderProgram {
+public final class AnimationShader extends RasterShader {
 
     public static final int MAX_WEIGHTS = 4;
     public static final int MAX_BONES = 180;
