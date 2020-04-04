@@ -109,7 +109,7 @@ public class EntityPlayerServer extends GraphicalEntityServer {
     }
 
     private Vector3fc tryToMove(Vector3fc startPosition, Vector3fc endPosition) {
-        List<Collision> collisions = getUniverseServer().getCollisions().collideSegment(new LineSegmentf(startPosition, endPosition));
+        List<Collision> collisions = getUniverseServer().getCollisionsServer().collideSegment(new LineSegmentf(startPosition, endPosition));
         if (!collisions.isEmpty()) {
             Vector3fc intersection = collisions.get(0).getPosition();
             Vector3f shift = Maths.normalizeOrEmpty(new Vector3f(startPosition).sub(endPosition)).mul(2 * EPS, new Vector3f());

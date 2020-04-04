@@ -20,7 +20,7 @@ import java.io.File;
 
 @Getter
 @Setter
-public class UniverseServer implements Threadable, INetworkServer, IBlocksRepositoryServer, ICollisions, IBalance, IEntityServerRepository, INetworkServerEventReceiver {
+public class UniverseServer implements Threadable, INetworkServer, IBlocksRepositoryServer, ICollisionsServer, IBalance, IEntityServerRepository, INetworkServerEventReceiver {
 
     @Override
     public void init() {
@@ -31,7 +31,7 @@ public class UniverseServer implements Threadable, INetworkServer, IBlocksReposi
     @Override
     public void update() {
         getEntityServerRepository().update();
-        getCollisions().update();
+        getCollisionsServer().update();
         getNetworkServerEventReceiver().update();
     }
 
@@ -102,8 +102,8 @@ public class UniverseServer implements Threadable, INetworkServer, IBlocksReposi
 
         new EntityGenericServer(() -> new EffigyDynamicText(new File("fonts/default.png"), false, false, new Vector4f(0, 0, 1, 1), "Hello world!"), new Vector3f(0, 0.1f, 0)).register();
 
-        getCollisions().add(new GroundObstacle());
-        getCollisions().add(new ChunksObstacle());
+        getCollisionsServer().add(new GroundObstacle());
+        getCollisionsServer().add(new ChunksObstacle(getBlocksServerRepository()));
 
         for (int i = 0; i < 10; ++i) {
             for (int j = 0; j < 10; ++j) {

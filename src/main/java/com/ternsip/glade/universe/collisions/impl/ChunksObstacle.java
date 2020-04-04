@@ -1,7 +1,7 @@
 package com.ternsip.glade.universe.collisions.impl;
 
 import com.ternsip.glade.universe.collisions.base.Obstacle;
-import com.ternsip.glade.universe.interfaces.IUniverseServer;
+import com.ternsip.glade.universe.parts.chunks.BlocksRepositoryBase;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.joml.AABBf;
@@ -13,16 +13,17 @@ import javax.annotation.Nullable;
 
 @RequiredArgsConstructor
 @Getter
-public class ChunksObstacle implements Obstacle, IUniverseServer {
+public class ChunksObstacle implements Obstacle {
 
     private static final float BLOCK_SAVE_DELTA = 1e-4f;
 
     private final AABBf aabb = new AABBf(-Float.MAX_VALUE, 0, -Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
+    private final BlocksRepositoryBase blocksRepository;
 
     @Nullable
     @Override
     public Vector3fc collideSegment(LineSegmentf segment) {
-        Vector3ic pos = getUniverseServer().getBlocksServerRepository().traverse(segment, (b, p) -> b.isObstacle());
+        Vector3ic pos = blocksRepository.traverse(segment, (b, p) -> b.isObstacle());
         if (pos == null) {
             return null;
         }

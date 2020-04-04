@@ -38,7 +38,7 @@ public class EntityServerRepository extends EntityRepository<EntityServer> imple
     public synchronized <T extends EntityServer> void register(T entity) {
         super.register(entity);
         if (entity instanceof Obstacle) {
-            getUniverseServer().getCollisions().add((Obstacle) entity);
+            getUniverseServer().getCollisionsServer().add((Obstacle) entity);
         }
         if (entity.isTransferable()) {
             getInitiatedConnections().forEach(connection -> getUniverseServer().getServer().send(new RegisterEntityClientPacket(entity, connection), connection));
@@ -49,7 +49,7 @@ public class EntityServerRepository extends EntityRepository<EntityServer> imple
     public synchronized <T extends EntityServer> void unregister(T entity) {
         super.unregister(entity);
         if (entity instanceof Obstacle) {
-            getUniverseServer().getCollisions().remove((Obstacle) entity);
+            getUniverseServer().getCollisionsServer().remove((Obstacle) entity);
         }
         if (entity.isTransferable()) {
             getUniverseServer().getServer().send(new UnregisterEntityClientPacket(entity), getConnectionInitiatedCondition());

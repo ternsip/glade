@@ -6,6 +6,8 @@ import com.ternsip.glade.common.logic.Threadable;
 import com.ternsip.glade.graphics.visual.impl.basis.EffigyAxis;
 import com.ternsip.glade.network.INetworkClientEventReceiver;
 import com.ternsip.glade.universe.bindings.Bind;
+import com.ternsip.glade.universe.collisions.impl.ChunksObstacle;
+import com.ternsip.glade.universe.collisions.impl.GroundObstacle;
 import com.ternsip.glade.universe.entities.base.EntityGeneric;
 import com.ternsip.glade.universe.entities.impl.EntityAim;
 import com.ternsip.glade.universe.entities.impl.EntityCameraEffects;
@@ -24,7 +26,7 @@ import java.io.File;
 
 @Getter
 @Setter
-public class UniverseClient implements Threadable, INetworkClient, IBlocksRepositoryClient, IBindings, IBalance, ISoundRepository, IEntityClientRepository, IEventIOReceiver, INetworkClientEventReceiver {
+public class UniverseClient implements Threadable, INetworkClient, ICollisionsClient, IBlocksRepositoryClient, IBindings, IBalance, ISoundRepository, IEntityClientRepository, IEventIOReceiver, INetworkClientEventReceiver {
 
     private final Callback<OnConnectedToServer> onConnectedToServerCallback = this::whenConnected;
 
@@ -68,6 +70,10 @@ public class UniverseClient implements Threadable, INetworkClient, IBlocksReposi
     }
 
     private void spawnEntities() {
+
+        getCollisionsClient().add(new GroundObstacle());
+        getCollisionsClient().add(new ChunksObstacle(getBlocksClientRepository()));
+
         new EntityCameraEffects().register();
         new EntityStatistics2D(new File("fonts/default.png"), new Vector4f(1, 1, 0, 1), true).register();
 
