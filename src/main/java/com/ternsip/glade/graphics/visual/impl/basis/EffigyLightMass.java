@@ -1,6 +1,5 @@
 package com.ternsip.glade.graphics.visual.impl.basis;
 
-import com.ternsip.glade.common.logic.Timer;
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.general.ShaderBuffer;
 import com.ternsip.glade.graphics.shader.impl.LightMassShader;
@@ -41,12 +40,11 @@ public class EffigyLightMass extends Effigy<LightMassShader> {
     }
 
     public void updateBuffers(ChangeBlocksRequest changeBlocksRequest) {
-        Timer timer = new Timer();
         Vector3ic start = changeBlocksRequest.getStart();
         Vector3ic endExcluding = changeBlocksRequest.getEndExcluding();
         for (int x = start.x(); x < endExcluding.x(); ++x) {
             for (int z = start.z(); z < endExcluding.z(); ++z) {
-                for (int y = start.y(); y < endExcluding.y(); ++y) {
+                for (int y = 0; y < SIZE_Y; ++y) {
                     int index = (int) INDEXER.getIndexLooping(x, y, z);
                     int heightIndex = (int) INDEXER.getIndexLooping(x, 0, z);
                     Block block = getUniverseClient().getBlocksClientRepository().getBlock(x, y, z);
@@ -61,7 +59,6 @@ public class EffigyLightMass extends Effigy<LightMassShader> {
         selfEmitBuffer.updateBuffer();
         heightBuffer.updateBuffer();
         opacityBuffer.updateBuffer();
-        log.info("Light Buffers update time spent: {}s", timer.spent() / 1000.0f); // TODO debug level
     }
 
     //public void applyChanges(BlockSidesUpdateClientPacket blockSidesUpdateClientPacket) {

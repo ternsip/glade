@@ -40,6 +40,10 @@ int loopIndex(int x, int y) {
     return ret;
 }
 
+int limitIndex(int x, int y) {
+    return max(0, min(x, y));
+}
+
 uniform int startX;
 uniform int startY;
 uniform int startZ;
@@ -53,7 +57,7 @@ void main(void) {
     int gid = int(dot(vec3(1, gl_NumWorkGroups.x, gl_NumWorkGroups.y * gl_NumWorkGroups.x), gl_GlobalInvocationID)) % calcSize;
 
     int x = loopIndex(startX + gid % sizeX, SIZE_X);
-    int y = loopIndex(startY + gid / (sizeX * sizeZ), SIZE_Y);
+    int y = limitIndex(startY + gid / (sizeX * sizeZ), SIZE_Y);
     int z = loopIndex(startZ + (gid / sizeX) % sizeZ, SIZE_Z);
     int realIndex = x + y * SIZE_X * SIZE_Z + z * SIZE_X;
     int currentOpacity = opacity[realIndex];
@@ -63,7 +67,7 @@ void main(void) {
 
     for (int k = 0; k < 6; ++k) {
         int nx = loopIndex(x + dx[k], SIZE_X);
-        int ny = loopIndex(y + dy[k], SIZE_Y);
+        int ny = limitIndex(y + dy[k], SIZE_Y);
         int nz = loopIndex(z + dz[k], SIZE_Z);
         int index = nx + ny * SIZE_X * SIZE_Z + nz * SIZE_X;
         bestSkyLight = max(bestSkyLight, sky[index] - boundOpacity);
