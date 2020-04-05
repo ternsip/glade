@@ -34,14 +34,8 @@ layout (std430, binding = 4) buffer heightBuffer {
 layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
 
-int loopIndex(int x, int y) {
-    int ret = x % y;
-    if (ret < 0) ret += y;
-    return ret;
-}
-
-int limitIndex(int x, int y) {
-    return max(0, min(x, y));
+int positiveLoop(int a, int b) {
+    return (b + a % b) % b;
 }
 
 uniform int startX;
@@ -56,9 +50,9 @@ void main(void) {
     int calcSize = sizeX * sizeY * sizeZ;
     int gid = int(dot(vec3(1, gl_NumWorkGroups.x, gl_NumWorkGroups.y * gl_NumWorkGroups.x), gl_GlobalInvocationID)) % calcSize;
 
-    int x = loopIndex(startX + gid % sizeX, SIZE_X);
-    int y = limitIndex(startY + gid / (sizeX * sizeZ), SIZE_Y);
-    int z = loopIndex(startZ + (gid / sizeX) % sizeZ, SIZE_Z);
+    int x = positiveLoop(startX + gid % sizeX, SIZE_X);
+    int y = clamp(startY + gid / (sizeX * sizeZ), 0, SIZE_Y);
+    int z = positiveLoop(startZ + (gid / sizeX) % sizeZ, SIZE_Z);
     int realIndex = x + y * SIZE_X * SIZE_Z + z * SIZE_X;
     int currentOpacity = opacity[realIndex];
     int boundOpacity = max(1, opacity[realIndex]);
@@ -66,9 +60,9 @@ void main(void) {
     int bestEmitLight = selfEmit[realIndex];
 
     for (int k = 0; k < 6; ++k) {
-        int nx = loopIndex(x + dx[k], SIZE_X);
-        int ny = limitIndex(y + dy[k], SIZE_Y);
-        int nz = loopIndex(z + dz[k], SIZE_Z);
+        int nx = positiveLoop(x + dx[k], SIZE_X);
+        int ny = clamp(y + dy[k], 0, SIZE_Y);
+        int nz = positiveLoop(z + dz[k], SIZE_Z);
         int index = nx + ny * SIZE_X * SIZE_Z + nz * SIZE_X;
         bestSkyLight = max(bestSkyLight, sky[index] - boundOpacity);
         bestEmitLight = max(bestEmitLight, emit[index] - boundOpacity);

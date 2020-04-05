@@ -56,9 +56,9 @@ public class EffigyLightMass extends Effigy<LightMassShader> {
                 }
             }
         }
-        selfEmitBuffer.updateBuffer();
-        heightBuffer.updateBuffer();
-        opacityBuffer.updateBuffer();
+        selfEmitBuffer.updateSubBuffer(0, selfEmitBuffer.getData());
+        heightBuffer.updateSubBuffer(0, heightBuffer.getData());
+        opacityBuffer.updateSubBuffer(0, opacityBuffer.getData());
     }
 
     //public void applyChanges(BlockSidesUpdateClientPacket blockSidesUpdateClientPacket) {

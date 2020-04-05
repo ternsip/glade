@@ -157,4 +157,8 @@ public class Maths {
         return number > 0 && ((number & (number - 1)) == 0);
     }
 
+    public static int positiveLoop(int a, int b) {
+        return (b + a % b) % b;
+    }
+
 }

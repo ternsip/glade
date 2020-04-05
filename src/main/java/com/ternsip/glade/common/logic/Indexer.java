@@ -1,48 +1,46 @@
 package com.ternsip.glade.common.logic;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.joml.Vector3ic;
 
 @RequiredArgsConstructor
-@Getter
 public class Indexer {
 
-    private final Vector3ic size;
+    private final int sizeX;
+    private final int sizeY;
+    private final int sizeZ;
 
-    public long getIndex(Vector3ic pos) {
-        return getIndex(pos.x(), pos.y(), pos.z());
+    public Indexer(Vector3ic size) {
+        this.sizeX = size.x();
+        this.sizeY = size.y();
+        this.sizeZ = size.z();
     }
 
     public long getIndex(int x, int y, int z) {
-        return x + y * getSize().x() * getSize().z() + z * getSize().x();
-    }
-
-    public long getIndexLooping(Vector3ic pos) {
-        return getIndexLooping(pos.x(), pos.y(), pos.z());
+        return x + y * sizeX * sizeZ + z * sizeX;
     }
 
     public long getIndexLooping(int x, int y, int z) {
-        int nx = Math.floorMod(x, getSize().x());
-        int ny = Math.floorMod(y, getSize().y());
-        int nz = Math.floorMod(z, getSize().z());
-        return nx + ny * getSize().x() * getSize().z() + nz * getSize().x();
+        int nx = Maths.positiveLoop(x, sizeX);
+        int ny = Maths.positiveLoop(y, sizeY);
+        int nz = Maths.positiveLoop(z, sizeZ);
+        return getIndex(nx, ny, nz);
     }
 
     public int getX(long index) {
-        return (int) (index % getSize().x());
+        return (int) (index % sizeX);
     }
 
     public int getY(long index) {
-        return (int) (index / (getSize().x() * getSize().z()));
+        return (int) (index / (sizeX * sizeZ));
     }
 
     public int getZ(long index) {
-        return (int) ((index / getSize().x()) % getSize().z());
+        return (int) ((index / sizeX) % sizeZ);
     }
 
     public long getVolume() {
-        return (long) getSize().x() * getSize().y() * getSize().z();
+        return (long) sizeX * sizeY * sizeZ;
     }
 
     public boolean isInside(Vector3ic pos) {
@@ -50,11 +48,11 @@ public class Indexer {
     }
 
     public boolean isInside(int x, int y, int z) {
-        return x >= 0 && x < getSize().x() && y >= 0 && y < getSize().y() && z >= 0 && z < getSize().z();
+        return x >= 0 && x < sizeX && y >= 0 && y < sizeY && z >= 0 && z < sizeZ;
     }
 
     public boolean isOnBorder(int x, int y, int z) {
-        return x == 0 || x == getSize().x() - 1 || y == 0 || y == getSize().y() - 1 || z == 0 || z == getSize().z() - 1;
+        return x == 0 || x == sizeX - 1 || y == 0 || y == sizeY - 1 || z == 0 || z == sizeZ - 1;
     }
 
 }
