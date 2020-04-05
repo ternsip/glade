@@ -1,6 +1,7 @@
 package com.ternsip.glade.graphics.shader.impl;
 
 import com.ternsip.glade.graphics.shader.base.AttributeData;
+import com.ternsip.glade.graphics.shader.base.BufferLayout;
 import com.ternsip.glade.graphics.shader.base.RasterShader;
 import com.ternsip.glade.graphics.shader.uniforms.*;
 import lombok.AccessLevel;
@@ -27,6 +28,10 @@ public final class ChunkShader extends RasterShader {
     public static final AttributeData EMIT_LIGHT = new AttributeData(7, "emitLight", 1, AttributeData.ArrayType.FLOAT);
     public static final AttributeData NORMALS = new AttributeData(8, "normal", 3, AttributeData.ArrayType.FLOAT);
     public static final AttributeData BLOCK_TYPE = new AttributeData(9, "blockType", 1, AttributeData.ArrayType.FLOAT);
+    public static final AttributeData FACE_INDEX = new AttributeData(10, "faceIndex", 1, AttributeData.ArrayType.FLOAT);
+
+    private final BufferLayout skyBuffer = new BufferLayout();
+    private final BufferLayout emitBuffer = new BufferLayout();
 
     private final UniformMatrix4 projectionMatrix = new UniformMatrix4();
     private final UniformMatrix4 viewMatrix = new UniformMatrix4();

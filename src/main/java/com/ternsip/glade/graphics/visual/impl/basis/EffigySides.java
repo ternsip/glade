@@ -9,6 +9,7 @@ import com.ternsip.glade.graphics.visual.base.LightSource;
 import com.ternsip.glade.graphics.visual.base.SideConstructor;
 import com.ternsip.glade.universe.common.Light;
 import com.ternsip.glade.universe.entities.impl.EntityCameraEffects;
+import com.ternsip.glade.universe.entities.impl.EntityLightMass;
 import com.ternsip.glade.universe.entities.impl.EntitySun;
 import com.ternsip.glade.universe.parts.chunks.SidesUpdate;
 import lombok.Getter;
@@ -38,6 +39,9 @@ public class EffigySides extends Effigy<ChunkShader> {
     @Override
     public void render() {
         getShader().start();
+        EntityLightMass entityLightMass = getLightMass();
+        getShader().getEmitBuffer().load(entityLightMass.getEffigyLightMass().getEmitBuffer());
+        getShader().getSkyBuffer().load(entityLightMass.getEffigyLightMass().getSkyBuffer());
         getShader().getProjectionMatrix().load(getProjectionMatrix());
         getShader().getViewMatrix().load(getViewMatrix());
         getShader().getTransformationMatrix().load(getTransformationMatrix());
@@ -91,5 +95,8 @@ public class EffigySides extends Effigy<ChunkShader> {
         return new LightSource(sun.getPositionInterpolated(), sun.getColor(), sun.getIntensity());
     }
 
+    public EntityLightMass getLightMass() {
+        return getUniverseClient().getEntityClientRepository().getEntityByClass(EntityLightMass.class);
+    }
 
 }

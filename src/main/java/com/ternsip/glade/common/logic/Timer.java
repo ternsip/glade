@@ -42,6 +42,10 @@ public class Timer {
         setLastTime(System.currentTimeMillis());
     }
 
+    public void grow() {
+        setLastTime(System.currentTimeMillis() - timeout - 1);
+    }
+
     /**
      * Is timer counter is over
      *

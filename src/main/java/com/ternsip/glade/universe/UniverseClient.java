@@ -9,10 +9,7 @@ import com.ternsip.glade.universe.bindings.Bind;
 import com.ternsip.glade.universe.collisions.impl.ChunksObstacle;
 import com.ternsip.glade.universe.collisions.impl.GroundObstacle;
 import com.ternsip.glade.universe.entities.base.EntityGeneric;
-import com.ternsip.glade.universe.entities.impl.EntityAim;
-import com.ternsip.glade.universe.entities.impl.EntityCameraEffects;
-import com.ternsip.glade.universe.entities.impl.EntitySides;
-import com.ternsip.glade.universe.entities.impl.EntityStatistics2D;
+import com.ternsip.glade.universe.entities.impl.*;
 import com.ternsip.glade.universe.entities.ui.EntityUIMenu;
 import com.ternsip.glade.universe.entities.ui.UIInventory;
 import com.ternsip.glade.universe.interfaces.*;
@@ -84,6 +81,7 @@ public class UniverseClient implements Threadable, INetworkClient, ICollisionsCl
         getBindings().addBindCallback(Bind.TEST_BUTTON, () -> getClient().send(new ConsoleMessageServerPacket("HELLO 123")));
 
         new EntitySides().register();
+        new EntityLightMass().register();
     }
 
     private void whenConnected(OnConnectedToServer onConnectedToServer) {

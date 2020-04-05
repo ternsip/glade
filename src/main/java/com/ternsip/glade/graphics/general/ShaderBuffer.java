@@ -14,12 +14,18 @@ public class ShaderBuffer {
     public ShaderBuffer(int[] data) {
         this.ssbo = glGenBuffers();
         this.data = data;
-        updateBuffers();
+        updateBuffer();
     }
 
-    public void updateBuffers() {
+    public void updateBuffer() {
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, getSsbo());
-        glBufferData(GL_SHADER_STORAGE_BUFFER, getData(), GL_STREAM_DRAW);
+        glBufferData(GL_SHADER_STORAGE_BUFFER, getData(), GL_DYNAMIC_DRAW);
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+    }
+
+    public void updateSubBuffer(int offset, int[] subData) {
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, getSsbo());
+        glBufferSubData(GL_SHADER_STORAGE_BUFFER, offset, subData);
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
     }
 

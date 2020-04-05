@@ -9,9 +9,9 @@ import com.ternsip.glade.graphics.interfaces.IGraphics;
 import com.ternsip.glade.graphics.shader.base.MeshAttributes;
 import com.ternsip.glade.universe.parts.blocks.Block;
 import com.ternsip.glade.universe.parts.blocks.BlockSide;
-import com.ternsip.glade.universe.parts.chunks.SidesUpdate;
 import com.ternsip.glade.universe.parts.chunks.Side;
 import com.ternsip.glade.universe.parts.chunks.SidePosition;
+import com.ternsip.glade.universe.parts.chunks.SidesUpdate;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -23,7 +23,7 @@ import static com.ternsip.glade.graphics.shader.base.RasterShader.INDICES;
 import static com.ternsip.glade.graphics.shader.base.RasterShader.VERTICES;
 import static com.ternsip.glade.graphics.shader.impl.ChunkShader.*;
 import static com.ternsip.glade.graphics.visual.base.SideConstructor.SideIndexData.*;
-import static com.ternsip.glade.universe.parts.chunks.BlocksClientRepository.MAX_LIGHT_LEVEL;
+import static com.ternsip.glade.universe.parts.chunks.BlocksClientRepository.INDEXER;
 
 public class SideConstructor implements IGraphics {
 
@@ -103,14 +103,13 @@ public class SideConstructor implements IGraphics {
                     new MeshAttributes()
                             .add(INDICES, Utils.arrayToBuffer(new int[SIDES_PER_MESH * INDEX_SIDE_SIZE]))
                             .add(VERTICES, Utils.arrayToBuffer(new float[SIDES_PER_MESH * VERTEX_SIDE_SIZE]))
-                            .add(SKY_LIGHT, Utils.arrayToBuffer(new float[SIDES_PER_MESH * SKY_LIGHT_SIDE_SIZE]))
-                            .add(EMIT_LIGHT, Utils.arrayToBuffer(new float[SIDES_PER_MESH * EMIT_LIGHT_SIDE_SIZE]))
                             .add(NORMALS, Utils.arrayToBuffer(new float[SIDES_PER_MESH * NORMAL_SIDE_SIZE]))
                             .add(TEXTURES, Utils.arrayToBuffer(new float[SIDES_PER_MESH * TEXTURE_SIDE_SIZE]))
                             .add(ATLAS_NUMBER, Utils.arrayToBuffer(new float[SIDES_PER_MESH * ATLAS_NUMBER_SIDE_SIZE]))
                             .add(ATLAS_LAYER, Utils.arrayToBuffer(new float[SIDES_PER_MESH * ATLAS_LAYER_SIDE_SIZE]))
                             .add(ATLAS_MAX_UV, Utils.arrayToBuffer(new float[SIDES_PER_MESH * ATLAS_MAX_UV_SIDE_SIZE]))
-                            .add(BLOCK_TYPE, Utils.arrayToBuffer(new float[SIDES_PER_MESH * BLOCK_TYPE_SIDE_SIZE])),
+                            .add(BLOCK_TYPE, Utils.arrayToBuffer(new float[SIDES_PER_MESH * BLOCK_TYPE_SIDE_SIZE]))
+                            .add(FACE_INDEX, Utils.arrayToBuffer(new float[SIDES_PER_MESH * FACE_INDEX_SIDE_SIZE])),
                     new Material(), true
             );
             mesh.setIndicesCount(0);
@@ -196,18 +195,6 @@ public class SideConstructor implements IGraphics {
         sideIndexDataDst.getVertices().position(sideIndexDataDst.getVertexPos());
         sideIndexDataDst.getVertices().put(vertices);
 
-        float[] skyLights = new float[SKY_LIGHT_SIDE_SIZE];
-        sideIndexDataSrc.getSkyLights().position(sideIndexDataSrc.getSkyLightPos());
-        sideIndexDataSrc.getSkyLights().get(skyLights);
-        sideIndexDataDst.getSkyLights().position(sideIndexDataDst.getSkyLightPos());
-        sideIndexDataDst.getSkyLights().put(skyLights);
-
-        float[] emitLights = new float[EMIT_LIGHT_SIDE_SIZE];
-        sideIndexDataSrc.getEmitLights().position(sideIndexDataSrc.getEmitLightPos());
-        sideIndexDataSrc.getEmitLights().get(emitLights);
-        sideIndexDataDst.getEmitLights().position(sideIndexDataDst.getEmitLightPos());
-        sideIndexDataDst.getEmitLights().put(emitLights);
-
         float[] blockTypes = new float[BLOCK_TYPE_SIDE_SIZE];
         sideIndexDataSrc.getBlockTypes().position(sideIndexDataSrc.getBlockTypePos());
         sideIndexDataSrc.getBlockTypes().get(blockTypes);
@@ -244,6 +231,12 @@ public class SideConstructor implements IGraphics {
         sideIndexDataDst.getAtlasMaxUV().position(sideIndexDataDst.getAtlasMaxUVPos());
         sideIndexDataDst.getAtlasMaxUV().put(atlasMaxUV);
 
+        float[] faceIndices = new float[FACE_INDEX_SIDE_SIZE];
+        sideIndexDataSrc.getFaceIndices().position(sideIndexDataSrc.getFaceIndexPos());
+        sideIndexDataSrc.getFaceIndices().get(faceIndices);
+        sideIndexDataDst.getFaceIndices().position(sideIndexDataDst.getFaceIndexPos());
+        sideIndexDataDst.getFaceIndices().put(faceIndices);
+
     }
 
     private void fillSide(int sideIndex, Side side) {
@@ -254,13 +247,18 @@ public class SideConstructor implements IGraphics {
         int dx = side.getSidePosition().getX();
         int dy = side.getSidePosition().getY();
         int dz = side.getSidePosition().getZ();
-        Texture atlasFragment = getGraphics().getTexturePackRepository().getCubeMap(side.getSideData().getBlock()).getTextureByBlockSide(blockSide);
+        int index = (int) INDEXER.getIndexLooping(
+                dx + blockSide.getAdjacentBlockOffset().x(),
+                dy + blockSide.getAdjacentBlockOffset().y(),
+                dz + blockSide.getAdjacentBlockOffset().z()
+        );
+        Texture atlasFragment = getGraphics().getTexturePackRepository().getCubeMap(side.getBlock()).getTextureByBlockSide(blockSide);
 
         for (int i = 0; i < SIDE_INDICES.length; ++i) {
             sideIndexData.getIndices().put(i + sideIndexData.getIndexPos(), SIDE_INDICES[i] + sideIndexData.getVertexStart());
         }
 
-        int blockType = side.getSideData().getBlock() == Block.WATER ? BLOCK_TYPE_WATER : BLOCK_TYPE_NORMAL;
+        int blockType = side.getBlock() == Block.WATER ? BLOCK_TYPE_WATER : BLOCK_TYPE_NORMAL;
 
         for (int i = 0; i < VERTICES_PER_SIDE; i++) {
             int vIdx = i * VERTICES.getNumberPerVertex();
@@ -268,8 +266,6 @@ public class SideConstructor implements IGraphics {
             sideIndexData.getVertices().put(vIdx + sideIndexData.getVertexPos() + 1, cubeSideMeshData.getVertices()[vIdx + 1] + dy);
             sideIndexData.getVertices().put(vIdx + sideIndexData.getVertexPos() + 2, cubeSideMeshData.getVertices()[vIdx + 2] + dz);
 
-            sideIndexData.getSkyLights().put(i * SKY_LIGHT.getNumberPerVertex() + sideIndexData.getSkyLightPos(), (float) side.getSideData().getSkyLight() / MAX_LIGHT_LEVEL);
-            sideIndexData.getEmitLights().put(i * EMIT_LIGHT.getNumberPerVertex() + sideIndexData.getEmitLightPos(), (float) side.getSideData().getEmitLight() / MAX_LIGHT_LEVEL);
             sideIndexData.getBlockTypes().put(i * BLOCK_TYPE.getNumberPerVertex() + sideIndexData.getBlockTypePos(), blockType);
 
             int nIdx = i * NORMALS.getNumberPerVertex();
@@ -290,6 +286,8 @@ public class SideConstructor implements IGraphics {
             int aMaxUVIdx = i * ATLAS_MAX_UV.getNumberPerVertex();
             sideIndexData.getAtlasMaxUV().put(aMaxUVIdx + sideIndexData.getAtlasMaxUVPos(), atlasFragment.getAtlasTexture().getMaxUV().x());
             sideIndexData.getAtlasMaxUV().put(aMaxUVIdx + sideIndexData.getAtlasMaxUVPos() + 1, atlasFragment.getAtlasTexture().getMaxUV().y());
+
+            sideIndexData.getFaceIndices().put(i * FACE_INDEX.getNumberPerVertex() + sideIndexData.getFaceIndexPos(), index);
         }
 
     }
@@ -319,9 +317,8 @@ public class SideConstructor implements IGraphics {
         public static final int ATLAS_NUMBER_SIDE_SIZE = VERTICES_PER_SIDE * ATLAS_NUMBER.getNumberPerVertex();
         public static final int ATLAS_LAYER_SIDE_SIZE = VERTICES_PER_SIDE * ATLAS_LAYER.getNumberPerVertex();
         public static final int ATLAS_MAX_UV_SIDE_SIZE = VERTICES_PER_SIDE * ATLAS_MAX_UV.getNumberPerVertex();
-        public static final int SKY_LIGHT_SIDE_SIZE = VERTICES_PER_SIDE * SKY_LIGHT.getNumberPerVertex();
-        public static final int EMIT_LIGHT_SIDE_SIZE = VERTICES_PER_SIDE * EMIT_LIGHT.getNumberPerVertex();
         public static final int BLOCK_TYPE_SIDE_SIZE = VERTICES_PER_SIDE * BLOCK_TYPE.getNumberPerVertex();
+        public static final int FACE_INDEX_SIDE_SIZE = VERTICES_PER_SIDE * FACE_INDEX.getNumberPerVertex();
 
         int vertexStart;
         int vertexPos;
@@ -331,20 +328,18 @@ public class SideConstructor implements IGraphics {
         int atlasNumberPos;
         int atlasLayerPos;
         int atlasMaxUVPos;
-        int skyLightPos;
-        int emitLightPos;
         int blockTypePos;
+        int faceIndexPos;
 
         IntBuffer indices;
         FloatBuffer vertices;
-        FloatBuffer skyLights;
-        FloatBuffer emitLights;
         FloatBuffer normals;
         FloatBuffer textures;
         FloatBuffer atlasNumber;
         FloatBuffer atlasLayer;
         FloatBuffer atlasMaxUV;
         FloatBuffer blockTypes;
+        FloatBuffer faceIndices;
 
         public SideIndexData(int sideIndex, ArrayList<Mesh> meshes) {
 
@@ -362,20 +357,18 @@ public class SideConstructor implements IGraphics {
             this.atlasNumberPos = sideOffset * ATLAS_NUMBER_SIDE_SIZE;
             this.atlasLayerPos = sideOffset * ATLAS_LAYER_SIDE_SIZE;
             this.atlasMaxUVPos = sideOffset * ATLAS_MAX_UV_SIDE_SIZE;
-            this.skyLightPos = sideOffset * SKY_LIGHT_SIDE_SIZE;
-            this.emitLightPos = sideOffset * EMIT_LIGHT_SIDE_SIZE;
             this.blockTypePos = sideOffset * BLOCK_TYPE_SIDE_SIZE;
+            this.faceIndexPos = sideOffset * FACE_INDEX_SIDE_SIZE;
 
             this.indices = meshAttributes.getBuffer(INDICES);
             this.vertices = meshAttributes.getBuffer(VERTICES);
-            this.skyLights = meshAttributes.getBuffer(SKY_LIGHT);
-            this.emitLights = meshAttributes.getBuffer(EMIT_LIGHT);
             this.normals = meshAttributes.getBuffer(NORMALS);
             this.textures = meshAttributes.getBuffer(TEXTURES);
             this.atlasNumber = meshAttributes.getBuffer(ATLAS_NUMBER);
             this.atlasLayer = meshAttributes.getBuffer(ATLAS_LAYER);
             this.atlasMaxUV = meshAttributes.getBuffer(ATLAS_MAX_UV);
             this.blockTypes = meshAttributes.getBuffer(BLOCK_TYPE);
+            this.faceIndices = meshAttributes.getBuffer(FACE_INDEX);
 
         }
     }

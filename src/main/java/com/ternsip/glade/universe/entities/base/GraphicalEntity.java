@@ -10,7 +10,6 @@ import org.joml.Vector3ic;
 import java.io.ObjectInputStream;
 
 import static com.ternsip.glade.common.logic.Maths.round;
-import static com.ternsip.glade.universe.parts.chunks.BlocksClientRepository.MAX_LIGHT_LEVEL;
 
 @Getter
 @Setter
@@ -35,7 +34,7 @@ public abstract class GraphicalEntity<T extends Effigy> extends EntityClient {
     public void update() {
         super.update();
         Vector3ic blockPos = round(getPosition());
-        setSkyIntensity(getUniverseClient().getBlocksClientRepository().isBlockExists(blockPos) ? getUniverseClient().getBlocksClientRepository().getSkyLight(blockPos) / (float) MAX_LIGHT_LEVEL : 1);
+        setSkyIntensity(1); // TODO fix that
     }
 
     /**
