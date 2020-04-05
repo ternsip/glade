@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
 
+import java.util.Arrays;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 import static com.ternsip.glade.universe.parts.chunks.BlocksClientRepository.*;
@@ -42,38 +43,61 @@ public class EffigyLightMass extends Effigy<LightMassShader> {
     public void updateBuffers(ChangeBlocksRequest changeBlocksRequest) {
         Vector3ic start = changeBlocksRequest.getStart();
         Vector3ic endExcluding = changeBlocksRequest.getEndExcluding();
+        int minIndexMinor = Integer.MAX_VALUE;
+        int maxIndexMinor = -1;
+        int minIndexMajor = Integer.MAX_VALUE;
+        int maxIndexMajor = -1;
+        int minIndexHeightMinor = Integer.MAX_VALUE;
+        int maxIndexHeightMinor = -1;
+        int minIndexHeightMajor = Integer.MAX_VALUE;
+        int maxIndexHeightMajor = -1;
+        int startIndex = (int) INDEXER.getIndexLooping(start.x(), start.y(), start.z());
+        int startHeightIndex = (int) INDEXER_XZ.getIndexLooping(start.x(), start.z());
         for (int x = start.x(); x < endExcluding.x(); ++x) {
             for (int z = start.z(); z < endExcluding.z(); ++z) {
-                for (int y = 0; y < SIZE_Y; ++y) {
+                for (int y = start.y(); y < endExcluding.y(); ++y) {
                     int index = (int) INDEXER.getIndexLooping(x, y, z);
-                    int heightIndex = (int) INDEXER.getIndexLooping(x, 0, z);
                     Block block = getUniverseClient().getBlocksClientRepository().getBlock(x, y, z);
                     selfEmitBuffer.getData()[index] = block.getEmitLight();
                     opacityBuffer.getData()[index] = block.getLightOpacity();
-                    if (block != Block.AIR) {
-                        heightBuffer.getData()[heightIndex] = y + 1;
+                    if (index < startIndex) {
+                        minIndexMinor = Math.min(minIndexMinor, index);
+                        maxIndexMinor = Math.max(maxIndexMinor, index);
+                    } else {
+                        minIndexMajor = Math.min(minIndexMajor, index);
+                        maxIndexMajor = Math.max(maxIndexMajor, index);
                     }
+                }
+                int heightIndex = (int) INDEXER_XZ.getIndexLooping(x, z);
+                if (heightBuffer.getData()[heightIndex] <= endExcluding.y()) {
+                    int yAir = endExcluding.y() - 1;
+                    for (; yAir >= 0; --yAir) {
+                        if (getUniverseClient().getBlocksClientRepository().getBlock(x, yAir, z) != Block.AIR) {
+                            break;
+                        }
+                    }
+                    heightBuffer.getData()[heightIndex] = yAir + 1;
+                }
+                if (heightIndex < startHeightIndex) {
+                    minIndexHeightMinor = Math.min(minIndexHeightMinor, heightIndex);
+                    maxIndexHeightMinor = Math.max(maxIndexHeightMinor, heightIndex);
+                } else {
+                    minIndexHeightMajor = Math.min(minIndexHeightMajor, heightIndex);
+                    maxIndexHeightMajor = Math.max(maxIndexHeightMajor, heightIndex);
                 }
             }
         }
-        selfEmitBuffer.updateSubBuffer(0, selfEmitBuffer.getData());
-        heightBuffer.updateSubBuffer(0, heightBuffer.getData());
-        opacityBuffer.updateSubBuffer(0, opacityBuffer.getData());
-    }
+        // TODO do not copy every time, update from origin instead using pointers, or use some kind of buffer
+        if (maxIndexMinor != -1) {
+            selfEmitBuffer.updateSubBuffer(minIndexMinor, Arrays.copyOfRange(selfEmitBuffer.getData(), minIndexMinor, maxIndexMinor + 1));
+            opacityBuffer.updateSubBuffer(minIndexMinor, Arrays.copyOfRange(opacityBuffer.getData(), minIndexMinor, maxIndexMinor + 1));
+            heightBuffer.updateSubBuffer(minIndexHeightMinor, Arrays.copyOfRange(heightBuffer.getData(), minIndexHeightMinor, maxIndexHeightMinor + 1));
+        }
+        selfEmitBuffer.updateSubBuffer(minIndexMajor, Arrays.copyOfRange(selfEmitBuffer.getData(), minIndexMajor, maxIndexMajor + 1));
+        opacityBuffer.updateSubBuffer(minIndexMajor, Arrays.copyOfRange(opacityBuffer.getData(), minIndexMajor, maxIndexMajor + 1));
+        heightBuffer.updateSubBuffer(minIndexHeightMajor, Arrays.copyOfRange(heightBuffer.getData(), minIndexHeightMajor, maxIndexHeightMajor + 1));
 
-    //public void applyChanges(BlockSidesUpdateClientPacket blockSidesUpdateClientPacket) {
-//
-    //    blockSidesUpdateClientPacket.getBlocksToChange().getPositionToBlock().forEach((pos, block) -> {
-    //        long index = (int) INDEXER.getIndexLooping(pos);
-    //        int x = INDEXER.getX(index);
-    //        int y = INDEXER.getY(index);
-    //        int z = INDEXER.getZ(index);
-    //        blocks[x][y][z] = block;
-    //        selfEmitBuffer.getData()[(int) index] = block.getEmitLight();
-    //        opacityBuffer.getData()[(int) index] = block.getLightOpacity();
-    //    });
-//
-    //}
+    }
 
     @Override
     public void render() {

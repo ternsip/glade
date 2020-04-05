@@ -1,9 +1,11 @@
 package com.ternsip.glade.common.logic;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.joml.Vector3ic;
 
 @RequiredArgsConstructor
+@Getter
 public class Indexer {
 
     private final int sizeX;
@@ -17,7 +19,7 @@ public class Indexer {
     }
 
     public long getIndex(int x, int y, int z) {
-        return x + y * sizeX * sizeZ + z * sizeX;
+        return y + x * sizeY * sizeZ + z * sizeY;
     }
 
     public long getIndexLooping(int x, int y, int z) {
@@ -28,15 +30,15 @@ public class Indexer {
     }
 
     public int getX(long index) {
-        return (int) (index % sizeX);
+        return (int) (index / (sizeY * sizeZ));
     }
 
     public int getY(long index) {
-        return (int) (index / (sizeX * sizeZ));
+        return (int) (index % sizeY);
     }
 
     public int getZ(long index) {
-        return (int) ((index / sizeX) % sizeZ);
+        return (int) ((index / sizeY) % sizeZ);
     }
 
     public long getVolume() {

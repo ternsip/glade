@@ -25,7 +25,7 @@ public class ShaderBuffer {
 
     public void updateSubBuffer(int offset, int[] subData) {
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, getSsbo());
-        glBufferSubData(GL_SHADER_STORAGE_BUFFER, offset, subData);
+        glBufferSubData(GL_SHADER_STORAGE_BUFFER, Integer.BYTES * offset, subData);
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
     }
 

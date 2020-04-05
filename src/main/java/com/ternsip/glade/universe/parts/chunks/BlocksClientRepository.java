@@ -1,6 +1,7 @@
 package com.ternsip.glade.universe.parts.chunks;
 
 import com.ternsip.glade.common.logic.Indexer;
+import com.ternsip.glade.common.logic.Indexer2D;
 import com.ternsip.glade.common.logic.Threadable;
 import com.ternsip.glade.universe.interfaces.IUniverseClient;
 import com.ternsip.glade.universe.parts.blocks.Block;
@@ -20,6 +21,7 @@ public class BlocksClientRepository extends BlocksRepositoryBase implements Thre
 
     public static final int VIEW_DISTANCE = 256;
     public static final Indexer INDEXER = new Indexer(new Vector3i(VIEW_DISTANCE));
+    public static final Indexer2D INDEXER_XZ = new Indexer2D(VIEW_DISTANCE, VIEW_DISTANCE);
     public static final byte MAX_LIGHT_LEVEL = 15;
 
     private final Map<SidePosition, Block> sides = new HashMap<>();
