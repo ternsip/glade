@@ -38,15 +38,6 @@ public class EffigyLightMass extends Effigy<LightMassShader> {
     private final ShaderBuffer opacityBuffer = new ShaderBuffer(new int[(int) VISIBILITY_INDEXER.getVolume()]);
     private final ShaderBuffer heightBuffer = new ShaderBuffer(new int[(int) HEIGHTS_INDEXER.getVolume()]);
 
-    public void finish() {
-        getSkyBuffer().finish();
-        getEmitBuffer().finish();
-        getSelfEmitBuffer().finish();
-        getOpacityBuffer().finish();
-        getHeightBuffer().finish();
-    }
-
-    // TODO multithreading
     public void updateBuffers(ChangeBlocksRequest changeBlocksRequest) {
         Vector3ic start = changeBlocksRequest.getStart();
         Vector3ic endExcluding = changeBlocksRequest.getEndExcluding();
@@ -144,6 +135,14 @@ public class EffigyLightMass extends Effigy<LightMassShader> {
     public boolean deleteModelOnFinish() {
         // TODO remove this method
         return true;
+    }
+
+    public void finish() {
+        getSkyBuffer().finish();
+        getEmitBuffer().finish();
+        getSelfEmitBuffer().finish();
+        getOpacityBuffer().finish();
+        getHeightBuffer().finish();
     }
 
     @Override
