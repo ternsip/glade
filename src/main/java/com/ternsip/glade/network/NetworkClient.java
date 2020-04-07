@@ -108,7 +108,7 @@ public class NetworkClient implements Threadable, IUniverseClient {
     private void handleTermination(Exception e) {
         if (getConnection().isActive()) {
             disconnect();
-            log.debug("Connection to server has been terminated", e);
+            log.info("Connection to server has been terminated", e);
         }
     }
 

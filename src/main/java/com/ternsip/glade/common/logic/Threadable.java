@@ -1,5 +1,7 @@
 package com.ternsip.glade.common.logic;
 
+import lombok.SneakyThrows;
+
 public interface Threadable {
 
     void init();
@@ -8,7 +10,8 @@ public interface Threadable {
 
     void finish();
 
-    default void lock() throws InterruptedException {
+    @SneakyThrows
+    default void lock() {
         synchronized (this) {
             this.wait();
         }

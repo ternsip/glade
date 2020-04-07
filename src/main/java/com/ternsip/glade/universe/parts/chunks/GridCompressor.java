@@ -3,24 +3,23 @@ package com.ternsip.glade.universe.parts.chunks;
 import com.ternsip.glade.common.logic.Maths;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.joml.Vector3i;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.*;
 
 import static com.ternsip.glade.universe.parts.chunks.BlocksServerRepository.*;
+import static java.util.Collections.synchronizedMap;
 
 /**
  * Compressor of of 3d space of integer cells (voxels/blocks/cubes)
  * Uses octree to infuse similar nodes and to not duplicate memory when similar pattern occurs
  * The more diversity 3d space have - the less compression level is
  */
-public class GridCompressor implements Serializable {
+public class GridCompressor {
 
     private static final int SIZE = Maths.max(SIZE_X, SIZE_Y, SIZE_Z);
     private static final int NODES = SIZE / 2;
@@ -28,19 +27,19 @@ public class GridCompressor implements Serializable {
     private static final int CHUNK_DEPTH = Maths.log2(NODES / Chunk.NODES);
 
     // Special buffers to decrease memory bandwidth
-    private Hash[] hashesBuffer = new Hash[Chunk.NODES * Chunk.NODES * Chunk.NODES];
-    private int[] indexPathBuffer = new int[CHUNK_DEPTH];
-    private Node[] nodePathBuffer = new Node[CHUNK_DEPTH];
+    private final Hash[] hashesBuffer = new Hash[Chunk.NODES * Chunk.NODES * Chunk.NODES];
+    private final int[] indexPathBuffer = new int[CHUNK_DEPTH];
+    private final Node[] nodePathBuffer = new Node[CHUNK_DEPTH];
 
     // This map is used to cache chunks by chunk-coordinate
-    private HashMap<Vector3i, Chunk> posToChunk = new HashMap<>();
+    private final Map<Vector3i, Chunk> posToChunk = synchronizedMap(new HashMap<>());
 
     // Octree general structure, holding mapping: hash of some node -> to that node
     // Remember that leaf nodes are just hashes that keeps real data, not some kind of other classes
-    private HashMap<Hash, Node> hashToNode = new HashMap<>();
+    private final Map<Hash, Node> hashToNode = synchronizedMap(new HashMap<>());
 
     // The root of octree
-    private Hash root;
+    private volatile Hash root;
 
     static {
         if (!Maths.isPowerOfTwo(SIZE) || SIZE < 2) {
@@ -70,32 +69,6 @@ public class GridCompressor implements Serializable {
     public synchronized void write(int x, int y, int z, int value) {
         Chunk chunk = loadChunk(x / Chunk.SIZE, y / Chunk.SIZE, z / Chunk.SIZE);
         chunk.values[x % Chunk.SIZE][y % Chunk.SIZE][z % Chunk.SIZE] = value;
-    }
-
-    public synchronized void read(int[][][] values, int startX, int startY, int startZ) {
-        int sizeX = values.length;
-        int sizeY = values[0].length;
-        int sizeZ = values[0][0].length;
-        for (int x = 0; x < sizeX; ++x) {
-            for (int y = 0; y < sizeY; ++y) {
-                for (int z = 0; z < sizeZ; ++z) {
-                    values[x][y][z] = read(startX + x, startY + y, startZ + z); // TODO slow due to chunk map, load each chunk and fill with it
-                }
-            }
-        }
-    }
-
-    public synchronized void write(int[][][] values, int startX, int startY, int startZ) {
-        int sizeX = values.length;
-        int sizeY = values[0].length;
-        int sizeZ = values[0][0].length;
-        for (int x = 0; x < sizeX; ++x) {
-            for (int y = 0; y < sizeY; ++y) {
-                for (int z = 0; z < sizeZ; ++z) {
-                    write(startX + x, startY + y, startZ + z, values[x][y][z]); // TODO slow due to chunk map, load each chunk and fill with it
-                }
-            }
-        }
     }
 
     public synchronized void saveChunks() {
@@ -244,51 +217,53 @@ public class GridCompressor implements Serializable {
         return pointer;
     }
 
-    private synchronized void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
-        // TODO infuse with class default definition, get rid of boilerplate
-        hashesBuffer = new Hash[Chunk.NODES * Chunk.NODES * Chunk.NODES];
-        indexPathBuffer = new int[CHUNK_DEPTH];
-        nodePathBuffer = new Node[CHUNK_DEPTH];
-        posToChunk = new HashMap<>();
-        hashToNode = new HashMap<>();
-        int size = ois.readInt();
+    @SneakyThrows
+    public synchronized void fromBytes(byte[] bytes) {
+        DataInputStream dis = new DataInputStream(new ByteArrayInputStream(bytes));
+        posToChunk.clear();
+        hashToNode.clear();
+        int size = dis.readInt();
         for (int i = 0; i < size; ++i) {
             Hash hash = new Hash();
             for (int j = 0; j < Hash.LENGTH; ++j) {
-                hash.values[j] = ois.readInt();
+                hash.values[j] = dis.readInt();
             }
             Node node = new Node();
             for (int c = 0; c < 8; ++c) {
                 node.children[c] = new Hash();
                 for (int j = 0; j < Hash.LENGTH; ++j) {
-                    node.children[c].values[j] = ois.readInt();
+                    node.children[c].values[j] = dis.readInt();
                 }
             }
             hashToNode.put(hash, node);
         }
         root = new Hash();
         for (int j = 0; j < Hash.LENGTH; ++j) {
-            root.values[j] = ois.readInt();
+            root.values[j] = dis.readInt();
         }
     }
 
-    private synchronized void writeObject(ObjectOutputStream oos) throws IOException {
-        oos.writeInt(hashToNode.size());
+    @SneakyThrows
+    public synchronized byte[] toBytes() {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream(baos);
+        dos.writeInt(hashToNode.size());
         for (Map.Entry<Hash, Node> entry : hashToNode.entrySet()) {
             Hash hash = entry.getKey();
             Node node = entry.getValue();
             for (int j = 0; j < Hash.LENGTH; ++j) {
-                oos.writeInt(hash.values[j]);
+                dos.writeInt(hash.values[j]);
             }
             for (int c = 0; c < 8; ++c) {
                 for (int j = 0; j < Hash.LENGTH; ++j) {
-                    oos.writeInt(node.children[c].values[j]);
+                    dos.writeInt(node.children[c].values[j]);
                 }
             }
         }
         for (int j = 0; j < Hash.LENGTH; ++j) {
-            oos.writeInt(root.values[j]);
+            dos.writeInt(root.values[j]);
         }
+        return baos.toByteArray();
     }
 
     /**

@@ -16,14 +16,6 @@ public class EntitySides extends GraphicalEntity<EffigySides> {
     private int observerViewDistance = 0;
 
     @Override
-    public void update(EffigySides effigy) {
-        super.update(effigy);
-        if (!getUniverseClient().getBlocksClientRepository().getSidesUpdates().isEmpty()) {
-            effigy.applyChanges(getUniverseClient().getBlocksClientRepository().getSidesUpdates().poll());
-        }
-    }
-
-    @Override
     public EffigySides getEffigy() {
         return new EffigySides();
     }

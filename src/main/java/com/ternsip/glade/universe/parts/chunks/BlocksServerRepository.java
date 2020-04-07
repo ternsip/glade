@@ -71,17 +71,17 @@ public class BlocksServerRepository extends BlocksRepositoryBase implements Thre
     }
 
     private void whenClientConnected(OnClientConnect onClientConnect) {
-        getUniverseServer().getServer().send(new GridTransferClientPacket(getGridBlocks()), onClientConnect.getConnection());
+        getUniverseServer().getServer().send(new GridTransferClientPacket(getGridBlocks().toBytes()), onClientConnect.getConnection());
     }
 
     private void saveToDisk() {
         getGridBlocks().saveChunks();
         getGridBlocks().cleanTree();
-        storage.save("block", getGridBlocks());
+        storage.save("block", getGridBlocks().toBytes());
     }
 
     private void loadFromDisk() {
-        setGridBlocks(storage.load("block"));
+        getGridBlocks().fromBytes(storage.load("block"));
     }
 
 }

@@ -11,12 +11,9 @@ import lombok.Setter;
 @Setter
 public class EntityLightMass extends GraphicalEntity<EffigyLightMass> {
 
-    private EffigyLightMass effigyLightMass;
-
     @Override
     public EffigyLightMass getEffigy() {
-        effigyLightMass = new EffigyLightMass(getUniverseClient().getBlocksClientRepository().getChangeBlocksRequests());
-        return effigyLightMass;
+        return new EffigyLightMass();
     }
 
 }

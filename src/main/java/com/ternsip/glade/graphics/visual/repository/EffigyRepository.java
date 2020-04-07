@@ -61,4 +61,13 @@ public class EffigyRepository implements IUniverseClient, IGraphics {
         });
     }
 
+    @SuppressWarnings("unchecked")
+    public final <T extends Effigy> T getEffigyByEntity(GraphicalEntity<T> entity) {
+        Object effigy = getEntityToEffigy().get(entity);
+        if (effigy == null) {
+            throw new IllegalArgumentException(String.format("No effigy mapping for entity %s", entity.getClass()));
+        }
+        return (T) effigy;
+    }
+
 }

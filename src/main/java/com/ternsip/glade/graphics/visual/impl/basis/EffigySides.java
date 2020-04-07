@@ -11,7 +11,6 @@ import com.ternsip.glade.universe.common.Light;
 import com.ternsip.glade.universe.entities.impl.EntityCameraEffects;
 import com.ternsip.glade.universe.entities.impl.EntityLightMass;
 import com.ternsip.glade.universe.entities.impl.EntitySun;
-import com.ternsip.glade.universe.parts.chunks.SidesUpdate;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.Matrix4f;
@@ -26,10 +25,6 @@ public class EffigySides extends Effigy<ChunkShader> {
 
     private final SideConstructor sideConstructor = new SideConstructor();
 
-    public void applyChanges(SidesUpdate sidesUpdate) {
-        getSideConstructor().applyChanges(sidesUpdate);
-    }
-
     @Override
     public Matrix4fc getTransformationMatrix() {
         Matrix4fc rotMatrix = Maths.getRotationQuaternion(getAdjustedRotation()).get(new Matrix4f());
@@ -38,10 +33,13 @@ public class EffigySides extends Effigy<ChunkShader> {
 
     @Override
     public void render() {
+        if (!getUniverseClient().getBlocksClientRepository().getChangeBlocksRequestsSides().isEmpty()) {
+            getSideConstructor().applyChanges(getUniverseClient().getBlocksClientRepository().getChangeBlocksRequestsSides().poll());
+        }
         getShader().start();
-        EntityLightMass entityLightMass = getLightMass();
-        getShader().getEmitBuffer().load(entityLightMass.getEffigyLightMass().getEmitBuffer());
-        getShader().getSkyBuffer().load(entityLightMass.getEffigyLightMass().getSkyBuffer());
+        EffigyLightMass effigyLightMass = getEffigyLightMass();
+        getShader().getEmitBuffer().load(effigyLightMass.getEmitBuffer());
+        getShader().getSkyBuffer().load(effigyLightMass.getSkyBuffer());
         getShader().getProjectionMatrix().load(getProjectionMatrix());
         getShader().getViewMatrix().load(getViewMatrix());
         getShader().getTransformationMatrix().load(getTransformationMatrix());
@@ -57,6 +55,7 @@ public class EffigySides extends Effigy<ChunkShader> {
         }
         getShader().stop();
     }
+
 
     @Override
     public Model loadModel() {
@@ -95,8 +94,8 @@ public class EffigySides extends Effigy<ChunkShader> {
         return new LightSource(sun.getPositionInterpolated(), sun.getColor(), sun.getIntensity());
     }
 
-    public EntityLightMass getLightMass() {
-        return getUniverseClient().getEntityClientRepository().getEntityByClass(EntityLightMass.class);
+    public EffigyLightMass getEffigyLightMass() {
+        return getGraphics().getEffigyRepository().getEffigyByEntity(getUniverseClient().getEntityClientRepository().getEntityByClass(EntityLightMass.class));
     }
 
 }

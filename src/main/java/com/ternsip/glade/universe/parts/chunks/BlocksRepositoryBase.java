@@ -23,7 +23,7 @@ public class BlocksRepositoryBase {
     public static final Vector3ic SIZE = new Vector3i(SIZE_X, SIZE_Y, SIZE_Z);
     public static final Indexer INDEXER = new Indexer(SIZE);
 
-    private GridCompressor gridBlocks = new GridCompressor();
+    private final GridCompressor gridBlocks = new GridCompressor();
 
     public void setBlock(Vector3ic pos, Block block) {
         gridBlocks.write(pos.x(), pos.y(), pos.z(), block.getIndex());
@@ -37,15 +37,13 @@ public class BlocksRepositoryBase {
         int sizeX = region.length;
         int sizeY = region[0].length;
         int sizeZ = region[0][0].length;
-        int[][][] values = new int[sizeX][sizeY][sizeZ];
         for (int x = 0; x < sizeX; ++x) {
             for (int y = 0; y < sizeY; ++y) {
                 for (int z = 0; z < sizeZ; ++z) {
-                    values[x][y][z] = region[x][y][z].getIndex();
+                    gridBlocks.write(x + start.x(), y + start.y(), z + start.z(), region[x][y][z].getIndex());
                 }
             }
         }
-        gridBlocks.write(values, start.x(), start.y(), start.z());
     }
 
     public Block[][][] getBlocks(Vector3ic start, Vector3ic end) {
@@ -56,12 +54,10 @@ public class BlocksRepositoryBase {
         Vector3ic fixEnd = new Vector3i(start).max(end);
         Vector3ic size = new Vector3i(fixEnd).sub(fixStart).add(1, 1, 1);
         Block[][][] blocks = new Block[size.x()][size.y()][size.z()];
-        int[][][] values = new int[size.x()][size.y()][size.z()];
-        gridBlocks.read(values, start.x(), start.y(), start.z());
         for (int x = 0; x < size.x(); ++x) {
             for (int y = 0; y < size.y(); ++y) {
                 for (int z = 0; z < size.z(); ++z) {
-                    blocks[x][y][z] = Block.getBlockByIndex(values[x][y][z]);
+                    blocks[x][y][z] = Block.getBlockByIndex(gridBlocks.read(x + start.x(), y + start.y(), z + start.z()));
                 }
             }
         }

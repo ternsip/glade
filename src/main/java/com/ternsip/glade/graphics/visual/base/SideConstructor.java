@@ -7,13 +7,17 @@ import com.ternsip.glade.graphics.general.Mesh;
 import com.ternsip.glade.graphics.general.Texture;
 import com.ternsip.glade.graphics.interfaces.IGraphics;
 import com.ternsip.glade.graphics.shader.base.MeshAttributes;
+import com.ternsip.glade.graphics.visual.impl.basis.EffigyLightMass;
+import com.ternsip.glade.universe.interfaces.IUniverseClient;
 import com.ternsip.glade.universe.parts.blocks.Block;
 import com.ternsip.glade.universe.parts.blocks.BlockSide;
+import com.ternsip.glade.universe.parts.chunks.ChangeBlocksRequest;
 import com.ternsip.glade.universe.parts.chunks.Side;
 import com.ternsip.glade.universe.parts.chunks.SidePosition;
-import com.ternsip.glade.universe.parts.chunks.SidesUpdate;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.joml.Vector3i;
+import org.joml.Vector3ic;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -24,8 +28,9 @@ import static com.ternsip.glade.graphics.shader.base.RasterShader.VERTICES;
 import static com.ternsip.glade.graphics.shader.impl.ChunkShader.*;
 import static com.ternsip.glade.graphics.visual.base.SideConstructor.SideIndexData.*;
 import static com.ternsip.glade.universe.parts.chunks.BlocksClientRepository.INDEXER;
+import static com.ternsip.glade.universe.parts.chunks.BlocksRepositoryBase.SIZE;
 
-public class SideConstructor implements IGraphics {
+public class SideConstructor implements IGraphics, IUniverseClient {
 
     private static final int BLOCK_TYPE_NORMAL = 0;
     private static final int BLOCK_TYPE_WATER = 1;
@@ -75,24 +80,67 @@ public class SideConstructor implements IGraphics {
             .put(BlockSide.FRONT, SIDE_FRONT)
             .build();
 
+    private final Map<SidePosition, Block> sidePosToBlock = new HashMap<>();
     private final Map<SidePosition, Integer> sides = new HashMap<>();
-    private ArrayList<SidePosition> activeSides = new ArrayList<>();
+    private final ArrayList<SidePosition> activeSides = new ArrayList<>();
 
     @Getter
-    private ArrayList<Mesh> meshes = new ArrayList<>();
+    private final ArrayList<Mesh> meshes = new ArrayList<>();
 
     public void finish() {
         getMeshes().forEach(Mesh::finish);
     }
 
-    public void applyChanges(SidesUpdate changes) {
+    public void applyChanges(ChangeBlocksRequest changeBlocksRequest) {
 
-        if (changes.isEmpty()) {
-            return;
+        // Add border blocks to engage neighbour side-recalculation
+        Vector3ic startChanges = new Vector3i(changeBlocksRequest.getStart()).sub(new Vector3i(1)).max(new Vector3i(0));
+        Vector3ic endChangesExcluding = new Vector3i(changeBlocksRequest.getStart()).add(changeBlocksRequest.getSize()).add(new Vector3i(1)).min(SIZE);
+
+        // Calculate which sides should be removed or added
+        List<SidePosition> sidesToRemove = new ArrayList<>();
+        List<Side> sidesToAdd = new ArrayList<>();
+
+        // Recalculating added/removed sides based on blocks state and putting them to the queue
+        for (int x = startChanges.x(); x < endChangesExcluding.x(); ++x) {
+            for (int z = startChanges.z(); z < endChangesExcluding.z(); ++z) {
+                for (int y = startChanges.y(); y < endChangesExcluding.y(); ++y) {
+
+                    Block block = getUniverseClient().getBlocksClientRepository().getBlock(x, y, z); // TODO prevent changes during this
+                    for (BlockSide blockSide : BlockSide.values()) {
+                        SidePosition sidePosition = new SidePosition(x, y, z, blockSide);
+                        Block oldSideBlock = sidePosToBlock.get(sidePosition);
+                        Block newSideBlock = null;
+                        if (block != Block.AIR) {
+                            int nx = x + blockSide.getAdjacentBlockOffset().x();
+                            int ny = y + blockSide.getAdjacentBlockOffset().y();
+                            int nz = z + blockSide.getAdjacentBlockOffset().z();
+                            if (INDEXER.isInside(nx, ny, nz)) {
+                                Block nextBlock = getUniverseClient().getBlocksClientRepository().getBlock(nx, ny, nz);
+                                if (nextBlock == null || (nextBlock.isSemiTransparent() && (block != nextBlock || !block.isCombineSides()))) {
+                                    newSideBlock = block;
+                                }
+                            } else {
+                                newSideBlock = block;
+                            }
+                        }
+                        if (newSideBlock != null && newSideBlock != oldSideBlock) {
+                            sidesToAdd.add(new Side(sidePosition, newSideBlock));
+                            sidePosToBlock.put(sidePosition, newSideBlock);
+                        }
+                        if (newSideBlock == null && oldSideBlock != null) {
+                            sidesToRemove.add(sidePosition);
+                            sidePosToBlock.remove(sidePosition);
+                        }
+                    }
+
+                }
+            }
         }
 
-        List<SidePosition> sidesToRemove = changes.getSidesToRemove();
-        List<Side> sidesToAdd = changes.getSidesToAdd();
+        if (sidesToAdd.isEmpty() && sidesToRemove.isEmpty()) {
+            return;
+        }
 
         int numberOfSidesThatExists = (int) sidesToAdd.stream().filter(side -> sides.get(side.getSidePosition()) != null).count();
         int oldLength = activeSides.size();
@@ -247,7 +295,7 @@ public class SideConstructor implements IGraphics {
         int dx = side.getSidePosition().getX();
         int dy = side.getSidePosition().getY();
         int dz = side.getSidePosition().getZ();
-        int index = (int) INDEXER.getIndexLooping(
+        int index = (int) EffigyLightMass.VISIBILITY_INDEXER.getIndexLooping(
                 dx + blockSide.getAdjacentBlockOffset().x(),
                 dy + blockSide.getAdjacentBlockOffset().y(),
                 dz + blockSide.getAdjacentBlockOffset().z()
