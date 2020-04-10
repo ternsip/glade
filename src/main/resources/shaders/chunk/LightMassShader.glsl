@@ -55,7 +55,13 @@ void main(void) {
     int realIndex = y + x * SIZE_Y * SIZE_Z + z * SIZE_Y;
     int currentOpacity = opacity[realIndex];
     int boundOpacity = max(1, opacity[realIndex]);
-    int bestSkyLight = y >= height[x + z * SIZE_X] ? MAX_LIGHT_LEVEL : 0;
+    bool isSky = true;
+    for (int deltaX = -1; deltaX <= 1; ++deltaX) {
+        for (int deltaZ = -1; deltaZ <= 1; ++deltaZ) {
+            isSky = isSky && (y >= height[positiveLoop(x + deltaX, SIZE_X) + positiveLoop(z + deltaZ, SIZE_Z) * SIZE_X]);
+        }
+    }
+    int bestSkyLight = isSky ? MAX_LIGHT_LEVEL : 0;
     int bestEmitLight = selfEmit[realIndex];
 
     for (int k = 0; k < 6; ++k) {
