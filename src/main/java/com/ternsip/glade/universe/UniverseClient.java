@@ -81,7 +81,6 @@ public class UniverseClient implements Threadable, INetworkClient, ICollisionsCl
         getBindings().addBindCallback(Bind.TEST_BUTTON, () -> getClient().send(new ConsoleMessageServerPacket("HELLO 123")));
 
         new EntitySides().register();
-        new EntityLightMass().register();
     }
 
     private void whenConnected(OnConnectedToServer onConnectedToServer) {

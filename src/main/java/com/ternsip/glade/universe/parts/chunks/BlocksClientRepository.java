@@ -14,8 +14,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 @Getter
 public class BlocksClientRepository extends BlocksRepositoryBase implements Threadable, IUniverseClient {
 
-    private final ConcurrentLinkedDeque<ChangeBlocksRequest> changeBlocksRequestsLight = new ConcurrentLinkedDeque<>();
-    private final ConcurrentLinkedDeque<ChangeBlocksRequest> changeBlocksRequestsSides = new ConcurrentLinkedDeque<>();
+    private final ConcurrentLinkedDeque<ChangeBlocksRequest> changeBlocksRequests = new ConcurrentLinkedDeque<>();
 
     @Override
     public void init() {
@@ -48,8 +47,7 @@ public class BlocksClientRepository extends BlocksRepositoryBase implements Thre
     }
 
     public void visualUpdate(Vector3ic start, Vector3ic size) {
-        changeBlocksRequestsLight.add(new ChangeBlocksRequest(start, size));
-        changeBlocksRequestsSides.add(new ChangeBlocksRequest(start, size));
+        changeBlocksRequests.add(new ChangeBlocksRequest(start, size));
     }
 
 }

@@ -3,7 +3,7 @@ package com.ternsip.glade.universe.parts.blocks;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import static com.ternsip.glade.graphics.visual.impl.basis.EffigyLightMass.MAX_LIGHT_LEVEL;
+import static com.ternsip.glade.graphics.visual.impl.basis.EffigySides.MAX_LIGHT_LEVEL;
 import static com.ternsip.glade.universe.parts.blocks.BlockMaterial.*;
 
 @RequiredArgsConstructor

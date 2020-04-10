@@ -4,7 +4,7 @@ import com.ternsip.glade.common.logic.Maths;
 import com.ternsip.glade.common.logic.Utils;
 import com.ternsip.glade.graphics.general.Model;
 import com.ternsip.glade.graphics.interfaces.IGraphics;
-import com.ternsip.glade.graphics.shader.base.Shader;
+import com.ternsip.glade.graphics.shader.base.RasterShader;
 import com.ternsip.glade.universe.common.Volumetric;
 import com.ternsip.glade.universe.interfaces.IUniverseClient;
 import lombok.Getter;
@@ -16,7 +16,7 @@ import java.lang.Math;
 
 @Getter
 @Setter
-public abstract class Effigy<SHADER extends Shader> implements IGraphics, IUniverseClient {
+public abstract class Effigy<SHADER extends RasterShader> implements IGraphics, IUniverseClient {
 
     @Delegate
     private final Volumetric volumetric = new Volumetric();

@@ -22,8 +22,8 @@ import java.lang.Math;
 import java.util.Arrays;
 
 import static com.ternsip.glade.common.logic.Maths.*;
-import static com.ternsip.glade.graphics.visual.impl.basis.EffigyLightMass.VIEW_AREA_X;
-import static com.ternsip.glade.graphics.visual.impl.basis.EffigyLightMass.VIEW_AREA_Z;
+import static com.ternsip.glade.graphics.visual.impl.basis.EffigySides.VIEW_AREA_X;
+import static com.ternsip.glade.graphics.visual.impl.basis.EffigySides.VIEW_AREA_Z;
 import static com.ternsip.glade.universe.parts.chunks.BlocksRepositoryBase.*;
 import static org.lwjgl.glfw.GLFW.*;
 
