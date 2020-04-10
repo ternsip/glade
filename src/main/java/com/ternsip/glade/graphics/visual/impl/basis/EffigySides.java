@@ -35,8 +35,6 @@ import static com.ternsip.glade.graphics.shader.base.RasterShader.VERTICES;
 import static com.ternsip.glade.graphics.shader.impl.ChunkShader.*;
 import static com.ternsip.glade.graphics.visual.impl.basis.EffigySides.SideIndexData.*;
 import static com.ternsip.glade.universe.parts.chunks.BlocksRepositoryBase.*;
-import static org.lwjgl.opengl.GL42C.glMemoryBarrier;
-import static org.lwjgl.opengl.GL44C.GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT;
 
 public class EffigySides extends Effigy<ChunkShader> {
 
@@ -285,6 +283,8 @@ public class EffigySides extends Effigy<ChunkShader> {
                 heightBuffer.writeInt((int) heightIndexer.getIndex(dx, dz), yAir + 1);
             }
         }
+        skyBuffer.updateSubBuffer(0, (int) indexer.getVolume());
+        emitBuffer.updateSubBuffer(0, (int) indexer.getVolume());
         selfEmitBuffer.updateSubBuffer(0, (int) indexer.getVolume());
         opacityBuffer.updateSubBuffer(0, (int) indexer.getVolume());
         heightBuffer.updateSubBuffer(0, (int) heightIndexer.getVolume());
@@ -307,7 +307,7 @@ public class EffigySides extends Effigy<ChunkShader> {
             //glMemoryBarrier(GL_ALL_BARRIER_BITS);
         }
         getLightMassShader().stop();
-        glMemoryBarrier(GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT);
+        //glMemoryBarrier(GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT);
         skyBuffer.read(0, (int) indexer.getVolume());
         emitBuffer.read(0 , (int) indexer.getVolume());
 
