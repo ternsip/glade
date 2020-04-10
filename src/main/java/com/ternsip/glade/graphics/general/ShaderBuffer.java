@@ -1,6 +1,5 @@
 package com.ternsip.glade.graphics.general;
 
-import com.ternsip.glade.common.logic.Utils;
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -8,6 +7,12 @@ import java.util.Arrays;
 import static org.lwjgl.opengl.ARBShaderStorageBufferObject.GL_SHADER_STORAGE_BUFFER;
 import static org.lwjgl.opengl.GL15C.*;
 
+/*
+ * NOTE: You might need to write vec4 here, because SSBOs have specific
+ * alignment requirements for struct members (vec3 is always treated
+ * as vec4 in memory!) Or you might need special 4x alignment in size (not sure)
+ * "https://www.safaribooksonline.com/library/view/opengl-programming-guide/9780132748445/app09lev1sec3.html"
+ */
 public class ShaderBuffer {
 
     @Getter
@@ -35,9 +40,15 @@ public class ShaderBuffer {
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
     }
 
-    public void read() {
+    public void read(int offset, int size) {
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
-        data = Utils.bufferToArray(glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_WRITE).asIntBuffer()); // TODO reuse old buffer
+        int[] subData = Arrays.copyOfRange(data, offset, offset + size);// TODO reuse old buffer
+        glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, subData);
+        for (int i = offset, di = 0; di < size; ++i, ++di) {
+            data[i] = subData[di];
+        }
+        //data = Utils.bufferToArray(glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY).asIntBuffer());
+        //glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
     }
 

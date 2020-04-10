@@ -1,10 +1,5 @@
 #version 430 core
 
-const int SIZE_X = 256;
-const int SIZE_Y = 256;
-const int SIZE_Z = 256;
-const int VOLUME = SIZE_X * SIZE_Y * SIZE_Z;
-
 int[] dx = {-1, 1, 0, 0, 0, 0};
 int[] dy = {0, 0, 1, -1, 0, 0};
 int[] dz = {0, 0, 0, 0, 1, -1};
@@ -33,12 +28,7 @@ layout (std430, binding = 4) buffer heightBuffer {
 
 layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
-
-int positiveLoop(int a, int b) {
-    return (b + a % b) % b;
-}
-
-uniform int startX;
+uniform int startX; // TODO THIS IS NOT NEEDED, REMOVE
 uniform int startY;
 uniform int startZ;
 uniform int sizeX;
@@ -47,28 +37,30 @@ uniform int sizeZ;
 
 void main(void) {
     int calcSize = sizeX * sizeY * sizeZ;
-    int gid = int(dot(vec3(1, gl_NumWorkGroups.x, gl_NumWorkGroups.y * gl_NumWorkGroups.x), gl_GlobalInvocationID)) % calcSize;
+    int realIndex = int(dot(vec3(1, gl_NumWorkGroups.x, gl_NumWorkGroups.y * gl_NumWorkGroups.x), gl_GlobalInvocationID)) % calcSize;
 
-    int x = positiveLoop(startX + gid / (sizeY * sizeZ), SIZE_X);
-    int y = clamp(startY + gid % sizeY, 0, SIZE_Y);
-    int z = positiveLoop(startZ + (gid / sizeY) % sizeZ, SIZE_Z);
-    int realIndex = y + x * SIZE_Y * SIZE_Z + z * SIZE_Y;
+    int maxX = sizeX - 1;
+    int maxY = sizeY - 1;
+    int maxZ = sizeZ - 1;
+    int x = realIndex / (sizeY * sizeZ);
+    int y = realIndex % sizeY;
+    int z = (realIndex / sizeY) % sizeZ;
     int currentOpacity = opacity[realIndex];
     int boundOpacity = max(1, opacity[realIndex]);
     bool isSky = true;
     for (int deltaX = -1; deltaX <= 1; ++deltaX) {
         for (int deltaZ = -1; deltaZ <= 1; ++deltaZ) {
-            isSky = isSky && (y >= height[positiveLoop(x + deltaX, SIZE_X) + positiveLoop(z + deltaZ, SIZE_Z) * SIZE_X]);
+            isSky = isSky && ((startY + y) >= height[clamp(x + deltaX, 0, maxX) + clamp(z + deltaZ, 0, maxZ) * sizeX]);
         }
     }
     int bestSkyLight = isSky ? MAX_LIGHT_LEVEL : 0;
     int bestEmitLight = selfEmit[realIndex];
 
     for (int k = 0; k < 6; ++k) {
-        int nx = positiveLoop(x + dx[k], SIZE_X);
-        int ny = clamp(y + dy[k], 0, SIZE_Y);
-        int nz = positiveLoop(z + dz[k], SIZE_Z);
-        int index = ny + nx * SIZE_Y * SIZE_Z + nz * SIZE_Y;
+        int nx = clamp(x + dx[k], 0, maxX);
+        int ny = clamp(y + dy[k], 0, maxY);
+        int nz = clamp(z + dz[k], 0, maxZ);
+        int index = ny + nx * sizeY * sizeZ + nz * sizeY;
         bestSkyLight = max(bestSkyLight, sky[index] - boundOpacity);
         bestEmitLight = max(bestEmitLight, emit[index] - boundOpacity);
     }

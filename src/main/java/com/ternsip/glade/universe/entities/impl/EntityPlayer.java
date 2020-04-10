@@ -18,13 +18,11 @@ import lombok.Setter;
 import org.joml.*;
 
 import java.io.ObjectInputStream;
-import java.lang.Math;
 import java.util.Arrays;
 
 import static com.ternsip.glade.common.logic.Maths.*;
-import static com.ternsip.glade.graphics.visual.impl.basis.EffigySides.VIEW_AREA_X;
-import static com.ternsip.glade.graphics.visual.impl.basis.EffigySides.VIEW_AREA_Z;
-import static com.ternsip.glade.universe.parts.chunks.BlocksRepositoryBase.*;
+import static com.ternsip.glade.universe.parts.chunks.BlocksRepositoryBase.SIZE_X;
+import static com.ternsip.glade.universe.parts.chunks.BlocksRepositoryBase.SIZE_Z;
 import static org.lwjgl.glfw.GLFW.*;
 
 @NoArgsConstructor
@@ -32,7 +30,7 @@ import static org.lwjgl.glfw.GLFW.*;
 @Setter
 public class EntityPlayer extends GraphicalEntity<EffigyBoy> {
 
-    private static final int VIEW_DISTANCE = Math.min(VIEW_AREA_X, VIEW_AREA_Z) / 2;
+    private static final int VIEW_DISTANCE = 128;
     private transient final Callback<KeyEvent> keyCallback = this::handleKeyEvent;
     private transient final Callback<MouseButtonEvent> mouseButtonEventCallback = this::handleMouseButtonEvent;
     private transient boolean thirdPerson = false;
