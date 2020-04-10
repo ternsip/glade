@@ -1,7 +1,6 @@
 #version 430 core
 
 const float MAX_LIGHT_LEVEL = 15.0;
-const int VIEW_DISTANCE = 256;
 
 layout (std430, binding = 0) buffer skyBuffer {
     int sky[];

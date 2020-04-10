@@ -2,6 +2,7 @@ package com.ternsip.glade.common.logic;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.joml.Vector3i;
 import org.joml.Vector3ic;
 
 @RequiredArgsConstructor
@@ -57,4 +58,7 @@ public class Indexer {
         return x == 0 || x == sizeX - 1 || y == 0 || y == sizeY - 1 || z == 0 || z == sizeZ - 1;
     }
 
+    public Vector3ic getSize() {
+        return new Vector3i(sizeX, sizeY, sizeZ);
+    }
 }

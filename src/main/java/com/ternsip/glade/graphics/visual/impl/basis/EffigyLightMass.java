@@ -15,8 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
 
-import java.util.Arrays;
-
 import static com.ternsip.glade.universe.parts.chunks.BlocksRepositoryBase.SIZE;
 import static com.ternsip.glade.universe.parts.chunks.BlocksRepositoryBase.SIZE_Y;
 
@@ -27,9 +25,11 @@ import static com.ternsip.glade.universe.parts.chunks.BlocksRepositoryBase.SIZE_
 @Setter
 public class EffigyLightMass extends Effigy<LightMassShader> {
 
-    public static final int VIEW_DISTANCE = 256;
-    public static final Indexer VISIBILITY_INDEXER = new Indexer(VIEW_DISTANCE, SIZE_Y, VIEW_DISTANCE);
-    public static final Indexer2D HEIGHTS_INDEXER = new Indexer2D(VIEW_DISTANCE, VIEW_DISTANCE);
+    public static final int VIEW_AREA_X = 256;
+    public static final int VIEW_AREA_Y = SIZE_Y;
+    public static final int VIEW_AREA_Z = 256;
+    public static final Indexer VISIBILITY_INDEXER = new Indexer(VIEW_AREA_X, SIZE_Y, VIEW_AREA_Z);
+    public static final Indexer2D HEIGHTS_INDEXER = new Indexer2D(VIEW_AREA_X, VIEW_AREA_Z);
     public static final byte MAX_LIGHT_LEVEL = 15;
 
     private final ShaderBuffer skyBuffer = new ShaderBuffer(new int[(int) VISIBILITY_INDEXER.getVolume()]);
@@ -38,9 +38,8 @@ public class EffigyLightMass extends Effigy<LightMassShader> {
     private final ShaderBuffer opacityBuffer = new ShaderBuffer(new int[(int) VISIBILITY_INDEXER.getVolume()]);
     private final ShaderBuffer heightBuffer = new ShaderBuffer(new int[(int) HEIGHTS_INDEXER.getVolume()]);
 
-    public void updateBuffers(ChangeBlocksRequest changeBlocksRequest) {
-        Vector3ic start = changeBlocksRequest.getStart();
-        Vector3ic endExcluding = changeBlocksRequest.getEndExcluding();
+    public void updateBuffers(Vector3ic start, Vector3ic size) {
+        Vector3ic endExcluding = new Vector3i(start).add(size);
         int minIndexMinor = Integer.MAX_VALUE;
         int maxIndexMinor = -1;
         int minIndexMajor = Integer.MAX_VALUE;
@@ -85,15 +84,14 @@ public class EffigyLightMass extends Effigy<LightMassShader> {
                 }
             }
         }
-        // TODO do not copy every time, update from origin instead using pointers, or use some kind of buffer
         if (maxIndexMinor != -1) {
-            selfEmitBuffer.updateSubBuffer(minIndexMinor, Arrays.copyOfRange(selfEmitBuffer.getData(), minIndexMinor, maxIndexMinor + 1));
-            opacityBuffer.updateSubBuffer(minIndexMinor, Arrays.copyOfRange(opacityBuffer.getData(), minIndexMinor, maxIndexMinor + 1));
-            heightBuffer.updateSubBuffer(minIndexHeightMinor, Arrays.copyOfRange(heightBuffer.getData(), minIndexHeightMinor, maxIndexHeightMinor + 1));
+            selfEmitBuffer.updateSubBuffer(minIndexMinor, maxIndexMinor + 1 - minIndexMinor);
+            opacityBuffer.updateSubBuffer(minIndexMinor, maxIndexMinor + 1 - minIndexMinor);
+            heightBuffer.updateSubBuffer(minIndexHeightMinor, maxIndexHeightMinor + 1 - minIndexHeightMinor);
         }
-        selfEmitBuffer.updateSubBuffer(minIndexMajor, Arrays.copyOfRange(selfEmitBuffer.getData(), minIndexMajor, maxIndexMajor + 1));
-        opacityBuffer.updateSubBuffer(minIndexMajor, Arrays.copyOfRange(opacityBuffer.getData(), minIndexMajor, maxIndexMajor + 1));
-        heightBuffer.updateSubBuffer(minIndexHeightMajor, Arrays.copyOfRange(heightBuffer.getData(), minIndexHeightMajor, maxIndexHeightMajor + 1));
+        selfEmitBuffer.updateSubBuffer(minIndexMajor, maxIndexMajor + 1 - minIndexMajor);
+        opacityBuffer.updateSubBuffer(minIndexMajor, maxIndexMajor + 1 - minIndexMajor);
+        heightBuffer.updateSubBuffer(minIndexHeightMajor, maxIndexHeightMajor + 1 - minIndexHeightMajor);
 
     }
 
@@ -101,10 +99,10 @@ public class EffigyLightMass extends Effigy<LightMassShader> {
     public void render() {
         if (!getUniverseClient().getBlocksClientRepository().getChangeBlocksRequestsLight().isEmpty()) {
             ChangeBlocksRequest changeBlocksRequest = getUniverseClient().getBlocksClientRepository().getChangeBlocksRequestsLight().poll();
-            updateBuffers(changeBlocksRequest);
             Vector3ic startLight = new Vector3i(changeBlocksRequest.getStart()).sub(new Vector3i(MAX_LIGHT_LEVEL - 1)).max(new Vector3i(0));
             Vector3ic endLightExcluding = new Vector3i(changeBlocksRequest.getEndExcluding()).add(new Vector3i(MAX_LIGHT_LEVEL - 1)).min(SIZE);
-            Vector3ic lightSize = new Vector3i(endLightExcluding).sub(startLight);
+            Vector3ic lightSize = new Vector3i(endLightExcluding).sub(startLight).min(VISIBILITY_INDEXER.getSize());
+            updateBuffers(startLight, lightSize);
             getShader().start();
             getShader().getSkyBuffer().load(getSkyBuffer());
             getShader().getEmitBuffer().load(getEmitBuffer());

@@ -3,6 +3,7 @@ package com.ternsip.glade.universe.entities.impl;
 import com.ternsip.glade.common.events.base.Callback;
 import com.ternsip.glade.common.events.display.KeyEvent;
 import com.ternsip.glade.common.events.display.MouseButtonEvent;
+import com.ternsip.glade.common.logic.Maths;
 import com.ternsip.glade.graphics.camera.CameraController;
 import com.ternsip.glade.graphics.visual.impl.test.EffigyBoy;
 import com.ternsip.glade.universe.entities.base.GraphicalEntity;
@@ -14,13 +15,16 @@ import com.ternsip.glade.universe.protocol.PlayerStateServerPacket;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.joml.LineSegmentf;
-import org.joml.Vector3f;
-import org.joml.Vector3fc;
+import org.joml.*;
 
 import java.io.ObjectInputStream;
+import java.lang.Math;
+import java.util.Arrays;
 
 import static com.ternsip.glade.common.logic.Maths.*;
+import static com.ternsip.glade.graphics.visual.impl.basis.EffigyLightMass.VIEW_AREA_X;
+import static com.ternsip.glade.graphics.visual.impl.basis.EffigyLightMass.VIEW_AREA_Z;
+import static com.ternsip.glade.universe.parts.chunks.BlocksRepositoryBase.*;
 import static org.lwjgl.glfw.GLFW.*;
 
 @NoArgsConstructor
@@ -28,6 +32,7 @@ import static org.lwjgl.glfw.GLFW.*;
 @Setter
 public class EntityPlayer extends GraphicalEntity<EffigyBoy> {
 
+    private static final int VIEW_DISTANCE = Math.min(VIEW_AREA_X, VIEW_AREA_Z) / 2;
     private transient final Callback<KeyEvent> keyCallback = this::handleKeyEvent;
     private transient final Callback<MouseButtonEvent> mouseButtonEventCallback = this::handleMouseButtonEvent;
     private transient boolean thirdPerson = false;
@@ -37,6 +42,7 @@ public class EntityPlayer extends GraphicalEntity<EffigyBoy> {
     private float cameraYRotation = 0;
     private LineSegmentf eyeSegment = new LineSegmentf();
     private Inventory selectionInventory;
+    private Vector3ic previousPosition = new Vector3i(-1000, -1000, -1000);
     private PlayerAnimation playerAnimation = PlayerAnimation.IDLE;
 
     public EntityPlayer(Inventory selectionInventory) {
@@ -81,6 +87,7 @@ public class EntityPlayer extends GraphicalEntity<EffigyBoy> {
             move.add(LEFT_DIRECTION);
         }
         setMoveEffort(normalizeOrEmpty(move).mul(getVelocity(), new Vector3f()));
+        updateBlocksAround();
     }
 
     @Override
@@ -159,5 +166,93 @@ public class EntityPlayer extends GraphicalEntity<EffigyBoy> {
         getUniverseClient().getClient().send(new PlayerActionServerPacket(getUuid(), baseAction));
     }
 
+    private void updateBlocksAround() {
+        Vector3ic newPos = new Vector3i((int) getPosition().x(), (int) getPosition().y(), (int) getPosition().z());
+        if (!getPreviousPosition().equals(newPos)) {
+            processMovement(new Vector3i(getPreviousPosition()), newPos);
+            setPreviousPosition(newPos);
+        }
+    }
+
+    private void processMovement(Vector3ic prevPos, Vector3ic nextPos) {
+        int sx = prevPos.x() - VIEW_DISTANCE;
+        int sz = prevPos.z() - VIEW_DISTANCE;
+        int ex = prevPos.x() + VIEW_DISTANCE;
+        int ez = prevPos.z() + VIEW_DISTANCE;
+        int sx2 = nextPos.x() - VIEW_DISTANCE;
+        int sz2 = nextPos.z() - VIEW_DISTANCE;
+        int ex2 = nextPos.x() + VIEW_DISTANCE;
+        int ez2 = nextPos.z() + VIEW_DISTANCE;
+        int[] ax = new int[]{sx, ex, sx2, ex2};
+        int[] az = new int[]{sz, ez, sz2, ez2};
+        Arrays.sort(ax);
+        Arrays.sort(az);
+        visualUpdate(ax[0], sz2, ax[1], ez2, sx2 < sx);
+        visualUpdate(ax[2], sz2, ax[3], ez2, sx2 > sx);
+        if (!(sx2 > ex) && !(ex2 < sx)) {
+            visualUpdate(ax[0], az[1], ax[1], az[2], sz2 < sz);
+            visualUpdate(ax[2], az[1], ax[3], az[2], sz2 > sz);
+        }
+    }
+
+    private void visualUpdate(int x, int z, int ex, int ez, boolean additive) {
+        int nx = Maths.clamp(x, 0, SIZE_X);
+        int nz = Maths.clamp(z, 0, SIZE_Z);
+        int nex = Maths.clamp(ex, 0, SIZE_X);
+        int nez = Maths.clamp(ez, 0, SIZE_Z);
+        int sizeX = nex - nx;
+        int sizeZ = nez - nz;
+        if (sizeX <= 0 || sizeZ <= 0) {
+            return;
+        }
+        //getUniverseClient().getBlocksClientRepository().visualUpdate(new Vector3i(nx, 0, nz), new Vector3i(sizeX, SIZE_Y, sizeZ), additive);
+    }
+
+/*    private void processMovement(Vector3ic prevPos, Vector3ic nextPos) {
+        int middlePrevChunkX = prevPos.x() / VISUAL_UPDATE_SIZE;
+        int middlePrevChunkZ = prevPos.z() / VISUAL_UPDATE_SIZE;
+        int startPrevChunkX = middlePrevChunkX - VIEW_DISTANCE;
+        int startPrevChunkZ = middlePrevChunkZ - VIEW_DISTANCE;
+        int endPrevChunkX = middlePrevChunkX + VIEW_DISTANCE;
+        int endPrevChunkZ = middlePrevChunkZ + VIEW_DISTANCE;
+
+        int middleNextChunkX = nextPos.x() / VISUAL_UPDATE_SIZE;
+        int middleNextChunkZ = nextPos.z() / VISUAL_UPDATE_SIZE;
+        int startNextChunkX = middleNextChunkX - VIEW_DISTANCE;
+        int startNextChunkZ = middleNextChunkZ - VIEW_DISTANCE;
+        int endNextChunkX = middleNextChunkX + VIEW_DISTANCE;
+        int endNextChunkZ = middleNextChunkZ + VIEW_DISTANCE;
+
+        if (startNextChunkX == startPrevChunkX && startNextChunkZ == startPrevChunkZ) {
+            return;
+        }
+        requestBlockUpdates(startNextChunkX, startNextChunkZ, endNextChunkX, endNextChunkZ, startPrevChunkX, startPrevChunkZ, endPrevChunkX, endPrevChunkZ, true);
+        requestBlockUpdates(startPrevChunkX, startPrevChunkZ, endPrevChunkX, endPrevChunkZ, startNextChunkX, startNextChunkZ, endNextChunkX, endNextChunkZ, false);
+    }
+
+    private void requestBlockUpdates(
+            int startNextChunkX, int startNextChunkZ, int endNextChunkX, int endNextChunkZ,
+            int startPrevChunkX, int startPrevChunkZ, int endPrevChunkX, int endPrevChunkZ,
+            boolean additive
+    ) {
+        if (startNextChunkX >= CHUNKS_X || startNextChunkZ >= CHUNKS_Z || endNextChunkX < 0 || endNextChunkZ < 0) {
+            return;
+        }
+        int scx = Maths.clamp(0, CHUNKS_X - 1, startNextChunkX);
+        int scz = Maths.clamp(0, CHUNKS_Z - 1, startNextChunkZ);
+        int ecx = Maths.clamp(0, CHUNKS_X - 1, endNextChunkX);
+        int ecz = Maths.clamp(0, CHUNKS_Z - 1, endNextChunkZ);
+        for (int cx = scx; cx <= ecx; ++cx) {
+            for (int cz = scz; cz <= ecz; ++cz) {
+                if (cx < startPrevChunkX || cx > endPrevChunkX || cz < startPrevChunkZ || cz > endPrevChunkZ) {
+                    getUniverseClient().getBlocksClientRepository().visualUpdate(
+                            new Vector3i(cx * VISUAL_UPDATE_SIZE, 0, cz * VISUAL_UPDATE_SIZE),
+                            new Vector3i(VISUAL_UPDATE_SIZE, SIZE_Y, VISUAL_UPDATE_SIZE),
+                            additive
+                    );
+                }
+            }
+        }
+    }*/
 
 }
