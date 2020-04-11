@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.ternsip.glade.common.logic.Indexer;
 import com.ternsip.glade.common.logic.Indexer2D;
 import com.ternsip.glade.common.logic.Maths;
+import com.ternsip.glade.common.logic.Timer;
 import com.ternsip.glade.common.logic.Utils;
 import com.ternsip.glade.graphics.general.*;
 import com.ternsip.glade.graphics.shader.base.MeshAttributes;
@@ -21,6 +22,7 @@ import com.ternsip.glade.universe.parts.chunks.GridCompressor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.joml.Vector3i;
@@ -36,49 +38,45 @@ import static com.ternsip.glade.graphics.shader.impl.ChunkShader.*;
 import static com.ternsip.glade.graphics.visual.impl.basis.EffigySides.SideIndexData.*;
 import static com.ternsip.glade.universe.parts.chunks.BlocksRepositoryBase.*;
 
+@Slf4j
 public class EffigySides extends Effigy<ChunkShader> {
 
     public static final long TIME_PERIOD_MILLISECONDS = 60_000L;
     public static final float TIME_PERIOD_DIVISOR = 1000f;
+    public static final int LIGHT_UPDATE_LIMIT = 128;
+    public static final byte MAX_LIGHT_LEVEL = 15;
     private static final int BLOCK_TYPE_NORMAL = 0;
     private static final int BLOCK_TYPE_WATER = 1;
-
     private static final CubeSideMeshData SIDE_FRONT = new CubeSideMeshData(
             new float[]{1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1},
             new float[]{0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1},
             new boolean[]{true, false, false, false, false, true, true, true}
     );
-
     private static final CubeSideMeshData SIDE_RIGHT = new CubeSideMeshData(
             new float[]{1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0},
             new float[]{1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0},
             new boolean[]{false, false, false, true, true, true, true, false}
     );
-
     private static final CubeSideMeshData SIDE_TOP = new CubeSideMeshData(
             new float[]{1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1},
             new float[]{0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0},
             new boolean[]{true, true, true, false, false, false, false, true}
     );
-
     private static final CubeSideMeshData SIDE_LEFT = new CubeSideMeshData(
             new float[]{0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1},
             new float[]{-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0},
             new boolean[]{true, false, false, false, false, true, true, true}
     );
-
     private static final CubeSideMeshData SIDE_BOTTOM = new CubeSideMeshData(
             new float[]{0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1},
             new float[]{0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0},
             new boolean[]{false, true, true, true, true, false, false, false}
     );
-
     private static final CubeSideMeshData SIDE_BACK = new CubeSideMeshData(
             new float[]{1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0},
             new float[]{0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1},
             new boolean[]{false, true, true, true, true, false, false, false}
     );
-
     private static final Map<BlockSide, CubeSideMeshData> ALL_SIDES = ImmutableMap.<BlockSide, CubeSideMeshData>builder()
             .put(BlockSide.BACK, SIDE_BACK)
             .put(BlockSide.BOTTOM, SIDE_BOTTOM)
@@ -87,10 +85,6 @@ public class EffigySides extends Effigy<ChunkShader> {
             .put(BlockSide.RIGHT, SIDE_RIGHT)
             .put(BlockSide.FRONT, SIDE_FRONT)
             .build();
-
-    public static final int LIGHT_UPDATE_LIMIT = 128;
-    public static final byte MAX_LIGHT_LEVEL = 15;
-
     @Getter(lazy = true)
     private final LightMassShader lightMassShader = getGraphics().getShaderRepository().getShader(LightMassShader.class);
 
@@ -119,7 +113,154 @@ public class EffigySides extends Effigy<ChunkShader> {
         lightCompressor.write(x, y, z, (sky << 16) | (emit & 0xFFFF));
     }
 
-    private void applyChanges(Vector3ic start, Vector3ic size) {
+    @Override
+    public Matrix4fc getTransformationMatrix() {
+        Matrix4fc rotMatrix = Maths.getRotationQuaternion(getAdjustedRotation()).get(new Matrix4f());
+        return new Matrix4f().translate(getAdjustedPosition()).mul(rotMatrix).scale(getAdjustedScale());
+    }
+
+    @Override
+    public void render() {
+        if (!getUniverseClient().getBlocksClientRepository().getChangeBlocksRequests().isEmpty()) {
+            ChangeBlocksRequest changeBlocksRequest = getUniverseClient().getBlocksClientRepository().getChangeBlocksRequests().poll();
+            Vector3ic startLight = new Vector3i(changeBlocksRequest.getStart()).sub(new Vector3i(MAX_LIGHT_LEVEL)).max(new Vector3i(0));
+            Vector3ic lightSize = new Vector3i(changeBlocksRequest.getSize()).add(new Vector3i(MAX_LIGHT_LEVEL * 2)).min(new Vector3i(SIZE).sub(startLight));
+            for (int x = 0; x < lightSize.x(); x += LIGHT_UPDATE_LIMIT) {
+                for (int z = 0; z < lightSize.z(); z += LIGHT_UPDATE_LIMIT) {
+                    int startX = x + startLight.x();
+                    int startY = startLight.y();
+                    int startZ = z + startLight.z();
+                    int sizeX = Math.min(LIGHT_UPDATE_LIMIT, lightSize.x() - x);
+                    int sizeY = lightSize.y();
+                    int sizeZ = Math.min(LIGHT_UPDATE_LIMIT, lightSize.z() - z);
+                    recalculateArea(new Vector3i(startX, startY, startZ), new Vector3i(sizeX, sizeY, sizeZ));
+                }
+            }
+        }
+
+        getShader().start();
+        getShader().getProjectionMatrix().load(getProjectionMatrix());
+        getShader().getViewMatrix().load(getViewMatrix());
+        getShader().getTransformationMatrix().load(getTransformationMatrix());
+        getShader().getTime().load((System.currentTimeMillis() % TIME_PERIOD_MILLISECONDS) / TIME_PERIOD_DIVISOR);
+        getShader().getSun().load(getSun());
+        getShader().getSamplers().loadDefault();
+        boolean isUnderwater = getUniverseClient().getEntityClientRepository().getEntityByClass(EntityCameraEffects.class).isUnderWater();
+        getShader().getFogColor().load(isUnderwater ? getUniverseClient().getBalance().getUnderwaterFogColor() : getUniverseClient().getBalance().getFogColor());
+        getShader().getFogDensity().load(isUnderwater ? getUniverseClient().getBalance().getUnderwaterFogDensity() : getUniverseClient().getBalance().getFogDensity());
+        getShader().getFogGradient().load(isUnderwater ? getUniverseClient().getBalance().getUnderwaterFogGradient() : getUniverseClient().getBalance().getFogGradient());
+        for (Mesh mesh : meshes) {
+            mesh.render();
+        }
+        getShader().stop();
+    }
+
+    @Override
+    public Model loadModel() {
+        return Model.builder().build();
+    }
+
+    @Override
+    public boolean deleteModelOnFinish() {
+        // TODO remove this method
+        return true;
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        meshes.forEach(Mesh::finish);
+        skyBuffer.finish();
+        emitBuffer.finish();
+        selfEmitBuffer.finish();
+        opacityBuffer.finish();
+        heightBuffer.finish();
+    }
+
+    @Override
+    public boolean isGraphicalInsideFrustum() {
+        return true;
+    }
+
+    @Override
+    public Class<ChunkShader> getShaderClass() {
+        return ChunkShader.class;
+    }
+
+    @Override
+    public Object getModelKey() {
+        return this;
+    }
+
+    public Light getSun() {
+        EntitySun sun = getUniverseClient().getEntityClientRepository().getEntityByClass(EntitySun.class);
+        return new LightSource(sun.getPositionInterpolated(), sun.getColor(), sun.getIntensity());
+    }
+
+    private void recalculateArea(Vector3ic start, Vector3ic size) {
+
+        // Recalculate light
+        Indexer indexer = new Indexer(size);
+        Indexer2D heightIndexer = new Indexer2D(size.x(), size.z());
+        Timer timer = new Timer();
+        for (int x = start.x(), dx = 0; dx < size.x(); ++x, ++dx) {
+            for (int z = start.z(), dz = 0; dz < size.z(); ++z, ++dz) {
+                for (int y = start.y(), dy = 0; dy < size.y(); ++y, ++dy) {
+                    int index = (int) indexer.getIndex(dx, dy, dz);
+                    Block block = getUniverseClient().getBlocksClientRepository().getBlock(x, y, z);
+                    selfEmitBuffer.writeInt(index, block.getEmitLight());
+                    opacityBuffer.writeInt(index, block.getLightOpacity());
+                    if (indexer.isOnBorder(dx, dy, dz)) {
+                        skyBuffer.writeInt(index, getSkyLight(x, y, z));
+                        emitBuffer.writeInt(index, getEmitLight(x, y, z));
+                    }
+                }
+                int yAir = SIZE_Y;
+                for (; yAir >= 0; --yAir) {
+                    if (getUniverseClient().getBlocksClientRepository().getBlock(x, yAir, z) != Block.AIR) {
+                        break;
+                    }
+                }
+                heightBuffer.writeInt((int) heightIndexer.getIndex(dx, dz), yAir + 1);
+            }
+        }
+
+        skyBuffer.updateSubBuffer(0, (int) indexer.getVolume());
+        emitBuffer.updateSubBuffer(0, (int) indexer.getVolume());
+        selfEmitBuffer.updateSubBuffer(0, (int) indexer.getVolume());
+        opacityBuffer.updateSubBuffer(0, (int) indexer.getVolume());
+        heightBuffer.updateSubBuffer(0, (int) heightIndexer.getVolume());
+
+        getLightMassShader().start();
+        getLightMassShader().getSkyBuffer().load(skyBuffer);
+        getLightMassShader().getEmitBuffer().load(emitBuffer);
+        getLightMassShader().getSelfEmitBuffer().load(selfEmitBuffer);
+        getLightMassShader().getOpacityBuffer().load(opacityBuffer);
+        getLightMassShader().getHeightBuffer().load(heightBuffer);
+        getLightMassShader().getStartX().load(start.x());
+        getLightMassShader().getStartY().load(start.y());
+        getLightMassShader().getStartZ().load(start.z());
+        getLightMassShader().getSizeX().load(size.x());
+        getLightMassShader().getSizeY().load(size.y());
+        getLightMassShader().getSizeZ().load(size.z());
+        for (int i = 0; i < MAX_LIGHT_LEVEL; ++i) {
+            getLightMassShader().compute((int) indexer.getVolume());
+            //glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+            //glMemoryBarrier(GL_ALL_BARRIER_BITS);
+        }
+        getLightMassShader().stop();
+        //glMemoryBarrier(GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT);
+        skyBuffer.read(0, (int) indexer.getVolume());
+        emitBuffer.read(0, (int) indexer.getVolume());
+
+        for (int x = start.x(), dx = 0; dx < size.x(); ++x, ++dx) {
+            for (int z = start.z(), dz = 0; dz < size.z(); ++z, ++dz) {
+                for (int y = start.y(), dy = 0; dy < size.y(); ++y, ++dy) {
+                    int index = (int) indexer.getIndex(dx, dy, dz);
+                    setLight(x, y, z, skyBuffer.readInt(index), emitBuffer.readInt(index));
+                }
+            }
+        }
 
         // Add border blocks to engage neighbour side-recalculation
         Vector3ic startChanges = new Vector3i(start).sub(new Vector3i(1)).max(new Vector3i(0));
@@ -251,155 +392,8 @@ public class EffigySides extends Effigy<ChunkShader> {
                 meshes.get(i).updateBuffers();
             }
         }
-    }
 
-    @Override
-    public Matrix4fc getTransformationMatrix() {
-        Matrix4fc rotMatrix = Maths.getRotationQuaternion(getAdjustedRotation()).get(new Matrix4f());
-        return new Matrix4f().translate(getAdjustedPosition()).mul(rotMatrix).scale(getAdjustedScale());
-    }
-
-    private void recalculateLight(Vector3ic start, Vector3ic size) {
-        Indexer indexer = new Indexer(size);
-        Indexer2D heightIndexer = new Indexer2D(size.x(), size.z());
-        for (int x = start.x(), dx = 0; dx < size.x(); ++x, ++dx) {
-            for (int z = start.z(), dz = 0; dz < size.z(); ++z, ++dz) {
-                for (int y = start.y(), dy = 0; dy < size.y(); ++y, ++dy) {
-                    int index = (int) indexer.getIndex(dx, dy, dz);
-                    Block block = getUniverseClient().getBlocksClientRepository().getBlock(x, y, z);
-                    selfEmitBuffer.writeInt(index, block.getEmitLight());
-                    opacityBuffer.writeInt(index, block.getLightOpacity());
-                    if (indexer.isOnBorder(dx, dy, dz)) {
-                        skyBuffer.writeInt(index, getSkyLight(x, y, z));
-                        emitBuffer.writeInt(index, getEmitLight(x, y, z));
-                    }
-                }
-                int yAir = SIZE_Y;
-                for (; yAir >= 0; --yAir) {
-                    if (getUniverseClient().getBlocksClientRepository().getBlock(x, yAir, z) != Block.AIR) {
-                        break;
-                    }
-                }
-                heightBuffer.writeInt((int) heightIndexer.getIndex(dx, dz), yAir + 1);
-            }
-        }
-        skyBuffer.updateSubBuffer(0, (int) indexer.getVolume());
-        emitBuffer.updateSubBuffer(0, (int) indexer.getVolume());
-        selfEmitBuffer.updateSubBuffer(0, (int) indexer.getVolume());
-        opacityBuffer.updateSubBuffer(0, (int) indexer.getVolume());
-        heightBuffer.updateSubBuffer(0, (int) heightIndexer.getVolume());
-
-        getLightMassShader().start();
-        getLightMassShader().getSkyBuffer().load(skyBuffer);
-        getLightMassShader().getEmitBuffer().load(emitBuffer);
-        getLightMassShader().getSelfEmitBuffer().load(selfEmitBuffer);
-        getLightMassShader().getOpacityBuffer().load(opacityBuffer);
-        getLightMassShader().getHeightBuffer().load(heightBuffer);
-        getLightMassShader().getStartX().load(start.x());
-        getLightMassShader().getStartY().load(start.y());
-        getLightMassShader().getStartZ().load(start.z());
-        getLightMassShader().getSizeX().load(size.x());
-        getLightMassShader().getSizeY().load(size.y());
-        getLightMassShader().getSizeZ().load(size.z());
-        for (int i = 0; i < MAX_LIGHT_LEVEL; ++i) {
-            getLightMassShader().compute((int) indexer.getVolume());
-            //glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
-            //glMemoryBarrier(GL_ALL_BARRIER_BITS);
-        }
-        getLightMassShader().stop();
-        //glMemoryBarrier(GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT);
-        skyBuffer.read(0, (int) indexer.getVolume());
-        emitBuffer.read(0 , (int) indexer.getVolume());
-
-        for (int x = start.x(), dx = 0; dx < size.x(); ++x, ++dx) {
-            for (int z = start.z(), dz = 0; dz < size.z(); ++z, ++dz) {
-                for (int y = start.y(), dy = 0; dy < size.y(); ++y, ++dy) {
-                    int index = (int) indexer.getIndex(dx, dy, dz);
-                    setLight(x, y, z, skyBuffer.readInt(index), emitBuffer.readInt(index));
-                }
-            }
-        }
-
-        applyChanges(start, size);
-
-    }
-
-    @Override
-    public void render() {
-        if (!getUniverseClient().getBlocksClientRepository().getChangeBlocksRequests().isEmpty()) {
-            ChangeBlocksRequest changeBlocksRequest = getUniverseClient().getBlocksClientRepository().getChangeBlocksRequests().poll();
-            Vector3ic startLight = new Vector3i(changeBlocksRequest.getStart()).sub(new Vector3i(MAX_LIGHT_LEVEL)).max(new Vector3i(0));
-            Vector3ic lightSize = new Vector3i(changeBlocksRequest.getSize()).add(new Vector3i(MAX_LIGHT_LEVEL * 2)).min(new Vector3i(SIZE).sub(startLight));
-            for (int x = 0; x < lightSize.x(); x += LIGHT_UPDATE_LIMIT) {
-                for (int z = 0; z < lightSize.z(); z += LIGHT_UPDATE_LIMIT) {
-                    int startX = x + startLight.x();
-                    int startY = startLight.y();
-                    int startZ = z + startLight.z();
-                    int sizeX = Math.min(LIGHT_UPDATE_LIMIT, lightSize.x() - x);
-                    int sizeY = lightSize.y();
-                    int sizeZ = Math.min(LIGHT_UPDATE_LIMIT, lightSize.z() - z);
-                    recalculateLight(new Vector3i(startX, startY, startZ), new Vector3i(sizeX, sizeY, sizeZ));
-                }
-            }
-        }
-
-        getShader().start();
-        getShader().getProjectionMatrix().load(getProjectionMatrix());
-        getShader().getViewMatrix().load(getViewMatrix());
-        getShader().getTransformationMatrix().load(getTransformationMatrix());
-        getShader().getTime().load((System.currentTimeMillis() % TIME_PERIOD_MILLISECONDS) / TIME_PERIOD_DIVISOR);
-        getShader().getSun().load(getSun());
-        getShader().getSamplers().loadDefault();
-        boolean isUnderwater = getUniverseClient().getEntityClientRepository().getEntityByClass(EntityCameraEffects.class).isUnderWater();
-        getShader().getFogColor().load(isUnderwater ? getUniverseClient().getBalance().getUnderwaterFogColor() : getUniverseClient().getBalance().getFogColor());
-        getShader().getFogDensity().load(isUnderwater ? getUniverseClient().getBalance().getUnderwaterFogDensity() : getUniverseClient().getBalance().getFogDensity());
-        getShader().getFogGradient().load(isUnderwater ? getUniverseClient().getBalance().getUnderwaterFogGradient() : getUniverseClient().getBalance().getFogGradient());
-        for (Mesh mesh : meshes) {
-            mesh.render();
-        }
-        getShader().stop();
-    }
-
-    @Override
-    public Model loadModel() {
-        return Model.builder().build();
-    }
-
-    @Override
-    public boolean deleteModelOnFinish() {
-        // TODO remove this method
-        return true;
-    }
-
-    @Override
-    public void finish() {
-        super.finish();
-        meshes.forEach(Mesh::finish);
-        skyBuffer.finish();
-        emitBuffer.finish();
-        selfEmitBuffer.finish();
-        opacityBuffer.finish();
-        heightBuffer.finish();
-    }
-
-    @Override
-    public boolean isGraphicalInsideFrustum() {
-        return true;
-    }
-
-    @Override
-    public Class<ChunkShader> getShaderClass() {
-        return ChunkShader.class;
-    }
-
-    @Override
-    public Object getModelKey() {
-        return this;
-    }
-
-    public Light getSun() {
-        EntitySun sun = getUniverseClient().getEntityClientRepository().getEntityByClass(EntitySun.class);
-        return new LightSource(sun.getPositionInterpolated(), sun.getColor(), sun.getIntensity());
+        log.info("Time spent: {}s", timer.spent() / 1000.0f);
     }
 
     private void relocateSide(int sideIndexSrc, int sideIndexDst) {
