@@ -262,6 +262,13 @@ public class EffigySides extends Effigy<ChunkShader> {
             }
         }
 
+        recalculateSides(start, size);
+
+        log.info("Time spent: {}s", timer.spent() / 1000.0f);
+    }
+
+    private void recalculateSides(Vector3ic start, Vector3ic size) {
+
         // Add border blocks to engage neighbour side-recalculation
         Vector3ic startChanges = new Vector3i(start).sub(new Vector3i(1)).max(new Vector3i(0));
         Vector3ic endChangesExcluding = new Vector3i(start).add(size).add(new Vector3i(1)).min(SIZE);
@@ -393,7 +400,6 @@ public class EffigySides extends Effigy<ChunkShader> {
             }
         }
 
-        log.info("Time spent: {}s", timer.spent() / 1000.0f);
     }
 
     private void relocateSide(int sideIndexSrc, int sideIndexDst) {
