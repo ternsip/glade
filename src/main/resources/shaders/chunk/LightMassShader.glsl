@@ -6,23 +6,19 @@ int[] dz = {0, 0, 0, 0, 1, -1};
 
 const int MAX_LIGHT_LEVEL = 15;
 
-layout (std430, binding = 0) buffer skyBuffer {
-    int sky[];
+layout (std430, binding = 0) buffer lightBuffer {
+    int light[];
 };
 
-layout (std430, binding = 1) buffer emitBuffer {
-    int emit[];
+layout (std430, binding = 1) buffer activeBlockIndexBuffer {
+    int activeBlockIndex[];
 };
 
-layout (std430, binding = 2) buffer selfEmitBuffer {
-    int selfEmit[];
+layout (std430, binding = 2) buffer activeBlockBuffer {
+    int activeBlock[];
 };
 
-layout (std430, binding = 3) buffer opacityBuffer {
-    int opacity[];
-};
-
-layout (std430, binding = 4) buffer heightBuffer {
+layout (std430, binding = 3) buffer heightBuffer {
     int height[];
 };
 
@@ -45,8 +41,9 @@ void main(void) {
     int x = realIndex / (sizeY * sizeZ);
     int y = realIndex % sizeY;
     int z = (realIndex / sizeY) % sizeZ;
-    int currentOpacity = opacity[realIndex];
-    int boundOpacity = max(1, opacity[realIndex]);
+    int lightValue = light[realIndex];
+    int opacity = (lightValue >> 8) & 0xFF;
+    int selfEmit = lightValue & 0xFF;
     bool isSky = true;
     for (int deltaX = -1; deltaX <= 1; ++deltaX) {
         for (int deltaZ = -1; deltaZ <= 1; ++deltaZ) {
@@ -54,18 +51,23 @@ void main(void) {
         }
     }
     int bestSkyLight = isSky ? MAX_LIGHT_LEVEL : 0;
-    int bestEmitLight = selfEmit[realIndex];
+    int bestEmitLight = selfEmit;
 
     for (int k = 0; k < 6; ++k) {
         int nx = clamp(x + dx[k], 0, maxX);
         int ny = clamp(y + dy[k], 0, maxY);
         int nz = clamp(z + dz[k], 0, maxZ);
         int index = ny + nx * sizeY * sizeZ + nz * sizeY;
-        bestSkyLight = max(bestSkyLight, sky[index] - boundOpacity);
-        bestEmitLight = max(bestEmitLight, emit[index] - boundOpacity);
+        int nLightValue = light[index];
+        bestSkyLight = max(bestSkyLight, ((nLightValue >> 24) & 0xFF) - opacity);
+        bestEmitLight = max(bestEmitLight, ((nLightValue >> 16) & 0xFF) - opacity);
     }
 
-    sky[realIndex] = bestSkyLight;
-    emit[realIndex] = bestEmitLight;
+    int newlight = (bestSkyLight << 24) + (bestEmitLight << 16) + (opacity << 8) + selfEmit;
+    light[realIndex] = newlight;
+    int activeBlockIdx = activeBlockIndex[realIndex];
+    if (activeBlockIdx != -1) {
+        activeBlock[activeBlockIdx] = newlight;
+    }
 
 }

@@ -1,8 +1,10 @@
 package com.ternsip.glade.common.logic;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
+@Getter
 public class Indexer2D {
 
     private final int sizeA;

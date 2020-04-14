@@ -39,6 +39,10 @@ public enum Block {
         return values().length;
     }
 
+    public boolean isVisible(Block nextBlock) {
+        return this != Block.AIR && nextBlock.isSemiTransparent() && (this != nextBlock || !this.isCombineSides());
+    }
+
     public int getIndex() {
         return ordinal();
     }

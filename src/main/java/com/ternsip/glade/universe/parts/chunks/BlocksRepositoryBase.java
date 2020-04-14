@@ -72,6 +72,10 @@ public class BlocksRepositoryBase {
         return Block.getBlockByIndex(gridBlocks.read(x, y, z));
     }
 
+    public Block getBlockUniversal(int x, int y, int z) {
+        return INDEXER.isInside(x, y, z) ? getBlock(x, y, z) : Block.AIR;
+    }
+
     public boolean isBlockExists(Vector3ic pos) {
         return INDEXER.isInside(pos);
     }

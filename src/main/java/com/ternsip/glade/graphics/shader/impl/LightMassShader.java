@@ -16,10 +16,9 @@ public final class LightMassShader extends ComputeShader {
 
     public static final File COMPUTE_SHADER = new File("shaders/chunk/LightMassShader.glsl");
 
-    private final BufferLayout skyBuffer = new BufferLayout();
-    private final BufferLayout emitBuffer = new BufferLayout();
-    private final BufferLayout selfEmitBuffer = new BufferLayout();
-    private final BufferLayout opacityBuffer = new BufferLayout();
+    private final BufferLayout lightBuffer = new BufferLayout();
+    private final BufferLayout activeBlockIndexBuffer = new BufferLayout();
+    private final BufferLayout activeBlockBuffer = new BufferLayout();
     private final BufferLayout heightBuffer = new BufferLayout();
 
     private final UniformInteger startX  = new UniformInteger();

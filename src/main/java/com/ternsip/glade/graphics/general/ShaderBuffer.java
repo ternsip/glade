@@ -59,6 +59,13 @@ public class ShaderBuffer {
         glDeleteBuffers(ssbo);
     }
 
+    public void fill(int offset, int size, int value) {
+        int end = offset + size;
+        for (int i = offset; i < end; ++i) {
+            data.putInt(i * Integer.BYTES, value); // TODO use array fill
+        }
+    }
+
     private ByteBuffer sliceData(int offset, int size) {
         ByteBuffer byteBuffer = data.slice();
         byteBuffer.order(BYTE_ORDER);

@@ -19,6 +19,10 @@ public class Indexer {
         this.sizeZ = size.z();
     }
 
+    public long getIndex(Vector3ic pos) {
+        return getIndex(pos.x(), pos.y(), pos.z());
+    }
+
     public long getIndex(int x, int y, int z) {
         return y + x * sizeY * sizeZ + z * sizeY;
     }
