@@ -436,9 +436,11 @@ public class EffigySides extends Effigy<ChunkShader> {
                                 int a = 5; // TODO remove check
                             }
                             if (lastIndex != index) {
-                                engagedBlocks.set(index, engagedBlocks.get(lastIndex));
-                                chunk.posToEngagedBlockIndex.put(engagedBlocks.get(index), index);
-                                chunk.posToEngagedBlock.put(engagedBlocks.get(index), block);
+                                Vector3ic relocatingPos = engagedBlocks.get(lastIndex);
+                                engagedBlocks.set(index, relocatingPos);
+                                Chunk anotherChunk = getChunk(getChunkPosition(relocatingPos));
+                                anotherChunk.posToEngagedBlockIndex.put(relocatingPos, index);
+                                anotherChunk.posToEngagedBlock.put(relocatingPos, block);
                             }
                             engagedBlocks.remove(lastIndex);
                         }
