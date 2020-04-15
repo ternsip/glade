@@ -10,12 +10,12 @@ layout (std430, binding = 0) buffer lightBuffer {
     int light[];
 };
 
-layout (std430, binding = 1) buffer activeBlockIndexBuffer {
-    int activeBlockIndex[];
+layout (std430, binding = 1) buffer engagedBlockIndexBuffer {
+    int engagedBlockIndex[];
 };
 
-layout (std430, binding = 2) buffer activeBlockBuffer {
-    int activeBlock[];
+layout (std430, binding = 2) buffer engagedBlockBuffer {
+    int engagedBlock[];
 };
 
 layout (std430, binding = 3) buffer heightBuffer {
@@ -30,6 +30,12 @@ uniform int startZ;
 uniform int sizeX;
 uniform int sizeY;
 uniform int sizeZ;
+uniform bool disableStartX;
+uniform bool disableStartY;
+uniform bool disableStartZ;
+uniform bool disableEndX;
+uniform bool disableEndY;
+uniform bool disableEndZ;
 
 void main(void) {
     int calcSize = sizeX * sizeY * sizeZ;
@@ -41,6 +47,9 @@ void main(void) {
     int x = realIndex / (sizeY * sizeZ);
     int y = realIndex % sizeY;
     int z = (realIndex / sizeY) % sizeZ;
+    if ((disableStartX && x == 0) || (disableEndX && x == maxX) || (disableStartY && y == 0) || (disableEndY && y == maxY) || (disableStartZ && z == 0) || (disableEndZ && z == maxZ)) {
+        return;
+    }
     int lightValue = light[realIndex];
     int opacity = (lightValue >> 8) & 0xFF;
     int selfEmit = lightValue & 0xFF;
@@ -65,9 +74,9 @@ void main(void) {
 
     int newlight = (bestSkyLight << 24) + (bestEmitLight << 16) + (opacity << 8) + selfEmit;
     light[realIndex] = newlight;
-    int activeBlockIdx = activeBlockIndex[realIndex];
-    if (activeBlockIdx != -1) {
-        activeBlock[activeBlockIdx] = newlight;
+    int engagedBlockIdx = engagedBlockIndex[realIndex];
+    if (engagedBlockIdx != -1) {
+        engagedBlock[engagedBlockIdx] = newlight;
     }
 
 }

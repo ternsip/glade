@@ -46,7 +46,7 @@ public class EffigySides extends Effigy<ChunkShader> {
     public static final int LIGHT_UPDATE_LIMIT = 128;
     public static final byte MAX_LIGHT_LEVEL = 15;
     public static final int LIGHT_UPDATE_DELTA = LIGHT_UPDATE_LIMIT - MAX_LIGHT_LEVEL * 2;
-    public static final int ACTIVE_BLOCK_BUFFER_SIZE = 256 * 256 * 64;
+    public static final int MAX_ENGAGED_BLOCKS = 256 * 256 * 64;
     private static final int BLOCK_TYPE_NORMAL = 0;
     private static final int BLOCK_TYPE_WATER = 1;
     private static final CubeSideMeshData SIDE_FRONT = new CubeSideMeshData(
@@ -92,19 +92,22 @@ public class EffigySides extends Effigy<ChunkShader> {
 
     private final ShaderBuffer lightBuffer = new ShaderBuffer(LIGHT_UPDATE_LIMIT * LIGHT_UPDATE_LIMIT * LIGHT_UPDATE_LIMIT);
     private final ShaderBuffer heightBuffer = new ShaderBuffer(LIGHT_UPDATE_LIMIT * LIGHT_UPDATE_LIMIT);
-    private final ShaderBuffer activeBlockIndexBuffer = new ShaderBuffer(LIGHT_UPDATE_LIMIT * LIGHT_UPDATE_LIMIT * LIGHT_UPDATE_LIMIT);
-    private final ShaderBuffer activeBlockBuffer = new ShaderBuffer(ACTIVE_BLOCK_BUFFER_SIZE);
+    private final ShaderBuffer engagedBlockIndexBuffer = new ShaderBuffer(LIGHT_UPDATE_LIMIT * LIGHT_UPDATE_LIMIT * LIGHT_UPDATE_LIMIT);
+    private final ShaderBuffer engagedBlockBuffer = new ShaderBuffer(MAX_ENGAGED_BLOCKS);
 
-    private final Map<SidePosition, Integer> sides = new HashMap<>(); // TODO rename to sidePosToActiveSide
+    private final Map<SidePosition, Integer> sidePosToActiveSideIndex = new HashMap<>(); // TODO rename to sidePosToActiveSide
     private final ArrayList<SidePosition> activeSides = new ArrayList<>();
-    private final ArrayList<Vector3ic> activeBlocks = new ArrayList<>();
-    private final Map<Vector3ic, Integer> posToActiveBlock = new HashMap<>();
+    private final ArrayList<Vector3ic> engagedBlocks = new ArrayList<>();
     private final ArrayList<Mesh> meshes = new ArrayList<>();
     private final Map<Vector3ic, Chunk> posToChunk = new HashMap<>();
     private final ArrayList<SidePosition> sidesToRemove = new ArrayList<>();
     private final ArrayList<Side> sidesToAdd = new ArrayList<>();
     private final GridCompressor lightCompressor = new GridCompressor();
     private final GridCompressor heightCompressor = new GridCompressor();
+
+    public Vector3ic getChunkPosition(Vector3ic pos) {
+        return new Vector3i(pos.x() / Chunk.SIZE, pos.y() / Chunk.SIZE, pos.z() / Chunk.SIZE);
+    }
 
     public Chunk getChunk(Vector3ic pos) {
         Chunk chunk = posToChunk.get(pos);
@@ -166,42 +169,44 @@ public class EffigySides extends Effigy<ChunkShader> {
             Vector3ic size = changeBlocksRequest.getSize();
             Vector3ic endExcluding = new Vector3i(start).add(size);
 
-            recalculateSides(start, size);
+            synchronized (getUniverseClient().getBlocksClientRepository().getGridBlocks()) { // TODO sync on blocksRepository
+                recalculateSides(start, size);
 
-            // Recalculate heights
-            for (int x = start.x(); x < endExcluding.x(); ++x) {
-                for (int z = start.z(); z < endExcluding.z(); ++z) {
-                    if (getHeight(x, z) > endExcluding.y()) {
-                        continue;
-                    }
-                    int yAir = endExcluding.y() - 1;
-                    for (; yAir >= 0; --yAir) {
-                        if (getUniverseClient().getBlocksClientRepository().getBlock(x, yAir, z) != Block.AIR) {
-                            break;
+                // Recalculate heights
+                for (int x = start.x(); x < endExcluding.x(); ++x) {
+                    for (int z = start.z(); z < endExcluding.z(); ++z) {
+                        if (getHeight(x, z) > endExcluding.y()) {
+                            continue;
                         }
+                        int yAir = endExcluding.y() - 1;
+                        for (; yAir >= 0; --yAir) {
+                            if (getUniverseClient().getBlocksClientRepository().getBlock(x, yAir, z) != Block.AIR) {
+                                break;
+                            }
+                        }
+                        int height = yAir + 1;
+                        setHeight(x, z, height);
                     }
-                    int height = yAir + 1;
-                    setHeight(x, z, height);
                 }
-            }
 
-            for (int x = 0; x < size.x(); x += LIGHT_UPDATE_DELTA) {
-                for (int y = 0; y < size.y(); y += LIGHT_UPDATE_DELTA) {
-                    for (int z = 0; z < size.z(); z += LIGHT_UPDATE_DELTA) {
-                        int startX = x + start.x();
-                        int startY = y + start.y();
-                        int startZ = z + start.z();
-                        int sizeX = Math.min(LIGHT_UPDATE_DELTA, size.x() - x);
-                        int sizeY = Math.min(LIGHT_UPDATE_DELTA, size.y() - y);
-                        int sizeZ = Math.min(LIGHT_UPDATE_DELTA, size.z() - z);
-                        recalculateArea(new Vector3i(startX, startY, startZ), new Vector3i(sizeX, sizeY, sizeZ));
+                for (int x = 0; x < size.x(); x += LIGHT_UPDATE_DELTA) {
+                    for (int y = 0; y < size.y(); y += LIGHT_UPDATE_DELTA) {
+                        for (int z = 0; z < size.z(); z += LIGHT_UPDATE_DELTA) {
+                            int startX = x + start.x();
+                            int startY = y + start.y();
+                            int startZ = z + start.z();
+                            int sizeX = Math.min(LIGHT_UPDATE_DELTA, size.x() - x);
+                            int sizeY = Math.min(LIGHT_UPDATE_DELTA, size.y() - y);
+                            int sizeZ = Math.min(LIGHT_UPDATE_DELTA, size.z() - z);
+                            recalculateArea(new Vector3i(startX, startY, startZ), new Vector3i(sizeX, sizeY, sizeZ));
+                        }
                     }
                 }
             }
         }
 
         getShader().start();
-        getShader().getActiveBlockBuffer().load(activeBlockBuffer);
+        getShader().getEngagedBlockBuffer().load(engagedBlockBuffer);
         getShader().getProjectionMatrix().load(getProjectionMatrix());
         getShader().getViewMatrix().load(getViewMatrix());
         getShader().getTransformationMatrix().load(getTransformationMatrix());
@@ -234,8 +239,8 @@ public class EffigySides extends Effigy<ChunkShader> {
         super.finish();
         meshes.forEach(Mesh::finish);
         lightBuffer.finish();
-        activeBlockBuffer.finish();
-        activeBlockIndexBuffer.finish();
+        engagedBlockBuffer.finish();
+        engagedBlockIndexBuffer.finish();
         heightBuffer.finish();
     }
 
@@ -263,8 +268,11 @@ public class EffigySides extends Effigy<ChunkShader> {
 
         Timer timer = new Timer();
         Vector3ic endExcluding = new Vector3i(start).add(size);
-        Vector3ic startLight = new Vector3i(start).sub(new Vector3i(MAX_LIGHT_LEVEL)).max(new Vector3i(0));
-        Vector3ic endLight = new Vector3i(endExcluding).add(new Vector3i(MAX_LIGHT_LEVEL)).min(new Vector3i(SIZE)).sub(new Vector3i(1));
+        Vector3ic startLightUnsafe = new Vector3i(start).sub(new Vector3i(MAX_LIGHT_LEVEL));
+        Vector3ic endLightExclusiveUnsafe = new Vector3i(endExcluding).add(new Vector3i(MAX_LIGHT_LEVEL));
+        Vector3ic startLight = new Vector3i(startLightUnsafe).max(new Vector3i(0));
+        Vector3ic endLightExclusive = new Vector3i(endLightExclusiveUnsafe).min(new Vector3i(SIZE));
+        Vector3ic endLight = new Vector3i(endLightExclusive).sub(new Vector3i(1));
         Indexer lightIndexer = new Indexer(new Vector3i(endLight).sub(startLight).add(new Vector3i(1)));
         Indexer2D lightHeightIndexer = new Indexer2D(lightIndexer.getSizeX(), lightIndexer.getSizeZ());
 
@@ -275,15 +283,15 @@ public class EffigySides extends Effigy<ChunkShader> {
         }
 
         lightBuffer.fill(0, (int) lightIndexer.getVolume(), combineToLight((byte) 0, (byte) 0, (byte) 1, (byte) 0));
-        activeBlockIndexBuffer.fill(0, (int) lightIndexer.getVolume(), -1);
+        engagedBlockIndexBuffer.fill(0, (int) lightIndexer.getVolume(), -1);
 
-        Vector3ic startChunk = new Vector3i(startLight.x() / Chunk.SIZE, startLight.y() / Chunk.SIZE, startLight.z() / Chunk.SIZE);
-        Vector3ic endChunk = new Vector3i(endLight.x() / Chunk.SIZE, endLight.y() / Chunk.SIZE, endLight.z() / Chunk.SIZE);
+        Vector3ic startChunk = getChunkPosition(startLight);
+        Vector3ic endChunk = getChunkPosition(endLight);
         for (int cx = startChunk.x(); cx <= endChunk.x(); ++cx) {
             for (int cy = startChunk.y(); cy <= endChunk.y(); ++cy) {
                 for (int cz = startChunk.z(); cz <= endChunk.z(); ++cz) {
                     Chunk chunk = getChunk(new Vector3i(cx, cy, cz));
-                    for (Map.Entry<Vector3ic, Block> entry : chunk.posToActiveBlock.entrySet()) {
+                    for (Map.Entry<Vector3ic, Block> entry : chunk.posToEngagedBlock.entrySet()) {
                         int lightX = entry.getKey().x() - startLight.x();
                         int lightY = entry.getKey().y() - startLight.y();
                         int lightZ = entry.getKey().z() - startLight.z();
@@ -293,7 +301,7 @@ public class EffigySides extends Effigy<ChunkShader> {
                         Block block = entry.getValue();
                         int index = (int) lightIndexer.getIndex(lightX, lightY, lightZ);
                         lightBuffer.writeInt(index, combineToLight((byte) 0, (byte) 0, block.getLightOpacity(), block.getEmitLight()));
-                        activeBlockIndexBuffer.writeInt(index, posToActiveBlock.get(entry.getKey()));
+                        engagedBlockIndexBuffer.writeInt(index, chunk.posToEngagedBlockIndex.get(entry.getKey()));
                     }
                 }
             }
@@ -321,12 +329,12 @@ public class EffigySides extends Effigy<ChunkShader> {
 
         lightBuffer.updateSubBuffer(0, (int) lightIndexer.getVolume());
         heightBuffer.updateSubBuffer(0, (int) lightHeightIndexer.getVolume());
-        activeBlockIndexBuffer.updateSubBuffer(0, (int) lightIndexer.getVolume());
+        engagedBlockIndexBuffer.updateSubBuffer(0, (int) lightIndexer.getVolume());
 
         getLightMassShader().start();
         getLightMassShader().getLightBuffer().load(lightBuffer);
-        getLightMassShader().getActiveBlockIndexBuffer().load(activeBlockIndexBuffer);
-        getLightMassShader().getActiveBlockBuffer().load(activeBlockBuffer);
+        getLightMassShader().getEngagedBlockIndexBuffer().load(engagedBlockIndexBuffer);
+        getLightMassShader().getEngagedBlockBuffer().load(engagedBlockBuffer);
         getLightMassShader().getHeightBuffer().load(heightBuffer);
         getLightMassShader().getStartX().load(startLight.x());
         getLightMassShader().getStartY().load(startLight.y());
@@ -334,6 +342,12 @@ public class EffigySides extends Effigy<ChunkShader> {
         getLightMassShader().getSizeX().load(lightIndexer.getSizeX());
         getLightMassShader().getSizeY().load(lightIndexer.getSizeY());
         getLightMassShader().getSizeZ().load(lightIndexer.getSizeZ());
+        getLightMassShader().getDisableStartX().load(startLightUnsafe.x() == startLight.x());
+        getLightMassShader().getDisableStartY().load(startLightUnsafe.y() == startLight.y());
+        getLightMassShader().getDisableStartZ().load(startLightUnsafe.z() == startLight.z());
+        getLightMassShader().getDisableEndX().load(endLightExclusiveUnsafe.x() == endLightExclusive.x());
+        getLightMassShader().getDisableEndY().load(endLightExclusiveUnsafe.y() == endLightExclusive.y());
+        getLightMassShader().getDisableEndZ().load(endLightExclusiveUnsafe.z() == endLightExclusive.z());
         for (int i = 0; i < MAX_LIGHT_LEVEL; ++i) {
             getLightMassShader().compute((int) lightIndexer.getVolume());
             //glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
@@ -370,14 +384,13 @@ public class EffigySides extends Effigy<ChunkShader> {
         Vector3ic startChanges = new Vector3i(start).sub(new Vector3i(1)).max(new Vector3i(0));
         Vector3ic endChangesExcluding = new Vector3i(start).add(size).add(new Vector3i(1)).min(SIZE);
 
-        // Calculate which sides should be removed or added
-        // Recalculating added/removed sides based on blocks state
+        // Recalculating changed area data based on new blocks
         BlocksClientRepository repo = getUniverseClient().getBlocksClientRepository();
         for (int x = startChanges.x(); x < endChangesExcluding.x(); ++x) {
             for (int y = startChanges.y(); y < endChangesExcluding.y(); ++y) {
                 for (int z = startChanges.z(); z < endChangesExcluding.z(); ++z) {
                     Vector3i pos = new Vector3i(x, y, z);
-                    Chunk chunk = getChunk(new Vector3i(x / Chunk.SIZE, y / Chunk.SIZE, z / Chunk.SIZE));
+                    Chunk chunk = getChunk(getChunkPosition(pos));
                     Block block = repo.getBlock(x, y, z);
                     boolean engaged = false;
                     boolean occluded = true;
@@ -389,12 +402,13 @@ public class EffigySides extends Effigy<ChunkShader> {
                         int ny = y + blockSide.getAdjacentBlockOffset().y();
                         int nz = z + blockSide.getAdjacentBlockOffset().z();
                         Block nextBlock = repo.getBlockUniversal(nx, ny, nz);
-                        // Check if block side is visible
                         if (block.isVisible(nextBlock)) {
                             newBlock = block;
+                            engaged = true;
                         }
                         engaged |= nextBlock.isVisible(block);
                         occluded &= nextBlock.getLightOpacity() == MAX_LIGHT_LEVEL;
+                        // Calculate which sides should be removed or added
                         if (newBlock != null && newBlock != oldBlock) {
                             sidesToAdd.add(new Side(sidePosition, newBlock));
                             chunk.sidePosToBlock.put(sidePosition, newBlock);
@@ -404,23 +418,29 @@ public class EffigySides extends Effigy<ChunkShader> {
                             chunk.sidePosToBlock.remove(sidePosition);
                         }
                     }
+                    // Engage visible blocks, when at least one side is visible, to handle case with no-neighbour
+                    // Engage non-occluded blocks with opacity > 1 (non-usual opacity), minimal opacity is 1
+                    // Engage blocks that emits light
                     if (engaged || (block.getLightOpacity() > 1 && !occluded) || block.getEmitLight() > 0) {
-                        if (!posToActiveBlock.containsKey(pos)) {
-                            posToActiveBlock.put(pos, activeBlocks.size());
-                            activeBlocks.add(pos);
+                        if (!chunk.posToEngagedBlockIndex.containsKey(pos)) {
+                            chunk.posToEngagedBlockIndex.put(pos, engagedBlocks.size());
+                            engagedBlocks.add(pos);
                         }
-                        chunk.posToActiveBlock.put(pos, block);
+                        chunk.posToEngagedBlock.put(pos, block);
                     } else {
-                        Integer index = posToActiveBlock.remove(pos);
-                        chunk.posToActiveBlock.remove(pos);
+                        Integer index = chunk.posToEngagedBlockIndex.remove(pos);
+                        chunk.posToEngagedBlock.remove(pos);
                         if (index != null) {
-                            int lastIndex = activeBlocks.size() - 1;
-                            activeBlocks.set(index, activeBlocks.get(lastIndex));
-                            activeBlocks.remove(lastIndex);
-                            if (lastIndex != index) {
-                                posToActiveBlock.put(activeBlocks.get(index), index);
-                                chunk.posToActiveBlock.put(activeBlocks.get(index), block);
+                            int lastIndex = engagedBlocks.size() - 1;
+                            if (index > lastIndex) {
+                                int a = 5; // TODO remove check
                             }
+                            if (lastIndex != index) {
+                                engagedBlocks.set(index, engagedBlocks.get(lastIndex));
+                                chunk.posToEngagedBlockIndex.put(engagedBlocks.get(index), index);
+                                chunk.posToEngagedBlock.put(engagedBlocks.get(index), block);
+                            }
+                            engagedBlocks.remove(lastIndex);
                         }
                     }
                 }
@@ -431,7 +451,7 @@ public class EffigySides extends Effigy<ChunkShader> {
             return;
         }
 
-        int numberOfSidesThatExists = (int) sidesToAdd.stream().filter(side -> sides.get(side.sidePosition) != null).count();
+        int numberOfSidesThatExists = (int) sidesToAdd.stream().filter(side -> sidePosToActiveSideIndex.get(side.sidePosition) != null).count();
         int oldLength = activeSides.size();
         int newLength = oldLength + (sidesToAdd.size() - sidesToRemove.size()) - numberOfSidesThatExists;
         int meshesNumber = newLength / SIDES_PER_MESH + (newLength % SIDES_PER_MESH > 0 ? 1 : 0);
@@ -457,7 +477,7 @@ public class EffigySides extends Effigy<ChunkShader> {
         boolean[] changedMeshes = new boolean[meshes.size()];
         for (Side side : sidesToAdd) {
             SidePosition sidePositionSrc = side.sidePosition;
-            Integer sideIndexSrc = sides.get(sidePositionSrc);
+            Integer sideIndexSrc = sidePosToActiveSideIndex.get(sidePositionSrc);
             // If side already exists refresh it with new data
             if (sideIndexSrc != null) {
                 fillSide(sideIndexSrc, side);
@@ -467,12 +487,12 @@ public class EffigySides extends Effigy<ChunkShader> {
             // If side need to be removed - fill it with side for adding
             if (toRemove.hasNext()) {
                 SidePosition sidePosition = toRemove.next();
-                int sideIndex = sides.get(sidePosition);
+                int sideIndex = sidePosToActiveSideIndex.get(sidePosition);
                 fillSide(sideIndex, side);
                 changedMeshes[sideIndex / SIDES_PER_MESH] = true;
                 Utils.assertThat(sideIndex < activeSides.size());
-                sides.remove(sidePosition);
-                sides.put(sidePositionSrc, sideIndex);
+                sidePosToActiveSideIndex.remove(sidePosition);
+                sidePosToActiveSideIndex.put(sidePositionSrc, sideIndex);
                 activeSides.set(sideIndex, sidePositionSrc);
                 continue;
             }
@@ -480,21 +500,21 @@ public class EffigySides extends Effigy<ChunkShader> {
             int sideIndex = activeSides.size();
             fillSide(sideIndex, side);
             changedMeshes[sideIndex / SIDES_PER_MESH] = true;
-            sides.put(sidePositionSrc, sideIndex);
+            sidePosToActiveSideIndex.put(sidePositionSrc, sideIndex);
             activeSides.add(sidePositionSrc);
         }
         // Relocate last side to the place of one that should be removed
         while (toRemove.hasNext()) {
             SidePosition sidePositionDst = toRemove.next();
-            int sideIndexDst = sides.get(sidePositionDst);
+            int sideIndexDst = sidePosToActiveSideIndex.get(sidePositionDst);
             int sideIndexSrc = activeSides.size() - 1;
             relocateSide(sideIndexSrc, sideIndexDst);
             changedMeshes[sideIndexSrc / SIDES_PER_MESH] = true;
             changedMeshes[sideIndexDst / SIDES_PER_MESH] = true;
             Utils.assertThat(sideIndexDst < activeSides.size());
             SidePosition sidePositionSrc = activeSides.get(sideIndexSrc);
-            sides.put(sidePositionSrc, sideIndexDst);
-            sides.remove(sidePositionDst);
+            sidePosToActiveSideIndex.put(sidePositionSrc, sideIndexDst);
+            sidePosToActiveSideIndex.remove(sidePositionDst);
             activeSides.set(sideIndexDst, sidePositionSrc);
             activeSides.remove(sideIndexSrc);
         }
@@ -580,7 +600,12 @@ public class EffigySides extends Effigy<ChunkShader> {
         int dx = side.sidePosition.x;
         int dy = side.sidePosition.y;
         int dz = side.sidePosition.z;
-        int faceIndex = posToActiveBlock.getOrDefault(new Vector3i(dx, dy, dz).add(blockSide.getAdjacentBlockOffset()), 0); // TODO work with this
+        Vector3ic pos = new Vector3i(dx, dy, dz);
+        Vector3ic adjustmentPos = new Vector3i(pos).add(blockSide.getAdjacentBlockOffset());
+        Integer faceIndex = getChunk(getChunkPosition(adjustmentPos)).posToEngagedBlockIndex.get(adjustmentPos);
+        if (faceIndex == null) {
+            faceIndex = getChunk(getChunkPosition(pos)).posToEngagedBlockIndex.get(pos);
+        }
         Texture atlasFragment = getGraphics().getTexturePackRepository().getCubeMap(side.block).getTextureByBlockSide(blockSide);
 
         for (int i = 0; i < SIDE_INDICES.length; ++i) {
@@ -728,7 +753,8 @@ public class EffigySides extends Effigy<ChunkShader> {
 
         private static final int SIZE = 32;
         private final Map<SidePosition, Block> sidePosToBlock = new HashMap<>();
-        private final Map<Vector3ic, Block> posToActiveBlock = new HashMap<>(); // TODO think about index integer optimisation, be aware of blocks outside of chunk
+        private final Map<Vector3ic, Block> posToEngagedBlock = new HashMap<>(); // TODO think about index integer optimisation
+        private final Map<Vector3ic, Integer> posToEngagedBlockIndex = new HashMap<>();
 
     }
 

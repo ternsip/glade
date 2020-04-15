@@ -2,8 +2,8 @@
 
 const float MAX_LIGHT_LEVEL = 15.0;
 
-layout (std430, binding = 0) buffer activeBlockBuffer {
-    int activeBlock[];
+layout (std430, binding = 0) buffer engagedBlockBuffer {
+    int engagedBlock[];
 };
 
 in vec3 position;
@@ -47,7 +47,7 @@ void main(void) {
     float distance_to_cam = length(viewMatrix * transformationMatrix * vec4(position, 1.0));
     visibility = clamp(exp(-pow(distance_to_cam * fogDensity, fogGradient)), 0, 1);
     passWorldPos = (transformationMatrix * vec4(position, 1.0)).xyz;
-    int light = activeBlock[int(faceIndex + 0.1)];
+    int light = engagedBlock[int(faceIndex + 0.1)];
     passSkyLight = ((light >> 24) & 0xFF) / MAX_LIGHT_LEVEL;
     passEmitLight =  ((light >> 16) & 0xFF) / MAX_LIGHT_LEVEL;
 
