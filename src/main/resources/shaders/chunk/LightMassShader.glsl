@@ -10,15 +10,7 @@ layout (std430, binding = 0) buffer lightBuffer {
     int light[];
 };
 
-layout (std430, binding = 1) buffer engagedBlockIndexBuffer {
-    int engagedBlockIndex[];
-};
-
-layout (std430, binding = 2) buffer engagedBlockBuffer {
-    int engagedBlock[];
-};
-
-layout (std430, binding = 3) buffer heightBuffer {
+layout (std430, binding = 1) buffer heightBuffer {
     int height[];
 };
 
@@ -74,9 +66,5 @@ void main(void) {
 
     int newlight = (bestSkyLight << 24) + (bestEmitLight << 16) + (opacity << 8) + selfEmit;
     light[realIndex] = newlight;
-    int engagedBlockIdx = engagedBlockIndex[realIndex];
-    if (engagedBlockIdx != -1) {
-        engagedBlock[engagedBlockIdx] = newlight;
-    }
 
 }

@@ -2,10 +2,6 @@
 
 const float MAX_LIGHT_LEVEL = 15.0;
 
-layout (std430, binding = 0) buffer engagedBlockBuffer {
-    int engagedBlock[];
-};
-
 in vec3 position;
 in vec2 textureCoordinates;
 in float atlasNumber;
@@ -15,7 +11,8 @@ in vec2 textureStart;
 in vec2 textureEnd;
 in vec3 normal;
 in float blockType;
-in float faceIndex;
+in float skyLight;
+in float emitLight;
 
 out vec2 passTextureCoords;
 out vec3 passWorldPos;
@@ -47,8 +44,7 @@ void main(void) {
     float distance_to_cam = length(viewMatrix * transformationMatrix * vec4(position, 1.0));
     visibility = clamp(exp(-pow(distance_to_cam * fogDensity, fogGradient)), 0, 1);
     passWorldPos = (transformationMatrix * vec4(position, 1.0)).xyz;
-    int light = engagedBlock[int(faceIndex + 0.1)];
-    passSkyLight = ((light >> 24) & 0xFF) / MAX_LIGHT_LEVEL;
-    passEmitLight =  ((light >> 16) & 0xFF) / MAX_LIGHT_LEVEL;
+    passSkyLight = skyLight;
+    passEmitLight = emitLight;
 
 }
