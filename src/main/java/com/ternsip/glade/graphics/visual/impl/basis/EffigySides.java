@@ -344,7 +344,7 @@ public class EffigySides extends Effigy<ChunkShader> {
                 }
             }
         }
-        log.info("Engage blocks time: {}s", timer.spent() / 1000.0f);
+        log.debug("Engage blocks time: {}s", timer.spent() / 1000.0f);
     }
 
     private void recalculateEngagedBlocks(Vector3ic start, Vector3ic size) {
@@ -405,7 +405,7 @@ public class EffigySides extends Effigy<ChunkShader> {
                 setHeight(x, z, height);
             }
         }
-        log.info("Heights calculation time: {}s", timer.spent() / 1000.0f);
+        log.debug("Heights calculation time: {}s", timer.spent() / 1000.0f);
     }
 
     private void recalculateLightPartitive(Vector3ic start, Vector3ic size) {
@@ -424,7 +424,7 @@ public class EffigySides extends Effigy<ChunkShader> {
                 }
             }
         }
-        log.info("Light calculation time: {}s", timer.spent() / 1000.0f);
+        log.debug("Light calculation time: {}s", timer.spent() / 1000.0f);
     }
 
     private void modifySides(Vector3ic start, Vector3ic size) {
@@ -476,7 +476,7 @@ public class EffigySides extends Effigy<ChunkShader> {
                 }
             }
         }
-        log.info("Side calculation time: {}s", timer.spent() / 1000.0f);
+        log.debug("Side calculation time: {}s", timer.spent() / 1000.0f);
     }
 
     private void recalculateSides() {
@@ -567,7 +567,7 @@ public class EffigySides extends Effigy<ChunkShader> {
         }
         sidesToRemove.clear();
         sidesToAdd.clear();
-        log.info("Mesh refresh time: {}s", timer.spent() / 1000.0f);
+        log.debug("Mesh refresh time: {}s", timer.spent() / 1000.0f);
     }
 
     private void relocateSide(int sideIndexSrc, int sideIndexDst) {
