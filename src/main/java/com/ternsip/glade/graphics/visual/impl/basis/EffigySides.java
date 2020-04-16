@@ -44,9 +44,8 @@ public class EffigySides extends Effigy<ChunkShader> {
 
     public static final long TIME_PERIOD_MILLISECONDS = 60_000L;
     public static final float TIME_PERIOD_DIVISOR = 1000f;
-    public static final int LIGHT_UPDATE_LIMIT = 128;
+    public static final int UPDATE_LIMIT = 128;
     public static final byte MAX_LIGHT_LEVEL = 15;
-    public static final int LIGHT_UPDATE_DELTA = LIGHT_UPDATE_LIMIT - MAX_LIGHT_LEVEL * 2;
     private static final int BLOCK_TYPE_NORMAL = 0;
     private static final int BLOCK_TYPE_WATER = 1;
     private static final CubeSideMeshData SIDE_FRONT = new CubeSideMeshData(
@@ -90,8 +89,8 @@ public class EffigySides extends Effigy<ChunkShader> {
 
     @Getter(lazy = true)
     private final LightMassShader lightMassShader = getGraphics().getShaderRepository().getShader(LightMassShader.class);
-    private final ShaderBuffer lightBuffer = new ShaderBuffer(LIGHT_UPDATE_LIMIT * LIGHT_UPDATE_LIMIT * LIGHT_UPDATE_LIMIT);
-    private final ShaderBuffer heightBuffer = new ShaderBuffer(LIGHT_UPDATE_LIMIT * LIGHT_UPDATE_LIMIT);
+    private final ShaderBuffer lightBuffer = new ShaderBuffer(UPDATE_LIMIT * UPDATE_LIMIT * UPDATE_LIMIT);
+    private final ShaderBuffer heightBuffer = new ShaderBuffer(UPDATE_LIMIT * UPDATE_LIMIT);
     private final Map<SidePosition, Integer> sidePosToActiveSideIndex = new HashMap<>();
     private final ArrayList<SidePosition> activeSides = new ArrayList<>();
     private final ArrayList<Mesh> meshes = new ArrayList<>();
@@ -164,9 +163,9 @@ public class EffigySides extends Effigy<ChunkShader> {
             Vector3ic start = changeBlocksRequest.getStart();
             Vector3ic size = changeBlocksRequest.getSize();
             synchronized (getUniverseClient().getBlocksClientRepository()) {
-                recalculateEngagedBlocks(start, size);
+                recalculateEngagedBlocksPartitive(start, size);
                 recalculateHeights(start, size);
-                recalculateLight(start, size);
+                recalculateLightPartitive(start, size);
                 modifySides(start, size);
                 recalculateSides();
             }
@@ -227,7 +226,7 @@ public class EffigySides extends Effigy<ChunkShader> {
         return new LightSource(sun.getPositionInterpolated(), sun.getColor(), sun.getIntensity());
     }
 
-    private void recalculateArea(Vector3ic start, Vector3ic size) {
+    private void recalculateLight(Vector3ic start, Vector3ic size) {
 
         Vector3ic endExcluding = new Vector3i(start).add(size);
         Vector3ic startLightUnsafe = new Vector3i(start).sub(new Vector3i(MAX_LIGHT_LEVEL));
@@ -329,17 +328,33 @@ public class EffigySides extends Effigy<ChunkShader> {
         return combineToLight(getSkyLight(light), getEmitLight(light), block.getLightOpacity(), block.getEmitLight());
     }
 
-    private void recalculateEngagedBlocks(Vector3ic start, Vector3ic size) {
+    private void recalculateEngagedBlocksPartitive(Vector3ic start, Vector3ic size) {
         Timer timer = new Timer();
+        int maxSize = UPDATE_LIMIT - 2;
+        for (int dx = 0; dx < size.x(); dx += maxSize) {
+            for (int dy = 0; dy < size.y(); dy += maxSize) {
+                for (int dz = 0; dz < size.z(); dz += maxSize) {
+                    int startX = dx + start.x();
+                    int startY = dy + start.y();
+                    int startZ = dz + start.z();
+                    int sizeX = Math.min(maxSize, size.x() - dx);
+                    int sizeY = Math.min(maxSize, size.y() - dy);
+                    int sizeZ = Math.min(maxSize, size.z() - dz);
+                    recalculateEngagedBlocks(new Vector3i(startX, startY, startZ), new Vector3i(sizeX, sizeY, sizeZ));
+                }
+            }
+        }
+        log.info("Engage blocks time: {}s", timer.spent() / 1000.0f);
+    }
+
+    private void recalculateEngagedBlocks(Vector3ic start, Vector3ic size) {
+
         // Add border blocks to engage neighbour side-recalculation
-        Vector3ic startChanges = new Vector3i(start).sub(new Vector3i(2)).max(new Vector3i(0));
-        Vector3ic endChangesExcluding = new Vector3i(start).add(size).add(new Vector3i(2)).min(SIZE);
+        Vector3ic startChanges = new Vector3i(start).sub(new Vector3i(1)).max(new Vector3i(0));
+        Vector3ic endChangesExcluding = new Vector3i(start).add(size).add(new Vector3i(1)).min(SIZE);
         Vector3ic sizeChanges = new Vector3i(endChangesExcluding).sub(startChanges);
         Indexer indexer = new Indexer(sizeChanges);
-
-        // Recalculating engaged blocks
         BlocksClientRepository repo = getUniverseClient().getBlocksClientRepository();
-        // TODO this might be splitted into smaller groups
         Block[][][] blocks = repo.getBlocks(startChanges, new Vector3i(endChangesExcluding).sub(new Vector3i(1)));
         for (int x = 0, wx = startChanges.x(); x < sizeChanges.x(); ++x, ++wx) {
             for (int y = 0, wy = startChanges.y(); y < sizeChanges.y(); ++y, ++wy) {
@@ -369,7 +384,7 @@ public class EffigySides extends Effigy<ChunkShader> {
                 }
             }
         }
-        log.info("Engage blocks time: {}s", timer.spent() / 1000.0f);
+
     }
 
     private void recalculateHeights(Vector3ic start, Vector3ic size) {
@@ -393,18 +408,19 @@ public class EffigySides extends Effigy<ChunkShader> {
         log.info("Heights calculation time: {}s", timer.spent() / 1000.0f);
     }
 
-    private void recalculateLight(Vector3ic start, Vector3ic size) {
+    private void recalculateLightPartitive(Vector3ic start, Vector3ic size) {
         Timer timer = new Timer();
-        for (int x = 0; x < size.x(); x += LIGHT_UPDATE_DELTA) {
-            for (int y = 0; y < size.y(); y += LIGHT_UPDATE_DELTA) {
-                for (int z = 0; z < size.z(); z += LIGHT_UPDATE_DELTA) {
+        int maxSize = UPDATE_LIMIT - MAX_LIGHT_LEVEL * 2;
+        for (int x = 0; x < size.x(); x += maxSize) {
+            for (int y = 0; y < size.y(); y += maxSize) {
+                for (int z = 0; z < size.z(); z += maxSize) {
                     int startX = x + start.x();
                     int startY = y + start.y();
                     int startZ = z + start.z();
-                    int sizeX = Math.min(LIGHT_UPDATE_DELTA, size.x() - x);
-                    int sizeY = Math.min(LIGHT_UPDATE_DELTA, size.y() - y);
-                    int sizeZ = Math.min(LIGHT_UPDATE_DELTA, size.z() - z);
-                    recalculateArea(new Vector3i(startX, startY, startZ), new Vector3i(sizeX, sizeY, sizeZ));
+                    int sizeX = Math.min(maxSize, size.x() - x);
+                    int sizeY = Math.min(maxSize, size.y() - y);
+                    int sizeZ = Math.min(maxSize, size.z() - z);
+                    recalculateLight(new Vector3i(startX, startY, startZ), new Vector3i(sizeX, sizeY, sizeZ));
                 }
             }
         }
