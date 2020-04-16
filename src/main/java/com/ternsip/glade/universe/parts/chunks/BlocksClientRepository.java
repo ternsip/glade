@@ -29,19 +29,19 @@ public class BlocksClientRepository extends BlocksRepositoryBase implements Thre
     }
 
     @Override
-    public void setBlock(Vector3ic pos, Block block) {
+    public synchronized void setBlock(Vector3ic pos, Block block) {
         super.setBlock(pos, block);
         visualUpdate(pos, new Vector3i(1));
     }
 
     @Override
-    public void setBlock(int x, int y, int z, Block block) {
+    public synchronized void setBlock(int x, int y, int z, Block block) {
         super.setBlock(x, y, z, block);
         visualUpdate(new Vector3i(x, y, z), new Vector3i(1));
     }
 
     @Override
-    public void setBlocks(Vector3ic start, Block[][][] region) {
+    public synchronized void setBlocks(Vector3ic start, Block[][][] region) {
         super.setBlocks(start, region);
         visualUpdate(start, new Vector3i(region[0].length, region[0][0].length, region[0][0].length));
     }

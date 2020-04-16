@@ -25,15 +25,15 @@ public class BlocksRepositoryBase {
 
     private final GridCompressor gridBlocks = new GridCompressor();
 
-    public void setBlock(Vector3ic pos, Block block) {
+    public synchronized void setBlock(Vector3ic pos, Block block) {
         gridBlocks.write(pos.x(), pos.y(), pos.z(), block.getIndex());
     }
 
-    public void setBlock(int x, int y, int z, Block block) {
+    public synchronized void setBlock(int x, int y, int z, Block block) {
         gridBlocks.write(x, y, z, block.getIndex());
     }
 
-    public void setBlocks(Vector3ic start, Block[][][] region) {
+    public synchronized void setBlocks(Vector3ic start, Block[][][] region) {
         int sizeX = region.length;
         int sizeY = region[0].length;
         int sizeZ = region[0][0].length;
@@ -46,7 +46,7 @@ public class BlocksRepositoryBase {
         }
     }
 
-    public Block[][][] getBlocks(Vector3ic start, Vector3ic end) {
+    public synchronized Block[][][] getBlocks(Vector3ic start, Vector3ic end) {
         if (!INDEXER.isInside(start) || !INDEXER.isInside(end)) {
             throw new IllegalArgumentException("You tried to get blocks out of limits.");
         }
@@ -64,29 +64,29 @@ public class BlocksRepositoryBase {
         return blocks;
     }
 
-    public Block getBlock(Vector3ic pos) {
+    public synchronized Block getBlock(Vector3ic pos) {
         return Block.getBlockByIndex(gridBlocks.read(pos.x(), pos.y(), pos.z()));
     }
 
-    public Block getBlock(int x, int y, int z) {
+    public synchronized Block getBlock(int x, int y, int z) {
         return Block.getBlockByIndex(gridBlocks.read(x, y, z));
     }
 
-    public Block getBlockUniversal(int x, int y, int z) {
+    public synchronized Block getBlockUniversal(int x, int y, int z) {
         return INDEXER.isInside(x, y, z) ? getBlock(x, y, z) : Block.AIR;
     }
 
-    public boolean isBlockExists(Vector3ic pos) {
+    public synchronized boolean isBlockExists(Vector3ic pos) {
         return INDEXER.isInside(pos);
     }
 
-    public boolean isBlockExists(int x, int y, int z) {
+    public synchronized boolean isBlockExists(int x, int y, int z) {
         return INDEXER.isInside(x, y, z);
     }
 
     // Using A Fast Voxel Traversal Algorithm for Ray Tracing by John Amanatides and Andrew Woo
     @Nullable
-    public Vector3ic traverse(LineSegmentf segment, BiFunction<Block, Vector3i, Boolean> condition) {
+    public synchronized Vector3ic traverse(LineSegmentf segment, BiFunction<Block, Vector3i, Boolean> condition) {
         int cx = (int) Math.floor(segment.aX);
         int cy = (int) Math.floor(segment.aY);
         int cz = (int) Math.floor(segment.aZ);
