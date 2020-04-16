@@ -87,13 +87,12 @@ public class EffigySides extends Effigy<ChunkShader> {
             .put(BlockSide.RIGHT, SIDE_RIGHT)
             .put(BlockSide.FRONT, SIDE_FRONT)
             .build();
+
     @Getter(lazy = true)
     private final LightMassShader lightMassShader = getGraphics().getShaderRepository().getShader(LightMassShader.class);
-
     private final ShaderBuffer lightBuffer = new ShaderBuffer(LIGHT_UPDATE_LIMIT * LIGHT_UPDATE_LIMIT * LIGHT_UPDATE_LIMIT);
     private final ShaderBuffer heightBuffer = new ShaderBuffer(LIGHT_UPDATE_LIMIT * LIGHT_UPDATE_LIMIT);
-
-    private final Map<SidePosition, Integer> sidePosToActiveSideIndex = new HashMap<>(); // TODO rename to sidePosToActiveSide
+    private final Map<SidePosition, Integer> sidePosToActiveSideIndex = new HashMap<>();
     private final ArrayList<SidePosition> activeSides = new ArrayList<>();
     private final ArrayList<Mesh> meshes = new ArrayList<>();
     private final Map<Vector3ic, Chunk> posToChunk = new HashMap<>();
@@ -559,62 +558,62 @@ public class EffigySides extends Effigy<ChunkShader> {
         SideIndexData sideIndexDataDst = new SideIndexData(sideIndexDst, meshes);
 
         for (int i = 0; i < SIDE_INDICES.length; ++i) {
-            sideIndexDataDst.getIndices().put(i + sideIndexDataDst.getIndexPos(), SIDE_INDICES[i] + sideIndexDataDst.getVertexStart());
+            sideIndexDataDst.indices.put(i + sideIndexDataDst.indexPos, SIDE_INDICES[i] + sideIndexDataDst.vertexStart);
         }
 
         float[] vertices = new float[VERTEX_SIDE_SIZE];
-        sideIndexDataSrc.getVertices().position(sideIndexDataSrc.getVertexPos());
-        sideIndexDataSrc.getVertices().get(vertices);
-        sideIndexDataDst.getVertices().position(sideIndexDataDst.getVertexPos());
-        sideIndexDataDst.getVertices().put(vertices);
+        sideIndexDataSrc.vertices.position(sideIndexDataSrc.vertexPos);
+        sideIndexDataSrc.vertices.get(vertices);
+        sideIndexDataDst.vertices.position(sideIndexDataDst.vertexPos);
+        sideIndexDataDst.vertices.put(vertices);
 
         float[] skyLights = new float[SKY_LIGHT_SIDE_SIZE];
-        sideIndexDataSrc.getSkyLights().position(sideIndexDataSrc.getSkyLightPos());
-        sideIndexDataSrc.getSkyLights().get(skyLights);
-        sideIndexDataDst.getSkyLights().position(sideIndexDataDst.getSkyLightPos());
-        sideIndexDataDst.getSkyLights().put(skyLights);
+        sideIndexDataSrc.skyLights.position(sideIndexDataSrc.skyLightPos);
+        sideIndexDataSrc.skyLights.get(skyLights);
+        sideIndexDataDst.skyLights.position(sideIndexDataDst.skyLightPos);
+        sideIndexDataDst.skyLights.put(skyLights);
 
         float[] emitLights = new float[EMIT_LIGHT_SIDE_SIZE];
-        sideIndexDataSrc.getEmitLights().position(sideIndexDataSrc.getEmitLightPos());
-        sideIndexDataSrc.getEmitLights().get(emitLights);
-        sideIndexDataDst.getEmitLights().position(sideIndexDataDst.getEmitLightPos());
-        sideIndexDataDst.getEmitLights().put(emitLights);
+        sideIndexDataSrc.emitLights.position(sideIndexDataSrc.emitLightPos);
+        sideIndexDataSrc.emitLights.get(emitLights);
+        sideIndexDataDst.emitLights.position(sideIndexDataDst.emitLightPos);
+        sideIndexDataDst.emitLights.put(emitLights);
 
         float[] blockTypes = new float[BLOCK_TYPE_SIDE_SIZE];
-        sideIndexDataSrc.getBlockTypes().position(sideIndexDataSrc.getBlockTypePos());
-        sideIndexDataSrc.getBlockTypes().get(blockTypes);
-        sideIndexDataDst.getBlockTypes().position(sideIndexDataDst.getBlockTypePos());
-        sideIndexDataDst.getBlockTypes().put(blockTypes);
+        sideIndexDataSrc.blockTypes.position(sideIndexDataSrc.blockTypePos);
+        sideIndexDataSrc.blockTypes.get(blockTypes);
+        sideIndexDataDst.blockTypes.position(sideIndexDataDst.blockTypePos);
+        sideIndexDataDst.blockTypes.put(blockTypes);
 
         float[] normals = new float[NORMAL_SIDE_SIZE];
-        sideIndexDataSrc.getNormals().position(sideIndexDataSrc.getNormalPos());
-        sideIndexDataSrc.getNormals().get(normals);
-        sideIndexDataDst.getNormals().position(sideIndexDataDst.getNormalPos());
-        sideIndexDataDst.getNormals().put(normals);
+        sideIndexDataSrc.normals.position(sideIndexDataSrc.normalPos);
+        sideIndexDataSrc.normals.get(normals);
+        sideIndexDataDst.normals.position(sideIndexDataDst.normalPos);
+        sideIndexDataDst.normals.put(normals);
 
         float[] textures = new float[TEXTURE_SIDE_SIZE];
-        sideIndexDataSrc.getTextures().position(sideIndexDataSrc.getTexturePos());
-        sideIndexDataSrc.getTextures().get(textures);
-        sideIndexDataDst.getTextures().position(sideIndexDataDst.getTexturePos());
-        sideIndexDataDst.getTextures().put(textures);
+        sideIndexDataSrc.textures.position(sideIndexDataSrc.texturePos);
+        sideIndexDataSrc.textures.get(textures);
+        sideIndexDataDst.textures.position(sideIndexDataDst.texturePos);
+        sideIndexDataDst.textures.put(textures);
 
         float[] atlasNumber = new float[ATLAS_NUMBER_SIDE_SIZE];
-        sideIndexDataSrc.getAtlasNumber().position(sideIndexDataSrc.getAtlasNumberPos());
-        sideIndexDataSrc.getAtlasNumber().get(atlasNumber);
-        sideIndexDataDst.getAtlasNumber().position(sideIndexDataDst.getAtlasNumberPos());
-        sideIndexDataDst.getAtlasNumber().put(atlasNumber);
+        sideIndexDataSrc.atlasNumber.position(sideIndexDataSrc.atlasNumberPos);
+        sideIndexDataSrc.atlasNumber.get(atlasNumber);
+        sideIndexDataDst.atlasNumber.position(sideIndexDataDst.atlasNumberPos);
+        sideIndexDataDst.atlasNumber.put(atlasNumber);
 
         float[] atlasLayer = new float[ATLAS_LAYER_SIDE_SIZE];
-        sideIndexDataSrc.getAtlasLayer().position(sideIndexDataSrc.getAtlasLayerPos());
-        sideIndexDataSrc.getAtlasLayer().get(atlasLayer);
-        sideIndexDataDst.getAtlasLayer().position(sideIndexDataDst.getAtlasLayerPos());
-        sideIndexDataDst.getAtlasLayer().put(atlasLayer);
+        sideIndexDataSrc.atlasLayer.position(sideIndexDataSrc.atlasLayerPos);
+        sideIndexDataSrc.atlasLayer.get(atlasLayer);
+        sideIndexDataDst.atlasLayer.position(sideIndexDataDst.atlasLayerPos);
+        sideIndexDataDst.atlasLayer.put(atlasLayer);
 
         float[] atlasMaxUV = new float[ATLAS_MAX_UV_SIDE_SIZE];
-        sideIndexDataSrc.getAtlasMaxUV().position(sideIndexDataSrc.getAtlasMaxUVPos());
-        sideIndexDataSrc.getAtlasMaxUV().get(atlasMaxUV);
-        sideIndexDataDst.getAtlasMaxUV().position(sideIndexDataDst.getAtlasMaxUVPos());
-        sideIndexDataDst.getAtlasMaxUV().put(atlasMaxUV);
+        sideIndexDataSrc.atlasMaxUV.position(sideIndexDataSrc.atlasMaxUVPos);
+        sideIndexDataSrc.atlasMaxUV.get(atlasMaxUV);
+        sideIndexDataDst.atlasMaxUV.position(sideIndexDataDst.atlasMaxUVPos);
+        sideIndexDataDst.atlasMaxUV.put(atlasMaxUV);
 
     }
 
@@ -629,46 +628,45 @@ public class EffigySides extends Effigy<ChunkShader> {
         Texture atlasFragment = getGraphics().getTexturePackRepository().getCubeMap(side.sideData.block).getTextureByBlockSide(blockSide);
 
         for (int i = 0; i < SIDE_INDICES.length; ++i) {
-            sideIndexData.getIndices().put(i + sideIndexData.getIndexPos(), SIDE_INDICES[i] + sideIndexData.getVertexStart());
+            sideIndexData.indices.put(i + sideIndexData.indexPos, SIDE_INDICES[i] + sideIndexData.vertexStart);
         }
 
         int blockType = side.sideData.block == Block.WATER ? BLOCK_TYPE_WATER : BLOCK_TYPE_NORMAL;
 
         for (int i = 0; i < VERTICES_PER_SIDE; i++) {
             int vIdx = i * VERTICES.getNumberPerVertex();
-            sideIndexData.getVertices().put(vIdx + sideIndexData.getVertexPos(), cubeSideMeshData.getVertices()[vIdx] + dx);
-            sideIndexData.getVertices().put(vIdx + sideIndexData.getVertexPos() + 1, cubeSideMeshData.getVertices()[vIdx + 1] + dy);
-            sideIndexData.getVertices().put(vIdx + sideIndexData.getVertexPos() + 2, cubeSideMeshData.getVertices()[vIdx + 2] + dz);
+            sideIndexData.vertices.put(vIdx + sideIndexData.vertexPos, cubeSideMeshData.vertices[vIdx] + dx);
+            sideIndexData.vertices.put(vIdx + sideIndexData.vertexPos + 1, cubeSideMeshData.vertices[vIdx + 1] + dy);
+            sideIndexData.vertices.put(vIdx + sideIndexData.vertexPos + 2, cubeSideMeshData.vertices[vIdx + 2] + dz);
 
-            sideIndexData.getSkyLights().put(i * SKY_LIGHT.getNumberPerVertex() + sideIndexData.getSkyLightPos(), (float) side.sideData.skyLight / MAX_LIGHT_LEVEL);
-            sideIndexData.getEmitLights().put(i * EMIT_LIGHT.getNumberPerVertex() + sideIndexData.getEmitLightPos(), (float) side.sideData.emitLight / MAX_LIGHT_LEVEL);
-            sideIndexData.getBlockTypes().put(i * BLOCK_TYPE.getNumberPerVertex() + sideIndexData.getBlockTypePos(), blockType);
+            sideIndexData.skyLights.put(i * SKY_LIGHT.getNumberPerVertex() + sideIndexData.skyLightPos, (float) side.sideData.skyLight / MAX_LIGHT_LEVEL);
+            sideIndexData.emitLights.put(i * EMIT_LIGHT.getNumberPerVertex() + sideIndexData.emitLightPos, (float) side.sideData.emitLight / MAX_LIGHT_LEVEL);
+            sideIndexData.blockTypes.put(i * BLOCK_TYPE.getNumberPerVertex() + sideIndexData.blockTypePos, blockType);
 
             int nIdx = i * NORMALS.getNumberPerVertex();
-            sideIndexData.getNormals().put(nIdx + sideIndexData.getNormalPos(), cubeSideMeshData.getNormals()[nIdx]);
-            sideIndexData.getNormals().put(nIdx + sideIndexData.getNormalPos() + 1, cubeSideMeshData.getNormals()[nIdx + 1]);
-            sideIndexData.getNormals().put(nIdx + sideIndexData.getNormalPos() + 2, cubeSideMeshData.getNormals()[nIdx + 2]);
+            sideIndexData.normals.put(nIdx + sideIndexData.normalPos, cubeSideMeshData.normals[nIdx]);
+            sideIndexData.normals.put(nIdx + sideIndexData.normalPos + 1, cubeSideMeshData.normals[nIdx + 1]);
+            sideIndexData.normals.put(nIdx + sideIndexData.normalPos + 2, cubeSideMeshData.normals[nIdx + 2]);
 
             int tIdx = i * TEXTURES.getNumberPerVertex();
-            sideIndexData.getTextures().put(tIdx + sideIndexData.getTexturePos(), cubeSideMeshData.getTextures()[tIdx] ? 1 : 0);
-            sideIndexData.getTextures().put(tIdx + sideIndexData.getTexturePos() + 1, cubeSideMeshData.getTextures()[tIdx + 1] ? 1 : 0);
+            sideIndexData.textures.put(tIdx + sideIndexData.texturePos, cubeSideMeshData.textures[tIdx] ? 1 : 0);
+            sideIndexData.textures.put(tIdx + sideIndexData.texturePos + 1, cubeSideMeshData.textures[tIdx + 1] ? 1 : 0);
 
             int aNumberIdx = i * ATLAS_NUMBER.getNumberPerVertex();
-            sideIndexData.getAtlasNumber().put(aNumberIdx + sideIndexData.getAtlasNumberPos(), (float) atlasFragment.getAtlasTexture().getAtlasNumber());
+            sideIndexData.atlasNumber.put(aNumberIdx + sideIndexData.atlasNumberPos, (float) atlasFragment.getAtlasTexture().getAtlasNumber());
 
             int aLayerIdx = i * ATLAS_LAYER.getNumberPerVertex();
-            sideIndexData.getAtlasLayer().put(aLayerIdx + sideIndexData.getAtlasLayerPos(), (float) atlasFragment.getAtlasTexture().getLayer());
+            sideIndexData.atlasLayer.put(aLayerIdx + sideIndexData.atlasLayerPos, (float) atlasFragment.getAtlasTexture().getLayer());
 
             int aMaxUVIdx = i * ATLAS_MAX_UV.getNumberPerVertex();
-            sideIndexData.getAtlasMaxUV().put(aMaxUVIdx + sideIndexData.getAtlasMaxUVPos(), atlasFragment.getAtlasTexture().getMaxUV().x());
-            sideIndexData.getAtlasMaxUV().put(aMaxUVIdx + sideIndexData.getAtlasMaxUVPos() + 1, atlasFragment.getAtlasTexture().getMaxUV().y());
+            sideIndexData.atlasMaxUV.put(aMaxUVIdx + sideIndexData.atlasMaxUVPos, atlasFragment.getAtlasTexture().getMaxUV().x());
+            sideIndexData.atlasMaxUV.put(aMaxUVIdx + sideIndexData.atlasMaxUVPos + 1, atlasFragment.getAtlasTexture().getMaxUV().y());
 
         }
 
     }
 
     @RequiredArgsConstructor
-    @Getter // TODO remove getter
     private static class CubeSideMeshData {
 
         private final float[] vertices;
@@ -678,23 +676,22 @@ public class EffigySides extends Effigy<ChunkShader> {
     }
 
     @RequiredArgsConstructor
-    @Getter // TODO remove getter
     public static class SideIndexData {
 
-        public static final int VERTICES_PER_SIDE = 4;
-        public static final int[] SIDE_INDICES = new int[]{0, 1, 2, 2, 3, 0};
-        public static final int SIDES_PER_MESH = Mesh.MAX_VERTICES / VERTICES_PER_SIDE;
+        static final int VERTICES_PER_SIDE = 4;
+        static final int[] SIDE_INDICES = new int[]{0, 1, 2, 2, 3, 0};
+        static final int SIDES_PER_MESH = Mesh.MAX_VERTICES / VERTICES_PER_SIDE;
 
-        public static final int VERTEX_SIDE_SIZE = VERTICES_PER_SIDE * VERTICES.getNumberPerVertex();
-        public static final int SKY_LIGHT_SIDE_SIZE = VERTICES_PER_SIDE * SKY_LIGHT.getNumberPerVertex();
-        public static final int EMIT_LIGHT_SIDE_SIZE = VERTICES_PER_SIDE * EMIT_LIGHT.getNumberPerVertex();
-        public static final int INDEX_SIDE_SIZE = SIDE_INDICES.length;
-        public static final int NORMAL_SIDE_SIZE = VERTICES_PER_SIDE * NORMALS.getNumberPerVertex();
-        public static final int TEXTURE_SIDE_SIZE = VERTICES_PER_SIDE * TEXTURES.getNumberPerVertex();
-        public static final int ATLAS_NUMBER_SIDE_SIZE = VERTICES_PER_SIDE * ATLAS_NUMBER.getNumberPerVertex();
-        public static final int ATLAS_LAYER_SIDE_SIZE = VERTICES_PER_SIDE * ATLAS_LAYER.getNumberPerVertex();
-        public static final int ATLAS_MAX_UV_SIDE_SIZE = VERTICES_PER_SIDE * ATLAS_MAX_UV.getNumberPerVertex();
-        public static final int BLOCK_TYPE_SIDE_SIZE = VERTICES_PER_SIDE * BLOCK_TYPE.getNumberPerVertex();
+        static final int VERTEX_SIDE_SIZE = VERTICES_PER_SIDE * VERTICES.getNumberPerVertex();
+        static final int SKY_LIGHT_SIDE_SIZE = VERTICES_PER_SIDE * SKY_LIGHT.getNumberPerVertex();
+        static final int EMIT_LIGHT_SIDE_SIZE = VERTICES_PER_SIDE * EMIT_LIGHT.getNumberPerVertex();
+        static final int INDEX_SIDE_SIZE = SIDE_INDICES.length;
+        static final int NORMAL_SIDE_SIZE = VERTICES_PER_SIDE * NORMALS.getNumberPerVertex();
+        static final int TEXTURE_SIDE_SIZE = VERTICES_PER_SIDE * TEXTURES.getNumberPerVertex();
+        static final int ATLAS_NUMBER_SIDE_SIZE = VERTICES_PER_SIDE * ATLAS_NUMBER.getNumberPerVertex();
+        static final int ATLAS_LAYER_SIDE_SIZE = VERTICES_PER_SIDE * ATLAS_LAYER.getNumberPerVertex();
+        static final int ATLAS_MAX_UV_SIDE_SIZE = VERTICES_PER_SIDE * ATLAS_MAX_UV.getNumberPerVertex();
+        static final int BLOCK_TYPE_SIDE_SIZE = VERTICES_PER_SIDE * BLOCK_TYPE.getNumberPerVertex();
 
         int vertexStart;
         int vertexPos;
