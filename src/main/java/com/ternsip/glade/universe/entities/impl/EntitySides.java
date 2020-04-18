@@ -5,15 +5,11 @@ import com.ternsip.glade.universe.entities.base.GraphicalEntity;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.joml.Vector3i;
 
 @RequiredArgsConstructor
 @Getter
 @Setter
 public class EntitySides extends GraphicalEntity<EffigySides> {
-
-    private final Vector3i observerPos = new Vector3i(-1000);
-    private int observerViewDistance = 0;
 
     @Override
     public EffigySides getEffigy() {
