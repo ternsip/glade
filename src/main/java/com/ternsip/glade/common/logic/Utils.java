@@ -234,4 +234,11 @@ public class Utils {
         return parentToFiles;
     }
 
+    public static void ensureFileFolder(File file) {
+        File parent = file.getParentFile();
+        if (!parent.exists()) {
+            parent.mkdirs();
+        }
+    }
+
 }

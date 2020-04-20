@@ -28,9 +28,9 @@ public class SurfaceGenerator implements ChunkGenerator {
                     int stoneHeight = height + heightMapStone[dx][dz];
                     int dirtHeight = stoneHeight + heightMapDirt[dx][dz];
                     if (wPos.y() < stoneHeight) {
-                        blocksServerRepository.setBlock(x, y, z, Block.STONE);
+                        blocksServerRepository.setBlockSilently(x, y, z, Block.STONE);
                     } else if (wPos.y() <= dirtHeight) {
-                        blocksServerRepository.setBlock(x, y, z, wPos.y() == dirtHeight ? Block.LAWN : Block.DIRT);
+                        blocksServerRepository.setBlockSilently(x, y, z, wPos.y() == dirtHeight ? Block.LAWN : Block.DIRT);
                     }
                 }
             }

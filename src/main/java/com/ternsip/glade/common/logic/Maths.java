@@ -165,4 +165,8 @@ public class Maths {
         return (b + a % b) % b;
     }
 
+    public static int ceil(int value, int divisor) {
+        return (int) Math.ceil((double)value / divisor);
+    }
+
 }

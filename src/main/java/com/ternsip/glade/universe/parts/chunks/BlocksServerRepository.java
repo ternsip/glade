@@ -2,7 +2,6 @@ package com.ternsip.glade.universe.parts.chunks;
 
 import com.ternsip.glade.common.events.base.Callback;
 import com.ternsip.glade.common.events.network.OnClientConnect;
-import com.ternsip.glade.common.logic.Threadable;
 import com.ternsip.glade.common.logic.Timer;
 import com.ternsip.glade.common.logic.Utils;
 import com.ternsip.glade.universe.interfaces.IUniverseServer;
@@ -11,6 +10,8 @@ import com.ternsip.glade.universe.protocol.GridTransferClientPacket;
 import com.ternsip.glade.universe.storage.Storage;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.joml.Vector3i;
+import org.joml.Vector3ic;
 
 import java.util.Comparator;
 import java.util.List;
@@ -18,17 +19,26 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Getter
-public class BlocksServerRepository extends BlocksRepositoryBase implements Threadable, IUniverseServer {
+public class BlocksServerRepository extends BlocksRepositoryBase implements IUniverseServer {
 
     private static final List<ChunkGenerator> CHUNK_GENERATORS = constructChunkGenerators();
     private static final int UPDATE_SIZE = 256;
+    private final Storage storage = new Storage("server_world");
 
     private final Callback<OnClientConnect> onClientConnectCallback = this::whenClientConnected;
-    private final Storage storage;
 
-    public BlocksServerRepository() {
-        this.storage = new Storage("blocks_meta");
-        if (storage.isExists()) {
+    private static List<ChunkGenerator> constructChunkGenerators() {
+        return Utils.getAllClasses(ChunkGenerator.class).stream()
+                .map(Utils::createInstanceSilently)
+                .sorted(Comparator.comparing(ChunkGenerator::getPriority))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public synchronized void init() {
+        super.init();
+        getUniverseServer().getNetworkServerEventReceiver().registerCallback(OnClientConnect.class, getOnClientConnectCallback());
+        if (getStorage().isExists()) {
             loadFromDisk();
         } else {
             Timer timer = new Timer();
@@ -40,48 +50,50 @@ public class BlocksServerRepository extends BlocksRepositoryBase implements Thre
                     for (ChunkGenerator chunkGenerator : CHUNK_GENERATORS) {
                         chunkGenerator.populate(this, x, z, endX, endZ);
                     }
+                    getBlocksCompressor().saveChunks();
+                    getBlocksCompressor().cleanTree();
                 }
             }
-            saveToDisk();
             log.info("World generation time spent: {}s", timer.spent() / 1000.0f);
+            timer.drop();
+            for (int x = 0; x < SIZE_X; x += UPDATE_LIMIT) {
+                for (int y = 0; y < SIZE_Y; y += UPDATE_LIMIT) {
+                    for (int z = 0; z < SIZE_Z; z += UPDATE_LIMIT) {
+                        int sizeX = Math.min(UPDATE_LIMIT, SIZE_X - x);
+                        int sizeY = Math.min(UPDATE_LIMIT, SIZE_Y - y);
+                        int sizeZ = Math.min(UPDATE_LIMIT, SIZE_Z - z);
+                        Vector3ic start = new Vector3i(x, y, z);
+                        Vector3ic size = new Vector3i(sizeX, sizeY, sizeZ);
+                        updateArea(start, size);
+                        getPosToChunk().forEach(this::saveChunk);
+                        getPosToChunk().clear();
+                        getLightCompressor().saveChunks();
+                        getLightCompressor().cleanTree();
+                        getHeightCompressor().saveChunks();
+                        getHeightCompressor().cleanTree();
+                    }
+                }
+            }
+            log.info("Chunk rendering time: {}s", timer.spent() / 1000.0f);
+            saveToDisk();
         }
-    }
-
-    private static List<ChunkGenerator> constructChunkGenerators() {
-        return Utils.getAllClasses(ChunkGenerator.class).stream()
-                .map(Utils::createInstanceSilently)
-                .sorted(Comparator.comparing(ChunkGenerator::getPriority))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public void init() {
-        getUniverseServer().getNetworkServerEventReceiver().registerCallback(OnClientConnect.class, getOnClientConnectCallback());
-    }
-
-    @Override
-    public void update() {
     }
 
     @Override
     public void finish() {
+        super.finish();
         getUniverseServer().getNetworkServerEventReceiver().unregisterCallback(OnClientConnect.class, getOnClientConnectCallback());
+        compressGrids();
         saveToDisk();
-        storage.finish();
+        getStorage().finish();
     }
 
-    private void whenClientConnected(OnClientConnect onClientConnect) {
-        getUniverseServer().getServer().send(new GridTransferClientPacket(getGridBlocks().toBytes()), onClientConnect.getConnection());
+    @Override
+    protected void onSidesUpdate(SidesUpdate sidesUpdate) {
     }
 
-    private void saveToDisk() {
-        getGridBlocks().saveChunks();
-        getGridBlocks().cleanTree();
-        storage.save("block", getGridBlocks().toBytes());
-    }
-
-    private void loadFromDisk() {
-        getGridBlocks().fromBytes(storage.load("block"));
+    private synchronized void whenClientConnected(OnClientConnect onClientConnect) {
+        getUniverseServer().getServer().send(new GridTransferClientPacket(getStorage().getFileBytes()), onClientConnect.getConnection());
     }
 
 }

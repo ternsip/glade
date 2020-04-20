@@ -18,7 +18,7 @@ public class WaterGenerator implements ChunkGenerator {
             for (int z = startZ; z <= endZ; ++z) {
                 for (int y = 0; y < BlocksServerRepository.SIZE_Y; ++y) {
                     if (y <= waterHeight && blocksServerRepository.getBlock(x, y, z) == Block.AIR) {
-                        blocksServerRepository.setBlock(x, y, z, Block.WATER);
+                        blocksServerRepository.setBlockSilently(x, y, z, Block.WATER);
                     }
                 }
             }
