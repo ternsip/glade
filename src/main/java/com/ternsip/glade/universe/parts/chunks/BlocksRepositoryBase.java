@@ -17,11 +17,12 @@ import static com.ternsip.glade.common.logic.Maths.frac;
 @Setter
 public class BlocksRepositoryBase {
 
-    public static final int SIZE_X = 512;
-    public static final int SIZE_Y = 256;
-    public static final int SIZE_Z = 512;
+    public static final int SIZE_X = 128;
+    public static final int SIZE_Y = 64;
+    public static final int SIZE_Z = 128;
     public static final Vector3ic SIZE = new Vector3i(SIZE_X, SIZE_Y, SIZE_Z);
     public static final Indexer INDEXER = new Indexer(SIZE);
+    public static final int[][][] arr = new int[SIZE_X][SIZE_Z][SIZE_Z];
 
     private final GridCompressor gridBlocks = new GridCompressor();
 

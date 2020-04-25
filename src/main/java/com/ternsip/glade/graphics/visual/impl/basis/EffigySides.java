@@ -36,8 +36,7 @@ import static com.ternsip.glade.graphics.shader.base.RasterShader.INDICES;
 import static com.ternsip.glade.graphics.shader.base.RasterShader.VERTICES;
 import static com.ternsip.glade.graphics.shader.impl.ChunkShader.*;
 import static com.ternsip.glade.graphics.visual.impl.basis.EffigySides.SideIndexData.*;
-import static com.ternsip.glade.universe.parts.chunks.BlocksRepositoryBase.INDEXER;
-import static com.ternsip.glade.universe.parts.chunks.BlocksRepositoryBase.SIZE;
+import static com.ternsip.glade.universe.parts.chunks.BlocksRepositoryBase.*;
 
 @Slf4j
 public class EffigySides extends Effigy<ChunkShader> {
@@ -248,12 +247,12 @@ public class EffigySides extends Effigy<ChunkShader> {
 
     private void renderEntirely() {
         Timer timer = new Timer();
-        for (int x = 0; x < 256; x += UPDATE_LIMIT) {
-            for (int y = 0; y < 256; y += UPDATE_LIMIT) {
-                for (int z = 0; z < 256; z += UPDATE_LIMIT) {
-                    int sizeX = Math.min(UPDATE_LIMIT, 256 - x);
-                    int sizeY = Math.min(UPDATE_LIMIT, 256 - y);
-                    int sizeZ = Math.min(UPDATE_LIMIT, 256 - z);
+        for (int x = 0; x < SIZE_X; x += UPDATE_LIMIT) {
+            for (int y = 0; y < SIZE_Y; y += UPDATE_LIMIT) {
+                for (int z = 0; z < SIZE_Z; z += UPDATE_LIMIT) {
+                    int sizeX = Math.min(UPDATE_LIMIT, SIZE_X - x);
+                    int sizeY = Math.min(UPDATE_LIMIT, SIZE_Y - y);
+                    int sizeZ = Math.min(UPDATE_LIMIT, SIZE_Z - z);
                     Vector3ic start = new Vector3i(x, y, z);
                     Vector3ic size = new Vector3i(sizeX, sizeY, sizeZ);
                     updateArea(start, size);
@@ -856,7 +855,7 @@ public class EffigySides extends Effigy<ChunkShader> {
     @Setter
     private static class Chunk {
 
-        private static final int SIZE = 32;
+        private static final int SIZE = 64;
         private final Map<SidePosition, SideData> sidePosToSideData = new HashMap<>();
         private final Map<Vector3ic, Block> posToEngagedBlock = new HashMap<>();
 

@@ -5,7 +5,7 @@ import com.ternsip.glade.universe.parts.chunks.BlocksServerRepository;
 
 public class WaterGenerator implements ChunkGenerator {
 
-    private final int waterHeight = 130;
+    private final int waterHeight = 30;
 
     @Override
     public int getPriority() {

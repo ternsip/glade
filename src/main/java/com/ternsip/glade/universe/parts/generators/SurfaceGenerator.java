@@ -10,7 +10,7 @@ import org.joml.Vector3ic;
 @Getter
 public class SurfaceGenerator implements ChunkGenerator {
 
-    private final int height = 130;
+    private final int height = 30;
 
     @Override
     public int getPriority() {
@@ -19,8 +19,8 @@ public class SurfaceGenerator implements ChunkGenerator {
 
     @Override
     public void populate(BlocksServerRepository blocksServerRepository, int startX, int startZ, int endX, int endZ) {
-        int[][] heightMapStone = generateHeightMap(11, 5, 50, 0.01f, startX, startZ, endX, endZ);
-        int[][] heightMapDirt = generateHeightMap(60, 5, 20, 0.01f, startX, startZ, endX, endZ);
+        int[][] heightMapStone = generateHeightMap(11, 5, 25, 0.01f, startX, startZ, endX, endZ);
+        int[][] heightMapDirt = generateHeightMap(60, 5, 10, 0.01f, startX, startZ, endX, endZ);
         for (int dx = 0, x = startX; x <= endX; ++x, ++dx) {
             for (int dz = 0, z = startZ; z <= endZ; ++z, ++dz) {
                 for (int y = 0; y < BlocksServerRepository.SIZE_Y; ++y) {

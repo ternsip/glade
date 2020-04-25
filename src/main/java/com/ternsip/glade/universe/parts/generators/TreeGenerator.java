@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class TreeGenerator implements ChunkGenerator {
 
-    private static final int MIN_HEIGHT = 45;
+    private static final int MIN_HEIGHT = 15;
     private static final int TREE_ATTEMPTS = 100;
 
     @Override
